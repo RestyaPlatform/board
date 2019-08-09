@@ -2,7 +2,7 @@
 	<%
 				var cardLink = '<a href="#/board/' + activity.attributes.board_id + '/card/' + activity.attributes.card_id + '">' + _.escape(activity.attributes.card_name) + '</a>';
 				var organizationLink = '<a href="#/organization/' + activity.attributes.organization_id + '">' + _.escape(activity.attributes.organization_name) + '</a>';
-			if(activity.attributes.type != 'add_comment' && activity.attributes.type != 'edit_comment') {
+			if(activity.attributes.type != 'add_comment') {
 				activity.attributes.comment = activity.attributes.comment.replace('##ORGANIZATION_LINK##', organizationLink);
 				activity.attributes.comment = activity.attributes.comment.replace('##CARD_LINK##', cardLink);
 				activity.attributes.comment = activity.attributes.comment.replace('##LABEL_NAME##', _.escape(activity.attributes.label_name));
@@ -14,7 +14,7 @@
 				activity.attributes.comment = activity.attributes.comment.replace('##CHECKLIST_ITEM_NAME##', _.escape(activity.attributes.checklist_item_name));
 				activity.attributes.comment = activity.attributes.comment.replace('##CHECKLIST_ITEM_PARENT_NAME##', _.escape(activity.attributes.checklist_item_parent_name));
 				activity.attributes.comment = activity.attributes.comment.replace('##CHECKLIST_NAME##', _.escape(activity.attributes.checklist_name));
-			} else {
+			} else if(activity.attributes.type != 'edit_comment'){
 				var comment = filterXSS(activity.attributes.full_name) + ' commented in card ' + cardLink;
 				var patt = /@\w+/g;
 				if(patt.test(activity.attributes.comment)) {

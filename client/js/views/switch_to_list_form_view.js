@@ -22,6 +22,9 @@ App.SwitchToListView = Backbone.View.extend({
         if (!_.isUndefined(this.model) && this.model !== null) {
             this.model.showImage = this.showImage;
         }
+        _.bindAll(this, 'sortLabelPosition', 'render', 'resetLabelField');
+        this.model.bind('change:board_custom_fields', this.sortLabelPosition);
+        this.model.bind('change:board_custom_fields', this.resetLabelField);
         this.sort_by = null;
         this.render();
     },
@@ -48,6 +51,10 @@ App.SwitchToListView = Backbone.View.extend({
             board: this.model
         }));
         this.showTooltip();
+        if (!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && $.inArray('r_listview_configure', APPS.enabled_apps) !== -1) {
+            this.resetLabelField();
+            this.sortLabelPosition();
+        }
         return this;
     },
     /**
@@ -172,11 +179,16 @@ App.SwitchToListView = Backbone.View.extend({
                     view = new App.CardView({
                         tagName: 'tr',
                         className: 'js-show-modal-card-view cur txt-aligns js-listview-list-id-' + card.attributes.list_id,
+                        id: 'js-card-' + card.attributes.id,
                         model: card,
                         template: 'list_view'
                     });
                     $('.js-card-list-view-' + self.model.attributes.id).append(view.render().el);
                 }
+            }
+            if (!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && $.inArray('r_listview_configure', APPS.enabled_apps) !== -1) {
+                this.resetLabelField();
+                this.sortLabelPosition();
             }
         }
         if (is_card_empty) {
@@ -188,6 +200,58 @@ App.SwitchToListView = Backbone.View.extend({
                 template: 'list_view'
             });
             view.render();
+        }
+    },
+    /**
+     * Listviewposition()
+     * toggle thr label filter list
+     * @param e
+     * @type Object(DOM event)
+     *
+     */
+    sortLabelPosition: function() {
+        var wrapper = this.$el.find('#list_view_configuration_label'),
+            items = wrapper.children(),
+            r_listview_configure_positions, temp_dom = [];
+        if (!_.isEmpty(this.model.attributes.board_custom_fields) && !_.isUndefined(this.model.attributes.board_custom_fields)) {
+            board_custom_fields = JSON.parse(this.model.attributes.board_custom_fields);
+            if (!_.isUndefined(board_custom_fields.r_listview_configure_position) && !_.isUndefined(board_custom_fields.r_listview_configure_position)) {
+                r_listview_configure_positions = board_custom_fields.r_listview_configure_position.split(',');
+                items.each(function(label, key) {
+                    temp_dom.push(key.id);
+                });
+                wrapper.prepend($.map(r_listview_configure_positions, function(v) {
+                    var list_index = temp_dom.findIndex(function(item) {
+                        return item === 'list_view_config_label-' + v;
+                    });
+                    return items[list_index];
+                }));
+            }
+        }
+    },
+    /**
+     * ListviewHide()
+     * toggle thr label filter list
+     * @param e
+     * @type Object(DOM event)
+     *
+     */
+    resetLabelField: function() {
+        var r_listview_configure;
+        var field_wrapper = this.$el.find('#list_view_configuration_label'),
+            field_wrapper_items = field_wrapper.children();
+        if (!_.isEmpty(this.model.attributes.board_custom_fields) && !_.isUndefined(this.model.attributes.board_custom_fields)) {
+            board_custom_fields = JSON.parse(this.model.attributes.board_custom_fields);
+            if (!_.isUndefined(board_custom_fields.r_listview_configure) && !_.isUndefined(board_custom_fields.r_listview_configure)) {
+                r_listview_configure = board_custom_fields.r_listview_configure.split(',');
+                field_wrapper_items.each(function(label, key) {
+                    if (r_listview_configure.indexOf($(key).data('field-name')) === -1) {
+                        $(key).hide();
+                    } else {
+                        $(key).show();
+                    }
+                });
+            }
         }
     }
 });

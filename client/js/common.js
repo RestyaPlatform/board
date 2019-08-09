@@ -165,6 +165,34 @@ function makeLink(text, board_id) {
     return text;
 }
 
+function CheckFieldExists(board, field_name, field_value, return_type, plugin_name) {
+    var checked_value = (return_type === 'Value') ? field_value : true;
+    if (!_.isUndefined(APPS) && APPS !== null) {
+        if (!_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null) {
+            if ($.inArray(plugin_name, APPS.enabled_apps) !== -1) {
+                if (!_.isUndefined(board.attributes.board_custom_fields) && !_.isEmpty(board.attributes.board_custom_fields)) {
+                    board_custom_fields = JSON.parse(board.attributes.board_custom_fields);
+                    if (!_.isEmpty(board_custom_fields[plugin_name]) && !_.isUndefined(board_custom_fields[plugin_name])) {
+                        r_gridview_configurations = board_custom_fields[plugin_name].split(',');
+                        if (r_gridview_configurations.length > 0) {
+                            if (r_gridview_configurations.indexOf(field_name) !== -1) {
+                                checked_value = (return_type === 'Value') ? field_value : true;
+                            } else {
+                                checked_value = (return_type === 'Value') ? '' : false;
+                            }
+                        } else {
+                            checked_value = (return_type === 'Value') ? '' : false;
+                        }
+                    } else {
+                        checked_value = (return_type === 'Value') ? '' : false;
+                    }
+                }
+            }
+        }
+    }
+    return checked_value;
+}
+
 function activityCommentReplace(activity) {
     if (!_.isUndefined(activity.comment) && !_.isEmpty(activity.comment)) {
         activity.comment = activity.comment.replace("the card ##CARD_LINK##", "this card");

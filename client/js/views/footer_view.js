@@ -89,12 +89,14 @@ App.FooterView = Backbone.View.extend({
         'click .js-show-board-import-wekan-form': 'showBoardImportWekanForm',
         'click .js-show-board-import-kantree-form': 'showBoardImportKantreeForm',
         'click .js-show-board-import-taiga-form': 'showBoardImportTaigaForm',
+        'click .js-show-board-import-csv-form': 'showBoardImportCSVForm',
         'click .js-show-board-import-pipefy-form': 'showBoardImportpipefyForm',
         'click .js-show-board-import-asana-form': 'showBoardImportAsanaForm',
         'click .js-show-board-import-taskwarrior-form': 'showBoardImportTaskwarriorForm',
         'change .js-board-import-wekan-file': 'importWekanBoard',
         'change .js-board-import-kantree-file': 'importKantreeBoard',
         'change .js-board-import-taiga-file': 'importTaigaBoard',
+        'change .js-board-import-csv-file': 'importCSVBoard',
         'change .js-board-import-pipefy-file': 'importpipefyBoard',
         'change .js-board-import-asana-file': 'importAsanaBoard',
         'change .js-board-import-taskwarrior-file': 'importTaskwarriorBoard',
@@ -2388,6 +2390,19 @@ App.FooterView = Backbone.View.extend({
         return false;
     },
     /**
+     * showBoardImportCSVForm()
+     * show Board Import Form
+     * @param e
+     * @type Object(DOM event)
+     *
+     */
+    showBoardImportCSVForm: function(e) {
+        e.preventDefault();
+        var form = $('#js-board-import-csv');
+        $('.js-board-import-csv-file', form).trigger('click');
+        return false;
+    },
+    /**
      * showBoardImportpipefyForm()
      * show Board Import Form
      * @param e
@@ -2641,6 +2656,50 @@ App.FooterView = Backbone.View.extend({
             },
             success: function(model, response) {
                 $('#js-board-import-pipefy-loader', '.js-show-board-import-pipefy-form').addClass('hide');
+                if (!_.isUndefined(response.id)) {
+                    app.navigate('#/board/' + response.id, {
+                        trigger: true,
+                        replace: true
+                    });
+                    self.flash('info', i18next.t('Board is been currently imported. Based on the size of file, it may take few seconds to minutes. Please refresh or check after some time..'), 1800000);
+                } else {
+                    if (response.error) {
+                        self.flash('danger', i18next.t(response.error));
+                    } else {
+                        self.flash('danger', i18next.t('Unable to import. please try again.'));
+                    }
+
+                }
+            }
+        });
+    },
+
+    /**
+     * importCSVBoard()
+     * import Board
+     * @param e
+     * @type Object(DOM event)
+     *
+     */
+    importCSVBoard: function(e) {
+        e.preventDefault();
+        $('#js-board-import-loader').removeClass('hide');
+        var self = this;
+        var form = $('form#js-board-import-csv');
+        var fileData = new FormData(form[0]);
+        var board = new App.Board();
+        board.url = api_url + 'boards.json';
+        board.save(fileData, {
+            type: 'POST',
+            data: fileData,
+            processData: false,
+            cache: false,
+            contentType: false,
+            error: function(e, s) {
+                $('#js-board-import-loader', '.js-show-board-import-csv-form').parent('.js-show-board-import-csv-form').addClass('hide');
+            },
+            success: function(model, response) {
+                $('#js-board-import-loader', '.js-show-board-import-csv-form').addClass('hide');
                 if (!_.isUndefined(response.id)) {
                     app.navigate('#/board/' + response.id, {
                         trigger: true,

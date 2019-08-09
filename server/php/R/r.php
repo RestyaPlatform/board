@@ -1389,6 +1389,10 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                             if ($obj['type'] === 'add_card') {
                                 $obj['comment'] = '##USER_NAME## added this card';
                             }
+                        } else {
+                            if ($obj['type'] === 'add_comment') {
+                                $obj['comment'] = '##USER_NAME## added comment in the card ##CARD_LINK## - ' . $obj['comment'];
+                            }
                         }
                         $obj = ActivityHandler::getActivitiesObj($obj);
                         if (!empty($_metadata)) {
@@ -3145,6 +3149,31 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 } else {
                     $response['error'] = 'Invalid file format. Upload CSV file';
                 }
+            } elseif (!empty($_FILES['board_import_csv'])) {
+                $all_rows = array();
+                $imported_board = array();
+                if (($handle = fopen($_FILES['board_import_csv']['tmp_name'], "r")) !== false) {
+                    $row = 1;
+                    while (($data = fgetcsv($handle, 40000, ",")) !== false) {
+                        if ($row > 1) {
+                            $arrResult = array();
+                            foreach ($data as $key => $value) {
+                                $arrResult[$all_rows[0][$key]] = $value;
+                            };
+                            $imported_board[] = $arrResult;
+                        } else {
+                            $all_rows[] = $data;
+                        }
+                        $row++;
+                    }
+                    if (!empty($imported_board)) {
+                        $board = importCSVBoard($imported_board);
+                        $response['id'] = $board['id'];
+                    } else {
+                        $response['error'] = 'Invalid file format. Upload CSV file';
+                    }
+                }
+                fclose($handle);
             } else {
                 $response['error'] = 'Unable to import. please try again.';
             }
@@ -6195,6 +6224,81 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
                     echo json_encode($SupportAppResponse);
                     break;
                 }
+            }
+        }
+        if (isset($r_put['r_gridview_configure'])) {
+            if (is_plugin_enabled('r_gridview_configure')) {
+                $field_arr = array(
+                    'r_gridview_configure',
+                );
+                $custom_fields_array = array();
+                $custom_fields_array['r_gridview_configure'] = $r_put['r_gridview_configure'];
+                $boardCustomFields = executeQuery('SELECT board_custom_fields FROM boards WHERE id = $1', [$id]);
+                if (!empty($boardCustomFields['board_custom_fields'])) {
+                    $boardCustomFields = json_decode($boardCustomFields['board_custom_fields'], true);
+                    foreach ($boardCustomFields as $key => $boardValue) {
+                        if (array_key_exists($key, $custom_fields_array)) {
+                            $custom_fields_array[$key] = $custom_fields_array[$key];
+                        } else {
+                            $custom_fields_array[$key] = $boardValue;
+                        }
+                    }
+                }
+                $board['id'] = $id;
+                $board['board_custom_fields'] = json_encode($custom_fields_array);
+                $grid_view_response = update_query('boards', $id, $r_resource_cmd, $board);
+                echo json_encode($grid_view_response);
+                break;
+            }
+        }
+        if (isset($r_put['r_listview_configure'])) {
+            if (is_plugin_enabled('r_listview_configure')) {
+                $field_arr = array(
+                    'r_listview_configure',
+                );
+                $custom_fields_array = array();
+                $custom_fields_array['r_listview_configure'] = $r_put['r_listview_configure'];
+                $boardCustomFields = executeQuery('SELECT board_custom_fields FROM boards WHERE id = $1', [$id]);
+                if (!empty($boardCustomFields['board_custom_fields'])) {
+                    $boardCustomFields = json_decode($boardCustomFields['board_custom_fields'], true);
+                    foreach ($boardCustomFields as $key => $boardValue) {
+                        if (array_key_exists($key, $custom_fields_array)) {
+                            $custom_fields_array[$key] = $custom_fields_array[$key];
+                        } else {
+                            $custom_fields_array[$key] = $boardValue;
+                        }
+                    }
+                }
+                $board['id'] = $id;
+                $board['board_custom_fields'] = json_encode($custom_fields_array);
+                $grid_view_response = update_query('boards', $id, $r_resource_cmd, $board);
+                echo json_encode($grid_view_response);
+                break;
+            }
+        }
+        if (isset($r_put['r_listview_configure_position'])) {
+            if (is_plugin_enabled('r_listview_configure')) {
+                $field_arr = array(
+                    'r_listview_configure_position',
+                );
+                $custom_fields_array = array();
+                $custom_fields_array['r_listview_configure_position'] = $r_put['r_listview_configure_position'];
+                $boardCustomFields = executeQuery('SELECT board_custom_fields FROM boards WHERE id = $1', [$id]);
+                if (!empty($boardCustomFields['board_custom_fields'])) {
+                    $boardCustomFields = json_decode($boardCustomFields['board_custom_fields'], true);
+                    foreach ($boardCustomFields as $key => $boardValue) {
+                        if (array_key_exists($key, $custom_fields_array)) {
+                            $custom_fields_array[$key] = $custom_fields_array[$key];
+                        } else {
+                            $custom_fields_array[$key] = $boardValue;
+                        }
+                    }
+                }
+                $board['id'] = $id;
+                $board['board_custom_fields'] = json_encode($custom_fields_array);
+                $grid_view_response = update_query('boards', $id, $r_resource_cmd, $board);
+                echo json_encode($grid_view_response);
+                break;
             }
         }
         if (isset($r_put['default_email_list_id']) || isset($r_put['is_default_email_position_as_bottom'])) {

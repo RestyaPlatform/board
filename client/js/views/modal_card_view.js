@@ -1282,6 +1282,9 @@ App.ModalCardView = Backbone.View.extend({
                 });
                 $('body').trigger('modalCardRendered', self.model.id, self.model);
             }).defer();
+            if (_.isEmpty(description)) {
+                this.$el.find('.js-show-card-desc').show();
+            }
             this.$el.find('#inputCarddescriptions').val(description).focus();
             this.$el.find('#checklistEditName').val(checklistEditName).focus();
             this.$el.find('#ChecklistItem').val(ChecklistItem).focus();
@@ -1576,6 +1579,9 @@ App.ModalCardView = Backbone.View.extend({
                     }
                 }
             });
+            if (_.isEmpty(this.model.attributes.description)) {
+                this.$el.find('#cardDescriptionEditForm').removeClass('hide');
+            }
             $('.js-card-duedate-edit-' + self.model.id).datetimepicker({
                 format: 'yyyy-mm-dd',
                 container: '.js-show-card-due-date-form',
