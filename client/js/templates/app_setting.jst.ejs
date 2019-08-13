@@ -1,3 +1,4 @@
+<%  var currenturl = window.location; %>
 <div class="well-sm">
 	<h3><%- i18next.t(app_settings[0].app_name) %> - <%- i18next.t('Settings') %></h3>
 </div>
@@ -5,6 +6,7 @@
 <div class="alert alert-info list-group-item-text"><%= i18next.t(app_settings[0].settings_description) %></div>
 <% } %>
 <div class="well-sm"></div>
+<% if(!_.isUndefined(currenturl.hash) && (currenturl.hash !== '#/apps/r_multiple_ldap_login')){ %>
 <form class="js-app-setting-form" role="form" id="js-app-setting-form">
 <% if (app_settings.length > 0 ) { 
 var folder = '';
@@ -46,30 +48,46 @@ _.each(app_settings, function(app_setting) {
 	</div>
   </div>
 </form>
-<%  var currenturl = window.location;
-	if(!_.isUndefined(currenturl.hash) && (currenturl.hash === '#/apps/r_ldap_login')){
-	   %>
-<!--<div class="well-sm">
-		<legend>
-			<span class="show h4"><%- i18next.t('Import LDAP users') %></span>
-		</legend>
-		<div class="form-group">
-		 <div class=" col-sm-7  col-xs-12">
-				<input type="checkbox" value="" name="enableImportUsers" id="enableImportUsers" class="js-enable-import-user">
-				<label for="enableImportUsers"><%- i18next.t('Import Groups from LDAP into Organizations and put users under organization. If this option is unchecked, only the users will be imported (not organization)') %> </label>
-		</div>
-		<div class="form-group">
+<% } %>	
+<% if(!_.isUndefined(currenturl.hash) && (currenturl.hash === '#/apps/r_multiple_ldap_login')){ %>
+	<%
+	var ldap_servers = app_settings.filter(function(model) {
+		return model.name === 'R_MLDAP_SERVERS';
+	});
+%>
+	<form class="js-ldapapp-app-setting-form" role="form" id="js-ldapapp-setting-form">
+		<div class="form-group col-xs-12">
+			<label class="col-sm-2  control-label col-xs-12"><%- i18next.t(ldap_servers[0].label ) %></label>
 			<div class=" col-sm-7  col-xs-12">
-				<input type="checkbox" value="" name="dontSendWelcomeMail" id="dontSendWelcomeMail">
-				<label for="dontSendWelcomeMail"><%- i18next.t("Don't send welcome email") %> </label>
+				  <input type="text" name="<%- ldap_servers[0].name %>" value="<%- ldap_servers[0].value %>" class="form-control js-ldap_servers_input" >					
+			  <div><span class="help-block"><%- ldap_servers[0].info %></span></div>
+			</div>
+		  </div>
+		  <div class="form-group col-xs-12">
+			<label for="inputSetting" class="col-sm-2  control-label col-xs-12"><%- i18next.t('Configure LDAP Server') %></label>
+			<div class="col-sm-7  col-xs-12">
+				<select name="<%- i18next.t('configure_ldap_server') %>" id="configure_ldap_server" class="form-control js-configure-LDAP-server">
+						<option value="">Please Select</option>
+					<% if(!_.isUndefined(ldap_servers[0].value) && !_.isEmpty(ldap_servers[0].value)){ 
+						var options = ldap_servers[0].value.split(',');
+					_.each(options, function(v, k) { %>
+						<option value="<%- v %>"><%- v %></option>
+					<% });} %>
+				</select>
+				<div><span class="help-block"><%- i18next.t('Configure your LDAP server by choosing the server') %></span></div>
 			</div>
 		</div>
-		<div class="form-group">
-			<label for="enableImportUsersSubmit" class="sr-only col-sm-4 control-label col-xs-12"><%- i18next.t('Import users') %></label>
-			<div class="col-sm-8">
-			<button type="button" id="importUsersSubmit" class="js-import-users btn btn-primary"><%- i18next.t('Import users') %></button>
-			<span class="clearfix hide" id="js-loader-img"><span class="cssloader"></span></span>
-			</div>
-			</div>
-		</div>-->
-<% } %>
+		<div class="well-sm"></div>
+		<div class="ldap_attributes_content"></div>
+		<div class="form-group js-ldap-submit hide">
+				<input type="hidden" value="r_multiple_ldap_login" name="folder" id="folder">
+				<label for="submit" class="sr-only  col-sm-4  control-label col-xs-12"><%- i18next.t('Submit') %></label>
+				<div class="col-lg-offset-2 col-lg-10">
+					<input type="submit" value="<%- i18next.t('Update') %>" id="submit" class="btn btn-primary">	 
+						<input type="button" value="<%- i18next.t('Test Connection') %>" class="btn btn-info js-test-connection">
+						<button type="button" id="importUsersSubmit" class="js-import-users btn btn-warning"><%- i18next.t('Import users') %></button>
+						<span class="clearfix hide" id="js-loader-img"><span class="cssloader"></span></span>
+				</div>
+				</div>
+	</form>
+<% } %>		

@@ -13,6 +13,17 @@
 				  <label for="inputPassword" class="sr-only control-label"><%- i18next.t('Password') %></label>
 				  <input type="password" placeholder="<%- i18next.t('Password') %>" class="form-control" id="inputPassword" name="password" title="<%- i18next.t('Password') %>" required/>
 				</div>
+				<% if (!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && $.inArray('r_multiple_ldap_login',APPS.enabled_apps) !== -1 && ldap_servers.length) {%>
+					<div class="form-group">
+						<label for="inputPassword" class="sr-only control-label"><%- i18next.t('LDAP Servers') %></label>
+						<select name="login_ldap_server" id="login_ldap_server" class="form-control">
+							<option value="">Please Select LDAP Server</option>
+						<% _.each(ldap_servers, function(ldap_server, k) { %>
+							<option value="<%- ldap_server %>"><%- ldap_server %></option>
+						<% }); %>
+					</select>
+					</div>
+				<% } %>
 				<div class="form-group">
 				  <label for="submit2" class="sr-only control-label"><%- i18next.t('Login') %></label>
 				  <input type="submit" class="btn btn-primary col-xs-12" value="<%- i18next.t('Login') %>" id="submitLogin" />

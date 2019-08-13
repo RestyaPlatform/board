@@ -181,7 +181,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 $filter_condition.= 'is_active = 1';
             } else if ($r_resource_filters['filter'] == 'inactive') {
                 $filter_condition.= 'is_active = 0';
-            } else if (is_plugin_enabled('r_ldap_login') && $r_resource_filters['filter'] == 'ldap') {
+            } else if ((is_plugin_enabled('r_ldap_login') || is_plugin_enabled('r_multiple_ldap_login')) && $r_resource_filters['filter'] == 'ldap') {
                 $filter_condition.= 'is_ldap = 1';
             } else {
                 $filter_condition.= 'role_id = ' . $r_resource_filters['filter'];
@@ -212,7 +212,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         $val_array = array(
             true
         );
-        if (is_plugin_enabled('r_ldap_login')) {
+        if (is_plugin_enabled('r_ldap_login')|| is_plugin_enabled('r_multiple_ldap_login')) {
             $ldap_count = executeQuery('SELECT count(*) FROM users WHERE is_ldap = $1', $val_array);
             $filter_count['ldap'] = $ldap_count['count'];
         }
@@ -1803,7 +1803,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         break;
 
     case '/settings':
-        $s_sql = pg_query_params($db_lnk, "SELECT name, value FROM settings WHERE name IN ('SITE_NAME', 'SITE_TIMEZONE', 'DROPBOX_APPKEY', 'LABEL_ICON', 'FLICKR_API_KEY', 'DEFAULT_LANGUAGE', 'IS_TWO_FACTOR_AUTHENTICATION_ENABLED', 'IMAP_EMAIL', 'PAGING_COUNT', 'ALLOWED_FILE_EXTENSIONS', 'DEFAULT_CARD_VIEW', 'DEFAULT_CARD_VIEW', 'R_LDAP_LOGIN_HANDLE', 'CALENDAR_VIEW_CARD_COLOR')", array());
+        $s_sql = pg_query_params($db_lnk, "SELECT name, value FROM settings WHERE name IN ('SITE_NAME', 'SITE_TIMEZONE', 'DROPBOX_APPKEY', 'LABEL_ICON', 'FLICKR_API_KEY', 'DEFAULT_LANGUAGE', 'IS_TWO_FACTOR_AUTHENTICATION_ENABLED', 'IMAP_EMAIL', 'PAGING_COUNT', 'ALLOWED_FILE_EXTENSIONS', 'DEFAULT_CARD_VIEW', 'DEFAULT_CARD_VIEW', 'R_LDAP_LOGIN_HANDLE', 'CALENDAR_VIEW_CARD_COLOR','R_MLDAP_LOGIN_HANDLE','R_MLDAP_SERVERS')", array());
         while ($row = pg_fetch_assoc($s_sql)) {
             $response[$row['name']] = $row['value'];
         }
@@ -1884,7 +1884,13 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         }
         if (!empty($data['settings_from_db'])) {
             $fields = $data['settings_from_db'];
-            $result = pg_query_params($db_lnk, 'SELECT * FROM settings WHERE name IN (' . $fields . ') ORDER BY "order" ASC', array());
+            if ($data['id'] !== 'r_multiple_ldap_login') {
+                $result = pg_query_params($db_lnk, 'SELECT * FROM settings WHERE name IN (' . $fields . ') ORDER BY "order" ASC', array());
+            } else {
+                $result = pg_query_params($db_lnk, 'SELECT * FROM settings WHERE name LIKE $1 ORDER BY "order" ASC', array(
+                    '%R_MLDAP%'
+                ));
+            }
             while ($row = pg_fetch_assoc($result)) {
                 $value = array();
                 if (strpos($row['name'], 'PASSWORD') !== false) {
@@ -2527,6 +2533,12 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             $ldap_error = $ldap_response['ldap_error'];
             $user = $ldap_response['user'];
         }
+        if (is_plugin_enabled('r_multiple_ldap_login')) {
+            require_once PLUGIN_PATH . DS . 'MultipleLdapLogin' . DS . 'functions.php';
+            $ldap_response = ldapUpdateUser($log_user, $r_post);
+            $ldap_error = $ldap_response['ldap_error'];
+            $user = $ldap_response['user'];
+        }
         if (!empty($log_user) && $log_user['is_ldap'] == 0) {
             $r_post['password'] = crypt($r_post['password'], $log_user['password']);
             $val_arr = array(
@@ -2555,7 +2567,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     $is_provide_access_token = true;
                 }
                 if ($is_provide_access_token) {
-                    if (is_plugin_enabled('r_ldap_login')) {
+                    if (is_plugin_enabled('r_ldap_login') || is_plugin_enabled('r_multiple_ldap_login')) {
                         $login_type_id = 1;
                     } else {
                         $login_type_id = 2;
@@ -5888,6 +5900,18 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
     case '/apps/settings':
         $folder_name = $r_post['folder'];
         unset($r_post['folder']);
+        if (isset($r_post['ldap_removed_server'])) {
+            $ldap_removed_server = $r_post['ldap_removed_server'];
+            unset($r_post['ldap_removed_server']);
+            if (!empty($ldap_removed_server)) {
+                foreach ($ldap_removed_server as $key => $val) {
+                    $val = str_replace(' ', '_', $val);
+                    pg_query_params($db_lnk, 'DELETE FROM settings WHERE name LIKE $1', array(
+                        '%-' . $val . '%'
+                    ));
+                };
+            }
+        }
         $content = file_get_contents(APP_PATH . DS . 'client' . DS . 'apps' . DS . $folder_name . DS . 'app.json');
         if (is_writable(APP_PATH . '/client/apps/' . $folder_name . '/app.json')) {
             $app = json_decode($content, true);
@@ -5911,8 +5935,31 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                             $val,
                             trim($key)
                         );
-                        pg_query_params($db_lnk, "UPDATE settings SET value = $1 WHERE name = $2", $qry_val_arr);
-                    }
+                        if ($folder_name !== 'r_multiple_ldap_login') {
+                            pg_query_params($db_lnk, "UPDATE settings SET value = $1 WHERE name = $2", $qry_val_arr);
+                        } else {
+                            $LDAPSettingExists = executeQuery('SELECT * FROM settings WHERE name = $1', array(
+                                trim($key)
+                            ));
+                            if ($LDAPSettingExists) {
+                                pg_query_params($db_lnk, "UPDATE settings SET value = $1 WHERE name = $2", $qry_val_arr);
+                            } else {
+                                $constant_key = explode('-', trim($key));
+                                $ldap_constant_attribute = executeQuery('SELECT * FROM settings WHERE name = $1', array(
+                                    $constant_key[0]
+                                ));
+                                $new_qry_val_arr = array(
+                                    $val,
+                                    trim($key) ,
+                                    $ldap_constant_attribute['description'],
+                                    $ldap_constant_attribute['type'],
+                                    $ldap_constant_attribute['options'],
+                                    $ldap_constant_attribute['label'],
+                                    $ldap_constant_attribute['order']
+                                );
+                                pg_query_params($db_lnk, 'INSERT INTO settings (setting_category_id, setting_category_parent_id, value , name, description, type, options, label, "order") VALUES (0, 0, $1, $2, $3, $4, $5, $6, $7)', $new_qry_val_arr);
+                            }
+                        }                    }
                 } else {
                     foreach ($r_post as $key => $val) {
                         if (!empty($app['settings'][$key]['is_encrypted'])) {
@@ -6048,6 +6095,10 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
         $plugin_url['LdapLogin'] = array(
             '/users/import',
             '/users/test-connection'
+        );
+        $plugin_url['MultipleLdapLogin'] = array(
+            '/mldap/users/import',
+            '/mldap/users/test-connection'
         );
         $plugin_url['BoardRoleMapper'] = array(
             '/board_roles'

@@ -116,6 +116,8 @@ App.ApplicationView = Backbone.View.extend({
                                     PAGING_COUNT = settings_response.PAGING_COUNT;
                                     ALLOWED_FILE_EXTENSIONS = settings_response.ALLOWED_FILE_EXTENSIONS;
                                     R_LDAP_LOGIN_HANDLE = settings_response.R_LDAP_LOGIN_HANDLE;
+                                    R_MLDAP_LOGIN_HANDLE = settings_response.R_MLDAP_LOGIN_HANDLE;
+                                    R_MLDAP_SERVERS = settings_response.R_MLDAP_SERVERS;
                                     APPS = settings_response.apps;
                                     IMAP_EMAIL = settings_response.IMAP_EMAIL;
                                     DEFAULT_CARD_VIEW = settings_response.DEFAULT_CARD_VIEW;
@@ -217,6 +219,8 @@ App.ApplicationView = Backbone.View.extend({
                                 PAGING_COUNT = settings_response.PAGING_COUNT;
                                 ALLOWED_FILE_EXTENSIONS = settings_response.ALLOWED_FILE_EXTENSIONS;
                                 R_LDAP_LOGIN_HANDLE = settings_response.R_LDAP_LOGIN_HANDLE;
+                                R_MLDAP_LOGIN_HANDLE = settings_response.R_MLDAP_LOGIN_HANDLE;
+                                R_MLDAP_SERVERS = settings_response.R_MLDAP_SERVERS;
                                 APPS = settings_response.apps;
                                 if (!_.isUndefined(APPS) && APPS !== null && !_.isEmpty(APPS.enabled_apps) && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null) {
                                     APPS.permission_checked_apps = [];

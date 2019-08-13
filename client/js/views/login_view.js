@@ -169,7 +169,13 @@ App.LoginView = Backbone.View.extend({
      *
      */
     render: function() {
-        this.$el.html(this.template());
+        var ldap_servers = [];
+        if (!_.isUndefined(R_MLDAP_SERVERS) && !_.isEmpty(R_MLDAP_SERVERS)) {
+            ldap_servers = R_MLDAP_SERVERS.split(',');
+        }
+        this.$el.html(this.template({
+            ldap_servers: ldap_servers
+        }));
         this.showTooltip();
         return this;
     },
