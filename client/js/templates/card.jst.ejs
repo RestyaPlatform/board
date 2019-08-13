@@ -2,30 +2,32 @@
 <div class="panel-body">
 	<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isUndefined(card.list) && !_.isEmpty(card.list) && !_.isEmpty(card.list.board.acl_links.where({slug: "view_card_labels", board_user_role_id: parseInt(card.board_user_role_id)})))) {  %>
   <div class="clearfix js-card-label-section-<%- card.attributes.id %>">
-  <%
+  <%if(CheckFieldExists(card.board, 'labels' , null , 'boolean', 'r_gridview_configure')){
   	card.labels.each(function(label) {
             if (!_.isUndefined(label) && label.attributes.name !== "") { %>
 			<span class="cur"><i style="color:<%- (label.attributes.color) ? label.attributes.color : '#'+converter.colorCode(''+label.attributes.name).substring(0, 6) %>;" data-toggle="tooltip" data-container="body" data-placement="top" data-original-title="<%- label.attributes.name %>" title="<%- label.attributes.name %>" class="<%= LABEL_ICON %> cur"></i></span>
                
    <%         }
-        });%> 
+        });	}%> 
   
   
   </div>
  <%  } %> 
  <div class="clearfix">
-  <% if(!_.isEmpty(card.attachments) && card.attachments.length > 0 && !_.isEmpty(card.attachments.at(0).attributes.name) && _.isEmpty(card.attachments.at(0).attributes.link) && card.attachments.at(0).attributes.name.toLowerCase().match(/\.(jpg|jpeg|png|gif)$/)){ %>
-	  <div class="clearfix js-card-attachment-image navbar-btn <% if(!_.isEmpty(card.collection) && !card.list.collection.board.attributes.is_show_image_front_of_card){ %> hide <% } %>">
-		<%
-			var img_src = card.showImage('CardAttachment',  card.attachments.at(0).attributes.id, 'large_thumb' );
-		%>
-		<img class="img-responsive center-block" src="<%= img_src %>"/>
-	  </div>
-	<% } else if (!_.isEmpty(card.attachments) && card.attachments.length > 0 && card.attachments.at(0).attributes.name.toLowerCase().match(/\.(pdf)$/) && !_.isUndefined(card.attachments.at(0).attributes.doc_image_path) && !_.isEmpty(card.attachments.at(0).attributes.doc_image_path) && card.attachments.at(0).attributes.doc_image_path !== null) { 
-			var document_path = card.documentLink('Card', card.attachments.at(0).attributes); %>
-				<img src="/img/<%= card.attachments.at(0).attributes.doc_image_path %>" class="img-responsive center-block">
+		<% if(CheckFieldExists(card.board, 'attachments' , null , 'boolean', 'r_gridview_configure')){ %>
+			<% if(!_.isEmpty(card.attachments) && card.attachments.length > 0 && !_.isEmpty(card.attachments.at(0).attributes.name) && _.isEmpty(card.attachments.at(0).attributes.link) && card.attachments.at(0).attributes.name.toLowerCase().match(/\.(jpg|jpeg|png|gif)$/)){ %>
+				<div class="clearfix js-card-attachment-image navbar-btn <% if(!_.isEmpty(card.collection) && !card.list.collection.board.attributes.is_show_image_front_of_card){ %> hide <% } %>">
+				<%
+					var img_src = card.showImage('CardAttachment',  card.attachments.at(0).attributes.id, 'large_thumb' );
+				%>
+				<img class="img-responsive center-block" src="<%= img_src %>"/>
+				</div>
+			<% } else if (!_.isEmpty(card.attachments) && card.attachments.length > 0 && card.attachments.at(0).attributes.name.toLowerCase().match(/\.(pdf)$/) && !_.isUndefined(card.attachments.at(0).attributes.doc_image_path) && !_.isEmpty(card.attachments.at(0).attributes.doc_image_path) && card.attachments.at(0).attributes.doc_image_path !== null) { 
+					var document_path = card.documentLink('Card', card.attachments.at(0).attributes); %>
+						<img src="/img/<%= card.attachments.at(0).attributes.doc_image_path %>" class="img-responsive center-block">
+				<% }%> 
 		<% }%> 
-  <a href="#/board/<%- card.attributes.board_id %>/card/<%- card.attributes.id %>" title="<%- card.attributes.name %>"><%- card.attributes.name %></a>
+  <a href="#/board/<%- card.attributes.board_id %>/card/<%- card.attributes.id %>" title="<%- card.attributes.name %>"><%= CheckFieldExists(card.board, 'name', card.attributes.name, 'Value', 'r_gridview_configure') %></a>
   </div>
   <div class="pull-left navbar-btn">
   <ul class="list-unstyled list-inline text-muted boardlistblk clearfix txt-aligns js-list-card-data">
@@ -37,48 +39,75 @@
 			});
 		}
 	%>
-	<% if(!_.isUndefined(cards_subscribers) && !_.isEmpty(cards_subscribers)){ %>
-		<li><small><span class="icon-eye-open"></span></small></li>
-	<% } %> 
-	<% if(card.card_voters.length > 0){ %>
-	<li><small  title="<%- i18next.t('{{count}} Vote', {count: card.card_voters.length}) %> "><span class="icon-thumbs-up"></span><span><%- card.card_voters.length %></span></small></li>
+	<% if(CheckFieldExists(card.board, 'Subscribe' , null , 'boolean', 'r_gridview_configure')){ %>
+		<% if(!_.isUndefined(cards_subscribers) && !_.isEmpty(cards_subscribers)){ %>
+			<li><small><span class="icon-eye-open"></span></small></li>
+		<% } %> 
 	<% } %>
-	<% 
-	if(card.attributes.comment_count > 0){ 
-	%>
-	<li><small title="<%- i18next.t('{{count}} Comment', {count: card.attributes.comment_count}) %> " ><span class="icon-comment"></span><span><%- card.attributes.comment_count %></span></small></li>
+	<% if(CheckFieldExists(card.board, 'card_voter_count' , null , 'boolean', 'r_gridview_configure')){ %>
+		<% if(card.card_voters.length > 0){ %>
+		<li><small  title="<%- i18next.t('{{count}} Vote', {count: card.card_voters.length}) %> "><span class="icon-thumbs-up"></span><span><%- card.card_voters.length %></span></small></li>
+		<% } %>
 	<% } %>
-	<% if(!_.isEmpty(card.attributes.description)){ %>
-	<li><small title="<%- i18next.t('Description') %>"><span class="icon-align-left"></span><span></span></small></li>
+	<% if(CheckFieldExists(card.board, 'comment_count' , null , 'boolean', 'r_gridview_configure')){ %>
+		<% if(card.attributes.comment_count > 0){ 
+		%>
+		<li><small title="<%- i18next.t('{{count}} Comment', {count: card.attributes.comment_count}) %> " ><span class="icon-comment"></span><span><%- card.attributes.comment_count %></span></small></li>
+		<% } %>
 	<% } %>
-	<% if(card.attributes.checklist_item_count > 0){ %>
-		<li <% if(card.attributes.checklist_item_completed_count == card.attributes.checklist_item_count) { %>class="card-listing-truncate"<% } %> ><small title="<%- i18next.t('%s checklist completed out of %s', { postProcess: 'sprintf', sprintf: [card.attributes.checklist_item_completed_count, card.attributes.checklist_item_count]}) %> "><% if(card.attributes.checklist_item_completed_count == card.attributes.checklist_item_count) { %><span class="label label-success"> <% } %><span class="icon-list-ul"></span><span><%- card.attributes.checklist_item_completed_count %>/<%- card.attributes.checklist_item_count %></span><% if(card.attributes.checklist_item_completed_count == card.attributes.checklist_item_count) { %></small><% } %></small></li>
+	<% if(CheckFieldExists(card.board, 'description' , null , 'boolean', 'r_gridview_configure')){ %>
+		<% if(!_.isEmpty(card.attributes.description)){ %>
+		<li><small title="<%- i18next.t('Description') %>"><span class="icon-align-left"></span><span></span></small></li>
+		<% } %>
+	<% } %>
+	<% if(CheckFieldExists(card.board, 'checklist_item_completed_count' , null , 'boolean', 'r_gridview_configure')){ %>
+		<% if(card.attributes.checklist_item_count > 0){ %>
+			<li <% if(card.attributes.checklist_item_completed_count == card.attributes.checklist_item_count) { %>class="card-listing-truncate"<% } %> ><small title="<%- i18next.t('%s checklist completed out of %s', { postProcess: 'sprintf', sprintf: [card.attributes.checklist_item_completed_count, card.attributes.checklist_item_count]}) %> "><% if(card.attributes.checklist_item_completed_count == card.attributes.checklist_item_count) { %><span class="label label-success"> <% } %><span class="icon-list-ul"></span><span><%- card.attributes.checklist_item_completed_count %>/<%- card.attributes.checklist_item_count %></span><% if(card.attributes.checklist_item_completed_count == card.attributes.checklist_item_count) { %></small><% } %></small></li>
+		<% } %> 
 	<% } %> 
-	<% if(card.attributes.due_date > 0){ %>
-		<li class="card-listing-truncate"><small title="<%- i18next.t('Due Date') %>"><span class="icon-time"></span><span><%- card.attributes.due_date %></span></small></li>
+	<% if(CheckFieldExists(card.board, 'due_date' , null , 'boolean', 'r_gridview_configure')){ %>
+		<% if(card.attributes.due_date > 0){ %>
+			<li class="card-listing-truncate"><small title="<%- i18next.t('Due Date') %>"><span class="icon-time"></span><span><%- card.attributes.due_date %></span></small></li>
+		<% } %> 
 	<% } %> 
-	<% if(!_.isEmpty(card.attachments) && card.attachments.length > 0){ %>
-	<li class="js-card-allAttachments-<%- card.id %>">
-		<small title="<%- i18next.t('{{count}} Attachment', {count: card.attachments.length}) %> ">
-			<span class="icon-paper-clip"></span>
-			<span>
-			<%- card.attachments.length %>
-			</span>
-		</small>
-	</li>
-	<% } %>  
+	<% if(CheckFieldExists(card.board, 'attachment_count' , null , 'boolean', 'r_gridview_configure')){ %>
+		<% if(!_.isEmpty(card.attachments) && card.attachments.length > 0){ %>
+		<li class="js-card-allAttachments-<%- card.id %>">
+			<small title="<%- i18next.t('{{count}} Attachment', {count: card.attachments.length}) %> ">
+				<span class="icon-paper-clip"></span>
+				<span>
+				<%- card.attachments.length %>
+				</span>
+			</small>
+		</li>
+		<% } %>  
+	<% } %> 
 	<%  var hide_card_informations = false;
 		if (!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && $.inArray('r_hide_card_additional_informations',APPS.enabled_apps) !== -1) {
 			hide_card_informations = true;
 		}
 		if(!_.isUndefined(card.id) && (_.isUndefined(card.attributes.is_offline) || card.attributes.is_offline === false)){ %>
-	<li class="pull-right card-id" <% if (hide_card_informations) { %>style="display: none;"<% } %> ><strong>#<%- card.id %></strong></li>
+	<li class="pull-right card-id" <% if (hide_card_informations) { %>style="display: none;"<% } %> >
+		<% if(CheckFieldExists(card.board, 'id' , null , 'boolean', 'r_gridview_configure')){ %>
+			<strong>#<%- card.id %></strong>
+			<%}%>
+		</li>
 	<%}%>
 	<li id="js-card-customfields-list-<%- card.attributes.id %>" class="hide"></li>
 	<% if(!_.isEmpty(card.attributes.due_date) && card.attributes.due_date != 'NULL'){
-		var date_time = card.attributes.due_date.split('T');
-		date_time = date_time[0].split(' ');
-	%>
+		var date_times = card.attributes.due_date.split('T'),hours_mins;
+		var date_time = date_times[0].split(' ');
+		if (!_.isEmpty(date_times[1])) {
+			hours_mins = date_times[1].split(':');
+			var noon = '';
+			if (hours_mins[0] <= 12) {
+					noon = 'AM';
+			} else {
+					noon = 'PM';
+					hours_mins[0] = hours_mins[0] - 12;
+			}
+			hours_mins = hours_mins[0] + ':' + hours_mins[1] + ' ' + noon;
+	}	%>
 	<%
 		var today = new Date();
 		card_due_date = card.attributes.due_date.split('T');
@@ -96,27 +125,35 @@
 		}
 	%>
 	<% if(!_.isUndefined(label) && !_.isEmpty(label) && label != null) { %>
-	<li class="card-listing-truncate"><small title=" <%- i18next.t('Due Date') %>"><span class="label <%- label %>"><%= dateFormat(date_time[0], 'mediumDate')  %></span></small></li>
-	<% }
-		} %>
+		<% if(CheckFieldExists(card.board, 'due_date' , null , 'boolean', 'r_gridview_configure')){ %>
+			<li class="card-listing-truncate"><small title=" <%- i18next.t('Due Date') %>"><span class="label <%- label %>"><%= dateFormat(date_time[0], 'mediumDate')  %>&nbsp; <%- hours_mins %></span></small></li>
+			<% } %>
+		<% } 
+	 } %>
 	<% if(!_.isEmpty(card.attributes.created) && card.attributes.created != 'NULL'){
 			var created_date_time = card.attributes.created.split('T');
 			created_date_time = created_date_time[0].split(' ');
 	%>
-	<li class="card-listing-truncate card-created-date" <% if (hide_card_informations) { %>style="display: none;"<% } %> ><small title=" <%- i18next.t('Created Date') %>"><span class="label label-default"><%= dateFormat(created_date_time[0], 'mediumDate')  %></span></small></li>
-	<li class="card-listing-truncate card-created-user" <% if (hide_card_informations) { %>style="display: none;"<% } %> ><small title=" <%- i18next.t('Created User') %>"><span class="label label-default"><%= card.attributes.card_created_user %></span></small></li>
+		<% if(CheckFieldExists(card.board, 'created' , null , 'boolean', 'r_gridview_configure')){ %>
+			<li class="card-listing-truncate card-created-date" <% if (hide_card_informations) { %>style="display: none;"<% } %> ><small title=" <%- i18next.t('Created Date') %>"><span class="label label-default"><%= dateFormat(created_date_time[0], 'mediumDate')  %></span></small></li>
+		<% } %>
+		<% if(CheckFieldExists(card.board, 'card_created_user' , null , 'boolean', 'r_gridview_configure')){ %>
+		<li class="card-listing-truncate card-created-user" <% if (hide_card_informations) { %>style="display: none;"<% } %> ><small title=" <%- i18next.t('Created User') %>"><span class="label label-default"><%= card.attributes.card_created_user %></span></small></li>
+		<% } %>
 	<% } %>
 	<% if(!_.isEmpty(card.attributes.list_moved_date) && card.attributes.list_moved_date != 'NULL'){ 
 			var list_moved_date_date_time = card.attributes.list_moved_date.split('T');
 			list_moved_date_date_time = list_moved_date_date_time[0].split(' ');
 	%>
-		<li class="card-listing-truncate list-moved-date" <% if (hide_card_informations) { %>style="display: none;"<% } %> ><small title=" <%- i18next.t('List Moved Date') %>"><span class="label label-default"><%= dateFormat(list_moved_date_date_time[0], 'mediumDate')  %></span></small></li>
+		<% if(CheckFieldExists(card.board, 'list_moved_date' , null , 'boolean', 'r_gridview_configure')){ %>
+			<li class="card-listing-truncate list-moved-date" <% if (hide_card_informations) { %>style="display: none;"<% } %> ><small title=" <%- i18next.t('List Moved Date') %>"><span class="label label-default"><%= dateFormat(list_moved_date_date_time[0], 'mediumDate')  %></span></small></li>
+			<% } %>
 	<% } %>
 	</ul>
 	</div>
 	<div class="clearfix pull-right">
 		<ul class="list-unstyled list-inline text-muted clearfix">
-		<%
+		<%if(CheckFieldExists(card.board, 'cards_users' , null , 'boolean', 'r_gridview_configure')){
 			card.users.each(function(card_user) {
 				if (!_.isUndefined(card_user)) {
 		%>
@@ -132,6 +169,7 @@
 		<%		
 				}
 			});
+		}
 		%>
 		</ul>
 	</div>

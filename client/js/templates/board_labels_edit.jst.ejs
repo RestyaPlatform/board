@@ -53,6 +53,13 @@
 					<li class="list-inline js-change-label-color navbar-btn cur" data-color="#dbcff1"><span class="background-box show well-lg" style="background-color:#dbcff1"><%= (label.attributes.color && label.attributes.color === '#dbcff1') ? icon : '' %></span></li>
 					<li class="list-inline js-change-label-color navbar-btn cur" data-color="#ccdc87"><span class="background-box show well-lg" style="background-color:#ccdc87"><%= (label.attributes.color && label.attributes.color === '#ccdc87') ? icon : '' %></span></li>
 					<li class="list-inline js-change-label-color navbar-btn cur" data-color="#f1eabf"><span class="background-box show well-lg" style="background-color:#f1eabf"><%= (label.attributes.color && label.attributes.color === '#f1eabf') ? icon : '' %></span></li>
+					<li class="list-inline navbar-btn cur" id="label-custom-colorpicker">	
+						<label for="js-label-custom-color"><%- i18next.t('Custom color') %></label>
+						<div class="input-group">
+								<input type="text" value="<%- label.attributes.color %>" id="js-label-custom-color" class="form-control input-sm"/>
+								<div class="input-group-addon"><i class="custom-background-box"></i></div>
+						</div>
+						</li>
 				</ul>
 			</div>
 		</div>

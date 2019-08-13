@@ -29,24 +29,25 @@
 <div class="well-sm"></div>
 <table class="table">
 <thead>
-	<tr>
-		<th class="card-id"><a class="js-sort-by show" title="<%- i18next.t('ID') %>" href="#" data-sort-by="id"><span class="icon-caret-down"></span><%- i18next.t("ID") %></a></th>
-		<th><a class="js-sort-by show" title="<%- i18next.t('Labels') %>" href="javascript:void(0);" data-sort-by="sort_group_label"><span class="icon-caret-down hide"></span><%- i18next.t("Labels") %></a></th>
-		<th><a class="js-sort-by show" title="<%- i18next.t('Card Name') %>" href="#" data-sort-by="name"><span class="icon-caret-down hide"></span><%- i18next.t("Card Name") %></a></th>
-		<th><a class="js-sort-by show" title="<%- i18next.t('List Name') %>" href="#" data-sort-by="list_name"><span class="icon-caret-down hide"></span><%- i18next.t("List Name") %></a></th>
-		<th><a class="js-sort-by show" title="<%- i18next.t('Members') %>" href="javascript:void(0);" data-sort-by="sort_group_user"><span class="icon-caret-down hide"></span><%- i18next.t("Members") %></a></th>
-		<th class="js-list-start-date hide field_heading"></th>
-		<th><a class="show" href="#" title="<%- i18next.t('End Date') %>" ><span class="icon-caret-down hide"></span><i data-sort-by="due_date" class="js-sort-by icon-calendar h3"></i></a></th>
-		<th class="js-list-estimated-time hide"></th>
-		<th class="js-list-spent-time hide"></th>
-		<th><a class="show" href="#" title="<%- i18next.t('Votes') %>" ><span class="icon-caret-down hide"></span><i  data-sort-by="card_voter_count" class="js-sort-by icon-thumbs-up h3"></i></a></th>
-		<th><a class="show" href="#" title="<%- i18next.t('Attachments') %>" ><span class="icon-caret-down hide"></span><i data-sort-by="attachment_count" class="js-sort-by icon-paper-clip h3"></i></a></th>
-		<th><a class="show" href="#" title="<%- i18next.t('Comments') %>"><span class="icon-caret-down hide"></span><i data-sort-by="comment_count" class="js-sort-by icon-comment h3"></i></a></th>
-		<th><a class="show" href="#" title="<%- i18next.t('Checklist') %>" ><span class="icon-caret-down hide"></span><i  data-sort-by="checklist_item_completed_count" class="js-sort-by icon-list-ul h3"></i></a></th>
+	<tr id="list_view_configuration_label">
+		<th class="card-id" id="list_view_config_label-id" data-field-name="id"><a class="js-sort-by show" title="<%- i18next.t('ID') %>" href="#" data-sort-by="id"><span class="icon-caret-down"></span><%- i18next.t("ID") %></a></th>
+		<th id="list_view_config_label-labels" data-field-name="labels"><a class="js-sort-by show" title="<%- i18next.t('Labels') %>" href="javascript:void(0);" data-sort-by="sort_group_label"><span class="icon-caret-down hide"></span><%- i18next.t("Labels") %></a></th>
+		<th id="list_view_config_label-name" data-field-name="name"><a class="js-sort-by show" title="<%- i18next.t('Card Name') %>" href="#" data-sort-by="name"><span class="icon-caret-down hide"></span><%- i18next.t("Card Name") %></a></th>
+		<th id="list_view_config_label-list_name" data-field-name="list_name"><a class="js-sort-by show" title="<%- i18next.t('List Name') %>" href="#" data-sort-by="list_name"><span class="icon-caret-down hide"></span><%- i18next.t("List Name") %></a></th>
+		<th id="list_view_config_label-cards_users" data-field-name="cards_users"><a class="js-sort-by show" title="<%- i18next.t('Members') %>" href="javascript:void(0);" data-sort-by="sort_group_user"><span class="icon-caret-down hide"></span><%- i18next.t("Members") %></a></th>
+		<th id="list_view_config_label-start_date" data-field-name="start_date" class="js-list-start-date hide field_heading"></th>
+		<th id="list_view_config_label-due_date" data-field-name="due_date"><a class="show" href="#" title="<%- i18next.t('End Date') %>" ><span class="icon-caret-down hide"></span><i data-sort-by="due_date" class="js-sort-by icon-calendar h3"></i></a></th>
+		<th id="list_view_config_label-estimated_time" class="js-list-estimated-time hide" data-field-name="estimated_time"></th>
+		<th  id="list_view_config_label-spent_time" class="js-list-spent-time hide" data-field-name="spent_time"></th>
+		<th id="list_view_config_label-subscribe" data-field-name="subscribe"><a class="show" href="#" title="<%- i18next.t('Subscribe') %>" ><i class="icon-eye-open"></i></a></th>
+		<th id="list_view_config_label-card_voter_count" data-field-name="card_voter_count"><a class="show" href="#" title="<%- i18next.t('Votes') %>" ><span class="icon-caret-down hide"></span><i  data-sort-by="card_voter_count" class="js-sort-by icon-thumbs-up h3"></i></a></th>
+		<th id="list_view_config_label-attachment_count" data-field-name="attachment_count"><a class="show" href="#" title="<%- i18next.t('Attachments') %>" ><span class="icon-caret-down hide"></span><i data-sort-by="attachment_count" class="js-sort-by icon-paper-clip h3"></i></a></th>
+		<th id="list_view_config_label-comment_count" data-field-name="comment_count"><a class="show" href="#" title="<%- i18next.t('Comments') %>"><span class="icon-caret-down hide"></span><i data-sort-by="comment_count" class="js-sort-by icon-comment h3"></i></a></th>
+		<th id="list_view_config_label-checklist_item_completed_count" data-field-name="checklist_item_completed_count"><a class="show" href="#" title="<%- i18next.t('Checklist') %>" ><span class="icon-caret-down hide"></span><i  data-sort-by="checklist_item_completed_count" class="js-sort-by icon-list-ul h3"></i></a></th>
 		<% if (!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && $.inArray('r_custom_fields',APPS.enabled_apps) !== -1) {
 			if (!_.isUndefined(board) && !_.isEmpty(board) && !_.isUndefined(board.attributes.custom_fields) && board.attributes.custom_fields !== null) {
 				_.each(board.attributes.custom_fields, function(customfield){ %>
-					<th class="js-list-customField-<%- customfield.id %>"><a class="show" href="javascript:void(0);" title="<%- customfield.label %>"><%- customfield.label %></a></th>
+					<th class="js-list-customField-<%- customfield.id %>" id="list_view_config_label-<%- customfield.name %>" data-field-name="<%- customfield.name %>"><a class="show" href="javascript:void(0);" title="<%- customfield.label %>" ><%- customfield.label %></a></th>
 			  <% });
 			} else { %>
 				<th class="hide js-custom-fields-list_view-header"></th>

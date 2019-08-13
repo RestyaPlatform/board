@@ -3,107 +3,147 @@
 	if (!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && $.inArray('r_hide_card_additional_informations',APPS.enabled_apps) !== -1) {
 		hide_card_informations = true;
 	} %>
-<td data-title="<%- i18next.t('ID') %>" class="card-id" <% if (hide_card_informations) { %>style="display: none;"<% } %>>#<%- card.attributes.id %></td>
-<%if (!_.isUndefined(card.labels) && !_.isEmpty(card.labels) && card.labels.length > 0) { %>
-	<td data-title="<%- i18next.t('Labels') %>">
-	<% card.labels.each(function(label) {
-		if (!_.isUndefined(label) && label.attributes.name !== "") { %>
-		<span data-container="body" data-placement="bottom" title="<%- label.attributes.name %>" data-toggle="tooltip"><%- label.attributes.name %></span><br />
-			
-	<% }
-	});
-} else { %>
-	<td data-title="<%- i18next.t('Labels') %>" > - </td>
-<% } %>
-</td>
-<td data-title="<%- i18next.t('Card Name') %>"><%- card.attributes.name %></td>
-<td data-title="<%- i18next.t('List Name') %>"><%- card.list_name %></td>
-<% if(!_.isUndefined(card.users) && !_.isEmpty(card.users) && card.users.length > 0) { %>
-<td data-title="<%- i18next.t('Members') %>" >
-	<%
-		card.users.each(function(card_user) {
-			if (!_.isUndefined(card_user)) {
-	%>
-				<span data-container="body" data-placement="bottom" title="<%-card_user.attributes.full_name %> (<%-card_user.attributes.username %>)" data-toggle="tooltip"><%-card_user.attributes.full_name %></span><br />
-					
-	<%		
-			}
+	<% if(CheckFieldExists(card.board, 'id' , null , 'boolean', 'r_listview_configure')){ %>		
+<td id="list_view_config_data-id" data-title="<%- i18next.t('ID') %>" class="card-id" <% if (hide_card_informations) { %>style="display: none;"<% } %>>#<%- card.attributes.id %></td>
+<% } %>  
+<% if(CheckFieldExists(card.board, 'labels' , null , 'boolean', 'r_listview_configure')){ %>	
+	<%if (!_.isUndefined(card.labels) && !_.isEmpty(card.labels) && card.labels.length > 0) { %>
+		<td id="list_view_config_data-labels" data-title="<%- i18next.t('Labels') %>">
+		<% card.labels.each(function(label) {
+			if (!_.isUndefined(label) && label.attributes.name !== "") { %>
+			<span data-container="body" data-placement="bottom" title="<%- label.attributes.name %>" data-toggle="tooltip"><%- label.attributes.name %></span><br />
+				
+		<% }
 		});
-	%>
-		</ul>
-</td>
-<% } else { %>
-<td data-title="<%- i18next.t('Members') %>" > - </td>
-<% } %>
-<td class="hide js-list-view-start-date-data js-list-view-start-date-<%- card.attributes.id %>" data-title="<%- i18next.t('Start Date') %>" title="<%- i18next.t('Start Date') %>" data-placement="bottom" data-toggle="tooltip" data-container="body"></td>
-<% if(!_.isEmpty(card.attributes.due_date) && card.attributes.due_date != 'NULL'){ %>
-	<%
-		var today = new Date();
-		card_due_date = card.attributes.due_date.split('T');
-		var due_date = new Date(card_due_date[0]);
-		var diff = Math.floor(due_date.getTime() - today.getTime());
-		var day = 1000 * 60 * 60 * 24;
-		var days = Math.floor(diff / day);
-		if (days < -1) {
-			label = 'label-past';
-		} else if (days == -1) {
-			label = 'label-present';
-		} else if (days > -1) {
-			label = 'label-future';
-		}
-	%>
-	<td data-title="<%- i18next.t('End Date') %>" title="<%- i18next.t('End Date') %>" data-placement="bottom" data-toggle="tooltip" data-container="body"><small><span class="label <%- label %>">
-	<% var date_time = card.attributes.due_date.split('T'); date_time = date_time[0].split(' '); %>
-	<% 
-		var date_times = card.attributes.due_date.split('T');
-		date_time = date_times[0].split(' ');
-		if(_.isUndefined(date_times[1])){
-			var time_split =card.attributes.due_date.split(' ');
-			date_times[1] = time_split['1'];
-		}
-		if(!_.isEmpty(date_times[1])){
-			hours_mins = date_times[1].split(':');
-			hours_mins = hours_mins[0]+':'+hours_mins[1]
-		}
-	%>
-	<%= dateFormat(date_time[0], 'mediumDate')  %><%- ' '+ hours_mins %></span></small></td><% } else {%>
-	<td data-title="End Date"> - </td>
+	} else { %>
+		<td  id="list_view_config_data-labels" data-title="<%- i18next.t('Labels') %>" > - </td>
 	<% } %>
-	<td class="hide js-list-view-estimated-time-data js-list-view-estimated-time-<%- card.attributes.id %>" title="<%- i18next.t('Estimated time') %>" data-title="<%- i18next.t('Estimated time') %>" data-placement="bottom" data-toggle="tooltip" data-container="body"></td>
-	<td class="hide js-list-view-spent-time-data js-list-view-spent-time-<%- card.attributes.id %>" title="<%- i18next.t('Spent time') %>" data-title="<%- i18next.t('Spent time') %>" data-placement="bottom" data-toggle="tooltip" data-container="body"></td>
+	</td>
+<% } %>
+<% if(CheckFieldExists(card.board, 'name' , null , 'boolean', 'r_listview_configure')){ %>	
+<td id="list_view_config_data-name"  data-title="<%- i18next.t('Card Name') %>"><%- card.attributes.name %></td>
+<% } %>  
+<% if(CheckFieldExists(card.board, 'list_name' , null , 'boolean', 'r_listview_configure')){ %>	
+<td id="list_view_config_data-list_name" data-title="<%- i18next.t('List Name') %>"><%- card.list_name %></td>
+<% } %>  
+<% if(CheckFieldExists(card.board, 'cards_users' , null , 'boolean', 'r_listview_configure')){ %>	
+	<% if(!_.isUndefined(card.users) && !_.isEmpty(card.users) && card.users.length > 0) { %>
+	<td id="list_view_config_data-cards_users" data-title="<%- i18next.t('Members') %>" >
+		<%
+			card.users.each(function(card_user) {
+				if (!_.isUndefined(card_user)) {
+		%>
+					<span data-container="body" data-placement="bottom" title="<%-card_user.attributes.full_name %> (<%-card_user.attributes.username %>)" data-toggle="tooltip"><%-card_user.attributes.full_name %></span><br />
+						
+		<%		
+				}
+			});
+		%>
+			</ul>
+	</td>
+	<% } else { %>
+	<td id="list_view_config_data-cards_users" data-title="<%- i18next.t('Members') %>" > - </td>
+	<% } %>
+<% } %>  
+<% if(CheckFieldExists(card.board, 'start_date' , null , 'boolean', 'r_listview_configure')){ %>	
+<td  id="list_view_config_data-start_date" class="hide js-list-view-start-date-data js-list-view-start-date-<%- card.attributes.id %>" data-title="<%- i18next.t('Start Date') %>" title="<%- i18next.t('Start Date') %>" data-placement="bottom" data-toggle="tooltip" data-container="body"></td>
+<% } %>  
+<% if(CheckFieldExists(card.board, 'due_date' , null , 'boolean', 'r_listview_configure')){ %>	
+	<% if(!_.isEmpty(card.attributes.due_date) && card.attributes.due_date != 'NULL'){ %>
+		<%
+			var today = new Date();
+			card_due_date = card.attributes.due_date.split('T');
+			var due_date = new Date(card_due_date[0]);
+			var diff = Math.floor(due_date.getTime() - today.getTime());
+			var day = 1000 * 60 * 60 * 24;
+			var days = Math.floor(diff / day);
+			if (days < -1) {
+				label = 'label-past';
+			} else if (days == -1) {
+				label = 'label-present';
+			} else if (days > -1) {
+				label = 'label-future';
+			}
+		%>
+		<td  id="list_view_config_data-due_date" data-title="<%- i18next.t('End Date') %>" title="<%- i18next.t('End Date') %>" data-placement="bottom" data-toggle="tooltip" data-container="body"><small><span class="label <%- label %>">
+		<% var date_time = card.attributes.due_date.split('T'); date_time = date_time[0].split(' '); %>
+		<% 
+			var date_times = card.attributes.due_date.split('T');
+			date_time = date_times[0].split(' ');
+			if(_.isUndefined(date_times[1])){
+				var time_split =card.attributes.due_date.split(' ');
+				date_times[1] = time_split['1'];
+			}
+			if(!_.isEmpty(date_times[1])){
+				hours_mins = date_times[1].split(':');
+				var noon = '';
+				if (hours_mins[0] <= 12) {
+						noon = 'AM';
+				} else {
+						noon = 'PM';
+						hours_mins[0] = hours_mins[0] - 12;
+				}
+				hours_mins = hours_mins[0] + ':' + hours_mins[1] + ' ' + noon;
+			}
+		%>
+		<%= dateFormat(date_time[0], 'mediumDate')  %><%- ' '+ hours_mins %></span></small></td><% } else {%>
+		<td id="list_view_config_data-due_date"  data-title="End Date"> - </td>
+		<% } %>
+	<% } %>
+	<% if(CheckFieldExists(card.board, 'estimated_time' , null , 'boolean', 'r_listview_configure')){ %>	
+		<td id="list_view_config_data-estimated_time" class="hide js-list-view-estimated-time-data js-list-view-estimated-time-<%- card.attributes.id %>" title="<%- i18next.t('Estimated time') %>" data-title="<%- i18next.t('Estimated time') %>" data-placement="bottom" data-toggle="tooltip" data-container="body"></td>
+	<% } %>
+	<% if(CheckFieldExists(card.board, 'spent_time' , null , 'boolean', 'r_listview_configure')){ %>	
+		<td id="list_view_config_data-spent_time" class="hide js-list-view-spent-time-data js-list-view-spent-time-<%- card.attributes.id %>" title="<%- i18next.t('Spent time') %>" data-title="<%- i18next.t('Spent time') %>" data-placement="bottom" data-toggle="tooltip" data-container="body"></td>
+	<% } %>
+	<% if(CheckFieldExists(card.board, 'subscribe' , null , 'boolean', 'r_listview_configure')){ %>	
 	<% 
 	if(!_.isUndefined(authuser) && !_.isUndefined(authuser.user)){
 	var cards_subscribers = card.cards_subscribers.where({ is_subscribed: 1, user_id: parseInt(authuser.user.id) }); 
 	}
 	if(!_.isUndefined(cards_subscribers) && cards_subscribers > 0){ %>
-	<td data-title="<%- i18next.t('Subscribed') %>" title="<%- i18next.t('Subscribed') %>" data-placement="bottom" data-toggle="tooltip" data-container="body"><span class="icon-eye-open"></span></td><% } %>
-	<% if(card.card_voters.length > 0) { %>
-	<td data-title="Voters" title="<%- i18next.t('{{count}}', {count: card.card_voters.length}) %>" data-placement="bottom" data-toggle="tooltip" data-container="body"><small><%- card.card_voters.length %></small></td><% } else { %><td data-title="Voters"> <small>0</small></td><% } %>
-	<% if(!_.isEmpty(card.attachments) && card.attachments.length > 0){ %>
-	<td data-title="Attachments" title="<%- i18next.t('{{count}}', {count: card.attachments.length}) %> " data-placement="bottom" data-toggle="tooltip" data-container="body"><small><%- card.attachments.length %></small></td>
-	<% } else { %>
-	<td data-title="Attachments"><small>0</small></td>
+	<td id="list_view_config_data-subscribe" data-title="<%- i18next.t('Subscribed') %>" title="<%- i18next.t('Subscribed') %>" data-placement="bottom" data-toggle="tooltip" data-container="body"><span class="icon-eye-open"></span></td><% }else { %>
+		<td id="list_view_config_data-subscribe" data-title="Subscribe"><small>-</small></td>
 	<% } %>
-	<% if(card.attributes.comment_count > 0){ %>
-	<td data-title="Comments" title="<%- i18next.t('{{count}}', {count: card.attributes.comment_count}) %> " data-placement="bottom" data-toggle="tooltip" data-container="body"><small><%- card.attributes.comment_count %></small></td>
-	<% } else { %>
-	<td data-title="Comments"><small>0</small></td>
 	<% } %>
-	<% if(card.attributes.checklist_item_count > 0){ %>
-	<td data-title="Checklist" title="<%- i18next.t('%s checklist completed out of %s', { postProcess: 'sprintf', sprintf: [card.attributes.checklist_item_completed_count,card.attributes.checklist_item_count]}) %> " data-placement="bottom" data-toggle="tooltip" data-container="body"><small>
-		<% if(card.attributes.checklist_item_completed_count == card.attributes.checklist_item_count) { %>
-			<span class="label label-success"><%- card.attributes.checklist_item_completed_count %>/<%- card.attributes.checklist_item_count %></span>
+	<% if(CheckFieldExists(card.board, 'card_voter_count' , null , 'boolean', 'r_listview_configure')){ %>	
+		<% if(card.card_voters.length > 0) { %>
+		<td id="list_view_config_data-card_voter_count" data-title="Voters" title="<%- i18next.t('{{count}}', {count: card.card_voters.length}) %>" data-placement="bottom" data-toggle="tooltip" data-container="body"><small><%- card.card_voters.length %></small></td><% } else { %><td id="list_view_config_data-card_voter_count" data-title="Voters"> <small>0</small></td><% } %>
+	<% } %>
+	<% if(CheckFieldExists(card.board, 'attachment_count' , null , 'boolean', 'r_listview_configure')){ %>	
+		<% if(!_.isEmpty(card.attachments) && card.attachments.length > 0){ %>
+		<td  id="list_view_config_data-attachment_count" data-title="Attachments" title="<%- i18next.t('{{count}}', {count: card.attachments.length}) %> " data-placement="bottom" data-toggle="tooltip" data-container="body"><small><%- card.attachments.length %></small></td>
 		<% } else { %>
-			<span class="label label-danger"><%- card.attributes.checklist_item_completed_count %>/<%- card.attributes.checklist_item_count %></span>
-		<% } %>	
-	</small></td>
-	<% } else { %>
-	<td data-title="Checklist"><small>-</small></td>
+		<td  id="list_view_config_data-attachment_count" data-title="Attachments"><small>0</small></td>
+		<% } %>
 	<% } %>
+	<% if(CheckFieldExists(card.board, 'comment_count' , null , 'boolean', 'r_listview_configure')){ %>	
+		<% if(card.attributes.comment_count > 0){ %>
+		<td id="list_view_config_data-comment_count" data-title="Comments" title="<%- i18next.t('{{count}}', {count: card.attributes.comment_count}) %> " data-placement="bottom" data-toggle="tooltip" data-container="body"><small><%- card.attributes.comment_count %></small></td>
+		<% } else { %>
+		<td id="list_view_config_data-comment_count" data-title="Comments"><small>0</small></td>
+		<% } %>
+	<% } %>
+	<% if(CheckFieldExists(card.board, 'checklist_item_completed_count' , null , 'boolean', 'r_listview_configure')){ %>	
+		<% if(card.attributes.checklist_item_count > 0){ %>
+		<td id="list_view_config_data-checklist_item_completed_count" data-title="Checklist" title="<%- i18next.t('%s checklist completed out of %s', { postProcess: 'sprintf', sprintf: [card.attributes.checklist_item_completed_count,card.attributes.checklist_item_count]}) %> " data-placement="bottom" data-toggle="tooltip" data-container="body"><small>
+			<% if(card.attributes.checklist_item_completed_count == card.attributes.checklist_item_count) { %>
+				<span class="label label-success"><%- card.attributes.checklist_item_completed_count %>/<%- card.attributes.checklist_item_count %></span>
+			<% } else { %>
+				<span class="label label-danger"><%- card.attributes.checklist_item_completed_count %>/<%- card.attributes.checklist_item_count %></span>
+			<% } %>	
+		</small></td>
+		<% } else { %>
+		<td id="list_view_config_data-checklist_item_completed_count" data-title="Checklist"><small>-</small></td>
+		<% } %>
+	<% } %>
+
 	<% if (!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && $.inArray('r_custom_fields',APPS.enabled_apps) !== -1) { 
 		if (!_.isUndefined(card.board) && !_.isEmpty(card.board) && !_.isUndefined(card.board.attributes.custom_fields) && card.board.attributes.custom_fields !== null) {
 			_.each(card.board.attributes.custom_fields, function(customfield){ %>
-				<td class="js-list-view-card-<%- card.attributes.id %>-customfield-<%- customfield.id %> card-listing-truncate" data-title="<%- customfield.label %>"><small>-</small></td>
+				<% if(CheckFieldExists(card.board, customfield.name , null , 'boolean', 'r_listview_configure')){ %>
+					<td class="js-list-view-card-<%- card.attributes.id %>-customfield-<%- customfield.id %> card-listing-truncate" data-title="<%- customfield.label %>"  id="list_view_config_data-<%- customfield.name %>"><small>-</small></td>
+				<% } %>
 			<% });
 		} else { %>
 			<td class="hide js-list-view-custom_fields-<%- card.attributes.id %>"></td>

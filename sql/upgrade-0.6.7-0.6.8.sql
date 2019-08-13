@@ -188,7 +188,7 @@ VALUES ('17', '0', 'CALENDAR_VIEW_CARD_COLOR', 'Default Color', NULL, 'select', 
      LEFT JOIN countries lco ON ((lco.id = li.country_id)))
      LEFT JOIN login_types lt ON ((lt.id = users.login_type_id)));
 
-UPDATE "settings" SET "options" = 'Never,Periodically,Instantly,Daily' WHERE "name" = 'DEFAULT_EMAIL_NOTIFICATION';
+UPDATE "settings" SET "options" = 'Never,Periodically,Instantly,Daily,Weekly' WHERE "name" = 'DEFAULT_EMAIL_NOTIFICATION';
 
 ALTER TABLE "oauth_clients"
 ADD "is_expirable_token" bigint NULL DEFAULT '1';
