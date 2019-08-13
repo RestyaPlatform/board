@@ -121,7 +121,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 foreach ($files as $file) {
                     $content = file_get_contents($file);
                     $data = json_decode($content, true);
-                    $folder = (DS, $file);
+                    $folder = explode(DS, $file);
                     if ($data['enabled'] === true) {
                         foreach ($data as $key => $value) {
                             if ($key != 'settings') {
