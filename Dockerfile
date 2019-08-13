@@ -1,4 +1,4 @@
- FROM php:7-cli as builder
+FROM php:7-cli as builder
 
 RUN apt-get update
 RUN apt-get install -y gnupg2
