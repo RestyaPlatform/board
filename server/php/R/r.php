@@ -103,7 +103,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             $files = glob(APP_PATH . '/client/locales/*/translation.json', GLOB_BRACE);
             $lang_iso2_codes = array();
             foreach ($files as $file) {
-                $folder = explode('/', $file);
+                $folder = explode(DS, $file);
                 $folder_iso2_code = $folder[count($folder) - 2];
                 array_push($lang_iso2_codes, $folder_iso2_code);
             }
@@ -121,7 +121,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 foreach ($files as $file) {
                     $content = file_get_contents($file);
                     $data = json_decode($content, true);
-                    $folder = explode('/', $file);
+                    $folder = explode(DS, $file);
                     if ($data['enabled'] === true) {
                         foreach ($data as $key => $value) {
                             if ($key != 'settings') {
@@ -1814,7 +1814,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 $data = json_decode($content, true);
                 if ($data['enabled'] === true) {
                     $response['apps']['enabled_apps'][] = $data['id'];
-                    $folder = explode('/', $file);
+                    $folder = explode(DS, $file);
                     foreach ($data as $key => $value) {
                         if ($key != 'settings') {
                             $response['apps_data'][$folder[count($folder) - 2]][$key] = $value;
@@ -1866,7 +1866,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         $files = glob(APP_PATH . DS . 'client' . DS . 'apps' . DS . '*' . DS . 'app.json', GLOB_BRACE);
         if (!empty($files)) {
             foreach ($files as $file) {
-                $folder = explode('/', $file);
+                $folder = explode(DS, $file);
                 $content = file_get_contents($file);
                 $data = json_decode($content, true);
                 $data['folder'] = $data['id'];

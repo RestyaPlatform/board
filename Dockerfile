@@ -88,6 +88,7 @@ COPY --from=builder /app/restyaboard-docker.zip /tmp/restyaboard.zip
 RUN unzip /tmp/restyaboard.zip -d ${ROOT_DIR} && \
     rm /tmp/restyaboard.zip && \
     chown -R www-data:www-data ${ROOT_DIR}
+RUN mv  ${ROOT_DIR}/api_explorer/ ${ROOT_DIR}/client/api_explorer/
 
 # install apps
 ADD docker-scripts/install_apps.sh /tmp/
