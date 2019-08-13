@@ -246,9 +246,17 @@ App.SwitchToListView = Backbone.View.extend({
                 r_listview_configure = board_custom_fields.r_listview_configure.split(',');
                 field_wrapper_items.each(function(label, key) {
                     if (r_listview_configure.indexOf($(key).data('field-name')) === -1) {
-                        $(key).hide();
+                        if ($(key).data('field-name') === 'id') {
+                            $(key).addClass('hide');
+                        } else {
+                            $(key).hide();
+                        }
                     } else {
-                        $(key).show();
+                        if ($(key).data('field-name') === 'id') {
+                            $(key).removeClass('hide');
+                        } else {
+                            $(key).show();
+                        }
                     }
                 });
             }

@@ -137,6 +137,7 @@ App.ListView = Backbone.View.extend({
         'listSort': 'listSort',
         'keyup[n] .js-board-list': 'keyboardShowAddCardForm',
         'click .js-list-color-pick': 'colorPicker',
+        'click .js-list-customcolor-card': 'customColorPicker',
         'click .js-remove-list-color': 'removelistColor',
     },
     /**
@@ -201,6 +202,10 @@ App.ListView = Backbone.View.extend({
         };
         var self = this;
         var list_id = self.model.id;
+        if ($(e.target).parents().find('#js-list-custom-color').length > 0) {
+            $(e.target).parents().find('#js-list-custom-color').val(' ');
+            $('#list-custom-colorpicker-' + list_id + ' .custom-background-box').css("background-color", color_label);
+        }
         $('#js-list-color-' + list_id).attr('style', 'background-color: ' + color_label + ' !important');
         $('#js-list-demo-' + list_id).attr('style', 'border-bottom: ' + color_label);
         $('.js-remove-list-color').addClass('hide');
@@ -234,6 +239,10 @@ App.ListView = Backbone.View.extend({
         };
         var self = this;
         var list_id = self.model.id;
+        if ($(e.target).parents().find('#js-list-custom-color').length > 0 && color_label) {
+            $(e.target).parents().find('#js-list-custom-color').val(color_label);
+            $('#list-custom-colorpicker-' + list_id + ' .custom-background-box').css("background-color", color_label);
+        }
         $('#js-list-color-' + list_id).attr('style', 'background-color: ' + color_label + ' !important');
         $('#js-list-demo-' + list_id).attr('style', 'border-bottom: 2px solid' + color_label + ' !important');
         $('.js-remove-list-color').removeClass('hide');
@@ -252,6 +261,40 @@ App.ListView = Backbone.View.extend({
         });
         return false;
     },
+    /**
+     * customColorPicker()
+     * add selected card in lis
+     * @param e
+     * @type Object(DOM event)
+     * @return false
+     *
+     */
+    customColorPicker: function(e) {
+        var color_label = $(e.target).parents().find('#js-list-custom-color').val();
+        var data = {
+            color: color_label
+        };
+        var self = this;
+        var list_id = self.model.id;
+        $('#js-list-color-' + list_id).attr('style', 'background-color: ' + color_label + ' !important');
+        $('#js-list-demo-' + list_id).attr('style', 'border-bottom: 2px solid' + color_label + ' !important');
+        $('.js-remove-list-color').removeClass('hide');
+        self.model.url = api_url + 'boards/' + self.model.attributes.board_id + '/lists/' + list_id + '.json';
+        self.model.save(data, {
+            patch: true,
+            success: function(model, response) {
+                var current_board = App.boards.findWhere({
+                    id: parseInt(self.model.attributes.board_id)
+                });
+                var current_list = current_board.lists.findWhere({
+                    id: parseInt(list_id)
+                });
+                current_list.set('color', color_label);
+            }
+        });
+        return false;
+    },
+
     /**
      * drop()
      * handle image upload
@@ -2195,6 +2238,7 @@ App.ListView = Backbone.View.extend({
                     silent: true
                 });
                 card.list = self.model;
+                card.board = self.model.board;
                 card.board_activities.add(self.model.activities, {
                     silent: true
                 });

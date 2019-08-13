@@ -111,6 +111,7 @@ App.ModalCardView = Backbone.View.extend({
         'click .js-color-focusout-card': 'colorPickerCard',
         'click .js-show-color-settings': 'showColorPicker',
         'click .js-remove-card-color': 'removeCardColor',
+        'click .js-color-customcolor-card': 'customColorPickerCard',
         'click .js-show-comment': 'showComment',
         'click .js-preview-comment': 'previewComment',
         'click .js-card-activites-load-more': 'cardActivityLoadMore',
@@ -311,6 +312,10 @@ App.ModalCardView = Backbone.View.extend({
         };
         var self = this;
         var card_id = self.model.id;
+        if ($(e.target).parents().find('#js-card-custom-color').length > 0) {
+            $(e.target).parents().find('#js-card-custom-color').val(' ');
+            $('#custom-color-picker .custom-background-box').css("background-color", color_label);
+        }
         $('#js-card-color-demo-' + card_id).css("background-color", color_label);
         $('#js-card-' + card_id).css("border-left-color", color_label).css("border-left-width", "8px");
         $('#js-carousel-card-' + card_id).css("border-left", '5px solid ' + color_label);
@@ -354,6 +359,10 @@ App.ModalCardView = Backbone.View.extend({
         var data = {
             color: color_label
         };
+        if ($(e.target).parents().find('#js-card-custom-color').length > 0 && color_label) {
+            $(e.target).parents().find('#js-card-custom-color').val(color_label);
+            $('#custom-color-picker .custom-background-box').css("background-color", color_label);
+        }
         var self = this;
         var card_id = self.model.id;
         $('#js-card-color-demo-' + card_id).css("background-color", color_label);
@@ -387,6 +396,53 @@ App.ModalCardView = Backbone.View.extend({
         });
         return false;
     },
+    /**
+     * colorPicker()
+     * add selected card in lis
+     * @param e
+     * @type Object(DOM event)
+     * @return false
+     *
+     */
+    customColorPickerCard: function(e) {
+        var color_label = $(e.target).parents().find('#js-card-custom-color').val();
+        var data = {
+            color: color_label
+        };
+        var self = this;
+        var card_id = self.model.id;
+        $('#js-card-color-demo-' + card_id).css("background-color", color_label);
+        $('#js-card-' + card_id).css("border-left-color", color_label).css("border-left-width", "8px");
+        $('#js-carousel-card-' + card_id).css("border-left", '5px solid ' + color_label);
+        $('.js-remove-card-color').removeClass('hide');
+        self.model.url = api_url + 'boards/' + self.model.attributes.board_id + '/lists/' + self.model.attributes.list_id + '/cards/' + self.model.id + '.json';
+        $('.js-close-popover').click();
+        self.model.save(data, {
+            patch: true,
+            success: function(model, response) {
+                if (!_.isUndefined(response.activity)) {
+                    response.activity = activityCommentReplace(response.activity);
+                    var activity = new App.Activity();
+                    activity.set(response.activity);
+                    var view = new App.ActivityView({
+                        model: activity,
+                        flag: '1'
+                    });
+                    self.model.activities.unshift(activity, {
+                        silent: true
+                    });
+                    if ($.cookie('filter') !== 'comment') {
+                        var view_activity = $('#js-card-activities-' + self.model.id);
+                        view_activity.prepend(view.render().el);
+                    }
+                    emojify.run();
+                }
+
+            }
+        });
+        return false;
+    },
+
     /**
      * drop()
      * handle card sorting(save card position) and image upload
@@ -1579,9 +1635,17 @@ App.ModalCardView = Backbone.View.extend({
                     }
                 }
             });
-            if (_.isEmpty(this.model.attributes.description)) {
-                this.$el.find('#cardDescriptionEditForm').removeClass('hide');
-            }
+
+            $('#custom-color-picker').colorpicker({
+                format: 'hex',
+                container: '#custom-color-picker',
+            }).on('changeColor', function(e) {
+                $('.js-color-dropdown').addClass('open');
+                return false;
+            }).on('click', function(e) {
+                $('.js-color-dropdown').addClass('open');
+                return false;
+            });
             $('.js-card-duedate-edit-' + self.model.id).datetimepicker({
                 format: 'yyyy-mm-dd',
                 container: '.js-show-card-due-date-form',
