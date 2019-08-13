@@ -139,6 +139,8 @@ App.ListView = Backbone.View.extend({
         'click .js-list-color-pick': 'colorPicker',
         'click .js-list-customcolor-card': 'customColorPicker',
         'click .js-remove-list-color': 'removelistColor',
+        'click .js-trigger-minimize': 'triggerListMinView',
+        'click  a.js-trigger-maximum': 'triggerListMaxView',
     },
     /**
      * listSort()
@@ -220,6 +222,72 @@ App.ListView = Backbone.View.extend({
                     id: parseInt(list_id)
                 });
                 current_list.set('color', color_label);
+            }
+        });
+        return false;
+    },
+    triggerListMinView: function(e) {
+        var self = this;
+        var list_id = $(e.currentTarget).data('list_id');
+        $(e.currentTarget).parents('#js-board-lists').find('.js-list-' + list_id).addClass('Minimized_list').removeClass('list');
+        $(e.currentTarget).parents('#js-board-lists').find('.js-list_maximize_content-' + list_id).addClass('hide');
+        $(e.currentTarget).parents('#js-board-lists').find('.list-minimize-view-' + list_id).removeClass('hide');
+        var formData = {
+            list_collapse: true
+        };
+        if (!_.isUndefined(self.model.attributes.custom_fields) && !_.isEmpty(self.model.attributes.custom_fields) && self.model.attributes.custom_fields) {
+            var list_custom_fields;
+            list_custom_fields = JSON.parse(self.model.attributes.custom_fields);
+            list_custom_fields.list_collapse = true;
+            formData = list_custom_fields;
+        }
+        var data = {
+            custom_fields: JSON.stringify(formData)
+        };
+        self.model.url = api_url + 'boards/' + self.model.attributes.board_id + '/lists/' + list_id + '.json';
+        self.model.save(data, {
+            patch: true,
+            success: function(model, response) {
+                var current_board = App.boards.findWhere({
+                    id: parseInt(self.model.attributes.board_id)
+                });
+                var current_list = current_board.lists.findWhere({
+                    id: parseInt(list_id)
+                });
+                current_list.set('custom_fields', JSON.stringify(formData));
+            }
+        });
+        return false;
+    },
+    triggerListMaxView: function(e) {
+        var self = this;
+        var list_id = $(e.currentTarget).data('list_id');
+        $(e.currentTarget).parents('#js-board-lists').find('.js-list-' + list_id).removeClass('Minimized_list').addClass('list');
+        $(e.currentTarget).parents('#js-board-lists').find('.js-list_maximize_content-' + list_id).removeClass('hide');
+        $(e.currentTarget).parents('#js-board-lists').find('.list-minimize-view-' + list_id).addClass('hide');
+        var formData = {
+            list_collapse: false
+        };
+        if (!_.isUndefined(self.model.attributes.custom_fields) && !_.isEmpty(self.model.attributes.custom_fields) && self.model.attributes.custom_fields) {
+            var list_custom_fields;
+            list_custom_fields = JSON.parse(self.model.attributes.custom_fields);
+            list_custom_fields.list_collapse = false;
+            formData = list_custom_fields;
+        }
+        var data = {
+            custom_fields: JSON.stringify(formData)
+        };
+        self.model.url = api_url + 'boards/' + self.model.attributes.board_id + '/lists/' + list_id + '.json';
+        self.model.save(data, {
+            patch: true,
+            success: function(model, response) {
+                var current_board = App.boards.findWhere({
+                    id: parseInt(self.model.attributes.board_id)
+                });
+                var current_list = current_board.lists.findWhere({
+                    id: parseInt(list_id)
+                });
+                current_list.set('custom_fields', JSON.stringify(formData));
             }
         });
         return false;
@@ -1039,6 +1107,15 @@ App.ListView = Backbone.View.extend({
         this.$el.html(this.template({
             list: this.model
         }));
+        if (!_.isUndefined(this.model.attributes.custom_fields) && !_.isEmpty(this.model.attributes.custom_fields) && this.model.attributes.custom_fields) {
+            var list_custom_fields = JSON.parse(this.model.attributes.custom_fields);
+            if (!_.isUndefined(list_custom_fields.list_collapse) && list_custom_fields.list_collapse) {
+                this.$el.find('.js-list-' + this.model.attributes.id).addClass('Minimized_list').removeClass('list');
+                this.$el.find('.js-list_maximize_content-' + this.model.attributes.id).addClass('hide');
+                this.$el.find('.list-minimize-view-' + this.model.attributes.id).removeClass('hide');
+
+            }
+        }
         this.renderCardsCollection();
         if (!_.isUndefined(authuser.user)) {
             if (!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(this.model.collection.board.acl_links.where({

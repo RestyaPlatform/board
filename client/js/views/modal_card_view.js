@@ -1338,12 +1338,13 @@ App.ModalCardView = Backbone.View.extend({
                 });
                 $('body').trigger('modalCardRendered', self.model.id, self.model);
             }).defer();
-            if (_.isEmpty(description)) {
-                this.$el.find('.js-show-card-desc').show();
-            }
             this.$el.find('#inputCarddescriptions').val(description).focus();
             this.$el.find('#checklistEditName').val(checklistEditName).focus();
             this.$el.find('#ChecklistItem').val(ChecklistItem).focus();
+            if (_.isEmpty(self.model.attributes.description)) {
+                this.$el.find('.js-show-card-desc').show();
+                this.$el.find('#cardDescriptionEditForm').removeClass('hide');
+            }
             this.resizeSplitter();
             this.renderAttachmentsCollection();
             this.renderLabelsCollection();
@@ -1681,6 +1682,11 @@ App.ModalCardView = Backbone.View.extend({
         }
         this.$el.find('.js-organization-member-search-response').html('');
         this.$el.find('.js-comment-member-search-response').nextAll().remove();
+        if (_.isEmpty(self.model.attributes.description)) {
+            this.$el.find('.js-show-card-desc').show();
+            this.$el.find('#cardDescriptionEditForm').removeClass('hide');
+        }
+
         _(function() {
             Backbone.TemplateManager.baseUrl = '{name}';
             var file_extension_regex;

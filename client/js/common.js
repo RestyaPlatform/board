@@ -202,17 +202,15 @@ var favicon = new Favico({
 });
 
 function parse_date(dateTime, logged_user, classname) {
-    var s = dateTime.replace("T", " ");
-    var current_timezone = moment.tz.guess();
-    if (current_timezone !== SITE_TIMEZONE) {
-        s = moment.tz(s, SITE_TIMEZONE);
-    }
-    var tz = s;
+    var s = dateTime.replace("T", " "),
+        current_timezone;
+    new_date = moment.tz(s, 'YYYY-MM-DD HH:mm:ss', SITE_TIMEZONE).utc().format('YYYY-MM-DD HH:mm:ss');
     if (logged_user && logged_user.user) {
-        if (current_timezone !== logged_user.user.timezone) {
-            tz = moment.tz(s, logged_user.user.timezone);
-        }
+        current_timezone = moment.tz(logged_user.user.timezone).format('Z').replace(':', '');
+    } else {
+        current_timezone = moment.tz(SITE_TIMEZONE).format('Z').replace(':', '');
     }
+    tz = moment(new_date + ' Z').utcOffset(current_timezone).format('YYYY-MM-DD HH:mm:ss');
     if (!moment.isMoment(tz)) {
         tz = moment(tz);
     }
@@ -221,6 +219,9 @@ function parse_date(dateTime, logged_user, classname) {
     }).defer();
     return true;
 }
+
+
+
 
 function stripScripts(s) {
     var div = document.createElement('div');
