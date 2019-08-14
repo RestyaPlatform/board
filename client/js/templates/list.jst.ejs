@@ -22,9 +22,7 @@
 			  <% } %>
 			  <%if(!_.isUndefined(authuser.user)) {%>
 			  <div class="pull-right col-xs-6 clearfix js-list-header-<%- list.id %> js-list-header-section">
-					  <div class="pull-right left-mar"><a href="" class="js-trigger-minimize" title="<%- i18next.t('Minimize') %>" data-list_id="<%- list.id %>"><span class="pull-right"><strong><i class="icon-collapse-alt cur text-primary" style="
-						margin-right: -4px;
-					"></i></strong></span></a>
+					  <div class="pull-right left-mar"><a href="" class="js-trigger-minimize" title="<%- i18next.t('Minimize') %>" data-list_id="<%- list.id %>"><span class="pull-right"><strong><i class="icon-resize-small text-primary" style="margin-right: -4px;"></i> </strong></span></a>
 					  </div>
 				  <div class="dropdown">
 				  <a href="#" class="dropdown-toggle pull-right js-show-list-actions" id="js-show-list-actions-<%- list.attributes.id %>" data-toggle="dropdown" title="<%- i18next.t('List Actions') %>" data-list-id="<%- list.attributes.id %>"><i class="icon-cog text-primary"></i></a>
@@ -70,7 +68,7 @@
 				<div class="list-header js-list-head <% if(!_.isUndefined(authuser.user)){%>cur-grab<%}%>">
 					<div class="clearfix">
 							<div class="text-center clearfix">
-									<div><a href="javascript:void(0);" class="js-trigger-maximum" title="<%- i18next.t('Maximize') %>" data-list_id="<%- list.id %>"><span><i class="icon-angle-left text-primary"></i><i class="icon-angle-right text-primary"></i></span></a>
+									<div><a href="javascript:void(0);" class="js-trigger-maximum" title="<%- i18next.t('Maximize') %>" data-list_id="<%- list.id %>"><span><i class="icon-resize-full text-primary"></i></span></a>
 									</div>
 							</div>
 							<div class="clearfix vertical-text htruncate-list"><strong><%- list.attributes.name %></strong></div>

@@ -212,7 +212,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         $val_array = array(
             true
         );
-        if (is_plugin_enabled('r_ldap_login')|| is_plugin_enabled('r_multiple_ldap_login')) {
+        if (is_plugin_enabled('r_ldap_login') || is_plugin_enabled('r_multiple_ldap_login')) {
             $ldap_count = executeQuery('SELECT count(*) FROM users WHERE is_ldap = $1', $val_array);
             $filter_count['ldap'] = $ldap_count['count'];
         }
@@ -5959,7 +5959,8 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                                 );
                                 pg_query_params($db_lnk, 'INSERT INTO settings (setting_category_id, setting_category_parent_id, value , name, description, type, options, label, "order") VALUES (0, 0, $1, $2, $3, $4, $5, $6, $7)', $new_qry_val_arr);
                             }
-                        }                    }
+                        }
+                    }
                 } else {
                     foreach ($r_post as $key => $val) {
                         if (!empty($app['settings'][$key]['is_encrypted'])) {
@@ -6376,7 +6377,7 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
         if (isset($r_put['r_listview_configure'])) {
             if (is_plugin_enabled('r_listview_configure')) {
                 $field_arr = array(
-                    'r_listview_configure',
+                    'r_listview_configure'
                 );
                 $custom_fields_array = array();
                 $custom_fields_array['r_listview_configure'] = $r_put['r_listview_configure'];
@@ -6394,8 +6395,6 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
                 $board['id'] = $id;
                 $board['board_custom_fields'] = json_encode($custom_fields_array);
                 $grid_view_response = update_query('boards', $id, $r_resource_cmd, $board);
-                echo json_encode($grid_view_response);
-                break;
             }
         }
         if (isset($r_put['r_listview_configure_position'])) {
