@@ -1228,7 +1228,19 @@ App.BoardHeaderView = Backbone.View.extend({
             }
         });
         if (!_.isEmpty(this.model.cards)) {
-            $('div.js-board-view-' + this.model.id).fullCalendar('addEventSource', this.model.cards.invoke('pick', ['id', 'title', 'start']));
+            if (!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && $.inArray('r_gantt_view', APPS.enabled_apps) !== -1) {
+                var start_date, cards_custom_fields;
+                self.model.cards.each(function(card) {
+                    if (!_.isEmpty(card.attributes.custom_fields) && card.attributes.custom_fields != 'NULL' && !_.isUndefined(card.attributes.custom_fields)) {
+                        cards_custom_fields = JSON.parse(card.attributes.custom_fields);
+                        if (!_.isUndefined(cards_custom_fields.start_date) && !_.isUndefined(cards_custom_fields.start_time) && !_.isEmpty(cards_custom_fields.start_date) && cards_custom_fields.start_date !== '') {
+                            start_date = cards_custom_fields.start_date + 'T' + cards_custom_fields.start_time;
+                            self.model.cards.get(card.attributes.id).set('start', start_date);
+                        }
+                    }
+                });
+            }
+            $('div.js-board-view-' + this.model.id).fullCalendar('addEventSource', this.model.cards.invoke('pick', ['id', 'title', 'start', 'end']));
         }
         return false;
     },
