@@ -73,6 +73,16 @@ App.BoardLabelsView = Backbone.View.extend({
             'max-height': boardH - 50,
             'overflow-y': 'auto'
         });
+        $('#label-custom-colorpicker').colorpicker({
+            format: 'hex',
+            horizontal: true,
+            container: '#label-custom-colorpicker',
+        }).on('changeColor', function(e) {
+            $(e.target).closest('form').find('#color').val(e.color.toString());
+            return false;
+        }).on('click', function(e) {
+            return false;
+        });
         return false;
     },
     /**

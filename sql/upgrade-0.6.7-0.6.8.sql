@@ -188,16 +188,13 @@ VALUES ('17', '0', 'CALENDAR_VIEW_CARD_COLOR', 'Default Color', NULL, 'select', 
      LEFT JOIN countries lco ON ((lco.id = li.country_id)))
      LEFT JOIN login_types lt ON ((lt.id = users.login_type_id)));
 
-UPDATE "settings" SET "options" = 'Never,Periodically,Instantly,Daily' WHERE "name" = 'DEFAULT_EMAIL_NOTIFICATION';
+UPDATE "settings" SET "options" = 'Never,Periodically,Instantly,Daily,Weekly' WHERE "name" = 'DEFAULT_EMAIL_NOTIFICATION';
 
 ALTER TABLE "oauth_clients"
 ADD "is_expirable_token" bigint NULL DEFAULT '1';
 COMMENT ON TABLE "oauth_clients" IS '';
 
-UPDATE "oauth_clients" SET
-"is_expirable_token" = '0'
-WHERE (("client_id" = '7857596005287233') OR ("client_id" = '1193674816623028') OR ("client_id" = '6728003996146168') OR ("client_id" = '7742632501382313') OR ("client_id" = '6664115227792148'));
-
+UPDATE "oauth_clients" SET "is_expirable_token" = '0' WHERE "client_id" != '7742632501382313';
 
 INSERT INTO "email_templates" ("created", "modified", "from_email", "reply_to_email", "name", "description", "subject", "email_text_content", "email_variables", "display_name")
 VALUES (now(), now(), '##SITE_NAME## Restyaboard <##FROM_EMAIL##>', '##REPLY_TO_EMAIL##', 'board_import_user_notification', 'We will send this mail to user, when user import the boards ', 'Restyaboard / Import Board', '<html>

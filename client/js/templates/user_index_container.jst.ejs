@@ -26,7 +26,7 @@
         </li>
         <% if (!_.isUndefined(APPS) && APPS !== null ) {
               if (!_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null) {
-                if ($.inArray('r_ldap_login',APPS.enabled_apps) !== -1) { %>
+                if ($.inArray('r_ldap_login',APPS.enabled_apps) !== -1 || $.inArray('r_multiple_ldap_login',APPS.enabled_apps) !== -1) { %>
         <li class="<% if(current_param === 'ldap') { %>active<% } %>">
           <a class="js-filter cur ldap_login_check" data-filter="ldap" title="<%- i18next.t('LDAP') %>">
             <span class="show">

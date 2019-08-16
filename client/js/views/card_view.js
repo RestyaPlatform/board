@@ -95,6 +95,9 @@ App.CardView = Backbone.View.extend({
                 this.model.list.collection.board.labels.bind('remove', this.render);
             }
             this.model.cards_subscribers.bind('add', this.render);
+            if (!_.isUndefined(this.model.board)) {
+                this.model.board.bind('change:board_custom_fields', this.render);
+            }
             this.model.cards_subscribers.bind('remove', this.render);
             this.model.card_voters.bind('add', this.render);
             this.model.card_voters.bind('remove', this.render);
@@ -219,10 +222,12 @@ App.CardView = Backbone.View.extend({
                 } else {
                     list_moved_date_date_time = list_moved_date_date_time[0].split(' ');
                 }
-                if ($('#js-card-' + self.model.id).find('.list-moved-date').length === 0) {
-                    $('#js-card-' + self.model.id).find('.js-list-card-data').append('<li class="card-listing-truncate list-moved-date"><small title="' + i18next.t('List Moved Date') + '"><span class="label label-default">' + dateFormat(list_moved_date_date_time[0], 'mediumDate') + '</span></small></li>');
-                } else {
-                    $('#js-card-' + self.model.id).find('.list-moved-date').html('<small title="' + i18next.t('List Moved Date') + '"><span class="label label-default">' + dateFormat(list_moved_date_date_time[0], 'mediumDate') + '</span></small>');
+                if (CheckFieldExists(self.model.board, 'list_moved_date', null, 'boolean', 'r_gridview_configure')) {
+                    if ($('#js-card-' + self.model.id).find('.list-moved-date').length === 0) {
+                        $('#js-card-' + self.model.id).find('.js-list-card-data').append('<li class="card-listing-truncate list-moved-date"><small title="' + i18next.t('List Moved Date') + '"><span class="label label-default">' + dateFormat(list_moved_date_date_time[0], 'mediumDate') + '</span></small></li>');
+                    } else {
+                        $('#js-card-' + self.model.id).find('.list-moved-date').html('<small title="' + i18next.t('List Moved Date') + '"><span class="label label-default">' + dateFormat(list_moved_date_date_time[0], 'mediumDate') + '</span></small>');
+                    }
                 }
                 _(function() {
                     if (self.model !== null && !_.isUndefined(self.model) && !_.isEmpty(self.model)) {
@@ -570,11 +575,6 @@ App.CardView = Backbone.View.extend({
                 }
             }
         }
-        if (self.model !== null && !_.isUndefined(self.model) && this.model.get('is_filtered')) {
-            this.$el.hide();
-        } else {
-            this.$el.show();
-        }
         _(function() {
             if (self.model !== null && !_.isUndefined(self.model) && !_.isEmpty(self.model)) {
                 $('body').trigger('cardRendered', self.model.id, self.model);
@@ -590,8 +590,45 @@ App.CardView = Backbone.View.extend({
                     }
                 });
             }
+            if (!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && $.inArray('r_listview_configure', APPS.enabled_apps) !== -1) {
+                self.sortLabelPosition();
+            }
+            if (self.model !== null && !_.isUndefined(self.model) && self.model.get('is_filtered')) {
+                self.$el.hide();
+            } else {
+                self.$el.show();
+            }
         }).defer();
         return this;
+    },
+    /* sortLabelPosition()
+     * sort the list view fields 
+     * @param e
+     * @type Object(DOM event)
+     *
+     */
+    sortLabelPosition: function() {
+        var board_id = this.model.get('board_id');
+        var wrapper = $('.js-card-list-view-' + board_id + ' #js-card-' + this.model.id),
+            items = wrapper.children(),
+            r_listview_configure_positions, temp_dom = [];
+        if (!_.isEmpty(this.model.board.attributes.board_custom_fields) && !_.isUndefined(this.model.board.attributes.board_custom_fields)) {
+            board_custom_fields = JSON.parse(this.model.board.attributes.board_custom_fields);
+            if (!_.isUndefined(board_custom_fields.r_listview_configure_position) && !_.isUndefined(board_custom_fields.r_listview_configure_position)) {
+                r_listview_configure_positions = board_custom_fields.r_listview_configure_position.split(',');
+                items.each(function(label, key) {
+                    temp_dom.push(key.id);
+                });
+                wrapper.prepend($.map(r_listview_configure_positions, function(v) {
+                    var list_index = temp_dom.findIndex(function(item) {
+                        return item === 'list_view_config_data-' + v;
+                    });
+                    return items[list_index];
+                }));
+
+            }
+        }
+        this.$el.show();
     },
     /**
      * renderAdd()

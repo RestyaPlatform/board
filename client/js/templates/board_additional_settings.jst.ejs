@@ -44,7 +44,8 @@
         </span>
         <div class="form-group">
             <select class="js-select-list form-control input-sm cur js-sort-by-group" placeholder="<%- i18next.t('Sort by') %>">
-                <option <% if(board.attributes.sort_by === 'Position'){ %>selected<% } %> value="position"><%- i18next.t('Position') %></option>
+                <option <% if(board.attributes.sort_by === 'id'){ %>selected<% } %> value="id"><%- i18next.t('ID') %></option>
+                <option <% if(board.attributes.sort_by === 'position'){ %>selected<% } %> value="position"><%- i18next.t('Position') %></option>
                 <option <% if(board.attributes.sort_by === 'due_date'){ %>selected<% } %> value="due_date"><%- i18next.t('Due date') %></option>
                 <option class="js-cardName" <% if(board.attributes.sort_by === 'name'){ %>selected<% } %> value="name"><%- i18next.t('Card Name') %></option>
                 <option class="js-createdDate" <% if(board.attributes.sort_by === 'created_date'){ %>selected<% } %> value="created_date"><%- i18next.t('Created date') %></option>

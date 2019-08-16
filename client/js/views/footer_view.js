@@ -2422,7 +2422,7 @@ App.FooterView = Backbone.View.extend({
             cache: false,
             contentType: false,
             error: function(e, s) {
-                $('#js-board-import-wekan-loader', '.js-show-board-import-wekan-form').parent('.js-show-board-import-wekan-form').addClass('hide');
+                $('#js-board-import-wekan-loader', '.js-show-board-import-wekan-form').addClass('hide');
             },
             success: function(model, response) {
                 $('#js-board-import-wekan-loader', '.js-show-board-import-wekan-form').addClass('hide');
@@ -2465,7 +2465,7 @@ App.FooterView = Backbone.View.extend({
             cache: false,
             contentType: false,
             error: function(e, s) {
-                $('#js-board-import-asana-loader', '.js-show-board-import-asana-form').parent('.js-show-board-import-asana-form').addClass('hide');
+                $('#js-board-import-asana-loader', '.js-show-board-import-asana-form').addClass('hide');
             },
             success: function(model, response) {
                 $('#js-board-import-asana-loader', '.js-show-board-import-asana-form').addClass('hide');
@@ -2508,7 +2508,7 @@ App.FooterView = Backbone.View.extend({
             cache: false,
             contentType: false,
             error: function(e, s) {
-                $('#js-board-import-taskwarrior-loader', '.js-show-board-import-taskwarrior-form').parent('.js-show-board-import-taskwarrior-form').addClass('hide');
+                $('#js-board-import-taskwarrior-loader', '.js-show-board-import-taskwarrior-form').addClass('hide');
             },
             success: function(model, response) {
                 $('#js-board-import-taskwarrior-loader', '.js-show-board-import-taskwarrior-form').addClass('hide');
@@ -2551,7 +2551,7 @@ App.FooterView = Backbone.View.extend({
             cache: false,
             contentType: false,
             error: function(e, s) {
-                $('#js-board-import-kantree-loader', '.js-show-board-import-kantree-form').parent('.js-show-board-import-kantree-form').addClass('hide');
+                $('#js-board-import-kantree-loader', '.js-show-board-import-kantree-form').addClass('hide');
             },
             success: function(model, response) {
                 $('#js-board-import-kantree-loader', '.js-show-board-import-kantree-form').addClass('hide');
@@ -2594,7 +2594,7 @@ App.FooterView = Backbone.View.extend({
             cache: false,
             contentType: false,
             error: function(e, s) {
-                $('#js-board-import-taiga-loader', '.js-show-board-import-taiga-form').parent('.js-show-board-import-taiga-form').addClass('hide');
+                $('#js-board-import-taiga-loader', '.js-show-board-import-taiga-form').addClass('hide');
             },
             success: function(model, response) {
                 $('#js-board-import-taiga-loader', '.js-show-board-import-taiga-form').addClass('hide');
@@ -2637,7 +2637,7 @@ App.FooterView = Backbone.View.extend({
             cache: false,
             contentType: false,
             error: function(e, s) {
-                $('#js-board-import-pipefy-loader', '.js-show-board-import-pipefy-form').parent('.js-show-board-import-pipefy-form').addClass('hide');
+                $('#js-board-import-pipefy-loader', '.js-show-board-import-pipefy-form').addClass('hide');
             },
             success: function(model, response) {
                 $('#js-board-import-pipefy-loader', '.js-show-board-import-pipefy-form').addClass('hide');

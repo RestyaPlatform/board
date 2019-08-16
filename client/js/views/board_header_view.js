@@ -97,6 +97,7 @@ App.BoardHeaderView = Backbone.View.extend({
         'click .js-sync-google-dropdown': 'syncGoogleDropdown',
         'click .js-show-copy-board': 'showCopyBoard',
         'click .js-syn-google-calendar': 'showSyncGoogleCalendar',
+        'click .js-choose-columns': 'showChooseColumns',
         'click .js-close-sub-popover': 'closeSubPopup',
         'click #js-select-google-sync-url': 'selectGoogleSyncUrl',
         'click .js-change-background': 'showChangeBackground',
@@ -1296,6 +1297,35 @@ App.BoardHeaderView = Backbone.View.extend({
             model: this.model
         }).el);
     },
+    /**
+     * showChooseColumns()
+     * get and display list and grid view column chooser
+     * @param e
+     * @type Object(DOM event)
+     *
+     */
+    showChooseColumns: function() {
+        $('.js-side-bar-' + this.model.id).addClass('side-bar-large');
+        var el = this.$el;
+        var choose_column_dom = '';
+        if (!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && $.inArray('r_gridview_configure', APPS.enabled_apps) !== -1) {
+            choose_column_dom += '<li class="clearfix cur card-label-show h5 btn-link media js-gridview-header-trigger"><div data-id="" class=""><div><div class="pull-left">Grid View</div></div></div></li>';
+        }
+        if (!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && $.inArray('r_listview_configure', APPS.enabled_apps) !== -1) {
+            choose_column_dom += '<li class="clearfix cur card-label-show h5 btn-link media js-listview-header-trigger"><div data-id="" class=""><div><div class="pull-left">List View</div></div></div></li>';
+        }
+        el.find('.js-setting-response').html('<div class="clearfix text-center col-xs-12"><a href="#" class="js-back-to-sidebar pull-left btn btn-xs btn-link"><i class="icon-caret-left"></i></a><span class="col-xs-10 navbar-btn"><strong>' + i18next.t('Choose Columns...') + '</strong></span></div><div class="col-xs-12 divider"></div><div class="col-xs-12 member-modal js-pre-scrollable vertical-scrollbar"><div class="clearfix col-xs-12"><ul class="nav nav-pills nav-stacked label-block js-board-labels-container"> ' + choose_column_dom + '  </ul></div><hr></div>');
+        var headerH = $('header').height();
+        var windowH = $(window).height();
+        var footerH = $('footer').height();
+        var boardH = windowH - headerH - footerH - 14;
+        $('.member-modal.js-pre-scrollable').css({
+            'max-height': boardH - 50,
+            'overflow-y': 'auto'
+        });
+        return false;
+    },
+
     /**
      * showCopyBoard()
      * get copy board view
