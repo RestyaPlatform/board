@@ -1195,8 +1195,10 @@ App.FooterView = Backbone.View.extend({
                                                 $('body').trigger('CutomFieldsRendered', [parseInt(activity.attributes.card_id), card]);
                                             }
                                             if (activity.attributes.type === 'add_card_duedate') {
+                                                card.set('end', activity.attributes.revisions.new_value.due_date);
                                                 card.set('start', activity.attributes.revisions.new_value.due_date);
                                             } else if (activity.attributes.type === 'delete_card_duedate') {
+                                                card.set('end', activity.attributes.revisions.new_value.due_date);
                                                 card.set('start', activity.attributes.revisions.new_value.due_date);
                                             }
                                             if (!_.isEmpty(activity.attributes.revisions)) {
