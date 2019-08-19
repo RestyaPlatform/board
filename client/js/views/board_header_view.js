@@ -1192,6 +1192,11 @@ App.BoardHeaderView = Backbone.View.extend({
                                                 }
                                                 card_customfield_value += customfield.label + ' : ' + custom_field_val + ' at ' + hours_mins;
                                             }
+                                        } else if (customfield.type === 'text' || customfield.type === 'textarea') {
+                                            if (!_.isEmpty(customfield.value)) {
+                                                customfield.value = customfield.value.substring(0, 124 - 3) + '...';
+                                            }
+                                            card_customfield_value += customfield.label + ' : ' + customfield.value;
                                         } else {
                                             card_customfield_value += customfield.label + ' : ' + customfield.value;
                                         }
@@ -1200,9 +1205,13 @@ App.BoardHeaderView = Backbone.View.extend({
                                         }
                                     }
                                 });
+                                if (!_.isEmpty(card_customfield_value)) {
+                                    card_customfield_value = card_customfield_value.substring(0, 400 - 3) + '...';
+                                }
                                 $(target).tooltip({
                                     title: card_customfield_value,
-                                    html: true
+                                    html: true,
+                                    placement: 'bottom'
                                 });
                             }
                         }
