@@ -4062,6 +4062,19 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     $r_resource_vars['boards']
                 );
                 pg_query_params($db_lnk, 'UPDATE boards SET background_picture_url = $1,background_picture_path = $2 WHERE id = $3', $qry_val_array);
+                $qry_val_arr = array(
+                    $r_resource_vars['boards']
+                );
+                $previous_value = executeQuery('SELECT * FROM boards WHERE id = $1', $qry_val_arr);
+                $foreign_id = $r_resource_vars['boards'];
+                if (empty($previous_value['background_picture_url'])) {
+                    $comment = '##USER_NAME## added background to board "' . $previous_value['name'] . '"';
+                    $activity_type = 'add_background';
+                } else {
+                    $comment = '##USER_NAME## changed backgound to board "' . $previous_value['name'] . '"';
+                    $activity_type = 'change_background';
+                }
+                $response['activity'] = insertActivity($authUser['id'], $comment, $activity_type, $foreign_id);
             } else {
                 $response['error'] = 'File extension not supported. It supports only jpg, png, bmp and gif.';
             }
