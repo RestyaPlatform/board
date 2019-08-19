@@ -97,6 +97,10 @@
 	<% if(!_.isEmpty(card.attributes.due_date) && card.attributes.due_date != 'NULL'){
 		var date_times = card.attributes.due_date.split('T'),hours_mins;
 		var date_time = date_times[0].split(' ');
+		if (_.isUndefined(date_times[1])) {
+			var time_split = card.attributes.due_date.split(' ');
+			date_times[1] = time_split['1'];
+		}
 		if (!_.isEmpty(date_times[1])) {
 			hours_mins = date_times[1].split(':');
 			var noon = '';
