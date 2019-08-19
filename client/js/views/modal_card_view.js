@@ -4118,13 +4118,23 @@ App.ModalCardView = Backbone.View.extend({
      */
     showCopyCardForm: function(e) {
         e.preventDefault();
+        var form_parent = $(e.target).attr('data-action');
         if ($('.js-copy-card').length) {
             $('.js-copy-card #card-title').val(this.model.attributes.name);
         }
-        $('.js-show-copy-card-form-response').html(new App.CopyCardView({
-            model: this.model,
-            boards: this.boards
-        }).el);
+        if (form_parent == 'modalcard-actions') {
+            $('.js-show-copy-card-form-response').html('');
+            $('.js-show-copy-card-form-response-copy').html(new App.CopyCardView({
+                model: this.model,
+                boards: this.boards
+            }).el);
+        } else {
+            $('.js-show-copy-card-form-response-copy').html('');
+            $('.js-show-copy-card-form-response').html(new App.CopyCardView({
+                model: this.model,
+                boards: this.boards
+            }).el);
+        }
         var target = $(e.target);
         $('li.dropdown').removeClass('open');
         target.parents('li.dropdown').addClass('open');
