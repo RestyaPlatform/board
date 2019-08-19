@@ -2323,6 +2323,7 @@ App.BoardHeaderView = Backbone.View.extend({
             patch: true
         });
         var target = $(e.target);
+        target.parents('div.dropdown').find('.js-board-visibility:first').html('<i class="icon-lock"></i><span class="hidden-xs">' + i18next.t('Private') + '</span>');
         target.parents('div.dropdown').removeClass('open');
         return false;
     },
@@ -2349,6 +2350,7 @@ App.BoardHeaderView = Backbone.View.extend({
             patch: true
         });
         var target = $(e.target);
+        target.parents('div.dropdown').find('.js-board-visibility:first').html('<i class="icon-circle"></i><span class="hidden-xs">' + i18next.t('Public') + '</span>');
         target.parents('div.dropdown').removeClass('open');
         return false;
     },
