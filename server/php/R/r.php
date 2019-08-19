@@ -1702,7 +1702,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             $json = json_decode($data, true);
             $response[] = array(
                 'name' => $json['name'],
-                'value' => implode($json['lists'], ', ')
+                'value' => implode($json['lists'], ',')
             );
         }
         sort($response);
