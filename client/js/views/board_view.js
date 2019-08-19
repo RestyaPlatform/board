@@ -870,7 +870,7 @@ App.BoardView = Backbone.View.extend({
                 'background-size': 'cover'
             }).addClass('board-view');
         } else if (!_.isEmpty(background_pattern_url) && background_pattern_url != 'NULL') {
-            background_pattern_url = background_pattern_url.replace('_XXXX.jpg', '_s.jpg?rand=' + Math.random());
+            background_pattern_url = background_pattern_url.replace('_XXXX.jpg', '_s.jpg');
             background_pattern_url = background_pattern_url + '?rand=' + Math.random();
             $('body').css({
                 'background': 'url(' + background_pattern_url + ')',
