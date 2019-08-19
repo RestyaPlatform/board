@@ -1055,7 +1055,7 @@ App.FooterView = Backbone.View.extend({
                                             new Notification(activity.attributes.comment, {
                                                 icon: icon
                                             });
-                                        } else if (patt_match.length > 0) {
+                                        } else if (!_.isUndefined(patt_match) && !_.isEmpty(patt_match) && patt_match !== null && patt_match.length > 0) {
                                             $.each(patt_match, function(index, user) {
                                                 if (user === '@' + authuser.user.username) {
                                                     new Notification(activity.attributes.comment, {
