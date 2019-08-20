@@ -864,12 +864,14 @@ App.BoardView = Backbone.View.extend({
         var background_pattern_url = this.model.attributes.background_pattern_url;
         if (!_.isEmpty(background_picture_url) && background_picture_url != 'NULL') {
             background_picture_url = background_picture_url.replace('_XXXX.jpg', '_b.jpg');
+            background_picture_url = background_picture_url + '?rand=' + Math.random();
             $('body').css({
                 'background': 'url(' + background_picture_url + ') 25% 25% no-repeat fixed',
                 'background-size': 'cover'
             }).addClass('board-view');
         } else if (!_.isEmpty(background_pattern_url) && background_pattern_url != 'NULL') {
             background_pattern_url = background_pattern_url.replace('_XXXX.jpg', '_s.jpg');
+            background_pattern_url = background_pattern_url + '?rand=' + Math.random();
             $('body').css({
                 'background': 'url(' + background_pattern_url + ')',
             }).addClass('board-view board-view-pattern');

@@ -4054,6 +4054,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     $r_post['background_picture_path'] = $save_path . DS . $file['name'];
                     $background_picture_url = preg_replace('/(http|https):/', '', $background_picture_url);
                     $r_post['path'] = $background_picture_url;
+                    $r_post['background_picture_url'] = $background_picture_url;
                     $response['background_picture_url'] = $background_picture_url;
                 }
                 $qry_val_array = array(
@@ -4062,6 +4063,20 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     $r_resource_vars['boards']
                 );
                 pg_query_params($db_lnk, 'UPDATE boards SET background_picture_url = $1,background_picture_path = $2 WHERE id = $3', $qry_val_array);
+                $qry_val_arr = array(
+                    $r_resource_vars['boards']
+                );
+                $previous_value = executeQuery('SELECT * FROM boards WHERE id = $1', $qry_val_arr);
+                $foreign_ids['board_id'] = $r_resource_vars['boards'];
+                if (empty($previous_value['background_picture_url'])) {
+                    $comment = '##USER_NAME## added background to board "' . $previous_value['name'] . '"';
+                    $activity_type = 'add_background';
+                } else {
+                    $comment = '##USER_NAME## changed backgound to board "' . $previous_value['name'] . '"';
+                    $activity_type = 'change_background';
+                }
+                unset($r_post['name']);
+                $response['activity'] = update_query('boards', $r_resource_vars['boards'], $r_resource_cmd, $r_post, $comment, $activity_type, $foreign_ids);
             } else {
                 $response['error'] = 'File extension not supported. It supports only jpg, png, bmp and gif.';
             }
