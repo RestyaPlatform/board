@@ -174,6 +174,17 @@ class ActivityHandler
                     $obj['custom_fields'][] = $custom_field;
                 }
             }
+        }else if ($obj_type === 'add_board_custom_field' || $obj_type === 'delete_board_custom_field'){
+            if (is_plugin_enabled('r_custom_fields')) {
+                $obj['custom_fields'] = array();
+                $conditions = array(
+                    $obj['board_id']
+                );
+                $custom_fields = pg_query_params($db_lnk, 'SELECT * FROM custom_fields_listing WHERE board_id IS NULL or board_id = $1 ORDER BY position ASC', $conditions);
+                while ($custom_field = pg_fetch_assoc($custom_fields)) {
+                    $obj['custom_fields'][] = $custom_field;
+                }
+            }
         }
         return $obj;
     }
