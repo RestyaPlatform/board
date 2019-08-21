@@ -4228,6 +4228,14 @@ App.ModalCardView = Backbone.View.extend({
                     } else {
                         card.list = self.model.list;
                     }
+                    if (card.attributes.board_id !== parseInt(current_board_id)) {
+                        var new_board = App.boards.get(parseInt(response.cards.board_id));
+                        if (!_.isEmpty(new_board) && !_.isUndefined(new_board)) {
+                            card.board = new_board;
+                        }
+                    } else {
+                        card.board = self.model.board;
+                    }
                     if (!_.isUndefined(response.id) && _.isUndefined(options.temp_id)) {
                         card.set({
                             id: parseInt(response.id)
