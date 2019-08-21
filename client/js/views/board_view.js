@@ -45,7 +45,6 @@ App.BoardView = Backbone.View.extend({
         this.model.attachments.add(this.model.get('attachments'));
         _.bindAll(this, 'render', 'renderListsCollection', 'renderActivitiesCollection', 'setBoardBackground', 'renderBoarduserCollection');
         this.model.bind('change:name change:is_closed', this.render);
-        this.model.bind('change:board_visibility', this.render);
         this.model.bind('change:background_color change:background_picture_url change:background_pattern_url', this.setBoardBackground);
         this.model.bind('change:sort_by', this.render);
         this.model.bind('change:sort_direction', this.render);

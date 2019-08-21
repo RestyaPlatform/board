@@ -37,6 +37,7 @@ App.BoardHeaderView = Backbone.View.extend({
         }
         this.model.lists.bind('change:name', this.showArchivedListLists, this);
         this.model.lists.bind('change:is_archived', this.showArchivedListLists, this);
+        this.model.bind('change:board_visibility', this.render, this);
         this.model.lists.bind('remove', this.showArchivedListLists, this);
         this.model.cards.bind('change:name', this.showArchivedCardsList, this);
         this.model.cards.bind('change:is_archived', this.showArchivedCardsList, this);
