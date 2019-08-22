@@ -26,8 +26,8 @@ if (!file_exists(IMAP_TEMP_FILE)) {
 if (file_exists(IMAP_TEMP_FILE)) {
     include_once IMAP_TEMP_FILE;
 }
-if (round((strtotime('now') - $_imap_time_trace) / 60) >= 30) {
-    file_put_contents(IMAP_TEMP_FILE, '<?php' . "\n" . '$_imap_time_trace = \'' . strtotime('now') . '\';');
+// if (round((strtotime('now') - $_imap_time_trace) / 60) >= 30) {
+    // file_put_contents(IMAP_TEMP_FILE, '<?php' . "\n" . '$_imap_time_trace = \'' . strtotime('now') . '\';');
     // Check is imap extension loaded
     if (!extension_loaded('imap')) {
         echo 'IMAP PHP extension not available on this server. Bounced email functions will not work.';
@@ -67,6 +67,7 @@ if (round((strtotime('now') - $_imap_time_trace) / 60) >= 30) {
                             // Email format for card  - board+##board_id##+##card_id##+hash@restya.com
                             // Check to email address contains atleast one "+" symbol
                             if (count($mail) > 1) {
+                                $body_data = array();
                                 // Fetch email body
                                 $s = imap_fetchstructure($connection, $counter);
                                 if (empty($s->parts)) { // simple
@@ -297,7 +298,7 @@ if (round((strtotime('now') - $_imap_time_trace) / 60) >= 30) {
             }
         }
     }
-}
+// }
 // Connect imap server
 function imapBodyDecode($mbox, $mid, $p, $partno)
 {
