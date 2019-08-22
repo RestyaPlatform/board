@@ -440,7 +440,8 @@ App.ListView = Backbone.View.extend({
         if (data.name === self.model.attributes.name) {
             $(e.target).addClass('hide').prev('.js-show-edit-list-form').removeClass('hide');
             $('#js-show-list-actions-' + self.model.id + ', #js-show-sort-form-' + self.model.id).removeClass('hide');
-            self.$el.find('.js-wip-limit-count-' + self.model.id).removeClass('hide');
+            $('.js-list-header-' + self.model.id).removeClass('hide');
+            self.$el.find('.js-wip-limit-section-' + self.model.id).removeClass('hide');
         } else {
             self.model.url = api_url + 'boards/' + this.model.attributes.board_id + '/lists/' + list_id + '.json';
             self.model.save(data, {
@@ -1172,7 +1173,7 @@ App.ListView = Backbone.View.extend({
                         var list_id = parseInt($(ui.item).parents('.js-board-list:first').data('list_id'));
                         var current_list = App.current_board.lists.get(parseInt(list_id));
                         $('.js-list-header-section').removeClass('animation');
-                        $('.js-open-wipLimit-form').removeClass('tada-animation');
+                        $('.js-wip-section').removeClass('tada-animation');
                         if (!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && $.inArray('r_agile_wip', APPS.enabled_apps) !== -1 && !_.isUndefined(current_list) && !_.isEmpty(current_list) && current_list !== null) {
                             var list_custom_fields = current_list.attributes.custom_fields;
                             if (!_.isUndefined(list_custom_fields) && !_.isEmpty(list_custom_fields) && list_custom_fields !== null) {
@@ -1184,7 +1185,7 @@ App.ListView = Backbone.View.extend({
                                     if (!_.isUndefined(list_custom_fields.hard_wip_limit) && !_.isEmpty(list_custom_fields.hard_wip_limit) && parseInt(card_count) > parseInt(list_custom_fields.wip_limit)) {
                                         ui.sender.sortable("cancel");
                                         $('.js-list-header-' + list_id).removeClass('animation');
-                                        $('.js-wip-limit-count-' + list_id).removeClass('tada-animation');
+                                        $('.js-wip-limit-section-' + list_id).removeClass('tada-animation');
                                     }
                                 }
                             }
@@ -1214,7 +1215,7 @@ App.ListView = Backbone.View.extend({
                         var current_list = App.current_board.lists.get(parseInt(list_id));
                         if (!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && $.inArray('r_agile_wip', APPS.enabled_apps) !== -1) {
                             $('.js-list-header-section').removeClass('animation');
-                            $('.js-open-wipLimit-form').removeClass('tada-animation');
+                            $('.js-wip-section').removeClass('tada-animation');
                             $('.board-list-outer > div.js-list-sort').removeClass('active');
                             var list_custom_fields = current_list.attributes.custom_fields;
                             if (!_.isUndefined(list_custom_fields) && !_.isEmpty(list_custom_fields)) {
@@ -1227,7 +1228,7 @@ App.ListView = Backbone.View.extend({
                                         $('#' + list).parents('.js-list-' + list_id).addClass('active');
                                     } else if (!_.isUndefined(list_custom_fields.hard_wip_limit) && !_.isEmpty(list_custom_fields.hard_wip_limit) && parseInt(card_count) > parseInt(list_custom_fields.wip_limit)) {
                                         $('.js-list-header-' + list_id).addClass('animation');
-                                        $('.js-wip-limit-count-' + list_id).addClass('tada-animation');
+                                        $('.js-wip-limit-section-' + list_id).addClass('tada-animation');
                                     }
                                 }
                             }
@@ -1638,7 +1639,8 @@ App.ListView = Backbone.View.extend({
         this.closePopup(e);
         $(e.currentTarget).addClass('hide').next('form').removeClass('hide');
         this.$('#js-show-list-actions-' + this.model.attributes.id + ', #js-show-sort-form-' + this.model.attributes.id).addClass('hide');
-        this.$el.find('.js-wip-limit-count-' + this.model.attributes.id).addClass('hide');
+        $('.js-list-header-' + this.model.attributes.id).addClass('hide');
+        this.$el.find('.js-wip-limit-section-' + this.model.attributes.id).addClass('hide');
         return false;
     },
     /**
@@ -1655,7 +1657,8 @@ App.ListView = Backbone.View.extend({
         toggle.parents('.js-board-list').find('#inputListName').val($('.get-name-' + this.model.attributes.id).html());
         toggle.parents('form').addClass('hide').prev('.js-show-edit-list-form').removeClass('hide');
         this.$('#js-show-list-actions-' + this.model.attributes.id + ', #js-show-sort-form-' + this.model.attributes.id).removeClass('hide');
-        this.$el.find('.js-wip-limit-count-' + this.model.attributes.id).removeClass('hide');
+        $('.js-list-header-' + this.model.attributes.id).removeClass('hide');
+        this.$el.find('.js-wip-limit-section-' + this.model.attributes.id).removeClass('hide');
         return false;
     },
     /**
