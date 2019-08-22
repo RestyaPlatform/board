@@ -652,6 +652,7 @@ App.CardView = Backbone.View.extend({
      */
     hideAddCardFrom: function(e) {
         $('#js-list-card-add-form-' + this.model.attributes.list_id).remove();
+        $('#js-card-listing-' + this.model.attributes.list_id).css("height", '100%');
         $('.js-show-add-card-form', $('#js-card-listing-' + this.model.attributes.list_id).next()).removeClass('hide');
         return false;
     },
