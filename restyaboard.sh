@@ -1476,6 +1476,10 @@
 					echo "Before updating make sure to remove duplicate username's and emails used by more than one user, otherwise unique indexing for users will be thrown an error But all other queries will be executed without any issue."
 					read -r -s -p $'Press [Enter] key to continue...'
 					upgrade+=("upgrade-0.6.6-0.6.7")
+				fi
+				if [[ $version < "v0.6.6" ]];
+				then
+					upgrade+=("upgrade-0.6.7-0.6.8")
 				fi			
 				# use for loop to read all values and indexes
 				for i in "${upgrade[@]}"
