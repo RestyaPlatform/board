@@ -174,7 +174,7 @@ class ActivityHandler
                     $obj['custom_fields'][] = $custom_field;
                 }
             }
-        }else if ($obj_type === 'add_board_custom_field' || $obj_type === 'delete_board_custom_field'){
+        } else if ($obj_type === 'add_board_custom_field' || $obj_type === 'delete_board_custom_field') {
             if (is_plugin_enabled('r_custom_fields')) {
                 $obj['custom_fields'] = array();
                 $conditions = array(
