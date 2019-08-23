@@ -1477,7 +1477,7 @@
 					read -r -s -p $'Press [Enter] key to continue...'
 					upgrade+=("upgrade-0.6.6-0.6.7")
 				fi
-				if [[ $version < "v0.6.6" ]];
+				if [[ $version < "v0.6.8" ]];
 				then
 					upgrade+=("upgrade-0.6.7-0.6.8")
 				fi			
