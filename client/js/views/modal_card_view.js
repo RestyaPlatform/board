@@ -1086,7 +1086,8 @@ App.ModalCardView = Backbone.View.extend({
                                 });
                             }
                         });
-                        self.model.set('due_date', data.start);
+                        self.model.set('due_date', data.due_date);
+                        self.model.set('end', data.due_date);
                         self.model.set('title', response.activity.card_name, {
                             silent: true
                         });
@@ -3874,6 +3875,7 @@ App.ModalCardView = Backbone.View.extend({
         if (!_.isEmpty(this.model.attributes.due_date) && this.model.attributes.due_date !== '') {
             this.model.url = api_url + 'boards/' + this.model.attributes.board_id + '/lists/' + this.model.attributes.list_id + '/cards/' + this.model.id + '.json';
             this.model.set('due_date', null);
+            this.model.set('end', null);
             $('.js-close-popover').click();
             this.model.save({
                 due_date: 'NULL'

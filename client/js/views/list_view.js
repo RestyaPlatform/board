@@ -1740,9 +1740,11 @@ App.ListView = Backbone.View.extend({
             card.set({
                 name: data.name,
                 is_archived: 0,
+                title: data.name,
                 list_id: parseInt(data.list_id),
                 board_id: parseInt(data.board_id),
                 due_date: null,
+                end: null,
                 checklist_item_count: data.cards_checklist_item_count,
                 checklist_item_completed_count: 0
             }, {
