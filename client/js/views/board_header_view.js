@@ -1237,10 +1237,11 @@ App.BoardHeaderView = Backbone.View.extend({
                 }
             }
         });
-        if (!_.isEmpty(this.model.cards)) {
-            if (!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && $.inArray('r_gantt_view', APPS.enabled_apps) !== -1) {
-                var start_date, cards_custom_fields;
-                self.model.cards.each(function(card) {
+        if (!_.isEmpty(self.model.cards)) {
+            var start_date, cards_custom_fields;
+            self.model.cards.each(function(card) {
+                self.model.cards.get(card.attributes.id).set('start', card.attributes.due_date);
+                if (!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && $.inArray('r_gantt_view', APPS.enabled_apps) !== -1) {
                     if (!_.isEmpty(card.attributes.custom_fields) && card.attributes.custom_fields != 'NULL' && !_.isUndefined(card.attributes.custom_fields)) {
                         cards_custom_fields = JSON.parse(card.attributes.custom_fields);
                         if (!_.isUndefined(cards_custom_fields.start_date) && !_.isUndefined(cards_custom_fields.start_time) && !_.isEmpty(cards_custom_fields.start_date) && cards_custom_fields.start_date !== '') {
@@ -1248,9 +1249,9 @@ App.BoardHeaderView = Backbone.View.extend({
                             self.model.cards.get(card.attributes.id).set('start', start_date);
                         }
                     }
-                });
-            }
-            $('div.js-board-view-' + this.model.id).fullCalendar('addEventSource', this.model.cards.invoke('pick', ['id', 'title', 'start', 'end']));
+                }
+            });
+            $('div.js-board-view-' + self.model.id).fullCalendar('addEventSource', self.model.cards.invoke('pick', ['id', 'title', 'start', 'end']));
         }
         return false;
     },
@@ -1330,22 +1331,27 @@ App.BoardHeaderView = Backbone.View.extend({
         $('.js-side-bar-' + this.model.id).addClass('side-bar-large');
         var el = this.$el;
         var choose_column_dom = '';
-        if (!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && $.inArray('r_gridview_configure', APPS.enabled_apps) !== -1) {
-            choose_column_dom += '<li class="clearfix cur card-label-show h5 btn-link media js-gridview-header-trigger"><div data-id="" class=""><div><div class="pull-left">Grid View</div></div></div></li>';
+        if (!_.isEmpty(authuser.user) && !_.isUndefined(authuser.user)) {
+            if(!_.isEmpty(role_links.where({slug: "r_listview_configure"})) || !_.isEmpty(role_links.where({slug: "r_gridview_configure"}))){
+                if (!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && $.inArray('r_gridview_configure', APPS.enabled_apps) !== -1 && !_.isEmpty(role_links.where({slug: "r_gridview_configure"}))) {
+                    choose_column_dom += '<li class="clearfix cur card-label-show h5 btn-link media js-gridview-header-trigger"><div data-id="" class=""><div><div class="pull-left">Grid View</div></div></div></li>';
+                }
+                    
+                if (!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && $.inArray('r_listview_configure', APPS.enabled_apps) !== -1 && !_.isEmpty(role_links.where({slug: "r_listview_configure"}))) {
+                    choose_column_dom += '<li class="clearfix cur card-label-show h5 btn-link media js-listview-header-trigger"><div data-id="" class=""><div><div class="pull-left">List View</div></div></div></li>';
+                }
+                el.find('.js-setting-response').html('<div class="clearfix text-center col-xs-12"><a href="#" class="js-back-to-sidebar pull-left btn btn-xs btn-link"><i class="icon-caret-left"></i></a><span class="col-xs-10 navbar-btn"><strong>' + i18next.t('Choose Columns...') + '</strong></span></div><div class="col-xs-12 divider"></div><div class="col-xs-12 member-modal js-pre-scrollable vertical-scrollbar"><div class="clearfix col-xs-12"><ul class="nav nav-pills nav-stacked label-block js-board-labels-container"> ' + choose_column_dom + '  </ul></div><hr></div>');
+                var headerH = $('header').height();
+                var windowH = $(window).height();
+                var footerH = $('footer').height();
+                var boardH = windowH - headerH - footerH - 14;
+                $('.member-modal.js-pre-scrollable').css({
+                    'max-height': boardH - 50,
+                    'overflow-y': 'auto'
+                });
+            }
+            return false;
         }
-        if (!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && $.inArray('r_listview_configure', APPS.enabled_apps) !== -1) {
-            choose_column_dom += '<li class="clearfix cur card-label-show h5 btn-link media js-listview-header-trigger"><div data-id="" class=""><div><div class="pull-left">List View</div></div></div></li>';
-        }
-        el.find('.js-setting-response').html('<div class="clearfix text-center col-xs-12"><a href="#" class="js-back-to-sidebar pull-left btn btn-xs btn-link"><i class="icon-caret-left"></i></a><span class="col-xs-10 navbar-btn"><strong>' + i18next.t('Choose Columns...') + '</strong></span></div><div class="col-xs-12 divider"></div><div class="col-xs-12 member-modal js-pre-scrollable vertical-scrollbar"><div class="clearfix col-xs-12"><ul class="nav nav-pills nav-stacked label-block js-board-labels-container"> ' + choose_column_dom + '  </ul></div><hr></div>');
-        var headerH = $('header').height();
-        var windowH = $(window).height();
-        var footerH = $('footer').height();
-        var boardH = windowH - headerH - footerH - 14;
-        $('.member-modal.js-pre-scrollable').css({
-            'max-height': boardH - 50,
-            'overflow-y': 'auto'
-        });
-        return false;
     },
 
     /**
