@@ -49,6 +49,10 @@
 					if(activity.attributes.comment.indexOf('##CARD_NAME##') != -1){
 						activity.attributes.comment = activity.attributes.comment.replace('##CARD_NAME##', (activity.attributes.card_name));
 					}
+					if(activity.attributes.comment.indexOf('##ORGANIZATION_LINK##') != -1){
+						activity.attributes.comment = activity.attributes.comment.replace('##ORGANIZATION_LINK##', organizationLink);
+					}
+					
 					if(activity.attributes.comment.indexOf('##LIST_NAME##') != -1){
 						activity.attributes.comment = activity.attributes.comment.replace('##LIST_NAME##', (activity.attributes.list_name));
 					}
