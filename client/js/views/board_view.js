@@ -1025,7 +1025,11 @@ App.BoardView = Backbone.View.extend({
             list.set(data, {
                 silent: true
             });
+            var board_lists = this.model.lists.where({
+                board_id: self.model.id
+            });
             var lists = new App.ListCollection();
+            lists.add(board_lists);
             lists.board = self.model;
             lists.add(list);
             list.board = self.model;
