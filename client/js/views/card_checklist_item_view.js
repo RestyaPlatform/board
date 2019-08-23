@@ -341,8 +341,6 @@ App.CardCheckListItemView = Backbone.View.extend({
         this.model.checklist.checklist_item_completed_count = parseInt(this.model.checklist.get('checklist_item_completed_count')) + 1;
         this.model.checklist.card.list.collection.board.cards.get(this.model.checklist.card).checklist_item_completed_count = this.model.checklist.card.attributes.checklist_item_completed_count;
         this.model.checklist.card.set('checklist_item_completed_count', parseInt(this.model.checklist.card.attributes.checklist_item_completed_count) + 1);
-        this.render();
-        this.renderProgress();
         this.model.save({
             is_completed: 1
         }, {
@@ -378,8 +376,6 @@ App.CardCheckListItemView = Backbone.View.extend({
         this.model.checklist.checklist_item_completed_count = parseInt(this.model.checklist.get('checklist_item_completed_count')) - 1;
         this.model.checklist.card.set('checklist_item_completed_count', parseInt(this.model.checklist.card.attributes.checklist_item_completed_count) - 1);
         this.model.checklist.card.list.collection.board.cards.get(this.model.checklist.card).checklist_item_completed_count = this.model.checklist.card.attributes.checklist_item_completed_count;
-        this.render();
-        this.renderProgress();
         this.model.save({
             is_completed: 0
         }, {
