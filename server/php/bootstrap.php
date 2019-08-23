@@ -46,7 +46,7 @@ function main()
         if (!defined('STDIN') && !file_exists(CLIENT_INFORMATION) && !empty($_server_domain_url)) {
             doPost('http://restya.com/clients', array(
                 'app' => 'board',
-                'ver' => '0.6.7',
+                'ver' => '0.6.8',
                 'url' => $_server_domain_url
             ));
             $fh = fopen(CLIENT_INFORMATION, 'a');
