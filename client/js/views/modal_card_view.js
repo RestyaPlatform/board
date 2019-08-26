@@ -4517,6 +4517,7 @@ App.ModalCardView = Backbone.View.extend({
         }
     },
     keyboardArchiveCard: function(e) {
+        e.stopImmediatePropagation();
         $('.js-archive-card', e.target).trigger('click');
         return false;
     },
@@ -4531,10 +4532,12 @@ App.ModalCardView = Backbone.View.extend({
         return false;
     },
     keyboardAddCardVote: function(e) {
+        e.stopImmediatePropagation();
         $('.js-add-card-vote', e.target).trigger('click');
         return false;
     },
     keyboardCardSubscribe: function(e) {
+        e.stopImmediatePropagation();
         if ($('.js-card-container .icon-eye-open', e.target).length) {
             $('.js-card-unsubscribe', e.target).trigger('click');
         } else {
@@ -4554,9 +4557,10 @@ App.ModalCardView = Backbone.View.extend({
         return false;
     },
     keyboardAddCardMember: function(e) {
+        e.stopImmediatePropagation();
         $('.js-show-add-member-form', e.target).trigger('click');
         _(function() {
-            $('.dropdown-menu-left .js-organization-member-search-response', e.target).find('a').each(function(index, value) {
+            $('#js-card-user-add-container .js-organization-member-search-response', e.target).find('a').each(function(index, value) {
                 if ($(value).data('user-id') == authuser.user.id) {
                     $(this).trigger('click');
                     $('#js-card-user-add-container .js-member-dropdown').removeClass('open');
