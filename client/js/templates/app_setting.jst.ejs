@@ -36,8 +36,8 @@ _.each(app_settings, function(app_setting) {
 		<%  var currenturl = window.location; %>
 		<% if(!_.isUndefined(currenturl.hash) && (currenturl.hash === '#/apps/r_ldap_login')){ %>
 	   
-			<input type="button" value="<%- i18next.t('Test Connection') %>" class="btn btn-info js-test-connection">
-			<button type="button" id="importUsersSubmit" class="js-import-users btn btn-warning"><%- i18next.t('Import users') %></button>
+			<input type="button" value="<%- i18next.t('Test Connection') %>" class="btn btn-primary js-test-connection">
+			<button type="button" id="importUsersSubmit" class="js-import-users btn btn-primary"><%- i18next.t('Import users') %></button>
 			<span class="clearfix hide" id="js-loader-img"><span class="cssloader"></span></span>
 		<% } %>
 		<%  
