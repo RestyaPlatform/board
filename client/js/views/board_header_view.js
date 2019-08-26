@@ -1090,7 +1090,7 @@ App.BoardHeaderView = Backbone.View.extend({
                     var diff = Math.floor(due_date.getTime() - today.getTime());
                     var day = 1000 * 60 * 60 * 24;
                     var days = Math.floor(diff / day);
-                    if (CALENDAR_VIEW_CARD_COLOR === 'Default Color') {
+                    if ($.trim(CALENDAR_VIEW_CARD_COLOR) === 'Past Present Future colors based on Due Date') {
                         if (days < -1) {
                             element.addClass('label-danger');
                             element.find('.fc-event-skin').addClass('label-danger');
@@ -1101,14 +1101,14 @@ App.BoardHeaderView = Backbone.View.extend({
                             element.addClass('label-future');
                             element.find('.fc-event-skin').addClass('label-future');
                         }
-                    } else if (CALENDAR_VIEW_CARD_COLOR === 'Card Color') {
+                    } else if ($.trim(CALENDAR_VIEW_CARD_COLOR) === 'Card Color') {
                         element.css({
                             "background-color": card.attributes.color,
                             "color": "#fff",
                             "border-color": "transparent"
                         });
                         element.find('.fc-event-skin').attr('style', 'background-color: ' + card.attributes.color + ' !important;color: #fff;border-color:transparent !important');
-                    } else if (CALENDAR_VIEW_CARD_COLOR === 'Label Color') {
+                    } else if ($.trim(CALENDAR_VIEW_CARD_COLOR) === 'Color of first Label') {
                         if (card.labels.length > 0) {
                             var label_color = new App.CardView({
                                 model: card
@@ -1335,12 +1335,20 @@ App.BoardHeaderView = Backbone.View.extend({
         var el = this.$el;
         var choose_column_dom = '';
         if (!_.isEmpty(authuser.user) && !_.isUndefined(authuser.user)) {
-            if(!_.isEmpty(role_links.where({slug: "r_listview_configure"})) || !_.isEmpty(role_links.where({slug: "r_gridview_configure"}))){
-                if (!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && $.inArray('r_gridview_configure', APPS.enabled_apps) !== -1 && !_.isEmpty(role_links.where({slug: "r_gridview_configure"}))) {
+            if (!_.isEmpty(role_links.where({
+                    slug: "r_listview_configure"
+                })) || !_.isEmpty(role_links.where({
+                    slug: "r_gridview_configure"
+                }))) {
+                if (!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && $.inArray('r_gridview_configure', APPS.enabled_apps) !== -1 && !_.isEmpty(role_links.where({
+                        slug: "r_gridview_configure"
+                    }))) {
                     choose_column_dom += '<li class="clearfix cur card-label-show h5 btn-link media js-gridview-header-trigger"><div data-id="" class=""><div><div class="pull-left">Grid View</div></div></div></li>';
                 }
-                    
-                if (!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && $.inArray('r_listview_configure', APPS.enabled_apps) !== -1 && !_.isEmpty(role_links.where({slug: "r_listview_configure"}))) {
+
+                if (!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && $.inArray('r_listview_configure', APPS.enabled_apps) !== -1 && !_.isEmpty(role_links.where({
+                        slug: "r_listview_configure"
+                    }))) {
                     choose_column_dom += '<li class="clearfix cur card-label-show h5 btn-link media js-listview-header-trigger"><div data-id="" class=""><div><div class="pull-left">List View</div></div></div></li>';
                 }
                 el.find('.js-setting-response').html('<div class="clearfix text-center col-xs-12"><a href="#" class="js-back-to-sidebar pull-left btn btn-xs btn-link"><i class="icon-caret-left"></i></a><span class="col-xs-10 navbar-btn"><strong>' + i18next.t('Choose Columns...') + '</strong></span></div><div class="col-xs-12 divider"></div><div class="col-xs-12 member-modal js-pre-scrollable vertical-scrollbar"><div class="clearfix col-xs-12"><ul class="nav nav-pills nav-stacked label-block js-board-labels-container"> ' + choose_column_dom + '  </ul></div><hr></div>');
