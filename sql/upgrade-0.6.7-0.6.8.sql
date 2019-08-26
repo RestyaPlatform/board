@@ -221,3 +221,5 @@ Restyaboard<br>
 </footer>
 </body>
 </html>', 'SITE_NAME, SITE_URL, BOARD_IMPORT_OPTION, NAME, BOARD_URL, BOARD_NAME', 'Board Import User Notification');
+
+UPDATE "users" SET "is_intro_video_skipped" = 'f';
