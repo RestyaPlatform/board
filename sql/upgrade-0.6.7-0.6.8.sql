@@ -19,7 +19,7 @@ ALTER "is_productivity_beats" SET NOT NULL;
 UPDATE "users" SET "is_productivity_beats" = '1';
 
 INSERT INTO "settings" ("setting_category_id", "setting_category_parent_id", "name", "value", "description", "type", "options", "label", "order")
-VALUES ('17', '0', 'CALENDAR_VIEW_CARD_COLOR', 'Default Color', NULL, 'select', 'Card Color,Label Color,Default Color', 'Calendar View Card Color ', '4');
+VALUES ('17', '0', 'CALENDAR_VIEW_CARD_COLOR', 'Default Color', NULL, 'select', 'Past Present Future colors based on Due Date, Card Color, Color of first Label', 'Calendar View Card Color ', '4');
 
  CREATE OR REPLACE VIEW users_listing AS
  SELECT users.id,
