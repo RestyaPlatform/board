@@ -4394,25 +4394,29 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                                         if (class_exists('imagick') && in_array($file_arr['extension'], array(
                                             'pdf'
                                         ))) {
-                                            $im = new Imagick($mediadir . DS . $file['name'][$i] . "[0]"); // 0-first page, 1-second page
-                                            $im->setImageColorspace(Imagick::COLORSPACE_RGB); // prevent image colors from inverting
-                                            $im->setimageformat('png');
-                                            $im->thumbnailimage(200, 150); // width and height
-                                            $target_hash = md5(SECURITYSALT . 'CardAttachment' . $cardAttachment['id'] . 'png' . 'original');
-                                            $target_dir = IMG_PATH . DS . 'original' . DS . 'CardAttachment';
-                                            $target = $target_dir . DS . $cardAttachment['id'] . '.' . $target_hash . '.png';
-                                            if (!file_exists($target_dir)) {
-                                                mkdir($target_dir, 0777, true);
+                                            try {
+                                                $im = new Imagick($mediadir . DS . $file['name'][$i] . "[0]"); // 0-first page, 1-second page
+                                                $im->setImageColorspace(Imagick::COLORSPACE_RGB); // prevent image colors from inverting
+                                                $im->setimageformat('png');
+                                                $im->thumbnailimage(200, 150); // width and height
+                                                $target_hash = md5(SECURITYSALT . 'CardAttachment' . $cardAttachment['id'] . 'png' . 'original');
+                                                $target_dir = IMG_PATH . DS . 'original' . DS . 'CardAttachment';
+                                                $target = $target_dir . DS . $cardAttachment['id'] . '.' . $target_hash . '.png';
+                                                if (!file_exists($target_dir)) {
+                                                    mkdir($target_dir, 0777, true);
+                                                }
+                                                $im->writeimage($target);
+                                                $im->clear();
+                                                $im->destroy();
+                                                $response_file['card_attachments'][$i]['doc_image_path'] = 'original' . DS . 'CardAttachment' . DS . $cardAttachment['id'] . '.' . $target_hash . '.png';
+                                                $qry_val_arr = array(
+                                                    $response_file['card_attachments'][$i]['doc_image_path'],
+                                                    $cardAttachment['id']
+                                                );
+                                                pg_query_params($db_lnk, 'UPDATE card_attachments SET doc_image_path = $1 WHERE id = $2', $qry_val_arr);
                                             }
-                                            $im->writeimage($target);
-                                            $im->clear();
-                                            $im->destroy();
-                                            $response_file['card_attachments'][$i]['doc_image_path'] = 'original' . DS . 'CardAttachment' . DS . $cardAttachment['id'] . '.' . $target_hash . '.png';
-                                            $qry_val_arr = array(
-                                                $response_file['card_attachments'][$i]['doc_image_path'],
-                                                $cardAttachment['id']
-                                            );
-                                            pg_query_params($db_lnk, 'UPDATE card_attachments SET doc_image_path = $1 WHERE id = $2', $qry_val_arr);
+                                            catch(Exception $e) {
+                                            }
                                         }
                                         $foreign_ids['board_id'] = $r_post['board_id'];
                                         $foreign_ids['list_id'] = $r_post['list_id'];
@@ -4844,25 +4848,29 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                         if (class_exists('imagick') && in_array($file_arr['extension'], array(
                             'pdf'
                         ))) {
-                            $im = new Imagick($mediadir . DS . $file['name'][$i] . "[0]"); // 0-first page, 1-second page
-                            $im->setImageColorspace(Imagick::COLORSPACE_RGB); // prevent image colors from inverting
-                            $im->setimageformat('png');
-                            $im->thumbnailimage(200, 150); // width and height
-                            $target_hash = md5(SECURITYSALT . 'CardAttachment' . $cardAttachment['id'] . 'png' . 'original');
-                            $target_dir = IMG_PATH . DS . 'original' . DS . 'CardAttachment';
-                            $target = $target_dir . DS . $cardAttachment['id'] . '.' . $target_hash . '.png';
-                            if (!file_exists($target_dir)) {
-                                mkdir($target_dir, 0777, true);
+                            try {
+                                $im = new Imagick($mediadir . DS . $file['name'][$i] . "[0]"); // 0-first page, 1-second page
+                                $im->setImageColorspace(Imagick::COLORSPACE_RGB); // prevent image colors from inverting
+                                $im->setimageformat('png');
+                                $im->thumbnailimage(200, 150); // width and height
+                                $target_hash = md5(SECURITYSALT . 'CardAttachment' . $cardAttachment['id'] . 'png' . 'original');
+                                $target_dir = IMG_PATH . DS . 'original' . DS . 'CardAttachment';
+                                $target = $target_dir . DS . $cardAttachment['id'] . '.' . $target_hash . '.png';
+                                if (!file_exists($target_dir)) {
+                                    mkdir($target_dir, 0777, true);
+                                }
+                                $im->writeimage($target);
+                                $im->clear();
+                                $im->destroy();
+                                $response['card_attachments'][$i]['doc_image_path'] = 'original' . DS . 'CardAttachment' . DS . $cardAttachment['id'] . '.' . $target_hash . '.png';
+                                $qry_val_arr = array(
+                                    $response['card_attachments'][$i]['doc_image_path'],
+                                    $cardAttachment['id']
+                                );
+                                pg_query_params($db_lnk, 'UPDATE card_attachments SET doc_image_path = $1 WHERE id = $2', $qry_val_arr);
                             }
-                            $im->writeimage($target);
-                            $im->clear();
-                            $im->destroy();
-                            $response['card_attachments'][$i]['doc_image_path'] = 'original' . DS . 'CardAttachment' . DS . $cardAttachment['id'] . '.' . $target_hash . '.png';
-                            $qry_val_arr = array(
-                                $response['card_attachments'][$i]['doc_image_path'],
-                                $cardAttachment['id']
-                            );
-                            pg_query_params($db_lnk, 'UPDATE card_attachments SET doc_image_path = $1 WHERE id = $2', $qry_val_arr);
+                            catch(Exception $e) {
+                            }
                         }
                         $foreign_ids['board_id'] = $r_resource_vars['boards'];
                         $foreign_ids['list_id'] = $r_resource_vars['lists'];
