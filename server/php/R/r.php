@@ -5276,7 +5276,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
         $names = explode("\n", $r_post['name']);
         foreach ($names as $name) {
             $r_post['name'] = trim($name);
-            if (!empty($r_post['name'])) {
+            if (isset($r_post['name'])) {
                 $qry_val_arr = array(
                     $r_post['checklist_id']
                 );
