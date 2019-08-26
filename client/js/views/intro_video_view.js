@@ -31,7 +31,7 @@ App.intro_video_view = Backbone.View.extend({
                 height: 300,
                 width: 200,
                 animationSpeed: ANIMATION_SPEED,
-                title: '<div class="col-xs-12"><div class="text-center"><strong>Restyaboard Intro</strong></div></div>',
+                title: "<div class='col-xs-12'><div class='text-center'><strong>What's New in Restyaboard v0.6.8 (Roxette)</strong></div></div>",
                 beforePopout: function(event) {
                     if ($(window).width() < 1400) {
                         $('.editor').resizable({
