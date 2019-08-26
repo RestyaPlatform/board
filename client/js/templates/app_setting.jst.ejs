@@ -43,7 +43,7 @@ _.each(app_settings, function(app_setting) {
 		<%  
 			if(!_.isUndefined(currenturl.hash) && (currenturl.hash === '#/apps/r_sparkpost')){
 	   %>
-	   <input type="button" value="<%- i18next.t('Test Connection') %>" class="btn btn-info js-spark-testmail">
+	   <input type="button" value="<%- i18next.t('Test Connection') %>" class="btn btn-primary js-spark-testmail">
 		<% } %>
 	</div>
   </div>
