@@ -1240,13 +1240,16 @@ App.BoardHeaderView = Backbone.View.extend({
         if (!_.isEmpty(self.model.cards)) {
             var start_date, cards_custom_fields;
             self.model.cards.each(function(card) {
-                self.model.cards.get(card.attributes.id).set('start', card.attributes.due_date);
-                if (!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && $.inArray('r_gantt_view', APPS.enabled_apps) !== -1) {
-                    if (!_.isEmpty(card.attributes.custom_fields) && card.attributes.custom_fields != 'NULL' && !_.isUndefined(card.attributes.custom_fields)) {
-                        cards_custom_fields = JSON.parse(card.attributes.custom_fields);
-                        if (!_.isUndefined(cards_custom_fields.start_date) && !_.isUndefined(cards_custom_fields.start_time) && !_.isEmpty(cards_custom_fields.start_date) && cards_custom_fields.start_date !== '') {
-                            start_date = cards_custom_fields.start_date + 'T' + cards_custom_fields.start_time;
-                            self.model.cards.get(card.attributes.id).set('start', start_date);
+                var board_card = self.model.cards.get(parseInt(card.attributes.id));
+                if (!_.isUndefined(board_card) && !_.isEmpty(board_card) && board_card !== null) {
+                    card.set('start', board_card.attributes.due_date);
+                    if (!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && $.inArray('r_gantt_view', APPS.enabled_apps) !== -1) {
+                        if (!_.isEmpty(board_card.attributes.custom_fields) && board_card.attributes.custom_fields != 'NULL' && !_.isUndefined(board_card.attributes.custom_fields)) {
+                            cards_custom_fields = JSON.parse(board_card.attributes.custom_fields);
+                            if (!_.isUndefined(cards_custom_fields.start_date) && !_.isUndefined(cards_custom_fields.start_time) && !_.isEmpty(cards_custom_fields.start_date) && cards_custom_fields.start_date !== '') {
+                                start_date = cards_custom_fields.start_date + 'T' + cards_custom_fields.start_time;
+                                self.model.cards.get(board_card.attributes.id).set('start', start_date);
+                            }
                         }
                     }
                 }
