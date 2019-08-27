@@ -2,7 +2,7 @@
 		<div class="list-header js-list-head <% if(!_.isUndefined(authuser.user)){%>cur-grab<%}%> js-list_maximize_content-<%- list.id %>">
 			<div class="clearfix">
 			  <a href="#" class="col-xs-6 js-list-name-<%- list.id %> <% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(list.board.acl_links.where({slug: "edit_list",board_user_role_id: parseInt(list.board_user_role_id)})))){ %>js-show-edit-list-form<% }else{ %> js-no-action<%}%>"><span><span class="clearfix row show">
-			  <strong class = "get-name-<%- list.attributes.id %>"><%- list.attributes.name %></strong> <span id="list-card-number-<%- list.attributes.id %>" title="<%- i18next.t('Number Of Cards') %>"></span><% var is_sub_class = 'hide'; if(!_.isEmpty(list.subscriber.attributes) && list.subscriber.attributes.is_subscribed == true){ is_sub_class = ''; }%><span class="pull-right"><i class="icon-eye-open js-list-subscribed-<%- list.attributes.id %> <%- is_sub_class %>"></i></span></span></span></a>
+			  <strong class = "get-name-<%- list.attributes.id %>"><%- list.attributes.name %></strong> <span id="list-card-number-<%- list.attributes.id %>" title="<%- i18next.t('Number Of Cards') %>"></span></span></span></a>
 			  <% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(list.board.acl_links.where({slug: "edit_list",board_user_role_id: parseInt(list.board_user_role_id)})))){ %>
 			  <form role="form" class="form-horizontal js-edit-list hide">
 				  <div class="form-group">
@@ -22,8 +22,8 @@
 			  <% } %>
 			  <%if(!_.isUndefined(authuser.user)) {%>
 			  <div class="pull-right col-xs-6 clearfix js-list-header-<%- list.id %> js-list-header-section">
-					  <div class="pull-right left-mar"><a href="" class="js-trigger-minimize" title="<%- i18next.t('Minimize') %>" data-list_id="<%- list.id %>"><span class="pull-right"><strong><i class="icon-resize-small text-primary" style="margin-right: -4px;"></i> </strong></span></a>
-					  </div>
+				  <div class="pull-right left-mar"><a href="" class="js-trigger-minimize" title="<%- i18next.t('Minimize') %>" data-list_id="<%- list.id %>"><span class="pull-right"><strong><i class="icon-resize-small text-primary" style="margin-right: -4px;"></i> </strong></span></a>
+				  </div>
 				  <div class="dropdown">
 				  <a href="#" class="dropdown-toggle pull-right js-show-list-actions" id="js-show-list-actions-<%- list.attributes.id %>" data-toggle="dropdown" title="<%- i18next.t('List Actions') %>" data-list-id="<%- list.attributes.id %>"><i class="icon-cog text-primary"></i></a>
 				  </div>
@@ -49,6 +49,11 @@
 					   <li class=" js-startDate js-sort-by-<%- list.attributes.id %> hide"><a title="<%- i18next.t('Start Date') %>" href="#" class="js-sort-by" data-sort-by="start_date"><%- i18next.t('Start Date') %></a></li>
 				   </ul>
 				  </div>
+				  <% var is_sub_class = 'hide';
+				  if(!_.isEmpty(list.subscriber.attributes) && list.subscriber.attributes.is_subscribed == true){ 
+					  is_sub_class = ''; 
+				  } %>
+				  <a href="javascript:void(0);"><span class="pull-right right-mar"><i class="icon-eye-open js-list-subscribed-<%- list.attributes.id %> <%- is_sub_class %>"></i></span></a>
 			  </div>
 			  <% } %>
 			</div>
