@@ -1487,6 +1487,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
 
     case '/boards/?/labels':
         $metadata = array();
+        $data = array();
         array_push($pg_params, $r_resource_vars['boards']);
         $sql = 'SELECT distinct(label_id) FROM cards_labels_listing cll WHERE board_id = $1';
         if ($res = pg_query_params($db_lnk, $sql, $pg_params)) {
