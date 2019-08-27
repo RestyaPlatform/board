@@ -175,7 +175,7 @@ function CheckFieldExists(board, field_name, field_value, return_type, plugin_na
     if (!_.isUndefined(APPS) && APPS !== null) {
         if (!_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null) {
             if ($.inArray(plugin_name, APPS.enabled_apps) !== -1) {
-                if (!_.isUndefined(board.attributes.board_custom_fields) && !_.isEmpty(board.attributes.board_custom_fields)) {
+                if (!_.isUndefined(board) && !_.isEmpty(board) && !_.isUndefined(board.attributes) && !_.isEmpty(board.attributes) && !_.isUndefined(board.attributes.board_custom_fields) && !_.isEmpty(board.attributes.board_custom_fields)) {
                     board_custom_fields = JSON.parse(board.attributes.board_custom_fields);
                     if (!_.isUndefined(board_custom_fields[plugin_name])) {
                         r_gridview_configurations = board_custom_fields[plugin_name].split(',');

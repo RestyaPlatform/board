@@ -612,7 +612,7 @@ App.CardView = Backbone.View.extend({
         var wrapper = $('.js-card-list-view-' + board_id + ' #js-card-' + this.model.id),
             items = wrapper.children(),
             r_listview_configure_positions, temp_dom = [];
-        if (!_.isEmpty(this.model.board.attributes.board_custom_fields) && !_.isUndefined(this.model.board.attributes.board_custom_fields)) {
+        if (!_.isUndefined(this.model.board) && !_.isEmpty(this.model.board) && !_.isUndefined(this.model.board.attributes.board_custom_fields) && !_.isEmpty(this.model.board.attributes.board_custom_fields)) {
             board_custom_fields = JSON.parse(this.model.board.attributes.board_custom_fields);
             if (!_.isUndefined(board_custom_fields.r_listview_configure_position) && !_.isUndefined(board_custom_fields.r_listview_configure_position)) {
                 r_listview_configure_positions = board_custom_fields.r_listview_configure_position.split(',');
