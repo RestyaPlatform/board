@@ -1014,28 +1014,28 @@ App.ModalCardView = Backbone.View.extend({
         }
         this.model.set(data);
         var target = $(e.currentTarget);
-        $('.js-show-side-card-title-edit-form').parents().find('.dropdown').removeClass('open');
+        self.$el.find('.js-show-side-card-title-edit-form').parents().find('.dropdown').removeClass('open');
         if (!_.isUndefined(data.name)) {
             target.prev('h4').html(_.escape(data.name)).removeClass('hide');
             $(e.target).addClass('hide');
         }
         if (!_.isUndefined(data.description)) {
             if (!_.isEmpty(data.description)) {
-                if (!$.trim($('#inputCarddescriptions').val()).length) {
+                if (!$.trim(self.$el.find('#inputCarddescriptions').val()).length) {
                     $('.error-msg').remove();
-                    $('<div class="error-msg text-primary h6">Whitespace is not allowed</div>').insertAfter('#inputCarddescriptions');
+                    $('<div class="error-msg text-primary h6">Whitespace is not allowed</div>').insertAfter(self.$el.find('#inputCarddescriptions'));
                     validation = false;
                     this.$el.find('#cardDescriptionEditForm').removeClass('hide').show();
                 } else {
                     $('.error-msg').remove();
                     $('.js-show-card-desc').show();
-                    $('#cardDescriptionEditForm').addClass('hide');
+                    self.$el.find('#cardDescriptionEditForm').addClass('hide');
                     validation = true;
                 }
             } else {
                 $('.error-msg').remove();
                 $('.js-show-card-desc').show();
-                $('#cardDescriptionEditForm').addClass('hide');
+                self.$el.find('#cardDescriptionEditForm').addClass('hide');
                 validation = true;
             }
         }
@@ -2731,6 +2731,7 @@ App.ModalCardView = Backbone.View.extend({
      * display labels in card
      */
     renderLabelsCollection: function() {
+        var self = this; 
         var is_edit_labels;
         if (!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(this.model.list.collection.board.acl_links.where({
                 slug: "delete_labels",
@@ -2742,7 +2743,7 @@ App.ModalCardView = Backbone.View.extend({
         }
         var view_label = this.$el.find('.js-card-labels-list');
         view_label.html('');
-        if ($('#js-label-add-container').length === 0) {
+        if (self.$el.find('#js-label-add-container').length === 0) {
             view_label.append('<li id="js-label-add-container"><div class="dropdown js-label-dropdown no-print"><a class="dropdown-toggle js-show-card-label-form btn btn-default" role="button" data-toggle="dropdown" title="' + i18next.t('Add new Labels') + '" href="#"> <i class="icon-plus"></i></a><ul class="dropdown-menu dropdown-menu-left arrow col-xs-12 js-show-card-label-form-response"></ul></div></li>');
         }
         var self = this;
