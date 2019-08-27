@@ -5203,7 +5203,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 $deletenames = implode(",", array_diff($previous_cards_labels, $oldlabel));
                 $names = implode(",", $newlabel);
                 $names = preg_replace('/[ ,]+/', ', ', $names);
-                $comment = '##USER_NAME## removed the label(s) ' . ' - ' . $deletenames . ' and added the lables ' . '-' . $names . ' to the card ##CARD_LINK##';
+                $comment = '##USER_NAME## removed the label(s) ' . ' - ' . $deletenames . ' and added the label(s) ' . ' - ' . $names . ' to the card ##CARD_LINK##';
                 $type = 'update_card_label';
             }
         } else {
