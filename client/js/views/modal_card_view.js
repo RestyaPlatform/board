@@ -1913,6 +1913,7 @@ App.ModalCardView = Backbone.View.extend({
             card_voter.set('user_id', parseInt(authuser.user.id));
             card_voter.set('board_id', board_id);
             card_voter.set('list_id', list_id);
+            card_voter.set('full_name', authuser.user.full_name);
             card_voter.set('username', authuser.user.username);
             card_voter.set('role_id', authuser.user.role_id);
             card_voter.set('profile_picture_path', authuser.user.profile_picture_path);
