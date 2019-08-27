@@ -3353,76 +3353,82 @@ App.ModalCardView = Backbone.View.extend({
         var self = this;
         var target = $(e.currentTarget);
         var uuid = new Date().getTime();
-        target.removeClass('js-add-card-member').addClass('js-remove-card-member').append('<i class="icon-ok"></i>');
         var user_id = target.data('user-id');
-        var user_name = target.data('user-name');
-        var user_initial = target.data('user-initial');
-        var user_profile_picture_path = target.data('user-profile-picture-path');
-        var full_name = target.data('user-fullname');
-        var content_img = '<i class="avatar avatar-color-194 img-rounded" title="' + full_name + ' (' + user_name + ')">' + user_initial + '</i>';
-        if (!_.isEmpty(user_profile_picture_path)) {
-            var hash = calcMD5(SecuritySalt + 'User' + user_id + 'png' + 'small_thumb');
-            var profile_picture_path = window.location.pathname + 'img/small_thumb/User/' + user_id + '.' + hash + '.png';
-            content_img = '<img src="' + profile_picture_path + '" alt="' + user_name + '" title="' + full_name + ' (' + user_name + ')" class="img-rounded img-responsive avatar">';
-        }
-        var view_user = $('#js-card-users-list-' + self.model.id).prepend('<li class="js-added-card-user-' + user_id + '">' + content_img + '</li>');
-        var card_user = new App.CardUser();
-        card_user.set('uuid', uuid);
-        card_user.set('is_offline', true);
-        card_user.set('user_id', user_id);
-        card_user.set('card_id', self.model.id);
-        card_user.set('board_id', self.model.attributes.board_id);
-        card_user.set('list_id', self.model.attributes.list_id);
-        card_user.set('profile_picture_path', user_profile_picture_path);
-        card_user.set('username', user_name);
-        card_user.set('initials', user_initial);
-        card_user.set('full_name', full_name);
-        self.model.users.add(card_user, {
-            silent: true
+        var already_added = self.model.users.findWhere({
+            'user_id': user_id,
+            'card_id': self.model.id
         });
-        self.renderUsersCollection();
-        card_user.url = api_url + 'boards/' + self.model.attributes.board_id + '/lists/' + self.model.attributes.list_id + '/cards/' + self.model.id + '/users/' + user_id + '.json';
-        card_user.save({
-            user_id: user_id,
-            card_id: self.model.id
-        }, {
-            success: function(model, response, options) {
-                if (_.isUndefined(options.temp_id)) {
-                    card_user.set('is_offline', false);
-                }
-                target.attr('data-card-user-id', response.id);
-                if (self.model.users.models.length > 0) {
-                    self.model.users.findWhere({
-                        'user_id': user_id,
-                        'card_id': self.model.id
-                    }).set('id', parseInt(response.id));
-                }
-                if (!_.isUndefined(response.id) && _.isUndefined(options.temp_id)) {
-                    card_user.set({
-                        id: parseInt(response.id)
-                    });
-                } else {
-                    global_uuid[uuid] = options.temp_id;
-                    card_user.set('id', uuid);
-                }
-                if (!_.isUndefined(response.activity)) {
-                    response.activity = activityCommentReplace(response.activity);
-                    var activity = new App.Activity();
-                    activity.set(response.activity);
-                    activity.board_users = self.model.board_users;
-                    var view = new App.ActivityView({
-                        model: activity,
-                        board: self.model.list.collection.board,
-                        flag: '1'
-                    });
-                    self.model.activities.unshift(activity);
-                    if ($.cookie('filter') !== 'comment') {
-                        var view_activity = $('#js-card-activities-' + self.model.id);
-                        view_activity.prepend(view.render().el);
+        if (_.isUndefined(already_added) || _.isEmpty(already_added)) {
+            target.removeClass('js-add-card-member').addClass('js-remove-card-member').append('<i class="icon-ok"></i>');
+            var user_name = target.data('user-name');
+            var user_initial = target.data('user-initial');
+            var user_profile_picture_path = target.data('user-profile-picture-path');
+            var full_name = target.data('user-fullname');
+            var content_img = '<i class="avatar avatar-color-194 img-rounded" title="' + full_name + ' (' + user_name + ')">' + user_initial + '</i>';
+            if (!_.isEmpty(user_profile_picture_path)) {
+                var hash = calcMD5(SecuritySalt + 'User' + user_id + 'png' + 'small_thumb');
+                var profile_picture_path = window.location.pathname + 'img/small_thumb/User/' + user_id + '.' + hash + '.png';
+                content_img = '<img src="' + profile_picture_path + '" alt="' + user_name + '" title="' + full_name + ' (' + user_name + ')" class="img-rounded img-responsive avatar">';
+            }
+            var view_user = $('#js-card-users-list-' + self.model.id).prepend('<li class="js-added-card-user-' + user_id + '">' + content_img + '</li>');
+            var card_user = new App.CardUser();
+            card_user.set('uuid', uuid);
+            card_user.set('is_offline', true);
+            card_user.set('user_id', user_id);
+            card_user.set('card_id', self.model.id);
+            card_user.set('board_id', self.model.attributes.board_id);
+            card_user.set('list_id', self.model.attributes.list_id);
+            card_user.set('profile_picture_path', user_profile_picture_path);
+            card_user.set('username', user_name);
+            card_user.set('initials', user_initial);
+            card_user.set('full_name', full_name);
+            self.model.users.add(card_user, {
+                silent: true
+            });
+            self.renderUsersCollection();
+            card_user.url = api_url + 'boards/' + self.model.attributes.board_id + '/lists/' + self.model.attributes.list_id + '/cards/' + self.model.id + '/users/' + user_id + '.json';
+            card_user.save({
+                user_id: user_id,
+                card_id: self.model.id
+            }, {
+                success: function(model, response, options) {
+                    if (_.isUndefined(options.temp_id)) {
+                        card_user.set('is_offline', false);
+                    }
+                    target.attr('data-card-user-id', response.id);
+                    if (self.model.users.models.length > 0) {
+                        self.model.users.findWhere({
+                            'user_id': user_id,
+                            'card_id': self.model.id
+                        }).set('id', parseInt(response.id));
+                    }
+                    if (!_.isUndefined(response.id) && _.isUndefined(options.temp_id)) {
+                        card_user.set({
+                            id: parseInt(response.id)
+                        });
+                    } else {
+                        global_uuid[uuid] = options.temp_id;
+                        card_user.set('id', uuid);
+                    }
+                    if (!_.isUndefined(response.activity)) {
+                        response.activity = activityCommentReplace(response.activity);
+                        var activity = new App.Activity();
+                        activity.set(response.activity);
+                        activity.board_users = self.model.board_users;
+                        var view = new App.ActivityView({
+                            model: activity,
+                            board: self.model.list.collection.board,
+                            flag: '1'
+                        });
+                        self.model.activities.unshift(activity);
+                        if ($.cookie('filter') !== 'comment') {
+                            var view_activity = $('#js-card-activities-' + self.model.id);
+                            view_activity.prepend(view.render().el);
+                        }
                     }
                 }
-            }
-        });
+            });
+        }
         return false;
     },
     /**
