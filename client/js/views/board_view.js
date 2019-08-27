@@ -1158,6 +1158,7 @@ App.BoardView = Backbone.View.extend({
                 list.board_users = self.model.board_users;
                 list.board_user_role_id = self.model.board_user_role_id;
                 if (!_.isUndefined(data.clone_list_id)) {
+                    $(view.render().el).attr('data-list_id', list.id);
                     $(view.render().el).insertAfter($(e.target).parents('.js-board-list'));
                 } else {
                     list.board = self.model;
