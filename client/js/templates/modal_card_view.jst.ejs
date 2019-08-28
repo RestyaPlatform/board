@@ -755,8 +755,16 @@
 		<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: "delete_card",board_user_role_id: parseInt(list.board_user_role_id)})))){ %>
 			<li class="dropdown" id="js-modal-action-card-delete-<%- card.attributes.id%>"></li>
 		<% } %>
-	  <% } %>
-	  <li class="dropdown dropup js-more-dropdown">
+		<% } %>
+		<% 
+		if(!_.isUndefined(authuser.user.id) && !_.isEmpty(authuser.user.id) && !_.isUndefined(card.board_users) && !_.isEmpty(card.board_users))
+		{
+			var board_user_role_id_check = card.board_users.findWhere({
+				user_id : parseInt(authuser.user.id)
+			});
+		}
+		%>
+	  <li class="dropdown <% if(!_.isUndefined(board_user_role_id_check) && !_.isEmpty(board_user_role_id_check)) { %> dropup <% } %> js-more-dropdown">
 	  <div class="col-xs-12 divider"></div>
 	  <a class="show btn btn-link js-more-menu quiet-button" data-toggle="dropdown" title="<%- i18next.t('More options share, print, export, and delete.') %>" href="#"><%- i18next.t('Share and more...') %></a>
 		<ul class="dropdown-menu dropdown-menu-left dropup-arrow col-xs-12 pre-scrollable vertical-scrollbar">
