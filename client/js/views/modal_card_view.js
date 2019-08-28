@@ -2952,26 +2952,29 @@ App.ModalCardView = Backbone.View.extend({
         }
         this.Modalheaderreset();
         var subscribed = '',
+            list_subscribed = '',
             subscribe_disabled = '',
             subscribe_title = i18next.t('Subscribe'),
             subscribe_class = 'js-card-subscribe';
-        subscribed = this.model.list.collection.board.board_subscribers.findWhere({
-            user_id: parseInt(authuser.user.id),
-            is_subscribed: 1
-        });
-        var list_subscribed = this.model.list.lists_subscribers.findWhere({
-            user_id: parseInt(authuser.user.id),
-            is_subscribed: 1
-        });
-        if (!_.isEmpty(cards_subscribers)) {
+        if (!_.isUndefined(authuser) && !_.isUndefined(authuser.user)) {
+            subscribed = this.model.list.collection.board.board_subscribers.findWhere({
+                user_id: parseInt(authuser.user.id),
+                is_subscribed: 1
+            });
+            list_subscribed = this.model.list.lists_subscribers.findWhere({
+                user_id: parseInt(authuser.user.id),
+                is_subscribed: 1
+            });
+        }
+        if (!_.isUndefined(cards_subscribers) && !_.isEmpty(cards_subscribers)) {
             subscribe_title = i18next.t('Unsubscribe');
             subscribe_class = 'js-card-unsubscribe';
         }
-        if (subscribed) {
+        if (!_.isUndefined(subscribed) && !_.isEmpty(subscribed)) {
             subscribe_disabled = 'disabled';
             subscribe_class = 'js-no-action';
             subscribe_title = i18next.t('Board wise subscription already enabled');
-        } else if (list_subscribed) {
+        } else if (!_.isUndefined(list_subscribed) && !_.isEmpty(list_subscribed)) {
             subscribe_disabled = 'disabled';
             subscribe_class = 'js-no-action';
             subscribe_title = i18next.t('List wise subscription already enabled');
