@@ -4289,7 +4289,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
         $s_result = pg_query_params($db_lnk, 'SELECT is_subscribed FROM list_subscribers WHERE list_id = $1 and user_id = $2', $qry_val_arr);
         $check_subscribed = pg_fetch_assoc($s_result);
         if (!empty($check_subscribed)) {
-            $is_subscribed = ($r_post['is_subscribed']) ? true : false;
+            $is_subscribed = ($r_post['is_subscribed']) ? true : 0;
             $qry_val_arr = array(
                 $is_subscribed,
                 $r_resource_vars['lists'],
