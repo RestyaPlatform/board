@@ -63,10 +63,18 @@
 						activity.attributes.comment = activity.attributes.comment.replace('##USER_NAME##', '<span class="h5">'+_.escape(activity.attributes.full_name)+'</span>');					
 					}
 					if(activity.attributes.comment.indexOf('##CHECKLIST_ITEM_NAME##') != -1){
-						activity.attributes.comment = activity.attributes.comment.replace('##CHECKLIST_ITEM_NAME##', (activity.attributes.checklist_item_name));
+						if (activity.attributes.checklist_item_name !== null) {
+							activity.attributes.comment = activity.attributes.comment.replace('##CHECKLIST_ITEM_NAME##', (activity.attributes.checklist_item_name));
+						} else {
+							activity.attributes.comment = activity.attributes.comment.replace('##CHECKLIST_ITEM_NAME##', i18next.t("[deleted]"));
+						}
 					}
 					if(activity.attributes.comment.indexOf('##CHECKLIST_ITEM_PARENT_NAME##') != -1){
-						activity.attributes.comment = activity.attributes.comment.replace('##CHECKLIST_ITEM_PARENT_NAME##', (activity.attributes.checklist_item_parent_name));
+						if (activity.attributes.checklist_item_parent_name !== null) {
+							activity.attributes.comment = activity.attributes.comment.replace('##CHECKLIST_ITEM_PARENT_NAME##', (activity.attributes.checklist_item_parent_name));
+						} else {
+							activity.attributes.comment = activity.attributes.comment.replace('##CHECKLIST_ITEM_PARENT_NAME##', i18next.t("[deleted]"));
+						}
 					}
 					if(activity.attributes.comment.indexOf('##CHECKLIST_NAME##') != -1){
 						activity.attributes.comment = activity.attributes.comment.replace('##CHECKLIST_NAME##', (activity.attributes.checklist_name));
