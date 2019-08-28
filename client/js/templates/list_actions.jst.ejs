@@ -17,8 +17,9 @@
         <a class="pull-right js-list-action-hover-icon"><i class=" icon-remove"></i></a>
 </li>
 <li class="divider"></li>
-<li class="dropdown js-show-list-color-settings-dropdown">
+<li class="<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(list.board.acl_links.where({slug: "edit_list",board_user_role_id: parseInt(list.board_user_role_id)})))){ %>dropdown<% } %> js-show-list-color-settings-dropdown">
         <a class="dropdown-toggle js-show-list-color-settings"  href="#" title="<%- i18next.t('Color') %>" data-toggle="dropdown"><%- i18next.t('Color') %></a>
+        <% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(list.board.acl_links.where({slug: "edit_list",board_user_role_id: parseInt(list.board_user_role_id)})))){ %>
         <ul class="dropdown-menu dropdown-menu-left arrow col-xs-12">
                 <li class="col-xs-12 clearfix text-center"> 
                         <div>
@@ -82,6 +83,7 @@
                 </ul>
                 <div class="well-sm"></div></div>
         </ul>
+        <% } %>
 </li>
 <li class="panel-settings" id="js-list-setting-<%- list.attributes.id %>">
 </li>
