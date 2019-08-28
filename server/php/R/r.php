@@ -1275,11 +1275,14 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             $r_resource_vars['boards']
         );
         $board = executeQuery('SELECT board_visibility FROM boards_listing WHERE id = $1', $val_array);
-        $val_array = array(
-            $r_resource_vars['boards'],
-            $authUser['id']
-        );
-        $boards_user = executeQuery('SELECT * FROM boards_users WHERE board_id = $1 AND user_id = $2', $val_array);
+        if(isset($authUser['id']) && $authUser['id'] != 'undefined' && !empty($authUser['id']))
+        {
+            $val_array = array(
+                $r_resource_vars['boards'],
+                $authUser['id']
+            );
+            $boards_user = executeQuery('SELECT * FROM boards_users WHERE board_id = $1 AND user_id = $2', $val_array);
+        }
         if ((!empty($authUser) && $authUser['role_id'] == 1) || $board['board_visibility'] == 2 || !empty($boards_user)) {
             $construct_offset = '';
             $condition = '';
