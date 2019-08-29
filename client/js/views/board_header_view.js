@@ -1058,7 +1058,7 @@ App.BoardHeaderView = Backbone.View.extend({
         }
         changeTitle('Board - ' + _.escape(self.model.attributes.name) + '- Calendar');
         if ($('div.js-board-view-' + self.model.id).length === 0) {
-            $('#content').html('<section id="boards-view" class="clearfix js-boards-view"><section class="row body-no-webkit-scrollbars"><div id="listview_table" class="clearfix js-board-view-' + self.model.id + ' col-xs-12 board-listview"></div><section></section>');
+            $('#content').html('<section id="boards-view" class="clearfix js-boards-view col-xs-12"><section class="row body-no-webkit-scrollbars"><div id="listview_table" class="clearfix js-board-view-' + self.model.id + ' col-xs-12 calendar-view"></div><section></section>');
         }
         $('div.js-board-view-' + this.model.id).html('');
         $('div.js-board-view-' + this.model.id).fullCalendar({
