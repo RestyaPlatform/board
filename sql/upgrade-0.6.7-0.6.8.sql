@@ -221,3 +221,25 @@ Restyaboard<br>
 </footer>
 </body>
 </html>', 'SITE_NAME, SITE_URL, BOARD_IMPORT_OPTION, NAME, BOARD_URL, BOARD_NAME', 'Board Import User Notification');
+
+DELETE FROM "acl_links_roles" WHERE acl_link_id = (select id from acl_links where slug='unsubscribe_board');
+DELETE FROM "acl_links_roles" WHERE acl_link_id = (select id from acl_links where slug='unsubscribe_list');
+DELETE FROM "acl_links_roles" WHERE acl_link_id = (select id from acl_links where slug='unsubscribe_card');
+
+DELETE FROM "acl_links" WHERE slug = 'unsubscribe_board';
+DELETE FROM "acl_links" WHERE slug = 'unsubscribe_list';
+DELETE FROM "acl_links" WHERE slug = 'unsubscribe_card';
+
+SELECT pg_catalog.setval('acl_links_id_seq', (SELECT MAX(id) FROM acl_links), true);
+
+INSERT INTO "acl_links" ("created", "modified", "name", "url", "method", "slug", "group_id", "is_user_action", "is_guest_action", "is_admin_action", "is_hide") values (now(), now(), 'Allow to unsubscribe board in public board', '/boards/?/board_subscribers/?', 'PUT', 'unsubscribe_board', '2', '1', '0', '0', '0'),
+(now(), now(), 'Allow to unsubscribe list in public board', '/boards/?/lists/?/list_subscribers/?', 'PUT', 'unsubscribe_list', '2', '1', '0', '0', '0'),
+(now(), now(), 'Allow to unsubscribe card in public board', '/boards/?/lists/?/cards/?/card_subscribers/?', 'POST', 'unsubscribe_card', '2', '1', '0', '0', '0');
+
+INSERT INTO "acl_links_roles" ("created", "modified", "acl_link_id", "role_id") VALUES 
+(now(), now(), (select id from acl_links where slug='unsubscribe_board'), '1'),
+(now(), now(), (select id from acl_links where slug='unsubscribe_board'), '2'),
+(now(), now(), (select id from acl_links where slug='unsubscribe_list'), '1'),
+(now(), now(), (select id from acl_links where slug='unsubscribe_list'), '2'),
+(now(), now(), (select id from acl_links where slug='unsubscribe_card'), '1'),
+(now(), now(), (select id from acl_links where slug='unsubscribe_card'), '2');
