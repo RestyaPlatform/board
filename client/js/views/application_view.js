@@ -570,6 +570,9 @@ App.ApplicationView = Backbone.View.extend({
         } else {
             if (view_type === 'list') {
                 view_type = null;
+                if ($('#listview_table').length === 0) {
+                    $('.js-switch-list-view').trigger('click');
+                }
             } else if (view_type === 'calendar') {
                 view_type = null;
             } else if (view_type === 'gantt') {
