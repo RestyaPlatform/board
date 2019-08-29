@@ -7445,14 +7445,17 @@ function r_delete($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         array_push($pg_params, $r_resource_vars['boards'], $r_resource_vars['labels']);
         $comment = __l('##USER_NAME## removed label ##LABEL_NAME## on ##BOARD_NAME##');
         $type = 'delete_label';
+        $label_id['id'] = $r_resource_vars['labels'];
+        $revision = json_encode($label_id);
         $qry_val_arr = array(
             $r_resource_vars['boards'],
             $authUser['id'],
             $type,
             $comment,
-            $_GET['token']
+            $_GET['token'],
+            $revision
         );
-        $activity = pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO activities (created, modified, board_id, user_id, type, comment, token) VALUES (now(), now(),$1, $2, $3, $4, $5) RETURNING id', $qry_val_arr));
+        $activity = pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO activities (created, modified, board_id, user_id, type, comment, token, revisions) VALUES (now(), now(),$1, $2, $3, $4, $5, $6) RETURNING id', $qry_val_arr));
         break;
 
     case '/boards/?/lists/?/cards/?': // delete card
