@@ -1840,8 +1840,9 @@ App.FooterView = Backbone.View.extend({
                                                 id: activity.attributes.foreign_id
                                             }));
                                         } else if (activity.attributes.type === 'delete_label') {
+                                            var label_value = JSON.parse(activity.attributes.revisions);
                                             var filter_labels = self.board.labels.filter(function(model) {
-                                                return parseInt(model.get('label_id')) === parseInt(activity.attributes.foreign_id);
+                                                return parseInt(model.get('label_id')) === parseInt(label_value.id);
                                             });
                                             self.board.labels.remove(filter_labels, {
                                                 silent: false

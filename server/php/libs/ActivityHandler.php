@@ -34,7 +34,7 @@ class ActivityHandler
     {
         global $r_debug, $db_lnk, $authUser, $_server_domain_url;
         $obj_type = $obj['type'];
-        if (!empty($obj['revisions']) && trim($obj['revisions']) !== '') {
+        if (!empty($obj['revisions']) && trim($obj['revisions']) !== '' && $obj_type !== 'delete_label') {
             $revisions = unserialize($obj['revisions']);
             $obj['revisions'] = $revisions;
             $diff = array();
@@ -184,14 +184,6 @@ class ActivityHandler
                 while ($custom_field = pg_fetch_assoc($custom_fields)) {
                     $obj['custom_fields'][] = $custom_field;
                 }
-            }
-        } else if ($obj_type === 'delete_label') {
-            $conditions = array(
-                $obj['board_id']
-            );
-            $s_result = pg_query_params($db_lnk, 'SELECT * FROM cards_labels_listing WHERE  board_id = $1 ORDER BY name ASC', $conditions);
-            while ($row = pg_fetch_assoc($s_result)) {
-                $obj['labels'][] = $row;
             }
         }
         return $obj;
