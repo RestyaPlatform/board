@@ -608,27 +608,29 @@ App.CardView = Backbone.View.extend({
      *
      */
     sortLabelPosition: function() {
-        var board_id = this.model.get('board_id');
-        var wrapper = $('.js-card-list-view-' + board_id + ' #js-card-' + this.model.id),
-            items = wrapper.children(),
-            r_listview_configure_positions, temp_dom = [];
-        if (!_.isUndefined(this.model.board) && !_.isEmpty(this.model.board) && !_.isUndefined(this.model.board.attributes.board_custom_fields) && !_.isEmpty(this.model.board.attributes.board_custom_fields)) {
-            board_custom_fields = JSON.parse(this.model.board.attributes.board_custom_fields);
-            if (!_.isUndefined(board_custom_fields.r_listview_configure_position) && !_.isUndefined(board_custom_fields.r_listview_configure_position)) {
-                r_listview_configure_positions = board_custom_fields.r_listview_configure_position.split(',');
-                items.each(function(label, key) {
-                    temp_dom.push(key.id);
-                });
-                wrapper.prepend($.map(r_listview_configure_positions, function(v) {
-                    var list_index = temp_dom.findIndex(function(item) {
-                        return item === 'list_view_config_data-' + v;
+        if (!_.isUndefined(this) && !_.isEmpty(this) && !_.isUndefined(this.model) && !_.isEmpty(this.model)) {
+            var board_id = this.model.get('board_id');
+            var wrapper = $('.js-card-list-view-' + board_id + ' #js-card-' + this.model.id),
+                items = wrapper.children(),
+                r_listview_configure_positions, temp_dom = [];
+            if (!_.isUndefined(this.model.board) && !_.isEmpty(this.model.board) && !_.isUndefined(this.model.board.attributes.board_custom_fields) && !_.isEmpty(this.model.board.attributes.board_custom_fields)) {
+                board_custom_fields = JSON.parse(this.model.board.attributes.board_custom_fields);
+                if (!_.isUndefined(board_custom_fields.r_listview_configure_position) && !_.isUndefined(board_custom_fields.r_listview_configure_position)) {
+                    r_listview_configure_positions = board_custom_fields.r_listview_configure_position.split(',');
+                    items.each(function(label, key) {
+                        temp_dom.push(key.id);
                     });
-                    return items[list_index];
-                }));
+                    wrapper.prepend($.map(r_listview_configure_positions, function(v) {
+                        var list_index = temp_dom.findIndex(function(item) {
+                            return item === 'list_view_config_data-' + v;
+                        });
+                        return items[list_index];
+                    }));
 
+                }
             }
+            this.$el.show();
         }
-        this.$el.show();
     },
     /**
      * renderAdd()
