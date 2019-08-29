@@ -1839,6 +1839,14 @@ App.FooterView = Backbone.View.extend({
                                             self.board.board_users.remove(self.board.board_users.findWhere({
                                                 id: activity.attributes.foreign_id
                                             }));
+                                        } else if (activity.attributes.type === 'delete_label') {
+                                            var label_value = JSON.parse(activity.attributes.revisions);
+                                            var filter_labels = self.board.labels.filter(function(model) {
+                                                return parseInt(model.get('label_id')) === parseInt(label_value.id);
+                                            });
+                                            self.board.labels.remove(filter_labels, {
+                                                silent: false
+                                            });
                                         } else if (activity.attributes.type === 'close_board') {
                                             App.boards.get(activity.attributes.board_id).set('is_closed', 1);
                                             self.board.set('is_closed', 1);
