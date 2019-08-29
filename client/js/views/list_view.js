@@ -806,10 +806,20 @@ App.ListView = Backbone.View.extend({
     listSubscribe: function(e) {
         var list_id = this.model.id;
         var subscribe_id = $(e.currentTarget).data('subscribe-id');
-        $(e.currentTarget).removeClass('js-list-subscribe').addClass('js-list-unsubscribe');
+        $(e.currentTarget).removeClass('js-list-subscribe');
         $('i.icon-ok', e.currentTarget).removeClass('hide');
         $('.js-subscribe-text', e.currentTarget).html(i18next.t('Subscribed'));
         $('.js-list-subscribed-' + list_id).removeClass('hide');
+        if (!_.isEmpty(this.model.collection.board.acl_links.where({
+                slug: "unsubscribe_list",
+                board_user_role_id: parseInt(this.model.board_user_role_id)
+            })) && !_.isEmpty(subscribe) || (!_.isEmpty(role_links.where({
+                slug: "unsubscribe_list"
+            })) && this.model.collection.board.attributes.board_visibility == 2)) {
+            $(e.currentTarget).addClass('js-list-unsubscribe');
+        } else if (typeof subscribe_id === 'undefined' || subscribe_id === 'undefined' || subscribe_id === '') {
+            $(e.currentTarget).addClass('hide');
+        }
         var list_subscribe = new App.ListSubscriber();
         list_subscribe.set('user_id', parseInt(authuser.user.id));
         list_subscribe.set('is_subscribed', 1);
@@ -831,7 +841,12 @@ App.ListView = Backbone.View.extend({
                     }
                 });
             }
-        } else {
+        } else if (!_.isEmpty(this.model.collection.board.acl_links.where({
+                slug: "unsubscribe_list",
+                board_user_role_id: parseInt(this.model.board_user_role_id)
+            })) || (!_.isEmpty(role_links.where({
+                slug: "unsubscribe_list"
+            })) && list.collection.board.attributes.board_visibility == 2)) {
             list_subscribe.url = api_url + 'boards/' + this.model.attributes.board_id + '/lists/' + list_id + '/list_subscribers/' + subscribe_id + '.json';
             list_subscribe.save({
                 id: parseInt(subscribe_id),
@@ -849,9 +864,19 @@ App.ListView = Backbone.View.extend({
      *
      */
     listUnsubscribe: function(e) {
-        $(e.currentTarget).removeClass('js-list-unsubscribe').addClass('js-list-subscribe');
+        $(e.currentTarget).removeClass('js-list-unsubscribe');
         $('i.icon-ok', e.currentTarget).addClass('hide');
-        $('.js-subscribe-text', e.currentTarget).html(i18next.t('Subscribe'));
+        if (!_.isEmpty(this.model.collection.board.acl_links.where({
+                slug: "subscribe_list",
+                board_user_role_id: parseInt(this.model.board_user_role_id)
+            })) && !_.isEmpty(subscribe) || (!_.isEmpty(role_links.where({
+                slug: "subscribe_list"
+            })) && this.model.collection.board.attributes.board_visibility == 2)) {
+            $(e.currentTarget).addClass('js-list-subscribe');
+            $('.js-subscribe-text', e.currentTarget).html(i18next.t('Subscribe'));
+        } else if (typeof subscribe_id === 'undefined' || subscribe_id === 'undefined' || subscribe_id === '') {
+            $(e.currentTarget).addClass('hide');
+        }
         var subscribe_id = $(e.currentTarget).data('subscribe-id');
         var list_id = this.model.id;
         $('.js-list-subscribed-' + list_id).addClass('hide');

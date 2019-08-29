@@ -2042,9 +2042,19 @@ App.ModalCardView = Backbone.View.extend({
         var card_subscribe_id = 'undefined';
         var self = this;
         var uuid = new Date().getTime();
-        $(e.currentTarget).removeClass('js-card-subscribe').addClass('js-card-unsubscribe');
+        $(e.currentTarget).removeClass('js-card-subscribe');
         $('.js-subscribe-change-icon').append('<i class="icon-ok"></i>');
         $('.js-card-subscribed-' + card_id).removeClass('hide');
+        if (!_.isEmpty(this.model.list.collection.board.acl_links.where({
+                slug: "unsubscribe_card",
+                board_user_role_id: parseInt(this.model.list.board_user_role_id)
+            })) || (!_.isEmpty(role_links.where({
+                slug: "unsubscribe_card"
+            })) && this.model.list.collection.board.attributes.board_visibility == 2)) {
+            $(e.currentTarget).addClass('js-card-unsubscribe');
+        } else {
+            $(e.currentTarget).addClass('hide');
+        }
         var card_subscribe = new App.CardSubscriber();
         card_subscribe.set('is_offline', true);
         card_subscribe.set('card_id', card_id);
@@ -2107,8 +2117,18 @@ App.ModalCardView = Backbone.View.extend({
      * @return false
      */
     cardUnsubscribe: function(e) {
-        $(e.currentTarget).removeClass('js-card-unsubscribe').addClass('js-card-subscribe');
+        $(e.currentTarget).removeClass('js-card-unsubscribe');
         $('i.icon-ok', e.currentTarget).remove();
+        if (!_.isEmpty(this.model.list.collection.board.acl_links.where({
+                slug: "subscribe_card",
+                board_user_role_id: parseInt(this.model.list.board_user_role_id)
+            })) || (!_.isEmpty(role_links.where({
+                slug: "subscribe_card"
+            })) && this.model.list.collection.board.attributes.board_visibility == 2)) {
+            $(e.currentTarget).addClass('js-card-subscribe');
+        } else {
+            $(e.currentTarget).addClass('hide');
+        }
         var card_id = this.model.id;
         var list_id = this.model.attributes.list_id;
         var board_id = this.model.attributes.board_id;
@@ -2979,7 +2999,12 @@ App.ModalCardView = Backbone.View.extend({
             subscribe_class = 'js-no-action';
             subscribe_title = i18next.t('List wise subscription already enabled');
         }
-        if (!_.isEmpty(cards_subscribers)) {
+        if (!_.isEmpty(cards_subscribers) && (!_.isEmpty(this.model.list.collection.board.acl_links.where({
+                slug: "unsubscribe_card",
+                board_user_role_id: parseInt(this.model.list.board_user_role_id)
+            })) || (!_.isEmpty(role_links.where({
+                slug: "unsubscribe_card"
+            })) && this.model.list.collection.board.attributes.board_visibility == 2))) {
             if (view_subscribe.length == 1) {
                 view_subscribe.append('	<a class="btn btn-default ' + subscribe_disabled + ' ' + subscribe_class + ' even-action htruncate" title=" ' + i18next.t(subscribe_title) + '" href="javascript:void(0);"><i class="icon-eye-close"></i> ' + i18next.t('Unsubsribe') + '</a>');
             }
@@ -2988,7 +3013,12 @@ App.ModalCardView = Backbone.View.extend({
                 view_headdropsubscribe.addClass(subscribe_disabled);
 
             }
-        } else {
+        } else if (!_.isEmpty(this.model.list.collection.board.acl_links.where({
+                slug: "subscribe_card",
+                board_user_role_id: parseInt(this.model.list.board_user_role_id)
+            })) || (!_.isEmpty(role_links.where({
+                slug: "subscribe_card"
+            })) && this.model.list.collection.board.attributes.board_visibility == 2) && _.isEmpty(cards_subscribers)) {
             if (view_subscribe.length == 1) {
                 view_subscribe.append('	<a class="btn btn-default ' + subscribe_disabled + ' ' + subscribe_class + ' even-action htruncate" title=" ' + i18next.t(subscribe_title) + '" href="javascript:void(0);"><i class="icon-eye-close"></i> ' + i18next.t('Subscribe') + '</a>');
             }
