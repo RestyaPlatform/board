@@ -1275,8 +1275,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             $r_resource_vars['boards']
         );
         $board = executeQuery('SELECT board_visibility FROM boards_listing WHERE id = $1', $val_array);
-        if(isset($authUser['id']) && $authUser['id'] != 'undefined' && !empty($authUser['id']))
-        {
+        if (isset($authUser['id']) && $authUser['id'] != 'undefined' && !empty($authUser['id'])) {
             $val_array = array(
                 $r_resource_vars['boards'],
                 $authUser['id']
@@ -3644,7 +3643,11 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                                 }
                             }
                             // Copy cards
-                            $card_fields = 'name, description, due_date, position, is_archived, user_id, color, custom_fields';
+                            $card_fields = 'name, description, due_date, position, is_archived, user_id, color';
+                            if (is_plugin_enabled('r_gantt_view'))
+                            {
+                                $card_fields = $card_fields . ', custom_fields';
+                            }
                             if ($keepcards) {
                                 $qry_val_arr = array(
                                     $list_id
