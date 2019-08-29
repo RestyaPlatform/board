@@ -185,6 +185,14 @@ class ActivityHandler
                     $obj['custom_fields'][] = $custom_field;
                 }
             }
+        } else if ($obj_type === 'delete_label') {
+            $conditions = array(
+                $obj['board_id']
+            );
+            $s_result = pg_query_params($db_lnk, 'SELECT * FROM cards_labels_listing WHERE  board_id = $1 ORDER BY name ASC', $conditions);
+            while ($row = pg_fetch_assoc($s_result)) {
+                $obj['labels'][] = $row;
+            }
         }
         return $obj;
     }

@@ -7444,6 +7444,16 @@ function r_delete($r_resource_cmd, $r_resource_vars, $r_resource_filters)
     case '/boards/?/labels/?': // delete Labels in Filter
         $sql = 'DELETE FROM cards_labels WHERE board_id = $1 AND label_id = $2';
         array_push($pg_params, $r_resource_vars['boards'], $r_resource_vars['labels']);
+        $comment = __l('##USER_NAME## removed label ##LABEL_NAME## on ##BOARD_NAME##');
+        $type = 'delete_label';
+        $qry_val_arr = array(
+            $r_resource_vars['boards'],
+            $authUser['id'],
+            $type,
+            $comment,
+            $_GET['token']
+        );
+        $activity = pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO activities (created, modified, board_id, user_id, type, comment, token) VALUES (now(), now(),$1, $2, $3, $4, $5) RETURNING id', $qry_val_arr));
         break;
 
     case '/boards/?/lists/?/cards/?': // delete card
