@@ -17,9 +17,9 @@
         <a class="pull-right js-list-action-hover-icon"><i class=" icon-remove"></i></a>
 </li>
 <li class="divider"></li>
-<li class="<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(list.board.acl_links.where({slug: "edit_list",board_user_role_id: parseInt(list.board_user_role_id)})))){ %>dropdown<% } %> js-show-list-color-settings-dropdown">
+<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(list.board.acl_links.where({slug: "edit_list",board_user_role_id: parseInt(list.board_user_role_id)})))){ %>
+<li class="dropdown js-show-list-color-settings-dropdown">
         <a class="dropdown-toggle js-show-list-color-settings"  href="#" title="<%- i18next.t('Color') %>" data-toggle="dropdown"><%- i18next.t('Color') %></a>
-        <% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(list.board.acl_links.where({slug: "edit_list",board_user_role_id: parseInt(list.board_user_role_id)})))){ %>
         <ul class="dropdown-menu dropdown-menu-left arrow col-xs-12">
                 <li class="col-xs-12 clearfix text-center"> 
                         <div>
@@ -83,8 +83,8 @@
                 </ul>
                 <div class="well-sm"></div></div>
         </ul>
-        <% } %>
 </li>
+<% } %>
 <li class="panel-settings" id="js-list-setting-<%- list.attributes.id %>">
 </li>
 <% if(!_.isUndefined(authuser) && (authuser.role_id == 1 || !_.isEmpty(list.collection.board.acl_links.where({slug: "add_card",board_user_role_id: parseInt(list.board_user_role_id)})))) { %>
@@ -100,7 +100,7 @@
                 <a href="#" title="<%- i18next.t('Move List') %>" class="js-show-move-list-form" data-list-id="<%- list.id %>"><%- i18next.t("Move List") %></a>
         </li>
 <% } %>
-<% if(!_.isUndefined(authuser) && (authuser.role_id == 1 || (((!_.isEmpty(list.collection.board.acl_links.where({slug: "subscribe_list",board_user_role_id: parseInt(list.board_user_role_id)})) && _.isEmpty(subscribe)) || (!_.isEmpty(list.collection.board.acl_links.where({slug: "unsubscribe_list",board_user_role_id: parseInt(list.board_user_role_id)})) && !_.isEmpty(subscribe)))  || (!_.isEmpty(role_links.where({slug: "subscribe_list"})) && list.collection.board.attributes.board_visibility == 2)))){ %>
+<% if(!_.isUndefined(authuser) && (authuser.role_id == 1 || (((!_.isEmpty(list.collection.board.acl_links.where({slug: "subscribe_list",board_user_role_id: parseInt(list.board_user_role_id)})) && _.isEmpty(subscribe)) || (!_.isEmpty(list.collection.board.acl_links.where({slug: "unsubscribe_list",board_user_role_id: parseInt(list.board_user_role_id)})) && !_.isEmpty(subscribe)))  || (!_.isEmpty(role_links.where({slug: "subscribe_list"})) && list.collection.board.attributes.board_visibility == 2 && _.isEmpty(subscribe) ) || (!_.isEmpty(role_links.where({slug: "unsubscribe_list"})) && list.collection.board.attributes.board_visibility == 2 && !_.isEmpty(subscribe))))) { %>
 	<%
 		var subscribe_disabled = '';
 		var subscribe_title = i18next.t('Subscribe');
