@@ -3644,7 +3644,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                                 }
                             }
                             // Copy cards
-                            $card_fields = 'name, description, due_date, position, is_archived, user_id, color';
+                            $card_fields = 'name, description, due_date, position, is_archived, user_id, color, custom_fields';
                             if ($keepcards) {
                                 $qry_val_arr = array(
                                     $list_id
