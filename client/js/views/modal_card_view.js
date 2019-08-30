@@ -423,7 +423,7 @@ App.ModalCardView = Backbone.View.extend({
             color_label = $(e.target).parents().find('#js-card-custom-color').val();
             this.$el.find('#card-action-customcolor').val(color_label);
             $('#cardaction-color-picker .custom-background-box').css("background-color", color_label);
-        } else if (form === 'card-action'){
+        } else if (form === 'card-action') {
             color_label = $(e.target).parents().find('#card-action-customcolor').val();
             this.$el.find('#js-card-custom-color').val(color_label);
             $('#custom-color-picker .custom-background-box').css("background-color", color_label);
