@@ -46,6 +46,7 @@ App.BoardHeaderView = Backbone.View.extend({
         this.model.cards.bind('add', this.updateListView);
         this.model.cards.bind('remove', this.updateListView);
         this.model.cards.bind('change:is_archived', this.updateListView);
+        this.model.cards.bind('change:list_id', this.updateListView);
         this.model.cards.bind('change:comment_count', this.updateListView);
         this.model.lists.bind('remove', this.updateListView);
         this.model.bind('change:organization_id', this.render, this);
@@ -1000,7 +1001,23 @@ App.BoardHeaderView = Backbone.View.extend({
                                 list_id: parseInt(e.attributes.list_id),
                             });
                             e.list.cards.reset(list_filtered_cards);
-                            $('.js-card-list-view-' + self.model.attributes.id).append(view.render().el);
+                            var bool = true;
+                            i = 0;
+                            _.each(list_filtered_cards, (function(card) {
+                                if (bool) {
+                                    if (parseInt(card.attributes.id) === parseInt(e.attributes.id)) {
+                                        if (!_.isUndefined(list_filtered_cards[i - 1])) {
+                                            var prev_card_id = list_filtered_cards[i - 1].id;
+                                            $('#js-card-' + prev_card_id).after(view.render().el);
+                                            bool = false;
+                                        } else {
+                                            $('.js-card-list-view-' + self.model.attributes.id).append(view.render().el);
+                                            bool = false;
+                                        }
+                                    }
+                                    i++;
+                                }
+                            }));
                         }
                     }
                 } else {

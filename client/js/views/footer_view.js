@@ -1510,6 +1510,8 @@ App.FooterView = Backbone.View.extend({
                                                     var tmp_newlist_cards = card_new_list.cards;
                                                     card.set('created', card.get('created'));
                                                     card.set('list_moved_date', activity.attributes.created);
+                                                    card.set('list_name', activity.attributes.moved_list_name);
+                                                    card.list_name = activity.attributes.moved_list_name;
                                                     card.set('position', parseFloat(activity.attributes.card_position));
                                                     tmp_newlist_cards.add(card, {
                                                         silent: true
