@@ -555,6 +555,9 @@ App.CardView = Backbone.View.extend({
                 card: self.model,
                 converter: this.converter
             }));
+            if (!_.isUndefined(this.model.attributes.name) && this.model.attributes.name !== '') {
+                this.$el.addClass('panel js-show-modal-card-view js-board-list-card non-select cur').removeAttr('id').attr('data-toggle', 'modal').attr('data-target', '#myModal').attr('data-card_id', this.model.id).attr('id', 'js-card-' + this.model.id).css("border-left-color", this.model.attributes.color).css("border-left-width", "8px");
+            }
             if (filter_count < total_filter && (query_params)) {
                 if (_.isUndefined(ops) && ops !== null) {
                     this.model.set('is_filtered', true);
