@@ -316,6 +316,10 @@ App.ModalCardView = Backbone.View.extend({
             $(e.target).parents().find('#js-card-custom-color').val(' ');
             $('#custom-color-picker .custom-background-box').css("background-color", color_label);
         }
+        if ($(e.target).parents().find('#card-action-customcolor').length > 0) {
+            $(e.target).parents().find('#card-action-customcolor').val(' ');
+            $('#cardaction-color-picker .custom-background-box').css("background-color", color_label);
+        }
         $('#js-card-color-demo-' + card_id).css("background-color", color_label);
         $('#js-card-' + card_id).css("border-left-color", color_label).css("border-left-width", "8px");
         $('#js-carousel-card-' + card_id).css("border-left", '5px solid ' + color_label);
@@ -355,15 +359,23 @@ App.ModalCardView = Backbone.View.extend({
      *
      */
     colorPickerCard: function(e) {
+        var self = this;
         var color_label = $(e.target).closest('li').data('color');
         var data = {
             color: color_label
         };
         if ($(e.target).parents().find('#js-card-custom-color').length > 0 && color_label) {
             $(e.target).parents().find('#js-card-custom-color').val(color_label);
-            $('#custom-color-picker .custom-background-box').css("background-color", color_label);
+            self.$el.find('#custom-color-picker .custom-background-box').css("background-color", color_label);
+            self.$el.find('#card-action-customcolor').val(color_label);
+            self.$el.find('#cardaction-color-picker .custom-background-box').css("background-color", color_label);
         }
-        var self = this;
+        if ($(e.target).parents().find('#card-action-customcolor').length > 0 && color_label) {
+            $(e.target).parents().find('#card-action-customcolor').val(color_label);
+            self.$el.find('#custom-color-picker .custom-background-box').css("background-color", color_label);
+            self.$el.find('#card-action-customcolor').val(color_label);
+            self.$el.find('#cardaction-color-picker .custom-background-box').css("background-color", color_label);
+        }
         var card_id = self.model.id;
         $('#js-card-color-demo-' + card_id).css("background-color", color_label);
         $('#js-card-' + card_id).css("border-left-color", color_label).css("border-left-width", "8px");
@@ -405,7 +417,17 @@ App.ModalCardView = Backbone.View.extend({
      *
      */
     customColorPickerCard: function(e) {
-        var color_label = $(e.target).parents().find('#js-card-custom-color').val();
+        var form = $(e.target).attr('data-form');
+        var color_label;
+        if (form === 'card-menu') {
+            color_label = $(e.target).parents().find('#js-card-custom-color').val();
+            this.$el.find('#card-action-customcolor').val(color_label);
+            $('#cardaction-color-picker .custom-background-box').css("background-color", color_label);
+        } else if (form === 'card-action'){
+            color_label = $(e.target).parents().find('#card-action-customcolor').val();
+            this.$el.find('#js-card-custom-color').val(color_label);
+            $('#custom-color-picker .custom-background-box').css("background-color", color_label);
+        }
         var data = {
             color: color_label
         };
@@ -1641,6 +1663,16 @@ App.ModalCardView = Backbone.View.extend({
             $('#custom-color-picker').colorpicker({
                 format: 'hex',
                 container: '#custom-color-picker',
+            }).on('changeColor', function(e) {
+                $('.js-color-dropdown').addClass('open');
+                return false;
+            }).on('click', function(e) {
+                $('.js-color-dropdown').addClass('open');
+                return false;
+            });
+            $('#cardaction-color-picker').colorpicker({
+                format: 'hex',
+                container: '#cardaction-color-picker',
             }).on('changeColor', function(e) {
                 $('.js-color-dropdown').addClass('open');
                 return false;
