@@ -49,7 +49,7 @@
 <td  id="list_view_config_data-start_date" class="hide js-list-view-start-date-data js-list-view-start-date-<%- card.attributes.id %>" data-title="<%- i18next.t('Start Date') %>" title="<%- i18next.t('Start Date') %>" data-placement="bottom" data-toggle="tooltip" data-container="body"></td>
 <% } %>  
 <% if(CheckFieldExists(card.board, 'due_date' , null , 'boolean', 'r_listview_configure')){ %>	
-	<% if(!_.isEmpty(card.attributes.due_date) && card.attributes.due_date != 'NULL'){ %>
+	<% if(!_.isUndefined(card.attributes.due_date) && !_.isEmpty(card.attributes.due_date) && card.attributes.due_date != 'NULL'){ %>
 		<%
 			var today = new Date();
 			card_due_date = card.attributes.due_date.split('T');

@@ -39,7 +39,7 @@
 			});
 		}
 	%>
-	<% if(CheckFieldExists(card.board, 'Subscribe' , null , 'boolean', 'r_gridview_configure')){ %>
+	<% if(CheckFieldExists(card.board, 'subscribe' , null , 'boolean', 'r_gridview_configure')){ %>
 		<% if(!_.isUndefined(cards_subscribers) && !_.isEmpty(cards_subscribers)){ %>
 			<li><small><span class="icon-eye-open"></span></small></li>
 		<% } %> 
@@ -94,7 +94,7 @@
 		</li>
 	<%}%>
 	<li id="js-card-customfields-list-<%- card.attributes.id %>" class="hide"></li>
-	<% if(!_.isEmpty(card.attributes.due_date) && card.attributes.due_date != 'NULL'){
+	<% if(!_.isUndefined(card.attributes.due_date) && !_.isEmpty(card.attributes.due_date) && card.attributes.due_date != 'NULL'){
 		var date_times = card.attributes.due_date.split('T'),hours_mins;
 		var date_time = date_times[0].split(' ');
 		if (_.isUndefined(date_times[1])) {
@@ -129,9 +129,7 @@
 		}
 	%>
 	<% if(!_.isUndefined(label) && !_.isEmpty(label) && label != null && CheckFieldExists(card.board, 'due_date' , null , 'boolean', 'r_gridview_configure')) { %>
-	<% if(CheckFieldExists(card.board, 'due_date' , null , 'boolean', 'r_gridview_configure')){ %>
 		<li class="card-listing-truncate"><small title=" <%- i18next.t('Due Date') %>"><span class="label <%- label %>"><%= dateFormat(date_time[0], 'mediumDate')  %>&nbsp; <%- hours_mins %></span></small></li>
-		<% } %>
 	<% }
 	} %>
 	<% if(!_.isEmpty(card.attributes.created) && card.attributes.created != 'NULL'){
