@@ -217,74 +217,14 @@ App.FooterView = Backbone.View.extend({
         });
         if (!_.isEmpty(filtered_cards)) {
             var cards = new App.CardCollection();
-            cards.sortDirection = sort_direction;
-            cards.comparator = function(item) {
-                var str = '' + item.get(sort_by);
-                if (sort_by === 'name' || sort_by === 'list_name') {
-                    str = str.toLowerCase();
-                    str = str.split('');
-                    str = _.map(str, function(letter) {
-                        if (cards.sortDirection.toLowerCase() === 'desc') {
-                            return String.fromCharCode(-(letter.charCodeAt(0)));
-                        } else {
-                            return String.fromCharCode((letter.charCodeAt(0)));
-                        }
-                    });
-                    return str;
-                } else if (sort_by === 'due_date') {
-                    if (item.get('due_date') !== null) {
-                        var date = item.get('due_date').split(' ');
-                        if (!_.isUndefined(date[1])) {
-                            _date = date[0] + 'T' + date[1];
-                        } else {
-                            _date = date[0];
-                        }
-                        sort_date = new Date(_date);
-                        return cards.sortDirection === 'desc' ? -sort_date.getTime() : sort_date.getTime();
-                    }
-                } else if (sort_by === 'created_date') {
-                    if (item.get('created') !== null) {
-                        var created_date = item.get('created').split(' ');
-                        if (!_.isUndefined(created_date[1])) {
-                            _date = created_date[0] + 'T' + created_date[1];
-                        } else {
-                            _date = created_date[0];
-                        }
-                        sort_date = new Date(_date);
-                        return cards.sortDirection === 'desc' ? -sort_date.getTime() : sort_date.getTime();
-                    }
-                } else if (sort_by === 'list_moved_date') {
-                    if (item.get('list_moved_date') !== null) {
-                        var list_moved_date = item.get('list_moved_date').split(' ');
-                        if (!_.isUndefined(list_moved_date[1])) {
-                            _date = list_moved_date[0] + 'T' + list_moved_date[1];
-                        } else {
-                            _date = list_moved_date[0];
-                        }
-                        sort_date = new Date(_date);
-                        return cards.sortDirection === 'desc' ? -sort_date.getTime() : sort_date.getTime();
-                    }
-                } else if (sort_by === 'start_date') {
-                    if (item.get('custom_fields') !== null) {
-                        var inputArr = item.get('custom_fields');
-                        var start_date_time = JSON.parse(inputArr);
-                        if (!_.isUndefined(start_date_time.start_date)) {
-                            _date = start_date_time.start_date + 'T' + start_date_time.start_time;
-                        } else {
-                            _date = start_date_time.start_date;
-                        }
-                        sort_date = new Date(_date);
-                        return cards.sortDirection === 'desc' ? -sort_date.getTime() : sort_date.getTime();
-                    }
-                } else {
-                    if (cards.sortDirection === 'desc') {
-                        return -item.get(sort_by);
-                    } else {
-                        return item.get(sort_by);
-                    }
-                }
-            };
-            cards.reset(filtered_cards);
+            cards.reset(filtered_cards, {
+                silent: true
+            });
+            if (sort_by !== null && sort_direction !== null) {
+                cards.sortByColumn(sort_by, sort_direction);
+            } else {
+                cards.sortByColumn('position');
+            }
             return cards;
         }
     },

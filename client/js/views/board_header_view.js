@@ -866,7 +866,7 @@ App.BoardHeaderView = Backbone.View.extend({
             list.board_users = self.model.board_users;
             list.labels = self.model.labels;
             if (_.isUndefined(list.get('is_new')) && list.get('is_archived') === 0) {
-                if (sort_by !== null && sort_by !== null) {
+                if (sort_by !== null && sort_direction !== null) {
                     self.model.cards.sortByColumn(sort_by, sort_direction);
                 } else {
                     self.model.cards.sortByColumn('position');
@@ -882,6 +882,11 @@ App.BoardHeaderView = Backbone.View.extend({
                 cards.reset(filtered_cards, {
                     silent: true
                 });
+                if (sort_by !== null && sort_direction !== null) {
+                    cards.sortByColumn(sort_by, sort_direction);
+                } else {
+                    cards.sortByColumn('position');
+                }
                 cards.each(function(card) {
                     if (parseInt(card.get('is_archived')) === 0) {
                         var card_id = card.id;
@@ -991,7 +996,7 @@ App.BoardHeaderView = Backbone.View.extend({
                             $('.js-card-list-view-' + self.model.attributes.id).html('');
                             $('.js-card-list-view-' + self.model.attributes.id).append(view.render().el);
                         } else {
-                            if (sort_by !== null && sort_by !== null) {
+                            if (sort_by !== null && sort_direction !== null) {
                                 self.model.cards.sortByColumn(sort_by, sort_direction);
                             } else {
                                 self.model.cards.sortByColumn('position');
@@ -1009,6 +1014,10 @@ App.BoardHeaderView = Backbone.View.extend({
                                         if (!_.isUndefined(list_filtered_cards[i - 1])) {
                                             var prev_card_id = list_filtered_cards[i - 1].id;
                                             $('#js-card-' + prev_card_id).after(view.render().el);
+                                            bool = false;
+                                        } else if (!_.isUndefined(list_filtered_cards[i + 1])) {
+                                            var next_card_id = list_filtered_cards[i + 1].id;
+                                            $('#js-card-' + next_card_id).before(view.render().el);
                                             bool = false;
                                         } else {
                                             $('.js-card-list-view-' + self.model.attributes.id).append(view.render().el);
