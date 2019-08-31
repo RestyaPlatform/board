@@ -2187,7 +2187,7 @@ App.ModalCardView = Backbone.View.extend({
         var currentdate = new Date();
         var tmp_move_date = currentdate.getFullYear() + '-' + (((currentdate.getMonth() + 1) < 10) ? '0' + (currentdate.getMonth() + 1) : (currentdate.getMonth() + 1)) + '-' + ((currentdate.getDate() < 10) ? '0' + currentdate.getDate() : currentdate.getDate()) + 'T' + currentdate.getHours() + ':' + (currentdate.getMinutes() < 10 ? '0' : '') + currentdate.getMinutes() + ':' + (currentdate.getSeconds() < 10 ? '0' : '') + currentdate.getSeconds();
         this.model.set('list_moved_date', tmp_move_date);
-        if ((!_.isUndefined(current_board.attributes.sort_by) && current_board.attributes.sort_by !== null && current_board.attributes.sort_by === 'position') || (_.isUndefined(current_board.attributes.sort_by) || current_board.attributes.sort_by === null)) {
+        if (((!_.isUndefined(current_board.attributes.sort_by) && current_board.attributes.sort_by !== null && current_board.attributes.sort_by === 'position') || (_.isUndefined(current_board.attributes.sort_by) || current_board.attributes.sort_by === null)) && parseInt(data.board_id) === parseInt(current_board_id)) {
             var change_list_cards = this.model.list.collection.board.cards.where({
                 list_id: data.list_id
             });
@@ -2254,7 +2254,7 @@ App.ModalCardView = Backbone.View.extend({
             } else {
                 data.position = this.model.attributes.position;
             }
-        } else {
+        } else if (parseInt(data.board_id) === parseInt(current_board_id)) {
             data.position = 1;
             this.model.set({
                 position: data.position
