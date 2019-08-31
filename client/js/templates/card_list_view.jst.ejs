@@ -101,9 +101,12 @@
 	if(!_.isUndefined(authuser) && !_.isUndefined(authuser.user)){
 	var cards_subscribers = card.cards_subscribers.where({ is_subscribed: 1, user_id: parseInt(authuser.user.id) }); 
 	}
-	if(!_.isUndefined(cards_subscribers) && cards_subscribers > 0){ %>
-	<td id="list_view_config_data-subscribe" data-title="<%- i18next.t('Subscribed') %>" title="<%- i18next.t('Subscribed') %>" data-placement="bottom" data-toggle="tooltip" data-container="body"><span class="icon-eye-open"></span></td><% }else { %>
-		<td id="list_view_config_data-subscribe" data-title="Subscribe"><small>-</small></td>
+	if(!_.isUndefined(cards_subscribers) && cards_subscribers.length > 0){ %>
+	<td id="list_view_config_data-subscribe">
+		<a href="javascript:void(0);" data-title="<%- i18next.t('Subscribed') %>" title="<%- i18next.t('Subscribed') %>" data-placement="bottom" data-toggle="tooltip" data-container="body"><span class="icon-eye-open"></span></a>
+	</td>
+	<% }else { %>
+		<td id="list_view_config_data-subscribe" data-title="<%- i18next.t('Subscribe') %>" title="<%- i18next.t('Subscribe') %>" data-placement="bottom" data-toggle="tooltip" data-container="body"><small>-</small></td>
 	<% } %>
 	<% } %>
 	<% if(CheckFieldExists(card.board, 'card_voter_count' , null , 'boolean', 'r_listview_configure')){ %>	

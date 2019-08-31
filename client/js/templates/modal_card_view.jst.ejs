@@ -191,6 +191,7 @@
 					</div>
 					<a class="hide js-app-activity-trigger"></a>
 					<ul class="js-card-actions js-card-add list-inline action-list navbar-btn">
+						<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: "edit_card",board_user_role_id: parseInt(list.board_user_role_id)})))){ %>
 						<li class="dropdown js-color-dropdown">
 								<% if(!_.isEmpty(card.attributes.color)){ %>
 									<a class="pr btn btn-default dropdown-toggle even-action htruncate" role="button" data-toggle="dropdown" title="<%- i18next.t('Color') %>" href="#"><span class="dycolorblk" id="js-card-color-demo-<%- card.id %>" style="background-color:<%- card.attributes.color %>;"></span><i class="icon-pencil">&nbsp;</i><%- i18next.t('Color') %></a>
@@ -243,7 +244,7 @@
 														</div>
 												</div>
 												<div  class="col-xs-4">
-														<button type="button" class="btn btn-primary btn-sm js-color-customcolor-card"><%- i18next.t('Save') %></button>
+														<button type="button" class="btn btn-primary btn-sm js-color-customcolor-card" data-form="card-menu"><%- i18next.t('Save') %></button>
 												</div>
 										</li>
 									
@@ -255,7 +256,10 @@
 								</ul>
 						</ul>
 					</li>
+					<% } %>
+					<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: "edit_card",board_user_role_id: parseInt(list.board_user_role_id)})))){ %>
 					<li class = "check_start_date_set-<%- card.id%> js-gantt-card-app" data-card_id = "<%- card.id%>"></li>
+					<% } %>
 					<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: "edit_card",board_user_role_id: parseInt(list.board_user_role_id)})))){ %>
 					<li class="dropdown"> <a class="btn btn-default dropdown-toggle js-show-card-due-date-form custom-datepicker-position even-action htruncate" role="button" data-toggle="dropdown" title="<%- i18next.t('Due Date') %>" href="#"><i class="icon-calendar"></i><%- i18next.t('Due Date') %></a>
 					  <ul class="dropdown-menu dropdown-menu-left arrow col-xs-12">
@@ -360,7 +364,7 @@
 						  </ul>
 						</li>
 					<% } %>
-					<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || (((!_.isEmpty(card.list.collection.board.acl_links.where({slug: "subscribe_card",board_user_role_id: parseInt(list.board_user_role_id)}))) || (!_.isEmpty(card.list.collection.board.acl_links.where({slug: "unsubscribe_card",board_user_role_id: parseInt(list.board_user_role_id)}))))  || (!_.isEmpty(role_links.where({slug: "subscribe_card"})) && card.list.collection.board.attributes.board_visibility == 2)))) { %>
+					<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || (((!_.isEmpty(card.list.collection.board.acl_links.where({slug: "subscribe_card",board_user_role_id: parseInt(list.board_user_role_id)}))) || (!_.isEmpty(card.list.collection.board.acl_links.where({slug: "unsubscribe_card",board_user_role_id: parseInt(list.board_user_role_id)}))))  || (!_.isEmpty(role_links.where({slug: "subscribe_card"})) && card.list.collection.board.attributes.board_visibility == 2) || (!_.isEmpty(role_links.where({slug: "unsubscribe_card"})) && card.list.collection.board.attributes.board_visibility == 2)))) { %>
 						<li class="navbar-btn" id="js-modal-subscribe-show-<%- card.attributes.id%>"></li>
 				   <% } %>
 					<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: "card_template_add",board_user_role_id: parseInt(list.board_user_role_id)})))) { %>
@@ -523,6 +527,7 @@
   <div class="dropdown dockheader-dropdown docmodal-submenu js-modal-settings hide">
   <a aria-expanded="true" data-toggle="dropdown" id="dropdownMenu1" class="dropdown-toggle label"> <i class="icon-cog h3"></i></a>
   <ul role="menu" class="dropdown-menu arrow">
+		<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: "edit_card",board_user_role_id: parseInt(list.board_user_role_id)})))){ %>
 		<li class="dropdown js-show-color-settings-dropdown"><a class="dropdown-toggle js-show-color-settings" href="#" title="Color" data-toggle="dropdown"><i class="text-primary"></i>Color</a>
 				<ul class="dropdown-menu dropdown-menu-left dropdown-new arrow selectcolourdown col-xs-12">
 					<li class="col-xs-12 clearfix text-center">
@@ -563,6 +568,19 @@
 							<li class="list-inline js-change-color js-color-focusout-card navbar-btn cur" data-color="#dbcff1"><span class="btn btn-default show well-sm" style="background-color:#dbcff1"></span></li>
 							<li class="list-inline js-change-color js-color-focusout-card navbar-btn cur" data-color="#ccdc87"><span class="btn btn-default show well-sm" style="background-color:#ccdc87"></span></li>
 							<li class="list-inline js-change-color js-color-focusout-card navbar-btn cur" data-color="#f1eabf"><span class="btn btn-default show well-sm" style="background-color:#f1eabf"></span></li>
+							<li class="col-xs-12 divider"><hr></li>
+							<li class="list-inline cur">
+									<label for="card-action-customcolor"><%- i18next.t('Custom color') %></label>
+									<div class="col-xs-8">
+											<div id="cardaction-color-picker" class="input-group">
+													<input type="text" value="<%- card.attributes.color %>" id="card-action-customcolor" class="form-control input-sm"/>
+													<span class="input-group-addon"><i class="custom-background-box"></i></span>
+											</div>
+									</div>
+									<div  class="col-xs-4">
+											<button type="button" class="btn btn-primary btn-sm js-color-customcolor-card" data-form="card-action"><%- i18next.t('Save') %></button>
+									</div>
+							</li>
 							<% if(!_.isEmpty(card.attributes.color)){ %>
 								<button type="button" class="btn btn-primary js-remove-card-color">Remove color</button>
 							<% }else{ %>
@@ -571,6 +589,7 @@
 					</ul>
 			</ul>
 		</li>
+		<% } %>
 	  <% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: "edit_card",board_user_role_id: parseInt(list.board_user_role_id)})))){ %>
 		<li class="dropdown"> <a class="dropdown-toggle js-show-card-due-date-form custom-datepicker-position" role="button" data-toggle="dropdown" title="<%- i18next.t('Due Date') %>" href="#"><%- i18next.t('Due Date') %></a>
 		  <ul class="dropdown-menu dropdown-menu-left arrow col-xs-12">
@@ -740,7 +759,7 @@
 				</ul>
 			</li>
 		<% } %>
-		<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || (((!_.isEmpty(card.list.collection.board.acl_links.where({slug: "subscribe_card",board_user_role_id: parseInt(list.board_user_role_id)}))) || (!_.isEmpty(card.list.collection.board.acl_links.where({slug: "unsubscribe_card",board_user_role_id: parseInt(list.board_user_role_id)}))))  || (!_.isEmpty(role_links.where({slug: "subscribe_card"})) && card.list.collection.board.attributes.board_visibility == 2)))) { %>
+		<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || (((!_.isEmpty(card.list.collection.board.acl_links.where({slug: "subscribe_card",board_user_role_id: parseInt(list.board_user_role_id)}))) || (!_.isEmpty(card.list.collection.board.acl_links.where({slug: "unsubscribe_card",board_user_role_id: parseInt(list.board_user_role_id)}))))  || (!_.isEmpty(role_links.where({slug: "subscribe_card"})) && card.list.collection.board.attributes.board_visibility == 2) || (!_.isEmpty(role_links.where({slug: "unsubscribe_card"})) && card.list.collection.board.attributes.board_visibility == 2)))) { %>
 			<li id="js-header-dropdown-subscribe-<%- card.attributes.id %>"></li>
 			<% } %>
 			<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: "vote_card",board_user_role_id: parseInt(list.board_user_role_id)})) || !_.isEmpty(card.list.collection.board.acl_links.where({slug: "unvote_card",board_user_role_id: parseInt(list.board_user_role_id)})))) { %>
@@ -755,8 +774,16 @@
 		<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: "delete_card",board_user_role_id: parseInt(list.board_user_role_id)})))){ %>
 			<li class="dropdown" id="js-modal-action-card-delete-<%- card.attributes.id%>"></li>
 		<% } %>
-	  <% } %>
-	  <li class="dropdown dropup js-more-dropdown">
+		<% } %>
+		<% 
+		if(!_.isUndefined(authuser.user.id) && !_.isEmpty(authuser.user.id) && !_.isUndefined(card.board_users) && !_.isEmpty(card.board_users))
+		{
+			var board_user_role_id_check = card.board_users.findWhere({
+				user_id : parseInt(authuser.user.id)
+			});
+		}
+		%>
+	  <li class="dropdown <% if(!_.isUndefined(board_user_role_id_check) && !_.isEmpty(board_user_role_id_check)) { %> dropup <% } %> js-more-dropdown">
 	  <div class="col-xs-12 divider"></div>
 	  <a class="show btn btn-link js-more-menu quiet-button" data-toggle="dropdown" title="<%- i18next.t('More options share, print, export, and delete.') %>" href="#"><%- i18next.t('Share and more...') %></a>
 		<ul class="dropdown-menu dropdown-menu-left dropup-arrow col-xs-12 pre-scrollable vertical-scrollbar">

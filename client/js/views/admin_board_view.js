@@ -58,7 +58,7 @@ App.AdminBoardView = Backbone.View.extend({
         'click .js-show-board-organization': 'showBoardOrganization',
         'submit .js-save-board-visibility': 'saveBoardVisibility',
         'click .js-close-span-popover': 'closeSpanPopover',
-        'click .js-back-to-board-visibility': 'showBoardVisibility',
+        'click .js-back-to-board-visibility': 'backShowBoardVisibility',
     },
     /**
      * render()
@@ -200,6 +200,23 @@ App.AdminBoardView = Backbone.View.extend({
         this.$('.js-back-to-board-visibility').addClass('hide');
         var visibility = this.model.attributes.board_visibility;
         var insert = $('.js-visibility-list', target.next('.dropdown-menu'));
+        insert.nextAll().remove();
+        $(new App.ShowBoardVisibilityView({
+            model: visibility
+        }).el).insertAfter(insert);
+    },
+    /**
+     * backShowBoardVisibility()
+     * render the board visibilities
+     * @param e
+     * @type Object(DOM event)
+     *
+     */
+    backShowBoardVisibility: function(e) {
+        var target = $(e.currentTarget);
+        this.$('.js-back-to-board-visibility').addClass('hide');
+        var visibility = this.model.attributes.board_visibility;
+        var insert = $(target).parents('.dropdown-menu:first').find('.js-visibility-list');
         insert.nextAll().remove();
         $(new App.ShowBoardVisibilityView({
             model: visibility

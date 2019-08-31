@@ -485,7 +485,10 @@ function checkAclLinks($r_request_method = 'GET', $r_resource_cmd = '/users', $r
         '/boards/?/lists/?/cards/?/comments',
         '/boards/?/board_subscribers',
         '/boards/?/lists/?/list_subscribers',
-        '/boards/?/lists/?/cards/?/card_subscribers'
+        '/boards/?/lists/?/cards/?/card_subscribers',
+        '/boards/?/board_subscribers/?',
+        '/boards/?/lists/?/list_subscribers/?',
+        '/boards/?/lists/?/cards/?/card_subscribers/?'
     );
     if (in_array($r_resource_cmd, $public_board_exception_url)) {
         $board_star = false;
@@ -761,6 +764,7 @@ function copyCards($cards, $new_list_id, $name, $new_board_id = '')
                     $comment->board_id = $new_board_id;
                     $comment->list_id = $new_list_id;
                     $comment->card_id = $new_card_id;
+                    $comment->token = $_GET['token'];
                     pg_execute_insert('activities', $comment);
                 }
             }
@@ -1544,9 +1548,10 @@ function importTrelloBoard($board = array())
                             $new_board['id'],
                             $users[$action['idMemberCreator']],
                             $type,
-                            $comment
+                            $comment,
+                            $_GET['token']
                         );
-                        $activity = pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO activities (created, modified, board_id, user_id, type, comment) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id', $qry_val_arr));
+                        $activity = pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO activities (created, modified, board_id, user_id, type, comment, token) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id', $qry_val_arr));
                     } else if (!empty($lists_key) && empty($cards_key)) {
                         $qry_val_arr = array(
                             $created,
@@ -1555,9 +1560,10 @@ function importTrelloBoard($board = array())
                             $lists_key,
                             $users[$action['idMemberCreator']],
                             $type,
-                            $comment
+                            $comment,
+                            $_GET['token']
                         );
-                        $activity = pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO activities (created, modified, board_id, list_id, user_id, type, comment) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id', $qry_val_arr));
+                        $activity = pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO activities (created, modified, board_id, list_id, user_id, type, comment, token) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id', $qry_val_arr));
                     } else if (empty($lists_key) && !empty($cards_key)) {
                         $qry_val_arr = array(
                             $created,
@@ -1566,9 +1572,10 @@ function importTrelloBoard($board = array())
                             $cards_key,
                             $users[$action['idMemberCreator']],
                             $type,
-                            $comment
+                            $comment,
+                            $_GET['token']
                         );
-                        $activity = pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO activities (created, modified, board_id, card_id, user_id, type, comment) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id', $qry_val_arr));
+                        $activity = pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO activities (created, modified, board_id, card_id, user_id, type, comment, token) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id', $qry_val_arr));
                     } else if (!empty($lists_key) && !empty($cards_key)) {
                         $qry_val_arr = array(
                             $created,
@@ -1578,9 +1585,10 @@ function importTrelloBoard($board = array())
                             $cards_key,
                             $users[$action['idMemberCreator']],
                             $type,
-                            $comment
+                            $comment,
+                            $_GET['token']
                         );
-                        $activity = pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO activities (created, modified, board_id, list_id, card_id, user_id, type, comment) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id', $qry_val_arr));
+                        $activity = pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO activities (created, modified, board_id, list_id, card_id, user_id, type, comment, token) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id', $qry_val_arr));
                     }
                     if (!empty($activity)) {
                         $id_converted = base_convert($activity['id'], 10, 36);
@@ -1944,9 +1952,10 @@ function importKantreeBoard($jsonArr = array())
                             $cards_key,
                             $users[$action['actor']['id']],
                             $type,
-                            $comment
+                            $comment,
+                            $_GET['token']
                         );
-                        $activity = pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO activities (created, modified, board_id, list_id, card_id, user_id, type, comment) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id', $qry_val_arr));
+                        $activity = pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO activities (created, modified, board_id, list_id, card_id, user_id, type, comment, token) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id', $qry_val_arr));
                         if (!empty($activity)) {
                             $id_converted = base_convert($activity['id'], 10, 36);
                             $materialized_path = sprintf("%08s", $id_converted);
@@ -2217,9 +2226,10 @@ function importTaigaBoard($board = array())
                         $cards_key,
                         $userNames[$action['data']['user']['email']],
                         $type,
-                        $comment
+                        $comment,
+                        $_GET['token']
                     );
-                    $activity = pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO activities (created, modified, board_id, list_id, card_id, user_id, type, comment) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id', $qry_val_arr));
+                    $activity = pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO activities (created, modified, board_id, list_id, card_id, user_id, type, comment, token) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id', $qry_val_arr));
                     if (!empty($activity)) {
                         $id_converted = base_convert($activity['id'], 10, 36);
                         $materialized_path = sprintf("%08s", $id_converted);
@@ -2568,9 +2578,10 @@ function importWekanBoard($board = array())
                         $new_board['id'],
                         $users[$action['userId']],
                         $type,
-                        $comment
+                        $comment,
+                        $_GET['token']
                     );
-                    $activity = pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO activities (created, modified, board_id, user_id, type, comment) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id', $qry_val_arr));
+                    $activity = pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO activities (created, modified, board_id, user_id, type, comment, token) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id', $qry_val_arr));
                 } else if (!empty($lists_key) && empty($cards_key)) {
                     $qry_val_arr = array(
                         $created,
@@ -2579,9 +2590,10 @@ function importWekanBoard($board = array())
                         $lists_key,
                         $users[$action['userId']],
                         $type,
-                        $comment
+                        $comment,
+                        $_GET['token']
                     );
-                    $activity = pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO activities (created, modified, board_id, list_id, user_id, type, comment) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id', $qry_val_arr));
+                    $activity = pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO activities (created, modified, board_id, list_id, user_id, type, comment, token) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id', $qry_val_arr));
                 } else if (empty($lists_key) && !empty($cards_key)) {
                     $qry_val_arr = array(
                         $created,
@@ -2590,9 +2602,10 @@ function importWekanBoard($board = array())
                         $cards_key,
                         $users[$action['userId']],
                         $type,
-                        $comment
+                        $comment,
+                        $_GET['token']
                     );
-                    $activity = pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO activities (created, modified, board_id, card_id, user_id, type, comment) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id', $qry_val_arr));
+                    $activity = pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO activities (created, modified, board_id, card_id, user_id, type, comment, token) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id', $qry_val_arr));
                 } else if (!empty($lists_key) && !empty($cards_key)) {
                     $qry_val_arr = array(
                         $created,
@@ -2602,9 +2615,10 @@ function importWekanBoard($board = array())
                         $cards_key,
                         $users[$action['userId']],
                         $type,
-                        $comment
+                        $comment,
+                        $_GET['token']
                     );
-                    $activity = pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO activities (created, modified, board_id, list_id, card_id, user_id, type, comment) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id', $qry_val_arr));
+                    $activity = pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO activities (created, modified, board_id, list_id, card_id, user_id, type, comment, token) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id', $qry_val_arr));
                 }
                 if (!empty($activity)) {
                     $id_converted = base_convert($activity['id'], 10, 36);

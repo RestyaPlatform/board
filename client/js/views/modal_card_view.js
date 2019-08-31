@@ -316,6 +316,10 @@ App.ModalCardView = Backbone.View.extend({
             $(e.target).parents().find('#js-card-custom-color').val(' ');
             $('#custom-color-picker .custom-background-box').css("background-color", color_label);
         }
+        if ($(e.target).parents().find('#card-action-customcolor').length > 0) {
+            $(e.target).parents().find('#card-action-customcolor').val(' ');
+            $('#cardaction-color-picker .custom-background-box').css("background-color", color_label);
+        }
         $('#js-card-color-demo-' + card_id).css("background-color", color_label);
         $('#js-card-' + card_id).css("border-left-color", color_label).css("border-left-width", "8px");
         $('#js-carousel-card-' + card_id).css("border-left", '5px solid ' + color_label);
@@ -355,15 +359,23 @@ App.ModalCardView = Backbone.View.extend({
      *
      */
     colorPickerCard: function(e) {
+        var self = this;
         var color_label = $(e.target).closest('li').data('color');
         var data = {
             color: color_label
         };
         if ($(e.target).parents().find('#js-card-custom-color').length > 0 && color_label) {
             $(e.target).parents().find('#js-card-custom-color').val(color_label);
-            $('#custom-color-picker .custom-background-box').css("background-color", color_label);
+            self.$el.find('#custom-color-picker .custom-background-box').css("background-color", color_label);
+            self.$el.find('#card-action-customcolor').val(color_label);
+            self.$el.find('#cardaction-color-picker .custom-background-box').css("background-color", color_label);
         }
-        var self = this;
+        if ($(e.target).parents().find('#card-action-customcolor').length > 0 && color_label) {
+            $(e.target).parents().find('#card-action-customcolor').val(color_label);
+            self.$el.find('#custom-color-picker .custom-background-box').css("background-color", color_label);
+            self.$el.find('#card-action-customcolor').val(color_label);
+            self.$el.find('#cardaction-color-picker .custom-background-box').css("background-color", color_label);
+        }
         var card_id = self.model.id;
         $('#js-card-color-demo-' + card_id).css("background-color", color_label);
         $('#js-card-' + card_id).css("border-left-color", color_label).css("border-left-width", "8px");
@@ -405,7 +417,17 @@ App.ModalCardView = Backbone.View.extend({
      *
      */
     customColorPickerCard: function(e) {
-        var color_label = $(e.target).parents().find('#js-card-custom-color').val();
+        var form = $(e.target).attr('data-form');
+        var color_label;
+        if (form === 'card-menu') {
+            color_label = $(e.target).parents().find('#js-card-custom-color').val();
+            this.$el.find('#card-action-customcolor').val(color_label);
+            $('#cardaction-color-picker .custom-background-box').css("background-color", color_label);
+        } else if (form === 'card-action') {
+            color_label = $(e.target).parents().find('#card-action-customcolor').val();
+            this.$el.find('#js-card-custom-color').val(color_label);
+            $('#custom-color-picker .custom-background-box').css("background-color", color_label);
+        }
         var data = {
             color: color_label
         };
@@ -1014,28 +1036,28 @@ App.ModalCardView = Backbone.View.extend({
         }
         this.model.set(data);
         var target = $(e.currentTarget);
-        $('.js-show-side-card-title-edit-form').parents().find('.dropdown').removeClass('open');
+        self.$el.find('.js-show-side-card-title-edit-form').parents().find('.dropdown').removeClass('open');
         if (!_.isUndefined(data.name)) {
             target.prev('h4').html(_.escape(data.name)).removeClass('hide');
             $(e.target).addClass('hide');
         }
         if (!_.isUndefined(data.description)) {
             if (!_.isEmpty(data.description)) {
-                if (!$.trim($('#inputCarddescriptions').val()).length) {
+                if (!$.trim(self.$el.find('#inputCarddescriptions').val()).length) {
                     $('.error-msg').remove();
-                    $('<div class="error-msg text-primary h6">Whitespace is not allowed</div>').insertAfter('#inputCarddescriptions');
+                    $('<div class="error-msg text-primary h6">Whitespace is not allowed</div>').insertAfter(self.$el.find('#inputCarddescriptions'));
                     validation = false;
                     this.$el.find('#cardDescriptionEditForm').removeClass('hide').show();
                 } else {
                     $('.error-msg').remove();
                     $('.js-show-card-desc').show();
-                    $('#cardDescriptionEditForm').addClass('hide');
+                    self.$el.find('#cardDescriptionEditForm').addClass('hide');
                     validation = true;
                 }
             } else {
                 $('.error-msg').remove();
                 $('.js-show-card-desc').show();
-                $('#cardDescriptionEditForm').addClass('hide');
+                self.$el.find('#cardDescriptionEditForm').addClass('hide');
                 validation = true;
             }
         }
@@ -1086,7 +1108,8 @@ App.ModalCardView = Backbone.View.extend({
                                 });
                             }
                         });
-                        self.model.set('due_date', data.start);
+                        self.model.set('due_date', data.due_date);
+                        self.model.set('end', data.due_date);
                         self.model.set('title', response.activity.card_name, {
                             silent: true
                         });
@@ -1647,6 +1670,16 @@ App.ModalCardView = Backbone.View.extend({
                 $('.js-color-dropdown').addClass('open');
                 return false;
             });
+            $('#cardaction-color-picker').colorpicker({
+                format: 'hex',
+                container: '#cardaction-color-picker',
+            }).on('changeColor', function(e) {
+                $('.js-color-dropdown').addClass('open');
+                return false;
+            }).on('click', function(e) {
+                $('.js-color-dropdown').addClass('open');
+                return false;
+            });
             $('.js-card-duedate-edit-' + self.model.id).datetimepicker({
                 format: 'yyyy-mm-dd',
                 container: '.js-show-card-due-date-form',
@@ -1912,6 +1945,7 @@ App.ModalCardView = Backbone.View.extend({
             card_voter.set('user_id', parseInt(authuser.user.id));
             card_voter.set('board_id', board_id);
             card_voter.set('list_id', list_id);
+            card_voter.set('full_name', authuser.user.full_name);
             card_voter.set('username', authuser.user.username);
             card_voter.set('role_id', authuser.user.role_id);
             card_voter.set('profile_picture_path', authuser.user.profile_picture_path);
@@ -2040,9 +2074,19 @@ App.ModalCardView = Backbone.View.extend({
         var card_subscribe_id = 'undefined';
         var self = this;
         var uuid = new Date().getTime();
-        $(e.currentTarget).removeClass('js-card-subscribe').addClass('js-card-unsubscribe');
+        $(e.currentTarget).removeClass('js-card-subscribe');
         $('.js-subscribe-change-icon').append('<i class="icon-ok"></i>');
         $('.js-card-subscribed-' + card_id).removeClass('hide');
+        if (!_.isEmpty(this.model.list.collection.board.acl_links.where({
+                slug: "unsubscribe_card",
+                board_user_role_id: parseInt(this.model.list.board_user_role_id)
+            })) || (!_.isEmpty(role_links.where({
+                slug: "unsubscribe_card"
+            })) && this.model.list.collection.board.attributes.board_visibility == 2)) {
+            $(e.currentTarget).addClass('js-card-unsubscribe');
+        } else {
+            $(e.currentTarget).addClass('hide');
+        }
         var card_subscribe = new App.CardSubscriber();
         card_subscribe.set('is_offline', true);
         card_subscribe.set('card_id', card_id);
@@ -2105,8 +2149,18 @@ App.ModalCardView = Backbone.View.extend({
      * @return false
      */
     cardUnsubscribe: function(e) {
-        $(e.currentTarget).removeClass('js-card-unsubscribe').addClass('js-card-subscribe');
+        $(e.currentTarget).removeClass('js-card-unsubscribe');
         $('i.icon-ok', e.currentTarget).remove();
+        if (!_.isEmpty(this.model.list.collection.board.acl_links.where({
+                slug: "subscribe_card",
+                board_user_role_id: parseInt(this.model.list.board_user_role_id)
+            })) || (!_.isEmpty(role_links.where({
+                slug: "subscribe_card"
+            })) && this.model.list.collection.board.attributes.board_visibility == 2)) {
+            $(e.currentTarget).addClass('js-card-subscribe');
+        } else {
+            $(e.currentTarget).addClass('hide');
+        }
         var card_id = this.model.id;
         var list_id = this.model.attributes.list_id;
         var board_id = this.model.attributes.board_id;
@@ -2730,6 +2784,7 @@ App.ModalCardView = Backbone.View.extend({
      * display labels in card
      */
     renderLabelsCollection: function() {
+        var self = this;
         var is_edit_labels;
         if (!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(this.model.list.collection.board.acl_links.where({
                 slug: "delete_labels",
@@ -2741,10 +2796,9 @@ App.ModalCardView = Backbone.View.extend({
         }
         var view_label = this.$el.find('.js-card-labels-list');
         view_label.html('');
-        if ($('#js-label-add-container').length === 0) {
+        if (self.$el.find('#js-label-add-container').length === 0) {
             view_label.append('<li id="js-label-add-container"><div class="dropdown js-label-dropdown no-print"><a class="dropdown-toggle js-show-card-label-form btn btn-default" role="button" data-toggle="dropdown" title="' + i18next.t('Add new Labels') + '" href="#"> <i class="icon-plus"></i></a><ul class="dropdown-menu dropdown-menu-left arrow col-xs-12 js-show-card-label-form-response"></ul></div></li>');
         }
-        var self = this;
         this.model.labels.each(function(label) {
             var slabel = self.model.labels.findWhere({
                 label_id: label.attributes.label_id
@@ -2950,31 +3004,39 @@ App.ModalCardView = Backbone.View.extend({
         }
         this.Modalheaderreset();
         var subscribed = '',
+            list_subscribed = '',
             subscribe_disabled = '',
             subscribe_title = i18next.t('Subscribe'),
             subscribe_class = 'js-card-subscribe';
-        subscribed = this.model.list.collection.board.board_subscribers.findWhere({
-            user_id: parseInt(authuser.user.id),
-            is_subscribed: 1
-        });
-        var list_subscribed = this.model.list.lists_subscribers.findWhere({
-            user_id: parseInt(authuser.user.id),
-            is_subscribed: 1
-        });
-        if (!_.isEmpty(cards_subscribers)) {
+        if (!_.isUndefined(authuser) && !_.isUndefined(authuser.user)) {
+            subscribed = this.model.list.collection.board.board_subscribers.findWhere({
+                user_id: parseInt(authuser.user.id),
+                is_subscribed: 1
+            });
+            list_subscribed = this.model.list.lists_subscribers.findWhere({
+                user_id: parseInt(authuser.user.id),
+                is_subscribed: 1
+            });
+        }
+        if (!_.isUndefined(cards_subscribers) && !_.isEmpty(cards_subscribers)) {
             subscribe_title = i18next.t('Unsubscribe');
             subscribe_class = 'js-card-unsubscribe';
         }
-        if (subscribed) {
+        if (!_.isUndefined(subscribed) && !_.isEmpty(subscribed)) {
             subscribe_disabled = 'disabled';
             subscribe_class = 'js-no-action';
             subscribe_title = i18next.t('Board wise subscription already enabled');
-        } else if (list_subscribed) {
+        } else if (!_.isUndefined(list_subscribed) && !_.isEmpty(list_subscribed)) {
             subscribe_disabled = 'disabled';
             subscribe_class = 'js-no-action';
             subscribe_title = i18next.t('List wise subscription already enabled');
         }
-        if (!_.isEmpty(cards_subscribers)) {
+        if (!_.isEmpty(cards_subscribers) && (!_.isEmpty(this.model.list.collection.board.acl_links.where({
+                slug: "unsubscribe_card",
+                board_user_role_id: parseInt(this.model.list.board_user_role_id)
+            })) || (!_.isEmpty(role_links.where({
+                slug: "unsubscribe_card"
+            })) && this.model.list.collection.board.attributes.board_visibility == 2))) {
             if (view_subscribe.length == 1) {
                 view_subscribe.append('	<a class="btn btn-default ' + subscribe_disabled + ' ' + subscribe_class + ' even-action htruncate" title=" ' + i18next.t(subscribe_title) + '" href="javascript:void(0);"><i class="icon-eye-close"></i> ' + i18next.t('Unsubsribe') + '</a>');
             }
@@ -2983,7 +3045,12 @@ App.ModalCardView = Backbone.View.extend({
                 view_headdropsubscribe.addClass(subscribe_disabled);
 
             }
-        } else {
+        } else if (!_.isEmpty(this.model.list.collection.board.acl_links.where({
+                slug: "subscribe_card",
+                board_user_role_id: parseInt(this.model.list.board_user_role_id)
+            })) || (!_.isEmpty(role_links.where({
+                slug: "subscribe_card"
+            })) && this.model.list.collection.board.attributes.board_visibility == 2) && _.isEmpty(cards_subscribers)) {
             if (view_subscribe.length == 1) {
                 view_subscribe.append('	<a class="btn btn-default ' + subscribe_disabled + ' ' + subscribe_class + ' even-action htruncate" title=" ' + i18next.t(subscribe_title) + '" href="javascript:void(0);"><i class="icon-eye-close"></i> ' + i18next.t('Subscribe') + '</a>');
             }
@@ -3352,76 +3419,82 @@ App.ModalCardView = Backbone.View.extend({
         var self = this;
         var target = $(e.currentTarget);
         var uuid = new Date().getTime();
-        target.removeClass('js-add-card-member').addClass('js-remove-card-member').append('<i class="icon-ok"></i>');
         var user_id = target.data('user-id');
-        var user_name = target.data('user-name');
-        var user_initial = target.data('user-initial');
-        var user_profile_picture_path = target.data('user-profile-picture-path');
-        var full_name = target.data('user-fullname');
-        var content_img = '<i class="avatar avatar-color-194 img-rounded" title="' + full_name + ' (' + user_name + ')">' + user_initial + '</i>';
-        if (!_.isEmpty(user_profile_picture_path)) {
-            var hash = calcMD5(SecuritySalt + 'User' + user_id + 'png' + 'small_thumb');
-            var profile_picture_path = window.location.pathname + 'img/small_thumb/User/' + user_id + '.' + hash + '.png';
-            content_img = '<img src="' + profile_picture_path + '" alt="' + user_name + '" title="' + full_name + ' (' + user_name + ')" class="img-rounded img-responsive avatar">';
-        }
-        var view_user = $('#js-card-users-list-' + self.model.id).prepend('<li class="js-added-card-user-' + user_id + '">' + content_img + '</li>');
-        var card_user = new App.CardUser();
-        card_user.set('uuid', uuid);
-        card_user.set('is_offline', true);
-        card_user.set('user_id', user_id);
-        card_user.set('card_id', self.model.id);
-        card_user.set('board_id', self.model.attributes.board_id);
-        card_user.set('list_id', self.model.attributes.list_id);
-        card_user.set('profile_picture_path', user_profile_picture_path);
-        card_user.set('username', user_name);
-        card_user.set('initials', user_initial);
-        card_user.set('full_name', full_name);
-        self.model.users.add(card_user, {
-            silent: true
+        var already_added = self.model.users.findWhere({
+            'user_id': user_id,
+            'card_id': self.model.id
         });
-        self.renderUsersCollection();
-        card_user.url = api_url + 'boards/' + self.model.attributes.board_id + '/lists/' + self.model.attributes.list_id + '/cards/' + self.model.id + '/users/' + user_id + '.json';
-        card_user.save({
-            user_id: user_id,
-            card_id: self.model.id
-        }, {
-            success: function(model, response, options) {
-                if (_.isUndefined(options.temp_id)) {
-                    card_user.set('is_offline', false);
-                }
-                target.attr('data-card-user-id', response.id);
-                if (self.model.users.models.length > 0) {
-                    self.model.users.findWhere({
-                        'user_id': user_id,
-                        'card_id': self.model.id
-                    }).set('id', parseInt(response.id));
-                }
-                if (!_.isUndefined(response.id) && _.isUndefined(options.temp_id)) {
-                    card_user.set({
-                        id: parseInt(response.id)
-                    });
-                } else {
-                    global_uuid[uuid] = options.temp_id;
-                    card_user.set('id', uuid);
-                }
-                if (!_.isUndefined(response.activity)) {
-                    response.activity = activityCommentReplace(response.activity);
-                    var activity = new App.Activity();
-                    activity.set(response.activity);
-                    activity.board_users = self.model.board_users;
-                    var view = new App.ActivityView({
-                        model: activity,
-                        board: self.model.list.collection.board,
-                        flag: '1'
-                    });
-                    self.model.activities.unshift(activity);
-                    if ($.cookie('filter') !== 'comment') {
-                        var view_activity = $('#js-card-activities-' + self.model.id);
-                        view_activity.prepend(view.render().el);
+        if (_.isUndefined(already_added) || _.isEmpty(already_added)) {
+            target.removeClass('js-add-card-member').addClass('js-remove-card-member').append('<i class="icon-ok"></i>');
+            var user_name = target.data('user-name');
+            var user_initial = target.data('user-initial');
+            var user_profile_picture_path = target.data('user-profile-picture-path');
+            var full_name = target.data('user-fullname');
+            var content_img = '<i class="avatar avatar-color-194 img-rounded" title="' + full_name + ' (' + user_name + ')">' + user_initial + '</i>';
+            if (!_.isEmpty(user_profile_picture_path)) {
+                var hash = calcMD5(SecuritySalt + 'User' + user_id + 'png' + 'small_thumb');
+                var profile_picture_path = window.location.pathname + 'img/small_thumb/User/' + user_id + '.' + hash + '.png';
+                content_img = '<img src="' + profile_picture_path + '" alt="' + user_name + '" title="' + full_name + ' (' + user_name + ')" class="img-rounded img-responsive avatar">';
+            }
+            var view_user = $('#js-card-users-list-' + self.model.id).prepend('<li class="js-added-card-user-' + user_id + '">' + content_img + '</li>');
+            var card_user = new App.CardUser();
+            card_user.set('uuid', uuid);
+            card_user.set('is_offline', true);
+            card_user.set('user_id', user_id);
+            card_user.set('card_id', self.model.id);
+            card_user.set('board_id', self.model.attributes.board_id);
+            card_user.set('list_id', self.model.attributes.list_id);
+            card_user.set('profile_picture_path', user_profile_picture_path);
+            card_user.set('username', user_name);
+            card_user.set('initials', user_initial);
+            card_user.set('full_name', full_name);
+            self.model.users.add(card_user, {
+                silent: true
+            });
+            self.renderUsersCollection();
+            card_user.url = api_url + 'boards/' + self.model.attributes.board_id + '/lists/' + self.model.attributes.list_id + '/cards/' + self.model.id + '/users/' + user_id + '.json';
+            card_user.save({
+                user_id: user_id,
+                card_id: self.model.id
+            }, {
+                success: function(model, response, options) {
+                    if (_.isUndefined(options.temp_id)) {
+                        card_user.set('is_offline', false);
+                    }
+                    target.attr('data-card-user-id', response.id);
+                    if (self.model.users.models.length > 0) {
+                        self.model.users.findWhere({
+                            'user_id': user_id,
+                            'card_id': self.model.id
+                        }).set('id', parseInt(response.id));
+                    }
+                    if (!_.isUndefined(response.id) && _.isUndefined(options.temp_id)) {
+                        card_user.set({
+                            id: parseInt(response.id)
+                        });
+                    } else {
+                        global_uuid[uuid] = options.temp_id;
+                        card_user.set('id', uuid);
+                    }
+                    if (!_.isUndefined(response.activity)) {
+                        response.activity = activityCommentReplace(response.activity);
+                        var activity = new App.Activity();
+                        activity.set(response.activity);
+                        activity.board_users = self.model.board_users;
+                        var view = new App.ActivityView({
+                            model: activity,
+                            board: self.model.list.collection.board,
+                            flag: '1'
+                        });
+                        self.model.activities.unshift(activity);
+                        if ($.cookie('filter') !== 'comment') {
+                            var view_activity = $('#js-card-activities-' + self.model.id);
+                            view_activity.prepend(view.render().el);
+                        }
                     }
                 }
-            }
-        });
+            });
+        }
         return false;
     },
     /**
@@ -3874,6 +3947,7 @@ App.ModalCardView = Backbone.View.extend({
         if (!_.isEmpty(this.model.attributes.due_date) && this.model.attributes.due_date !== '') {
             this.model.url = api_url + 'boards/' + this.model.attributes.board_id + '/lists/' + this.model.attributes.list_id + '/cards/' + this.model.id + '.json';
             this.model.set('due_date', null);
+            this.model.set('end', null);
             $('.js-close-popover').click();
             this.model.save({
                 due_date: 'NULL'
@@ -4228,6 +4302,14 @@ App.ModalCardView = Backbone.View.extend({
                     } else {
                         card.list = self.model.list;
                     }
+                    if (card.attributes.board_id !== parseInt(current_board_id)) {
+                        var new_board = App.boards.get(parseInt(response.cards.board_id));
+                        if (!_.isEmpty(new_board) && !_.isUndefined(new_board)) {
+                            card.board = new_board;
+                        }
+                    } else {
+                        card.board = self.model.board;
+                    }
                     if (!_.isUndefined(response.id) && _.isUndefined(options.temp_id)) {
                         card.set({
                             id: parseInt(response.id)
@@ -4507,6 +4589,7 @@ App.ModalCardView = Backbone.View.extend({
         }
     },
     keyboardArchiveCard: function(e) {
+        e.stopImmediatePropagation();
         $('.js-archive-card', e.target).trigger('click');
         return false;
     },
@@ -4521,10 +4604,12 @@ App.ModalCardView = Backbone.View.extend({
         return false;
     },
     keyboardAddCardVote: function(e) {
+        e.stopImmediatePropagation();
         $('.js-add-card-vote', e.target).trigger('click');
         return false;
     },
     keyboardCardSubscribe: function(e) {
+        e.stopImmediatePropagation();
         if ($('.js-card-container .icon-eye-open', e.target).length) {
             $('.js-card-unsubscribe', e.target).trigger('click');
         } else {
@@ -4544,9 +4629,10 @@ App.ModalCardView = Backbone.View.extend({
         return false;
     },
     keyboardAddCardMember: function(e) {
+        e.stopImmediatePropagation();
         $('.js-show-add-member-form', e.target).trigger('click');
         _(function() {
-            $('.dropdown-menu-left .js-organization-member-search-response', e.target).find('a').each(function(index, value) {
+            $('#js-card-user-add-container .js-organization-member-search-response', e.target).find('a').each(function(index, value) {
                 if ($(value).data('user-id') == authuser.user.id) {
                     $(this).trigger('click');
                     $('#js-card-user-add-container .js-member-dropdown').removeClass('open');

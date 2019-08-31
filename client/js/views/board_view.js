@@ -45,7 +45,6 @@ App.BoardView = Backbone.View.extend({
         this.model.attachments.add(this.model.get('attachments'));
         _.bindAll(this, 'render', 'renderListsCollection', 'renderActivitiesCollection', 'setBoardBackground', 'renderBoarduserCollection');
         this.model.bind('change:name change:is_closed', this.render);
-        this.model.bind('change:board_visibility', this.render);
         this.model.bind('change:background_color change:background_picture_url change:background_pattern_url', this.setBoardBackground);
         this.model.bind('change:sort_by', this.render);
         this.model.bind('change:sort_direction', this.render);
@@ -864,12 +863,14 @@ App.BoardView = Backbone.View.extend({
         var background_pattern_url = this.model.attributes.background_pattern_url;
         if (!_.isEmpty(background_picture_url) && background_picture_url != 'NULL') {
             background_picture_url = background_picture_url.replace('_XXXX.jpg', '_b.jpg');
+            background_picture_url = background_picture_url + '?rand=' + Math.random();
             $('body').css({
                 'background': 'url(' + background_picture_url + ') 25% 25% no-repeat fixed',
                 'background-size': 'cover'
             }).addClass('board-view');
         } else if (!_.isEmpty(background_pattern_url) && background_pattern_url != 'NULL') {
             background_pattern_url = background_pattern_url.replace('_XXXX.jpg', '_s.jpg');
+            background_pattern_url = background_pattern_url + '?rand=' + Math.random();
             $('body').css({
                 'background': 'url(' + background_pattern_url + ')',
             }).addClass('board-view board-view-pattern');
@@ -1024,7 +1025,11 @@ App.BoardView = Backbone.View.extend({
             list.set(data, {
                 silent: true
             });
+            var board_lists = this.model.lists.where({
+                board_id: self.model.id
+            });
             var lists = new App.ListCollection();
+            lists.add(board_lists);
             lists.board = self.model;
             lists.add(list);
             list.board = self.model;
@@ -1153,6 +1158,7 @@ App.BoardView = Backbone.View.extend({
                 list.board_users = self.model.board_users;
                 list.board_user_role_id = self.model.board_user_role_id;
                 if (!_.isUndefined(data.clone_list_id)) {
+                    $(view.render().el).attr('data-list_id', list.id);
                     $(view.render().el).insertAfter($(e.target).parents('.js-board-list'));
                 } else {
                     list.board = self.model;

@@ -440,7 +440,8 @@ App.ListView = Backbone.View.extend({
         if (data.name === self.model.attributes.name) {
             $(e.target).addClass('hide').prev('.js-show-edit-list-form').removeClass('hide');
             $('#js-show-list-actions-' + self.model.id + ', #js-show-sort-form-' + self.model.id).removeClass('hide');
-            self.$el.find('.js-wip-limit-count-' + self.model.id).removeClass('hide');
+            $('.js-list-header-' + self.model.id).removeClass('hide');
+            self.$el.find('.js-wip-limit-section-' + self.model.id).removeClass('hide');
         } else {
             self.model.url = api_url + 'boards/' + this.model.attributes.board_id + '/lists/' + list_id + '.json';
             self.model.save(data, {
@@ -690,7 +691,7 @@ App.ListView = Backbone.View.extend({
             position = $(e.target).find('#list_position').val();
         }
         var board_id = parseInt(data.board_id);
-        if (sort_by !== null && sort_by !== null) {
+        if (sort_by !== null && sort_direction !== null) {
             this.model.collection.sortByColumn(sort_by, sort_direction);
         } else {
             this.model.collection.sortByColumn('position');
@@ -702,7 +703,7 @@ App.ListView = Backbone.View.extend({
             this.$el.remove();
             var i = 0;
             var current_position = 0;
-            if (sort_by !== null && sort_by !== null) {
+            if (sort_by !== null && sort_direction !== null) {
                 App.boards.get(board_id).lists.sortByColumn(sort_by, sort_direction);
             } else {
                 App.boards.get(board_id).lists.sortByColumn('position');
@@ -805,10 +806,20 @@ App.ListView = Backbone.View.extend({
     listSubscribe: function(e) {
         var list_id = this.model.id;
         var subscribe_id = $(e.currentTarget).data('subscribe-id');
-        $(e.currentTarget).removeClass('js-list-subscribe').addClass('js-list-unsubscribe');
+        $(e.currentTarget).removeClass('js-list-subscribe');
         $('i.icon-ok', e.currentTarget).removeClass('hide');
         $('.js-subscribe-text', e.currentTarget).html(i18next.t('Subscribed'));
         $('.js-list-subscribed-' + list_id).removeClass('hide');
+        if (!_.isEmpty(this.model.collection.board.acl_links.where({
+                slug: "unsubscribe_list",
+                board_user_role_id: parseInt(this.model.board_user_role_id)
+            })) && !_.isEmpty(subscribe) || (!_.isEmpty(role_links.where({
+                slug: "unsubscribe_list"
+            })) && this.model.collection.board.attributes.board_visibility == 2)) {
+            $(e.currentTarget).addClass('js-list-unsubscribe');
+        } else if (typeof subscribe_id === 'undefined' || subscribe_id === 'undefined' || subscribe_id === '') {
+            $(e.currentTarget).addClass('hide');
+        }
         var list_subscribe = new App.ListSubscriber();
         list_subscribe.set('user_id', parseInt(authuser.user.id));
         list_subscribe.set('is_subscribed', 1);
@@ -830,7 +841,12 @@ App.ListView = Backbone.View.extend({
                     }
                 });
             }
-        } else {
+        } else if (!_.isEmpty(this.model.collection.board.acl_links.where({
+                slug: "unsubscribe_list",
+                board_user_role_id: parseInt(this.model.board_user_role_id)
+            })) || (!_.isEmpty(role_links.where({
+                slug: "unsubscribe_list"
+            })) && list.collection.board.attributes.board_visibility == 2)) {
             list_subscribe.url = api_url + 'boards/' + this.model.attributes.board_id + '/lists/' + list_id + '/list_subscribers/' + subscribe_id + '.json';
             list_subscribe.save({
                 id: parseInt(subscribe_id),
@@ -848,9 +864,19 @@ App.ListView = Backbone.View.extend({
      *
      */
     listUnsubscribe: function(e) {
-        $(e.currentTarget).removeClass('js-list-unsubscribe').addClass('js-list-subscribe');
+        $(e.currentTarget).removeClass('js-list-unsubscribe');
         $('i.icon-ok', e.currentTarget).addClass('hide');
-        $('.js-subscribe-text', e.currentTarget).html(i18next.t('Subscribe'));
+        if (!_.isEmpty(this.model.collection.board.acl_links.where({
+                slug: "subscribe_list",
+                board_user_role_id: parseInt(this.model.board_user_role_id)
+            })) && !_.isEmpty(subscribe) || (!_.isEmpty(role_links.where({
+                slug: "subscribe_list"
+            })) && this.model.collection.board.attributes.board_visibility == 2)) {
+            $(e.currentTarget).addClass('js-list-subscribe');
+            $('.js-subscribe-text', e.currentTarget).html(i18next.t('Subscribe'));
+        } else if (typeof subscribe_id === 'undefined' || subscribe_id === 'undefined' || subscribe_id === '') {
+            $(e.currentTarget).addClass('hide');
+        }
         var subscribe_id = $(e.currentTarget).data('subscribe-id');
         var list_id = this.model.id;
         $('.js-list-subscribed-' + list_id).addClass('hide');
@@ -1172,7 +1198,7 @@ App.ListView = Backbone.View.extend({
                         var list_id = parseInt($(ui.item).parents('.js-board-list:first').data('list_id'));
                         var current_list = App.current_board.lists.get(parseInt(list_id));
                         $('.js-list-header-section').removeClass('animation');
-                        $('.js-open-wipLimit-form').removeClass('tada-animation');
+                        $('.js-wip-section').removeClass('tada-animation');
                         if (!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && $.inArray('r_agile_wip', APPS.enabled_apps) !== -1 && !_.isUndefined(current_list) && !_.isEmpty(current_list) && current_list !== null) {
                             var list_custom_fields = current_list.attributes.custom_fields;
                             if (!_.isUndefined(list_custom_fields) && !_.isEmpty(list_custom_fields) && list_custom_fields !== null) {
@@ -1184,7 +1210,7 @@ App.ListView = Backbone.View.extend({
                                     if (!_.isUndefined(list_custom_fields.hard_wip_limit) && !_.isEmpty(list_custom_fields.hard_wip_limit) && parseInt(card_count) > parseInt(list_custom_fields.wip_limit)) {
                                         ui.sender.sortable("cancel");
                                         $('.js-list-header-' + list_id).removeClass('animation');
-                                        $('.js-wip-limit-count-' + list_id).removeClass('tada-animation');
+                                        $('.js-wip-limit-section-' + list_id).removeClass('tada-animation');
                                     }
                                 }
                             }
@@ -1214,7 +1240,7 @@ App.ListView = Backbone.View.extend({
                         var current_list = App.current_board.lists.get(parseInt(list_id));
                         if (!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && $.inArray('r_agile_wip', APPS.enabled_apps) !== -1) {
                             $('.js-list-header-section').removeClass('animation');
-                            $('.js-open-wipLimit-form').removeClass('tada-animation');
+                            $('.js-wip-section').removeClass('tada-animation');
                             $('.board-list-outer > div.js-list-sort').removeClass('active');
                             var list_custom_fields = current_list.attributes.custom_fields;
                             if (!_.isUndefined(list_custom_fields) && !_.isEmpty(list_custom_fields)) {
@@ -1227,7 +1253,7 @@ App.ListView = Backbone.View.extend({
                                         $('#' + list).parents('.js-list-' + list_id).addClass('active');
                                     } else if (!_.isUndefined(list_custom_fields.hard_wip_limit) && !_.isEmpty(list_custom_fields.hard_wip_limit) && parseInt(card_count) > parseInt(list_custom_fields.wip_limit)) {
                                         $('.js-list-header-' + list_id).addClass('animation');
-                                        $('.js-wip-limit-count-' + list_id).addClass('tada-animation');
+                                        $('.js-wip-limit-section-' + list_id).addClass('tada-animation');
                                     }
                                 }
                             }
@@ -1422,7 +1448,7 @@ App.ListView = Backbone.View.extend({
                             $('#js-card-listing-' + e.attributes.list_id).append(view.render().el);
                         } else {
                             self.model.cards.reset(filtered_cards);
-                            if (sort_by !== null && sort_by !== null) {
+                            if (sort_by !== null && sort_direction !== null) {
                                 self.model.cards.sortByColumn(sort_by, sort_direction);
                             } else {
                                 self.model.cards.sortByColumn('position');
@@ -1478,7 +1504,7 @@ App.ListView = Backbone.View.extend({
                     view_card.html('<span class="js-list-placeholder-' + self.model.id + '">&nbsp;</span>');
                 }
             }).defer();
-            if (sort_by !== null && sort_by !== null) {
+            if (sort_by !== null && sort_direction !== null) {
                 this.model.cards.sortByColumn(sort_by, sort_direction);
             } else {
                 this.model.cards.sortByColumn('position');
@@ -1492,7 +1518,7 @@ App.ListView = Backbone.View.extend({
                 this.model.cards.add(cards.toJSON(), {
                     silent: true
                 });
-                if (sort_by !== null && sort_by !== null) {
+                if (sort_by !== null && sort_direction !== null) {
                     this.model.cards.sortByColumn(sort_by, sort_direction);
                     cards.sortByColumn(sort_by, sort_direction);
                 } else {
@@ -1638,7 +1664,8 @@ App.ListView = Backbone.View.extend({
         this.closePopup(e);
         $(e.currentTarget).addClass('hide').next('form').removeClass('hide');
         this.$('#js-show-list-actions-' + this.model.attributes.id + ', #js-show-sort-form-' + this.model.attributes.id).addClass('hide');
-        this.$el.find('.js-wip-limit-count-' + this.model.attributes.id).addClass('hide');
+        $('.js-list-header-' + this.model.attributes.id).addClass('hide');
+        this.$el.find('.js-wip-limit-section-' + this.model.attributes.id).addClass('hide');
         return false;
     },
     /**
@@ -1655,7 +1682,8 @@ App.ListView = Backbone.View.extend({
         toggle.parents('.js-board-list').find('#inputListName').val($('.get-name-' + this.model.attributes.id).html());
         toggle.parents('form').addClass('hide').prev('.js-show-edit-list-form').removeClass('hide');
         this.$('#js-show-list-actions-' + this.model.attributes.id + ', #js-show-sort-form-' + this.model.attributes.id).removeClass('hide');
-        this.$el.find('.js-wip-limit-count-' + this.model.attributes.id).removeClass('hide');
+        $('.js-list-header-' + this.model.attributes.id).removeClass('hide');
+        this.$el.find('.js-wip-limit-section-' + this.model.attributes.id).removeClass('hide');
         return false;
     },
     /**
@@ -1711,7 +1739,7 @@ App.ListView = Backbone.View.extend({
                 silent: true
             });
             list_cards.add(tmp_card);
-            if (sort_by !== null && sort_by !== null) {
+            if (sort_by !== null && sort_direction !== null) {
                 list_cards.sortByColumn(sort_by, sort_direction);
             } else {
                 list_cards.sortByColumn('position');
@@ -1737,9 +1765,11 @@ App.ListView = Backbone.View.extend({
             card.set({
                 name: data.name,
                 is_archived: 0,
+                title: data.name,
                 list_id: parseInt(data.list_id),
                 board_id: parseInt(data.board_id),
                 due_date: null,
+                end: null,
                 checklist_item_count: data.cards_checklist_item_count,
                 checklist_item_completed_count: 0
             }, {
@@ -2239,7 +2269,7 @@ App.ListView = Backbone.View.extend({
                     });
                     return str;
                 } else if (sort_by === 'due_date') {
-                    if (item.get('due_date') !== null) {
+                    if (!_.isUndefined(item.get('due_date')) && item.get('due_date') !== null) {
                         var date = item.get('due_date').split(' ');
                         if (!_.isUndefined(date[1])) {
                             _date = date[0] + 'T' + date[1];
@@ -2250,7 +2280,7 @@ App.ListView = Backbone.View.extend({
                         return cards.sortDirection === 'desc' ? -sort_date.getTime() : sort_date.getTime();
                     }
                 } else if (sort_by === 'created_date') {
-                    if (item.get('created') !== null) {
+                    if (!_.isUndefined(item.get('created')) && item.get('created') !== null) {
                         var created_date = item.get('created').split(' ');
                         if (!_.isUndefined(created_date[1])) {
                             _date = created_date[0] + 'T' + created_date[1];
@@ -2261,7 +2291,7 @@ App.ListView = Backbone.View.extend({
                         return cards.sortDirection === 'desc' ? -sort_date.getTime() : sort_date.getTime();
                     }
                 } else if (sort_by === 'list_moved_date') {
-                    if (item.get('list_moved_date') !== null) {
+                    if (!_.isUndefined(item.get('list_moved_date')) && item.get('list_moved_date') !== null) {
                         var list_moved_date = item.get('list_moved_date').split(' ');
                         if (!_.isUndefined(list_moved_date[1])) {
                             _date = list_moved_date[0] + 'T' + list_moved_date[1];
@@ -2272,7 +2302,7 @@ App.ListView = Backbone.View.extend({
                         return cards.sortDirection === 'desc' ? -sort_date.getTime() : sort_date.getTime();
                     }
                 } else if (sort_by === 'start_date') {
-                    if (item.get('custom_fields') !== null) {
+                    if (!_.isUndefined(item.get('custom_fields')) && item.get('custom_fields') !== null) {
                         var inputArr = item.get('custom_fields');
                         var start_date_time = JSON.parse(inputArr);
                         if (!_.isUndefined(start_date_time.start_date)) {

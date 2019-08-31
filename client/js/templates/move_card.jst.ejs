@@ -2,7 +2,7 @@
 var content_board = '<div class="form-group clearfix"><select name="board_id" class="js-change-list col-xs-12 form-control input-sm cur">';
 var content_list = '<div class="form-group clearfix"><select name="list_id" class="js-change-position col-xs-12 form-control input-sm cur">';
 var content_position = '';
-if (sort_by !== null && sort_by !== null) {
+if (sort_by !== null && sort_direction !== null) {
 	card.list.cards.sortByColumn(sort_by, sort_direction);
 } else {
 	card.list.cards.sortByColumn('position');
@@ -70,7 +70,7 @@ boards.each(function(board) {
 
 		});
 	} else {
-		if(parseInt(board.attributes.is_closed) === 0){
+		if(parseInt(board.attributes.is_closed) === 0 && board.lists.length > 0){
 			if(!_.isEmpty(board.attributes.organization_name) && parseInt(board.attributes.organization_id) != 0) {
 				content_board += '<option value="' + board.id + '">' + _.escape(board.attributes.name) + ' (' + _.escape(board.attributes.organization_name) + ') </option>';
 			} else {
