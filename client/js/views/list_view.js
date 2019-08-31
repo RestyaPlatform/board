@@ -2269,7 +2269,7 @@ App.ListView = Backbone.View.extend({
                     });
                     return str;
                 } else if (sort_by === 'due_date') {
-                    if (item.get('due_date') !== null) {
+                    if (!_.isUndefined(item.get('due_date')) && item.get('due_date') !== null) {
                         var date = item.get('due_date').split(' ');
                         if (!_.isUndefined(date[1])) {
                             _date = date[0] + 'T' + date[1];
@@ -2280,7 +2280,7 @@ App.ListView = Backbone.View.extend({
                         return cards.sortDirection === 'desc' ? -sort_date.getTime() : sort_date.getTime();
                     }
                 } else if (sort_by === 'created_date') {
-                    if (item.get('created') !== null) {
+                    if (!_.isUndefined(item.get('created')) && item.get('created') !== null) {
                         var created_date = item.get('created').split(' ');
                         if (!_.isUndefined(created_date[1])) {
                             _date = created_date[0] + 'T' + created_date[1];
@@ -2291,7 +2291,7 @@ App.ListView = Backbone.View.extend({
                         return cards.sortDirection === 'desc' ? -sort_date.getTime() : sort_date.getTime();
                     }
                 } else if (sort_by === 'list_moved_date') {
-                    if (item.get('list_moved_date') !== null) {
+                    if (!_.isUndefined(item.get('list_moved_date')) && item.get('list_moved_date') !== null) {
                         var list_moved_date = item.get('list_moved_date').split(' ');
                         if (!_.isUndefined(list_moved_date[1])) {
                             _date = list_moved_date[0] + 'T' + list_moved_date[1];
@@ -2302,7 +2302,7 @@ App.ListView = Backbone.View.extend({
                         return cards.sortDirection === 'desc' ? -sort_date.getTime() : sort_date.getTime();
                     }
                 } else if (sort_by === 'start_date') {
-                    if (item.get('custom_fields') !== null) {
+                    if (!_.isUndefined(item.get('custom_fields')) && item.get('custom_fields') !== null) {
                         var inputArr = item.get('custom_fields');
                         var start_date_time = JSON.parse(inputArr);
                         if (!_.isUndefined(start_date_time.start_date)) {
