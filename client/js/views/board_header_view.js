@@ -980,7 +980,7 @@ App.BoardHeaderView = Backbone.View.extend({
                 }
                 view = new App.CardView({
                     tagName: 'tr',
-                    className: 'js-show-modal-card-view cur txt-aligns js-listview-list-id-' + e.attributes.list_id,
+                    className: 'card-list-view js-show-modal-card-view cur txt-aligns js-listview-list-id-' + e.attributes.list_id,
                     id: 'js-card-' + e.attributes.id,
                     model: e,
                     template: 'list_view'
@@ -1049,7 +1049,7 @@ App.BoardHeaderView = Backbone.View.extend({
             if (arhived_cards.length === 0) {
                 view = new App.CardView({
                     tagName: 'tr',
-                    className: 'js-show-modal-card-view cur txt-aligns',
+                    className: 'card-list-view js-show-modal-card-view cur txt-aligns',
                     model: null,
                     template: 'list_view'
                 });
