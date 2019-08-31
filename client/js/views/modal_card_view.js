@@ -4109,6 +4109,10 @@ App.ModalCardView = Backbone.View.extend({
             });
             var current_position = this.model.collection.indexOf(this.model) + 1;
             var is_first_list = true;
+            var position_visiblity = false;
+            if ((!_.isUndefined(board.attributes.sort_by) && board.attributes.sort_by !== null && board.attributes.sort_by === 'position') || (_.isUndefined(board.attributes.sort_by) || board.attributes.sort_by === null)) {
+                position_visiblity = true;
+            }
             var wip_enabled = false;
             if (!_.isUndefined(APPS) && APPS !== null) {
                 if (!_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null) {
@@ -4147,6 +4151,9 @@ App.ModalCardView = Backbone.View.extend({
                 }
             });
             self.$el.find('.js-change-position').html(content_list);
+            if (position_visiblity && self.$el.find('.js-position').parent().hasClass('hide')) {
+                self.$el.find('.js-position').parent().removeClass('hide');
+            }
             self.$el.find('.js-position').html(content_position);
         }
     },

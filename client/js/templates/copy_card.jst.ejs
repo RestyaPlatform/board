@@ -1,144 +1,147 @@
 <% if (card.attachments.length > 0 || card.activities.length > 0 || card.labels.length > 0 || card.checklists.length > 0 || card.users.length > 0 || (!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && $.inArray('r_custom_fields', APPS.enabled_apps) !== -1)) { %>
-		<div class="form-group">
-			<h4> <%- i18next.t('Keep...') %></h4>
-			<% if (card.attachments.length > 0) {%>
-				<div class="form-group">
-					<div class="checkbox">
-					<input id="Attachments" class="hide" type="checkbox" name="keep_attachments" value="1" checked="checked">
-						<label for="Attachments">
-						<%- i18next.t('Attachments') %>(<%- card.attachments.length %>)
-						</label>
-					</div>
-				</div>
-		   <% }
-		   if (parseInt(card.attributes.comment_count) > 0) { %>
+	<div class="form-group">
+		<h4> <%- i18next.t('Keep...') %></h4>
+		<% if (card.attachments.length > 0) {%>
 			<div class="form-group">
 				<div class="checkbox">
-					 <input id="Activities" class="hide" type="checkbox" name="keep_activities" value="1" checked="checked">
-					 <label for="Activities">
-						 <%- i18next.t('Comments') %> (<%- card.attributes.comment_count %>)
-					 </label>
-				 </div>
+				<input id="Attachments" class="hide" type="checkbox" name="keep_attachments" value="1" checked="checked">
+					<label for="Attachments">
+					<%- i18next.t('Attachments') %>(<%- card.attachments.length %>)
+					</label>
+				</div>
+			</div>
+	   <% }
+	   if (parseInt(card.attributes.comment_count) > 0) { %>
+		<div class="form-group">
+			<div class="checkbox">
+				 <input id="Activities" class="hide" type="checkbox" name="keep_activities" value="1" checked="checked">
+				 <label for="Activities">
+					 <%- i18next.t('Comments') %> (<%- card.attributes.comment_count %>)
+				 </label>
 			 </div>
-		<%  }
-			if (card.labels.length > 0) { %>
-			   <div class="form-group">
-				   <div class="checkbox">
-					    <input id="Labels" class="hide" type="checkbox" name="keep_labels" value="1" checked="checked">
-						<label for="Labels">
-							<%- i18next.t('Labels') %> (<%- card.labels.length %>)
-						</label>
-					</div>
+		 </div>
+	<%  }
+		if (card.labels.length > 0) { %>
+		   <div class="form-group">
+			   <div class="checkbox">
+					<input id="Labels" class="hide" type="checkbox" name="keep_labels" value="1" checked="checked">
+					<label for="Labels">
+						<%- i18next.t('Labels') %> (<%- card.labels.length %>)
+					</label>
 				</div>
-			<%}
-		     if (card.checklists.length > 0) { %>
-				<div class="form-group">
-					<div class="checkbox">
-						<input id="Checklists" class="hide" type="checkbox" name="keep_checklists" value="1" checked="checked">
-						<label for="Checklists">
-							<%- i18next.t('Checklists') %> (<%- card.checklists.length %>)
-						</label>
-					</div>
+			</div>
+		<%}
+		 if (card.checklists.length > 0) { %>
+			<div class="form-group">
+				<div class="checkbox">
+					<input id="Checklists" class="hide" type="checkbox" name="keep_checklists" value="1" checked="checked">
+					<label for="Checklists">
+						<%- i18next.t('Checklists') %> (<%- card.checklists.length %>)
+					</label>
 				</div>
-		   <% }
-			if (card.users.length > 0) { %>
-				<div class="form-group">
-					<div class="checkbox">
-						<input id="users" class="hide" type="checkbox" name="keep_users" value="1" checked="checked">
-						<label for="users">
-							<%- i18next.t('Members') %> (<%- card.users.length %>)
-						</label>
-					</div>
+			</div>
+	   <% }
+		if (card.users.length > 0) { %>
+			<div class="form-group">
+				<div class="checkbox">
+					<input id="users" class="hide" type="checkbox" name="keep_users" value="1" checked="checked">
+					<label for="users">
+						<%- i18next.t('Members') %> (<%- card.users.length %>)
+					</label>
 				</div>
-		   <% } %>
-		   <% if (!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && $.inArray('r_custom_fields', APPS.enabled_apps) !== -1) { %>
-				<div class="form-group">
-					<div class="checkbox">
-						<input id="custom_fields" class="hide" type="checkbox" name="keep_custom_fields" value="1" checked="checked">
-						<label for="custom_fields">
-							<%- i18next.t('Custom Fields') %> 
-						</label>
-					</div>
+			</div>
+	   <% } %>
+	   <% if (!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && $.inArray('r_custom_fields', APPS.enabled_apps) !== -1) { %>
+			<div class="form-group">
+				<div class="checkbox">
+					<input id="custom_fields" class="hide" type="checkbox" name="keep_custom_fields" value="1" checked="checked">
+					<label for="custom_fields">
+						<%- i18next.t('Custom Fields') %> 
+					</label>
 				</div>
-			<% } %>
-		</div>
+			</div>
+		<% } %>
+	</div>
 <%	}  %>
-		<h4> <%- i18next.t('Copy to...') %></h4>
-        <% var content_board = '<div class="form-group clearfix"><select name="board_id" class="js-change-list col-xs-12 form-control panel-body cur">';
-        var content_list = '<div class="form-group clearfix"><select name="list_id" class="js-change-position col-xs-12 form-control panel-body cur">';
-        var content_position = '';
-		var current_position = card.collection.indexOf(card) + 1;
-        boards.each(function(board) {
-	if (card.attributes.board_id == board.id) {
-		content_board += '<option value="' + board.id + '" selected="selected">' + _.escape(board.attributes.name) + ' '+ i18next.t('(current)')+'</option>';
-		board.lists.add(board.attributes.lists);
-		var filtered_lists = board.lists.where({
-			is_archived: 0
-		});
-		var wip_enabled = false;
-		if (!_.isUndefined(APPS) && APPS !== null ) {
-			if (!_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null) {
-				if ($.inArray('r_agile_wip',APPS.enabled_apps) !== -1) {
-					wip_enabled = true;
-				}
+	<h4> <%- i18next.t('Copy to...') %></h4>
+	<% var content_board = '<div class="form-group clearfix"><select name="board_id" class="js-change-list col-xs-12 form-control panel-body cur">';
+	var content_list = '<div class="form-group clearfix"><select name="list_id" class="js-change-position col-xs-12 form-control panel-body cur">';
+	var content_position = '';
+	var current_position = card.collection.indexOf(card) + 1;
+	boards.each(function(board) {
+if (card.attributes.board_id == board.id) {
+	content_board += '<option value="' + board.id + '" selected="selected">' + _.escape(board.attributes.name) + ' '+ i18next.t('(current)')+'</option>';
+	board.lists.add(board.attributes.lists);
+	var filtered_lists = board.lists.where({
+		is_archived: 0
+	});
+	var wip_enabled = false;
+	if (!_.isUndefined(APPS) && APPS !== null ) {
+		if (!_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null) {
+			if ($.inArray('r_agile_wip',APPS.enabled_apps) !== -1) {
+				wip_enabled = true;
 			}
 		}
-		_.each(filtered_lists, function(list) {
-			if (card.attributes.list_id == list.id) {
-				content_list += '<option value="' + list.id + '" selected="selected">' + _.escape(list.attributes.name) + ' '+ i18next.t('(current)')+'</option>';
-				if ((!_.isUndefined(board.attributes.sort_by) && board.attributes.sort_by !== null && board.attributes.sort_by === 'position') || (_.isUndefined(board.attributes.sort_by) ||board.attributes.sort_by === null)) {
-					for(var i = 1; i <= list.attributes.card_count; i++){
-						if (i === 1) {
-							content_position += '<div class="form-group clearfix"><select name="position" class="js-position col-xs-12 form-control panel-body cur">';
-						}
-						if (card.attributes.list_id == list.attributes.id && i == current_position) {
-							content_position += '<option value="' + i + '" selected="selected">' + i + ' '+i18next.t('(current)')+'</option>';
-						} else {
-							content_position += '<option value="' + i + '">' + i+ '</option>';
-						}
-					}
-					
-					var next_position = parseInt(list.attributes.card_count ) + 1;
-					if( isNaN(list.attributes.card_count))
-						next_position = 1;				
-					content_position += '<option value="' + next_position + '">' + next_position + '</option>';
-					content_position += '</select></div>';
-				}
+	}
+	_.each(filtered_lists, function(list) {
+		if (card.attributes.list_id == list.id) {
+			content_list += '<option value="' + list.id + '" selected="selected">' + _.escape(list.attributes.name) + ' '+ i18next.t('(current)')+'</option>';
+			if ((!_.isUndefined(App.current_board.attributes.sort_by) && App.current_board.attributes.sort_by !== null && App.current_board.attributes.sort_by === 'position') || (_.isUndefined(App.current_board.attributes.sort_by) ||App.current_board.attributes.sort_by === null)) {
+				content_position += '<div class="form-group clearfix">';
 			} else {
-				if (wip_enabled && !_.isUndefined(list.attributes.custom_fields) && list.attributes.custom_fields) {
-					var list_custom_fields = JSON.parse(list.attributes.custom_fields);
-					var list_card_count = isNaN(list.attributes.card_count) ? 0 : list.attributes.card_count;
-					if (!_.isUndefined(list_custom_fields.wip_limit) && !_.isEmpty(list_custom_fields.wip_limit)) {
-						if (parseInt(list_card_count) === parseInt(list_custom_fields.wip_limit) && !_.isUndefined(list_custom_fields.hard_wip_limit) && !_.isEmpty(list_custom_fields.hard_wip_limit)) {
-							content_list += '<option value="' + list.id + '" disabled>' + _.escape(list.attributes.name) + ' (' + i18next.t('Agile WIP exceeded') + ')</option>';
-						} else if(parseInt(list_card_count) > parseInt(list_custom_fields.wip_limit)) {
-							content_list += '<option value="' + list.id + '">' + _.escape(list.attributes.name) + ' ( > ' + i18next.t('WIP limit') + ')</option>';
-						} else {
-							content_list += '<option value="' + list.id + '">' + _.escape(list.attributes.name) + '</option>';
-						}
+				content_position += '<div class="form-group clearfix hide">';
+			}
+				for(var i = 1; i <= list.attributes.card_count; i++){
+					if (i === 1) {
+						content_position += '<select name="position" class="js-position col-xs-12 form-control panel-body cur">';
+					}
+					if (card.attributes.list_id == list.attributes.id && i == current_position) {
+						content_position += '<option value="' + i + '" selected="selected">' + i + ' '+i18next.t('(current)')+'</option>';
+					} else {
+						content_position += '<option value="' + i + '">' + i+ '</option>';
+					}
+				}
+				
+				var next_position = parseInt(list.attributes.card_count ) + 1;
+				if( isNaN(list.attributes.card_count))
+					next_position = 1;				
+				content_position += '<option value="' + next_position + '">' + next_position + '</option>';
+				content_position += '</select></div>';
+		} else {
+			if (wip_enabled && !_.isUndefined(list.attributes.custom_fields) && list.attributes.custom_fields) {
+				var list_custom_fields = JSON.parse(list.attributes.custom_fields);
+				var list_card_count = isNaN(list.attributes.card_count) ? 0 : list.attributes.card_count;
+				if (!_.isUndefined(list_custom_fields.wip_limit) && !_.isEmpty(list_custom_fields.wip_limit)) {
+					if (parseInt(list_card_count) === parseInt(list_custom_fields.wip_limit) && !_.isUndefined(list_custom_fields.hard_wip_limit) && !_.isEmpty(list_custom_fields.hard_wip_limit)) {
+						content_list += '<option value="' + list.id + '" disabled>' + _.escape(list.attributes.name) + ' (' + i18next.t('Agile WIP exceeded') + ')</option>';
+					} else if(parseInt(list_card_count) > parseInt(list_custom_fields.wip_limit)) {
+						content_list += '<option value="' + list.id + '">' + _.escape(list.attributes.name) + ' ( > ' + i18next.t('WIP limit') + ')</option>';
 					} else {
 						content_list += '<option value="' + list.id + '">' + _.escape(list.attributes.name) + '</option>';
 					}
 				} else {
 					content_list += '<option value="' + list.id + '">' + _.escape(list.attributes.name) + '</option>';
 				}
-			}
-
-		});
-	} else {
-		if(parseInt(board.attributes.is_closed) === 0 && board.lists.length > 0){
-			if(!_.isEmpty(board.attributes.organization_name) && parseInt(board.attributes.organization_id) != 0) {
-				content_board += '<option value="' + board.id + '">' + _.escape(board.attributes.name) + ' (' + _.escape(board.attributes.organization_name) + ') </option>';
 			} else {
-				content_board += '<option value="' + board.id + '">' + _.escape(board.attributes.name) + '</option>';
+				content_list += '<option value="' + list.id + '">' + _.escape(list.attributes.name) + '</option>';
 			}
 		}
+
+	});
+} else {
+	if(parseInt(board.attributes.is_closed) === 0 && board.lists.length > 0){
+		if(!_.isEmpty(board.attributes.organization_name) && parseInt(board.attributes.organization_id) != 0) {
+			content_board += '<option value="' + board.id + '">' + _.escape(board.attributes.name) + ' (' + _.escape(board.attributes.organization_name) + ') </option>';
+		} else {
+			content_board += '<option value="' + board.id + '">' + _.escape(board.attributes.name) + '</option>';
+		}
 	}
+}
 
 });
-        content_board += '</select></div>';
-        content_list += '</select></div>';
-        
-		var content = content_board + content_list + content_position;
+	content_board += '</select></div>';
+	content_list += '</select></div>';
+	
+	var content = content_board + content_list + content_position;
 %>		
 <%= content %>
