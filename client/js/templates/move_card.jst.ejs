@@ -70,7 +70,7 @@ boards.each(function(board) {
 
 		});
 	} else {
-		if(parseInt(board.attributes.is_closed) === 0){
+		if(parseInt(board.attributes.is_closed) === 0 && board.lists.length > 0){
 			if(!_.isEmpty(board.attributes.organization_name) && parseInt(board.attributes.organization_id) != 0) {
 				content_board += '<option value="' + board.id + '">' + _.escape(board.attributes.name) + ' (' + _.escape(board.attributes.organization_name) + ') </option>';
 			} else {
