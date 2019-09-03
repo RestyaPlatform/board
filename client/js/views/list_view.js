@@ -58,6 +58,7 @@ App.ListView = Backbone.View.extend({
         }
         _.bindAll(this, 'render', 'renderCardsCollection', 'removeRender', 'colorListviewcollection');
         this.model.bind('change:name', this.render);
+        this.model.bind('change:custom_fields', this.render);
         this.model.bind('change:color add:color remove:color', this.colorListviewcollection);
         if (!_.isUndefined(this.model.collection)) {
             this.model.collection.board.labels.bind('add', this.renderCardsCollection);
