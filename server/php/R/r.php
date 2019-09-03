@@ -6550,8 +6550,20 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
             );
             pg_query_params($db_lnk, 'UPDATE card_attachments SET board_id = $1 WHERE list_id = $2', $qry_val_arr);
             pg_query_params($db_lnk, 'UPDATE activities SET board_id = $1 WHERE list_id = $2', $qry_val_arr);
+            if ($previous_value['board_id'] !== $r_put['board_id']) {
+                $qry_val_arr = array(
+                    $previous_value['board_id']
+                );
+                $current_board_name = executeQuery('SELECT name FROM boards WHERE id =  $1', $qry_val_arr);
+                $qry_val_arr = array(
+                    $r_put['board_id']
+                );
+                $new_board_name = executeQuery('SELECT name FROM boards WHERE id =  $1', $qry_val_arr);
+                $comment = '##USER_NAME## moved the list ##LIST_NAME## from ' . $current_board_name['name'] . ' to ' . $new_board_name['name'] . '.';
+                $activity_type = 'move_list';
+            }
         }
-        if (isset($r_put['position'])) {
+        if (isset($r_put['position']) && $previous_value['board_id'] === $r_put['board_id']) {
             $comment = '##USER_NAME## changed list ' . $previous_value['name'] . ' position.';
             $activity_type = 'change_list_position';
         } else if (isset($previous_value) && isset($r_put['is_archived'])) {
@@ -6654,7 +6666,7 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
                     $activity_type = 'edit_list_color';
                 }
             }
-        } else {
+        } else if(!isset($r_put['board_id'])) {
             $id = $r_resource_vars['lists'];
             $comment = '##USER_NAME## renamed this list.';
             $activity_type = 'edit_list';

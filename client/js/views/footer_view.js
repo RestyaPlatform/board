@@ -1658,7 +1658,7 @@ App.FooterView = Backbone.View.extend({
                                         var list = self.board.lists.findWhere({
                                             id: parseInt(activity.attributes.list_id)
                                         });
-                                        if (activity.attributes.type === 'add_list') {
+                                        if (activity.attributes.type === 'add_list' || (_.isUndefined(list) && activity.attributes.type === 'move_list')) {
                                             var new_list = new App.List();
                                             new_list.set(activity.attributes.list);
                                             new_list.set('card_count', 0);
