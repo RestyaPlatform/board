@@ -96,6 +96,25 @@ class ActivityHandler
                     $obj['custom_fields'][] = $custom_field;
                 }
             }
+        } else if ($obj_type === 'move_card') {
+            $obj_val_arr = array(
+                $obj['card_id']
+            );
+            $obj['card'] = executeQuery('SELECT * FROM cards_listing WHERE id = $1', $obj_val_arr);
+            $card_attachments = pg_query_params($db_lnk, 'SELECT * FROM card_attachments WHERE card_id = $1 ORDER BY id DESC', $obj_val_arr);
+            while ($card_attachment = pg_fetch_assoc($card_attachments)) {
+                $obj['card']['card_attachments'][] = $card_attachment;
+            }
+            if (is_plugin_enabled('r_custom_fields')) {
+                $obj['custom_fields'] = array();
+                $conditions = array(
+                    $obj['card']['board_id']
+                );
+                $custom_fields = pg_query_params($db_lnk, 'SELECT * FROM custom_fields_listing WHERE board_id IS NULL or board_id = $1 ORDER BY position ASC', $conditions);
+                while ($custom_field = pg_fetch_assoc($custom_fields)) {
+                    $obj['custom_fields'][] = $custom_field;
+                }
+            }
         } else if ($obj_type === 'copy_card') {
             $obj_val_arr = array(
                 $obj['foreign_id']

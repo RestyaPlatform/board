@@ -1031,7 +1031,7 @@ App.FooterView = Backbone.View.extend({
                                         var card = self.board.cards.findWhere({
                                             id: parseInt(activity.attributes.card_id)
                                         });
-                                        if (activity.attributes.type === 'add_card' || activity.attributes.type === 'copy_card') {
+                                        if (activity.attributes.type === 'add_card' || activity.attributes.type === 'copy_card' || (_.isUndefined(card) && activity.attributes.type === 'move_card')) {
                                             var new_card = new App.Card();
                                             if (activity.attributes.type === 'add_card') {
                                                 activity.attributes.card.cards_labels = null;
