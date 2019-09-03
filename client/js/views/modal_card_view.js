@@ -943,6 +943,7 @@ App.ModalCardView = Backbone.View.extend({
         e.preventDefault();
         var self = this;
         var validation = true;
+        var previous_description = self.model.attributes.description;
         var data = $(e.target).serializeObject();
         var edit_mode = $(e.target).closest('form').find('#inputCarddescriptions').data('edit_mode');
         if (edit_mode === 1 && $.trim(data.name) === '') {
@@ -994,6 +995,10 @@ App.ModalCardView = Backbone.View.extend({
                     self.$el.find('#cardDescriptionEditForm').addClass('hide');
                     validation = true;
                 }
+            } else if (previous_description === null || _.isEmpty(previous_description)) {
+                $('.error-msg').remove();
+                $('<div class="error-msg text-primary h6">Whitespace is not allowed</div>').insertAfter(self.$el.find('#inputCarddescriptions'));
+                validation = false;
             } else {
                 $('.error-msg').remove();
                 $('.js-show-card-desc').show();

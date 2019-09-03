@@ -128,7 +128,7 @@
 											<%= makeLink(converter.makeHtml(activity.attributes.revisions.new_value.description), activity.attributes.board_id) %>
 										<% } else if(activity.attributes.description){ %>
 											<%= makeLink(converter.makeHtml(activity.attributes.description), activity.attributes.board_id) %>
-										<% } else { %>	
+										<% } else if(activity.attributes.card_description){ %>	
 											<%= makeLink(converter.makeHtml(activity.attributes.card_description), activity.attributes.board_id) %>
 										<% } %>				
 									</div>
