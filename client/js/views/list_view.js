@@ -2233,140 +2233,86 @@ App.ListView = Backbone.View.extend({
         }
         $('.js-sort-down-' + self.model.attributes.id).remove();
         $('.js-sort-up-' + self.model.attributes.id).remove();
-        var filtered_cards = self.model.cards.filter(function(card) {
-            return parseInt(card.attributes.is_archived) === 0;
-        });
-        var is_card_empty = true;
-        var view = '';
-        // $('#js-card-listing-' + self.model.attributes.id).html('&nbsp;');
-        if (!_.isEmpty(filtered_cards)) {
-            $('#js-card-listing-' + self.model.attributes.id).html('<span class="js-list-placeholder-' + self.model.attributes.id + '">&nbsp;</span>');
-            _.each(filtered_cards, function(card) {
-                card.set('list_name', _.escape(self.model.attributes.name));
+        if (!_.isUndefined(self.model.collection)) {
+            var filtered_cards = self.model.collection.board.cards.where({
+                list_id: parseInt(self.model.id)
             });
-            var cards = new App.CardCollection();
-            if (this.sort_by === sort_by) {
-                $(e.target).parent().addClass('active');
-                $(e.target).html('<i class="icon icon-arrow-up js-sort-up-' + self.model.attributes.id + '"></i>' + i18next.t($(e.target).text()));
-                cards.sortDirection = 'asc';
-                this.sort_by = '-' + sort_by;
-            } else {
-                $(e.target).parent().addClass('active');
-                $(e.target).html('<i class="icon icon-arrow-down js-sort-down-' + self.model.attributes.id + '"></i>' + i18next.t($(e.target).text()));
-                cards.sortDirection = 'desc';
-                this.sort_by = sort_by;
-            }
-            cards.comparator = function(item) {
-                var str = '' + item.get(sort_by);
-                if (sort_by === 'name' || sort_by === 'list_name') {
-                    str = str.toLowerCase();
-                    str = str.split('');
-                    str = _.map(str, function(letter) {
-                        if (cards.sortDirection.toLowerCase() === 'desc') {
-                            return String.fromCharCode(-(letter.charCodeAt(0)));
-                        } else {
-                            return String.fromCharCode((letter.charCodeAt(0)));
-                        }
-                    });
-                    return str;
-                } else if (sort_by === 'due_date') {
-                    if (!_.isUndefined(item.get('due_date')) && item.get('due_date') !== null) {
-                        var date = item.get('due_date').split(' ');
-                        if (!_.isUndefined(date[1])) {
-                            _date = date[0] + 'T' + date[1];
-                        } else {
-                            _date = date[0];
-                        }
-                        sort_date = new Date(_date);
-                        return cards.sortDirection === 'desc' ? -sort_date.getTime() : sort_date.getTime();
-                    }
-                } else if (sort_by === 'created_date') {
-                    if (!_.isUndefined(item.get('created')) && item.get('created') !== null) {
-                        var created_date = item.get('created').split(' ');
-                        if (!_.isUndefined(created_date[1])) {
-                            _date = created_date[0] + 'T' + created_date[1];
-                        } else {
-                            _date = created_date[0];
-                        }
-                        sort_date = new Date(_date);
-                        return cards.sortDirection === 'desc' ? -sort_date.getTime() : sort_date.getTime();
-                    }
-                } else if (sort_by === 'list_moved_date') {
-                    if (!_.isUndefined(item.get('list_moved_date')) && item.get('list_moved_date') !== null) {
-                        var list_moved_date = item.get('list_moved_date').split(' ');
-                        if (!_.isUndefined(list_moved_date[1])) {
-                            _date = list_moved_date[0] + 'T' + list_moved_date[1];
-                        } else {
-                            _date = list_moved_date[0];
-                        }
-                        sort_date = new Date(_date);
-                        return cards.sortDirection === 'desc' ? -sort_date.getTime() : sort_date.getTime();
-                    }
-                } else if (sort_by === 'start_date') {
-                    if (!_.isUndefined(item.get('custom_fields')) && item.get('custom_fields') !== null) {
-                        var inputArr = item.get('custom_fields');
-                        var start_date_time = JSON.parse(inputArr);
-                        if (!_.isUndefined(start_date_time.start_date)) {
-                            _date = start_date_time.start_date + 'T' + start_date_time.start_time;
-                        } else {
-                            _date = start_date_time.start_date;
-                        }
-                        sort_date = new Date(_date);
-                        return cards.sortDirection === 'desc' ? -sort_date.getTime() : sort_date.getTime();
-                    }
+            var is_card_empty = true;
+            var view = '';
+            $('#js-card-listing-' + self.model.attributes.id).html('<span class="js-list-placeholder-' + self.model.attributes.id + '">&nbsp;</span>');
+            if (!_.isEmpty(filtered_cards)) {
+                _.each(filtered_cards, function(card) {
+                    card.set('list_name', _.escape(self.model.attributes.name));
+                });
+                var cards = new App.CardCollection();
+                cards.reset(filtered_cards);
+                this.model.cards.add(cards.toJSON(), {
+                    silent: true
+                });
+                if (this.sort_by === sort_by) {
+                    $(e.target).parent().addClass('active');
+                    $(e.target).html('<i class="icon icon-arrow-up js-sort-up-' + self.model.attributes.id + '"></i>' + i18next.t($(e.target).text()));
+                    this.sort_by = sort_by;
+                    self.model.cards.sortByColumn(this.sort_by, 'asc');
+                    cards.sortByColumn(this.sort_by, 'asc');
                 } else {
-                    if (cards.sortDirection === 'desc') {
-                        return -item.get(sort_by);
-                    } else {
-                        return item.get(sort_by);
-                    }
+                    $(e.target).parent().addClass('active');
+                    $(e.target).html('<i class="icon icon-arrow-down js-sort-down-' + self.model.attributes.id + '"></i>' + i18next.t($(e.target).text()));
+                    this.sort_by = sort_by;
+                    self.model.cards.sortByColumn(this.sort_by, 'desc');
+                    cards.sortByColumn(this.sort_by, 'desc');
                 }
-            };
-            cards.reset(filtered_cards);
-            cards.each(function(card) {
-                is_card_empty = false;
-                card.list_name = _.escape(self.model.attributes.name);
-                card.list_id = self.model.attributes.id;
-                card.board_users = self.model.board_users;
-                filter_attachments = self.model.attachments.where({
-                    card_id: card.id
+
+                cards.each(function(card) {
+                    is_card_empty = false;
+                    if (parseInt(card.get('is_archived')) === 0) {
+                        card.list_name = _.escape(self.model.attributes.name);
+                        card.list_id = self.model.attributes.id;
+                        card.board_users = self.model.board_users;
+                        filter_attachments = self.model.attachments.where({
+                            card_id: card.id
+                        });
+                        card.attachments.add(filter_attachments, {
+                            silent: true
+                        });
+                        var filter_labels = self.model.labels.filter(function(model) {
+                            return parseInt(model.get('card_id')) === parseInt(card.id);
+                        });
+                        var labels = new App.CardLabelCollection();
+                        labels.add(filter_labels, {
+                            silent: true
+                        });
+                        card.labels = labels;
+                        card.card_voters.add(card.get('card_voters'), {
+                            silent: true
+                        });
+                        card.cards.add(self.model.cards, {
+                            silent: true
+                        });
+                        card.list = self.model;
+                        card.board = self.model.board;
+                        card.board_activities.add(self.model.activities, {
+                            silent: true
+                        });
+                        view = new App.CardView({
+                            tagName: 'div',
+                            model: card,
+                            converter: self.converter
+                        });
+                        $('#js-card-listing-' + self.model.attributes.id).append(view.render().el);
+                    }
                 });
-                card.attachments.add(filter_attachments, {
-                    silent: true
-                });
-                var filter_labels = self.model.labels.filter(function(model) {
-                    return parseInt(model.get('card_id')) === parseInt(card.id);
-                });
-                var labels = new App.CardLabelCollection();
-                labels.add(filter_labels, {
-                    silent: true
-                });
-                card.labels = labels;
-                card.cards.add(self.model.cards, {
-                    silent: true
-                });
-                card.list = self.model;
-                card.board = self.model.board;
-                card.board_activities.add(self.model.activities, {
-                    silent: true
-                });
+                $('#js-card-listing-' + self.model.attributes.id).find('.js-list-placeholder-' + self.model.attributes.id).remove();
+            }
+            if (is_card_empty) {
                 view = new App.CardView({
                     tagName: 'div',
-                    model: card,
+                    className: '',
+                    model: null,
                     converter: self.converter
                 });
-                $('#js-card-listing-' + self.model.attributes.id).append(view.render().el);
-            });
-            $('#js-card-listing-' + self.model.attributes.id).find('.js-list-placeholder-' + self.model.attributes.id).remove();
-        }
-        if (is_card_empty) {
-            view = new App.CardView({
-                tagName: 'div',
-                className: '',
-                model: null,
-                converter: self.converter
-            });
-            view.render();
+                view.render();
+            }
         }
     }
 });
