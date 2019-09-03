@@ -6607,12 +6607,10 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
                 }
             }
             if (isset($custom_fields['list_collapse'])) {
-                if($custom_fields['list_collapse'])
-                {
+                if ($custom_fields['list_collapse']) {
                     $comment = '##USER_NAME## minimized the ##LIST_NAME## list';
                     $activity_type = 'list_change_min';
-                } else
-                {
+                } else {
                     $comment = '##USER_NAME## maximized the ##LIST_NAME## list';
                     $activity_type = 'list_change_max';
                 }
