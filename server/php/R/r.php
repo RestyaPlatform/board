@@ -6606,6 +6606,17 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
                     }
                 }
             }
+            if (isset($custom_fields['list_collapse'])) {
+                if($custom_fields['list_collapse'])
+                {
+                    $comment = '##USER_NAME## minimized the ##LIST_NAME## list';
+                    $activity_type = 'list_change_min';
+                } else
+                {
+                    $comment = '##USER_NAME## maximized the ##LIST_NAME## list';
+                    $activity_type = 'list_change_max';
+                }
+            }
             if (is_plugin_enabled('r_agile_wip') && isset($custom_fields['wip_limit'])) {
                 if (empty($previous_custom_fields_value['wip_limit']) && isset($custom_fields['wip_limit'])) {
                     if (!empty($custom_fields['wip_limit'])) {
