@@ -99,7 +99,7 @@
 					<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: "get_custom_fields",board_user_role_id: parseInt(list.board_user_role_id)})))){ %>
 						<li id="js-custom-fields-listing-<%- card.attributes.id %>"></li>
 					<% } %>
-					<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: "edit_card",board_user_role_id: parseInt(list.board_user_role_id)})))){ %>
+					<% if(!_.isUndefined(authuser.user)) { %>
 						<li class="mar-bottom" id="js-modal-duedate-show-<%- card.attributes.id %>"></li>
 					<% } %>
 				</ul>
