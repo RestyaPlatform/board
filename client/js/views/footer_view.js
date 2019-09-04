@@ -1791,6 +1791,17 @@ App.FooterView = Backbone.View.extend({
                                             self.board.labels.remove(filter_labels, {
                                                 silent: false
                                             });
+                                        } else if (activity.attributes.type === 'update_label') {
+                                            var label_value = JSON.parse(activity.attributes.revisions);
+                                            var filter_labels = self.board.labels.filter(function(model) {
+                                                return parseInt(model.get('label_id')) === parseInt(label_value.id);
+                                            });
+                                            self.board.labels.remove(filter_labels, {
+                                                silent: false
+                                            });
+                                            self.board.labels.add(filter_labels, {
+                                                silent: true
+                                            });
                                         } else if (activity.attributes.type == 'change_grid_view_configuration' || activity.attributes.type == 'change_list_view_configuration') {
                                             var board_custom_fields = JSON.parse(activity.attributes.revisions);
                                             if ((!_.isUndefined(board_custom_fields) && !_.isEmpty(board_custom_fields) && board_custom_fields !== null) && (!_.isUndefined(board_custom_fields.r_gridview_configure) || !_.isUndefined(board_custom_fields.r_listview_configure))) {
