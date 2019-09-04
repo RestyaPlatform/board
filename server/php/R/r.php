@@ -6401,6 +6401,18 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
                 $board['id'] = $id;
                 $board['board_custom_fields'] = json_encode($custom_fields_array);
                 $grid_view_response = update_query('boards', $id, $r_resource_cmd, $board);
+                $comment = __l('##USER_NAME## changed grid view configuration on ##BOARD_NAME##');
+                $type = 'change_grid_view_configuration';
+                $revision = $board['board_custom_fields'];
+                $qry_val_arr = array(
+                    $r_resource_vars['boards'],
+                    $authUser['id'],
+                    $type,
+                    $comment,
+                    $_GET['token'],
+                    $revision
+                );
+                $activity = pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO activities (created, modified, board_id, user_id, type, comment, token, revisions) VALUES (now(), now(),$1, $2, $3, $4, $5, $6) RETURNING id', $qry_val_arr));
                 echo json_encode($grid_view_response);
                 break;
             }
@@ -6426,6 +6438,18 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
                 $board['id'] = $id;
                 $board['board_custom_fields'] = json_encode($custom_fields_array);
                 $grid_view_response = update_query('boards', $id, $r_resource_cmd, $board);
+                $comment = __l('##USER_NAME## changed list view configuration on ##BOARD_NAME##');
+                $type = 'change_list_view_configuration';
+                $revision = $board['board_custom_fields'];
+                $qry_val_arr = array(
+                    $r_resource_vars['boards'],
+                    $authUser['id'],
+                    $type,
+                    $comment,
+                    $_GET['token'],
+                    $revision
+                );
+                $activity = pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO activities (created, modified, board_id, user_id, type, comment, token, revisions) VALUES (now(), now(),$1, $2, $3, $4, $5, $6) RETURNING id', $qry_val_arr));
             }
         }
         if (isset($r_put['r_listview_configure_position'])) {

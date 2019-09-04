@@ -1666,7 +1666,7 @@ App.FooterView = Backbone.View.extend({
                                             new_list.set('board_id', parseInt(activity.attributes.list.board_id));
                                             new_list.set('lists_cards', []);
                                             new_list.set('is_archived', 0);
-                                            new_list.set('position', parseInt(activity.attributes.list.position));
+                                            new_list.set('position', parseFloat(activity.attributes.list.position));
                                             self.board.lists.add(new_list);
                                             if (self.board.attributes.lists === null) {
                                                 self.board.attributes.lists = [];
@@ -1791,6 +1791,11 @@ App.FooterView = Backbone.View.extend({
                                             self.board.labels.remove(filter_labels, {
                                                 silent: false
                                             });
+                                        } else if (activity.attributes.type == 'change_grid_view_configuration' || activity.attributes.type == 'change_list_view_configuration') {
+                                            var board_custom_fields = JSON.parse(activity.attributes.revisions);
+                                            if ((!_.isUndefined(board_custom_fields) && !_.isEmpty(board_custom_fields) && board_custom_fields !== null) && (!_.isUndefined(board_custom_fields.r_gridview_configure) || !_.isUndefined(board_custom_fields.r_listview_configure))) {
+                                                self.board.set('board_custom_fields', activity.attributes.revisions);
+                                            }
                                         } else if (activity.attributes.type === 'close_board') {
                                             App.boards.get(activity.attributes.board_id).set('is_closed', 1);
                                             self.board.set('is_closed', 1);
