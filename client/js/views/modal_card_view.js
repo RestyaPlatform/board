@@ -2746,7 +2746,7 @@ App.ModalCardView = Backbone.View.extend({
         }
         var view_label = this.$el.find('.js-card-labels-list');
         view_label.html('');
-        if (self.$el.find('#js-label-add-container').length === 0) {
+        if (self.$el.find('#js-label-add-container').length === 0 && is_edit_labels) {
             view_label.append('<li id="js-label-add-container"><div class="dropdown js-label-dropdown no-print"><a class="dropdown-toggle js-show-card-label-form btn btn-default" role="button" data-toggle="dropdown" title="' + i18next.t('Add new Labels') + '" href="#"> <i class="icon-plus"></i></a><ul class="dropdown-menu dropdown-menu-left arrow col-xs-12 js-show-card-label-form-response"></ul></div></li>');
         }
         this.model.labels.each(function(label) {
