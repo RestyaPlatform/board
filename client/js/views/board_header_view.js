@@ -2418,14 +2418,14 @@ App.BoardHeaderView = Backbone.View.extend({
      *
      */
     clearAll: function() {
-        $('.js-board-dues, .js-board-users, .js-board-labels').find('.js-filter-icon').remove();
+        $('.js-board-dues, .js-board-users, .js-board-labels, .js-board-colors').find('.js-filter-icon').remove();
         if ($('li#js-mode-and > i.js-filter_mode-icon').length === 1) {
             $('#js-mode-and').find('.js-filter_mode-icon').remove();
         }
         if ($('li#js-mode-or > i.js-filter_mode-icon').length === 0) {
             $('li#js-mode-or').append('<i class="icon-ok js-filter_mode-icon cur pull-right"></i>');
         }
-        $('.js-board-dues, .js-board-users, .js-board-labels').children().removeClass('selected');
+        $('.js-board-dues, .js-board-users, .js-board-labels, .js-board-colors').children().removeClass('selected');
         if ($('#js-mode-and').hasClass('selected')) {
             $('#js-mode-and').removeClass('selected');
         }
