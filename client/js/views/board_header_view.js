@@ -361,7 +361,9 @@ App.BoardHeaderView = Backbone.View.extend({
             is_closed: 1
         }, {
             patch: true,
-            success: function(model, response) {}
+            success: function(model, response) {
+                $(e.target).parents('div.dropdown:first, li.dropdown:first').removeClass('open');
+            }
         });
         return false;
     },
