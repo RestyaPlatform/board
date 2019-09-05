@@ -1908,53 +1908,65 @@ App.FooterView = Backbone.View.extend({
                                         board.board_users.add(activity.attributes.board_user);
                                     }
                                 }
-                            } else if (activity.attributes.type === 'add_board' && !_.isUndefined(App.boards) && !_.isEmpty(App.boards) && App.boards !== null && mode == 1) {
-                                var _new_board = new App.Board();
-                                _new_board.set('id', parseInt(activity.attributes.board_id));
-                                _new_board.set('name', filterXSS(activity.attributes.board_name));
-                                _new_board.set('is_closed', 0);
-                                if (!_.isUndefined(activity.attributes.board) && !_.isEmpty(activity.attributes.board) && activity.attributes.board !== null) {
-                                    var tmp_new_board = activity.attributes.board;
-                                    _new_board.set('organization_id', parseInt(tmp_new_board.organization_id));
-                                    _new_board.set('board_visibility', parseInt(tmp_new_board.board_visibility));
-                                    if (!_.isUndefined(tmp_new_board.organization_name) && !_.isEmpty(tmp_new_board.organization_name) && tmp_new_board.organization_name !== null) {
-                                        _new_board.set('organization_name', tmp_new_board.organization_name);
+                            } else if (!_.isUndefined(App.boards) && !_.isEmpty(App.boards) && App.boards !== null && mode == 1) {
+                                if (activity.attributes.type === 'add_board') {
+                                    var _new_board = new App.Board();
+                                    _new_board.set('id', parseInt(activity.attributes.board_id));
+                                    _new_board.set('name', filterXSS(activity.attributes.board_name));
+                                    _new_board.set('is_closed', 0);
+                                    if (!_.isUndefined(activity.attributes.board) && !_.isEmpty(activity.attributes.board) && activity.attributes.board !== null) {
+                                        var tmp_new_board = activity.attributes.board;
+                                        _new_board.set('organization_id', parseInt(tmp_new_board.organization_id));
+                                        _new_board.set('board_visibility', parseInt(tmp_new_board.board_visibility));
+                                        if (!_.isUndefined(tmp_new_board.organization_name) && !_.isEmpty(tmp_new_board.organization_name) && tmp_new_board.organization_name !== null) {
+                                            _new_board.set('organization_name', tmp_new_board.organization_name);
+                                        }
+                                        if (!_.isUndefined(tmp_new_board.background_pattern_url) && !_.isEmpty(tmp_new_board.background_pattern_url) && tmp_new_board.background_pattern_url !== null) {
+                                            _new_board.set('background_pattern_url', tmp_new_board.background_pattern_url);
+                                        }
+                                        if (!_.isUndefined(tmp_new_board.background_picture_url) && !_.isEmpty(tmp_new_board.background_picture_url) && tmp_new_board.background_picture_url !== null) {
+                                            _new_board.set('background_picture_url', tmp_new_board.background_picture_url);
+                                        }
+                                        if (!_.isUndefined(tmp_new_board.music_content) && !_.isEmpty(tmp_new_board.music_content) && tmp_new_board.music_content !== null) {
+                                            _new_board.set('music_content', tmp_new_board.music_content);
+                                        }
+                                        if (!_.isUndefined(tmp_new_board.music_name) && !_.isEmpty(tmp_new_board.music_name) && tmp_new_board.music_name !== null) {
+                                            _new_board.set('music_name', tmp_new_board.music_name);
+                                        }
                                     }
-                                    if (!_.isUndefined(tmp_new_board.background_pattern_url) && !_.isEmpty(tmp_new_board.background_pattern_url) && tmp_new_board.background_pattern_url !== null) {
-                                        _new_board.set('background_pattern_url', tmp_new_board.background_pattern_url);
+                                    if (!_.isUndefined(activity.attributes.lists) && !_.isEmpty(activity.attributes.lists) && activity.attributes.lists !== null) {
+                                        var _tmp_list_collection = activity.attributes.lists;
+                                        var _new_board_lists = new App.ListCollection();
+                                        _new_board_lists.board = _new_board;
+                                        _.each(_tmp_list_collection, function(list) {
+                                            var _tmp_list = new App.List();
+                                            _tmp_list.set('id', parseInt(list.id));
+                                            _tmp_list.set('name', filterXSS(list.name));
+                                            _tmp_list.set('uuid', new Date().getTime());
+                                            _tmp_list.set('is_archived', 0);
+                                            _tmp_list.set('position', parseInt(list.position));
+                                            _tmp_list.set('board_id', parseInt(_new_board.attributes.id));
+                                            _new_board_lists.add(_tmp_list);
+                                            _new_board.lists.add(_tmp_list);
+                                        });
                                     }
-                                    if (!_.isUndefined(tmp_new_board.background_picture_url) && !_.isEmpty(tmp_new_board.background_picture_url) && tmp_new_board.background_picture_url !== null) {
-                                        _new_board.set('background_picture_url', tmp_new_board.background_picture_url);
+                                    $('#boards-index').find('.js-my-boards').prepend(new App.BoardSimpleView({
+                                        model: _new_board,
+                                        id: 'js-my-board-' + activity.attributes.board_id,
+                                        className: 'col-lg-3 col-md-4 col-sm-4 col-xs-12 mob-no-pad js-board-view js-board-view-' + activity.attributes.board_id
+                                    }).el);
+                                    App.boards.add(_new_board);
+                                } else if (activity.attributes.type === 'change_visibility') {
+                                    var existing_board;
+                                    if (activity.attributes.board_id) {
+                                        existing_board = App.boards.findWhere({
+                                            id: parseInt(activity.attributes.board_id)
+                                        });
                                     }
-                                    if (!_.isUndefined(tmp_new_board.music_content) && !_.isEmpty(tmp_new_board.music_content) && tmp_new_board.music_content !== null) {
-                                        _new_board.set('music_content', tmp_new_board.music_content);
-                                    }
-                                    if (!_.isUndefined(tmp_new_board.music_name) && !_.isEmpty(tmp_new_board.music_name) && tmp_new_board.music_name !== null) {
-                                        _new_board.set('music_name', tmp_new_board.music_name);
+                                    if (!_.isUndefined(existing_board) && !_.isEmpty(existing_board) && existing_board !== null) {
+                                        existing_board.set('board_visibility', activity.attributes.revisions.new_value.board_visibility);
                                     }
                                 }
-                                if (!_.isUndefined(activity.attributes.lists) && !_.isEmpty(activity.attributes.lists) && activity.attributes.lists !== null) {
-                                    var _tmp_list_collection = activity.attributes.lists;
-                                    var _new_board_lists = new App.ListCollection();
-                                    _new_board_lists.board = _new_board;
-                                    _.each(_tmp_list_collection, function(list) {
-                                        var _tmp_list = new App.List();
-                                        _tmp_list.set('id', parseInt(list.id));
-                                        _tmp_list.set('name', filterXSS(list.name));
-                                        _tmp_list.set('uuid', new Date().getTime());
-                                        _tmp_list.set('is_archived', 0);
-                                        _tmp_list.set('position', parseInt(list.position));
-                                        _tmp_list.set('board_id', parseInt(_new_board.attributes.id));
-                                        _new_board_lists.add(_tmp_list);
-                                        _new_board.lists.add(_tmp_list);
-                                    });
-                                }
-                                $('#boards-index').find('.js-my-boards').prepend(new App.BoardSimpleView({
-                                    model: _new_board,
-                                    id: 'js-my-board-' + activity.attributes.board_id,
-                                    className: 'col-lg-3 col-md-4 col-sm-4 col-xs-12 mob-no-pad js-board-view js-board-view-' + activity.attributes.board_id
-                                }).el);
-                                App.boards.add(_new_board);
                             }
                             Auth = JSON.parse($.cookie('auth'));
                             if (parseInt(activity.attributes.card_id) !== 0 && activity.attributes.token !== authuser.access_token && (parseInt(Auth.user.unread_activity_id) < parseInt(activity.attributes.id) || _.isUndefined(Auth.user.unread_activity_id))) {
