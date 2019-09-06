@@ -45,7 +45,7 @@
 	<% } %>
 	<% } %>
 	</li>
-	<% if (!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && (($.inArray('r_gridview_configure',APPS.enabled_apps) !== -1 && (!_.isEmpty(role_links.where({slug: "r_gridview_configure"})))) || ($.inArray('r_listview_configure',APPS.enabled_apps) !== -1 && (!_.isEmpty(role_links.where({slug: "r_listview_configure"})))))) {%>
+	<% if (!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && (($.inArray('r_gridview_configure',APPS.enabled_apps) !== -1 && (!_.isEmpty(role_links.where({slug: "r_gridview_configure"})))) || ($.inArray('r_listview_configure',APPS.enabled_apps) !== -1 && (!_.isEmpty(role_links.where({slug: "r_listview_configure"}))))) && !_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(board.acl_links.where({slug: "edit_board",board_user_role_id: parseInt(board.board_user_role_id)})))) {%>
 	<li><a href="#" class="nav-list-item nav-list-sub-item js-choose-columns"> <%- i18next.t('Choose Columns...') %></a></li>
 	<% } %>  	
 	<li class="js-background-change"></li>
