@@ -45,6 +45,12 @@ App.ArchiveListDeleteConfirmView = Backbone.View.extend({
                         list.collection.remove(list);
                     }
                 });
+                var archived_lists = self.model.lists.where({
+                    is_archived: 1
+                });
+                self.model.lists.remove(archived_lists, {
+                    silent: true
+                });
                 self.flash('success', i18next.t('Lists deleted successfully.'));
                 $('.js-archived-items').trigger('click');
             }
