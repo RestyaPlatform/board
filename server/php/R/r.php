@@ -6607,10 +6607,10 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
             $foreign_ids['board_id'] = $r_resource_vars['boards'];
             $foreign_ids['list_id'] = $r_resource_vars['lists'];
             if (empty($r_put['is_archived'])) {
-                $comment = '##USER_NAME## unarchived ##LIST_NAME##';
+                $comment = '##USER_NAME## unarchived list "' . $previous_value['name'] . '"';
                 $activity_type = 'unarchive_list';
             } else {
-                $comment = '##USER_NAME## archived ##LIST_NAME##';
+                $comment = '##USER_NAME## archived list "' . $previous_value['name'] . '"';
                 $activity_type = 'archive_list';
             }
         } else if (isset($r_put['custom_fields'])) {
@@ -6810,10 +6810,10 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
                 }
             }
             if ($r_put['is_archived']) {
-                $comment = '##USER_NAME## archived ' . $previous_value['name'];
+                $comment = '##USER_NAME## archived card ' . $previous_value['name'];
                 $activity_type = 'archived_card';
             } else {
-                $comment = '##USER_NAME## send back ' . $previous_value['name'] . ' to board';
+                $comment = '##USER_NAME## send back card ' . $previous_value['name'] . ' to board';
                 $activity_type = 'unarchived_card';
             }
             $foreign_ids['board_id'] = $r_resource_vars['boards'];
@@ -7458,7 +7458,7 @@ function r_delete($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         $previous_value = pg_fetch_assoc($s_result);
         $foreign_id['board_id'] = $r_resource_vars['boards'];
         $foreign_id['list_id'] = $r_resource_vars['lists'];
-        $comment = '##USER_NAME## deleted "' . $previous_value['name'] . '"';
+        $comment = '##USER_NAME## deleted list "' . $previous_value['name'] . '"';
         $response['activity'] = insertActivity($authUser['id'], $comment, 'delete_list', $foreign_id);
         $sql = 'DELETE FROM lists WHERE id= $1';
         array_push($pg_params, $r_resource_vars['lists']);
