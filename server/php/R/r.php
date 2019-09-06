@@ -2694,7 +2694,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 }
                 if ($authUser['role_id'] == 1) {
                     $emailFindReplace = array(
-                        '##PASSWORD##' => $r_post['password']
+                        '##PASSWORD##' => 'Please contact your administrator for your new password.'
                     );
                     sendMail('changepassword', $emailFindReplace, $user['email']);
                     $response = array(
@@ -2757,7 +2757,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                         pg_query_params($db_lnk, 'DELETE FROM oauth_refresh_tokens WHERE user_id= $1', $conditions);
                         if ($authUser['role_id'] == 1) {
                             $emailFindReplace = array(
-                                '##PASSWORD##' => $r_post['password']
+                                '##PASSWORD##' => 'should be known to you already. If not, please use the password reset function to generate a one-time password, and then reset it again.'
                             );
                             sendMail('changepassword', $emailFindReplace, $user['email']);
                             $response = array(
