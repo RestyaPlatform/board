@@ -5533,6 +5533,30 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
         }
         $sql = true;
         if (!empty($sql)) {
+            $r_post['card_voter_count'] = NULL;
+            $r_post['cards_subscriber_count'] = NULL;
+            if($is_keep_attachment == 'undefined')
+            {
+                $r_post['attachment_count'] = NULL;
+            }
+            if($is_keep_activity == 'undefined')
+            {
+                $r_post['comment_count'] = NULL;
+            }
+            if($is_keep_label == 'undefined')
+            {
+                $r_post['label_count'] = NULL;
+            }
+            if($is_keep_user == 'undefined')
+            {
+                $r_post['cards_user_count'] = NULL;
+            }
+            if($is_keep_checklist == 'undefined')
+            {
+                $r_post['checklist_count'] = NULL;
+                $r_post['checklist_item_count'] = NULL;
+                $r_post['checklist_item_completed_count'] = NULL;
+            }
             $post = getbindValues($table_name, $r_post);
             $result = pg_execute_insert($table_name, $post);
             if ($result) {
