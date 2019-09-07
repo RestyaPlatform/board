@@ -38,6 +38,7 @@ App.BoardHeaderView = Backbone.View.extend({
         this.model.lists.bind('change:name', this.showArchivedListLists, this);
         this.model.lists.bind('change:is_archived', this.showArchivedListLists, this);
         this.model.bind('change:board_visibility', this.render, this);
+        this.model.bind('change:is_closed', this.render, this);
         this.model.lists.bind('remove', this.showArchivedListLists, this);
         this.model.cards.bind('change:name', this.showArchivedCardsList, this);
         this.model.cards.bind('change:is_archived', this.showArchivedCardsList, this);
@@ -361,7 +362,9 @@ App.BoardHeaderView = Backbone.View.extend({
             is_closed: 1
         }, {
             patch: true,
-            success: function(model, response) {}
+            success: function(model, response) {
+                $(e.target).parents('div.dropdown:first, li.dropdown:first').removeClass('open');
+            }
         });
         return false;
     },
@@ -1635,12 +1638,6 @@ App.BoardHeaderView = Backbone.View.extend({
      *
      */
     showArchivedListLists: function(e) {
-        if (this.liststart !== 0) {
-            this.liststart = 0;
-        }
-        if (this.listpage !== 1) {
-            this.listpage = 1;
-        }
         var self = this;
         if (this.$el.find('.js-load-more-archived-cards').hasClass('show')) {
             this.$el.find('.js-load-more-archived-cards').removeClass('show').addClass('hide');
@@ -1669,8 +1666,8 @@ App.BoardHeaderView = Backbone.View.extend({
                 });
                 if (!_.isEmpty(filtered_lists)) {
                     $('.js-delete-all-archived-lists-confirm').removeClass('hide');
+                    count = self.listpage_filter * PAGING_COUNT;
                     _.each(filtered_lists, function(list, key) {
-                        count = self.listpage_filter * 9;
                         if (key === self.liststart_filter) {
                             if (count > (self.liststart_filter)) {
                                 self.liststart_filter++;
@@ -1698,8 +1695,8 @@ App.BoardHeaderView = Backbone.View.extend({
                     }).el);
                 }
                 if (!_.isEmpty(filtered_lists)) {
+                    count = self.listpage * PAGING_COUNT;
                     _.each(filtered_lists, function(list, key) {
-                        count = self.listpage * 9;
                         if (key === self.liststart) {
                             if (count > (self.liststart)) {
                                 self.liststart++;
@@ -1733,10 +1730,10 @@ App.BoardHeaderView = Backbone.View.extend({
     loadMoreArchivedListLists: function(e) {
         e.preventDefault();
         if (!_.isEmpty(this.listq)) {
-            this.listpage_filter++;
+            ++this.listpage_filter;
             this.showArchivedListLists();
         } else {
-            this.listpage++;
+            ++this.listpage;
             this.showArchivedListLists();
         }
         return false;
@@ -2418,14 +2415,14 @@ App.BoardHeaderView = Backbone.View.extend({
      *
      */
     clearAll: function() {
-        $('.js-board-dues, .js-board-users, .js-board-labels').find('.js-filter-icon').remove();
+        $('.js-board-dues, .js-board-users, .js-board-labels, .js-board-colors').find('.js-filter-icon').remove();
         if ($('li#js-mode-and > i.js-filter_mode-icon').length === 1) {
             $('#js-mode-and').find('.js-filter_mode-icon').remove();
         }
         if ($('li#js-mode-or > i.js-filter_mode-icon').length === 0) {
             $('li#js-mode-or').append('<i class="icon-ok js-filter_mode-icon cur pull-right"></i>');
         }
-        $('.js-board-dues, .js-board-users, .js-board-labels').children().removeClass('selected');
+        $('.js-board-dues, .js-board-users, .js-board-labels, .js-board-colors').children().removeClass('selected');
         if ($('#js-mode-and').hasClass('selected')) {
             $('#js-mode-and').removeClass('selected');
         }

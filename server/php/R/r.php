@@ -2694,7 +2694,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 }
                 if ($authUser['role_id'] == 1) {
                     $emailFindReplace = array(
-                        '##PASSWORD##' => $r_post['password']
+                        '##PASSWORD##' => 'Please contact your administrator for your new password.'
                     );
                     sendMail('changepassword', $emailFindReplace, $user['email']);
                     $response = array(
@@ -2757,7 +2757,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                         pg_query_params($db_lnk, 'DELETE FROM oauth_refresh_tokens WHERE user_id= $1', $conditions);
                         if ($authUser['role_id'] == 1) {
                             $emailFindReplace = array(
-                                '##PASSWORD##' => $r_post['password']
+                                '##PASSWORD##' => 'should be known to you already. If not, please use the password reset function to generate a one-time password, and then reset it again.'
                             );
                             sendMail('changepassword', $emailFindReplace, $user['email']);
                             $response = array(
@@ -5533,6 +5533,25 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
         }
         $sql = true;
         if (!empty($sql)) {
+            $r_post['card_voter_count'] = NULL;
+            $r_post['cards_subscriber_count'] = NULL;
+            if ($is_keep_attachment == 'undefined') {
+                $r_post['attachment_count'] = NULL;
+            }
+            if ($is_keep_activity == 'undefined') {
+                $r_post['comment_count'] = NULL;
+            }
+            if ($is_keep_label == 'undefined') {
+                $r_post['label_count'] = NULL;
+            }
+            if ($is_keep_user == 'undefined') {
+                $r_post['cards_user_count'] = NULL;
+            }
+            if ($is_keep_checklist == 'undefined') {
+                $r_post['checklist_count'] = NULL;
+                $r_post['checklist_item_count'] = NULL;
+                $r_post['checklist_item_completed_count'] = NULL;
+            }
             $post = getbindValues($table_name, $r_post);
             $result = pg_execute_insert($table_name, $post);
             if ($result) {
@@ -6595,10 +6614,10 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
             $foreign_ids['board_id'] = $r_resource_vars['boards'];
             $foreign_ids['list_id'] = $r_resource_vars['lists'];
             if (empty($r_put['is_archived'])) {
-                $comment = '##USER_NAME## unarchived ##LIST_NAME##';
+                $comment = '##USER_NAME## unarchived list "' . $previous_value['name'] . '"';
                 $activity_type = 'unarchive_list';
             } else {
-                $comment = '##USER_NAME## archived ##LIST_NAME##';
+                $comment = '##USER_NAME## archived list "' . $previous_value['name'] . '"';
                 $activity_type = 'archive_list';
             }
         } else if (isset($r_put['custom_fields'])) {
@@ -6798,10 +6817,10 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
                 }
             }
             if ($r_put['is_archived']) {
-                $comment = '##USER_NAME## archived ' . $previous_value['name'];
+                $comment = '##USER_NAME## archived card ' . $previous_value['name'];
                 $activity_type = 'archived_card';
             } else {
-                $comment = '##USER_NAME## send back ' . $previous_value['name'] . ' to board';
+                $comment = '##USER_NAME## send back card ' . $previous_value['name'] . ' to board';
                 $activity_type = 'unarchived_card';
             }
             $foreign_ids['board_id'] = $r_resource_vars['boards'];
@@ -7446,7 +7465,7 @@ function r_delete($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         $previous_value = pg_fetch_assoc($s_result);
         $foreign_id['board_id'] = $r_resource_vars['boards'];
         $foreign_id['list_id'] = $r_resource_vars['lists'];
-        $comment = '##USER_NAME## deleted "' . $previous_value['name'] . '"';
+        $comment = '##USER_NAME## deleted list "' . $previous_value['name'] . '"';
         $response['activity'] = insertActivity($authUser['id'], $comment, 'delete_list', $foreign_id);
         $sql = 'DELETE FROM lists WHERE id= $1';
         array_push($pg_params, $r_resource_vars['lists']);
