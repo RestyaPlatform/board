@@ -1426,6 +1426,7 @@ App.FooterView = Backbone.View.extend({
                                                     }
                                                 }
                                             } else if (activity.attributes.type === 'add_card_attachment') {
+                                                var previous_attachment_count = isNaN(card.attributes.attachment_count) ? 0 : card.attributes.attachment_count;
                                                 var new_attachment = new App.CardAttachment();
                                                 new_attachment.set(activity.attributes.attachment);
                                                 new_attachment.set('id', parseInt(activity.attributes.attachment.id));
@@ -1436,6 +1437,7 @@ App.FooterView = Backbone.View.extend({
                                                     silent: true
                                                 });
                                                 card.attachments.unshift(new_attachment);
+                                                card.set('attachment_count', previous_attachment_count + 1);
                                             } else if (activity.attributes.type === 'move_card') {
                                                 // Getting the old list of the card
                                                 var card_old_list = self.board.lists.findWhere({
@@ -1553,12 +1555,14 @@ App.FooterView = Backbone.View.extend({
                                             } else if (activity.attributes.type === 'change_card_position') {
                                                 card.set('position', activity.attributes.card_position);
                                             } else if (activity.attributes.type === 'delete_card_attachment') {
+                                                var previous_attachment = card.attributes.attachment_count;
                                                 self.board.attachments.remove(self.board.attachments.findWhere({
                                                     id: parseInt(activity.attributes.foreign_id)
                                                 }));
                                                 card.attachments.remove(card.attachments.findWhere({
                                                     id: parseInt(activity.attributes.foreign_id)
                                                 }));
+                                                card.set('attachment_count', previous_attachment - 1);
                                             } else if (activity.attributes.type === 'delete_card_comment') {
                                                 self.board.activities.remove(self.board.activities.findWhere({
                                                     id: parseInt(activity.attributes.foreign_id)

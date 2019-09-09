@@ -1271,6 +1271,13 @@ App.ModalCardView = Backbone.View.extend({
                     var i = 1;
                     card_attachments.add(response.card_attachments);
                     card_attachments.each(function(attachment) {
+                        var is_already_added = self.model.attachments.findWhere({
+                            id: parseInt(attachment.attributes.id)
+                        });
+                        if (_.isUndefined(is_already_added) || _.isEmpty(is_already_added)) {
+                            var previous_attachment_count = isNaN(self.model.attributes.attachment_count) ? 0 : parseInt(self.model.attributes.attachment_count);
+                            self.model.set('attachment_count', previous_attachment_count + 1);
+                        }
                         var options = {
                             silent: true
                         };
@@ -1726,6 +1733,13 @@ App.ModalCardView = Backbone.View.extend({
                 var i = 1;
                 card_attachments.add(response.card_attachments);
                 card_attachments.each(function(attachment) {
+                    var is_already_added = self.model.attachments.findWhere({
+                        id: parseInt(attachment.attributes.id)
+                    });
+                    if (_.isUndefined(is_already_added) || _.isEmpty(is_already_added)) {
+                        var previous_attachment_count = isNaN(self.model.attributes.attachment_count) ? 0 : parseInt(self.model.attributes.attachment_count);
+                        self.model.set('attachment_count', previous_attachment_count + 1);
+                    }
                     var options = {
                         silent: true
                     };
@@ -2671,6 +2685,10 @@ App.ModalCardView = Backbone.View.extend({
                             });
                             i++;
                         });
+                        if (!_.isUndefined(self.model.attributes.attachment_count) && self.model.attributes.attachment_count !== null) {
+                            var previous_attachment_count = isNaN(self.model.attributes.attachment_count) ? 0 : parseInt(self.model.attributes.attachment_count);
+                            self.model.set('attachment_count', previous_attachment_count + response.card_attachments.length);
+                        }
                         var view_attachment = this.$('#js-card-attachments-list');
                         response.activity = activityCommentReplace(response.activity);
                         var activity = new App.Activity();
@@ -2714,7 +2732,8 @@ App.ModalCardView = Backbone.View.extend({
             var view = new App.CardAttachmentView({
                 card_id: self.model.attributes.id,
                 model: attachment,
-                board: self.model.list.collection.board
+                board: self.model.list.collection.board,
+                card: self.model
             });
             view_attachment.append(view.render().el);
             emojify.run();
@@ -3881,7 +3900,8 @@ App.ModalCardView = Backbone.View.extend({
                         });
                         var view = new App.CardAttachmentView({
                             model: card_attachment,
-                            board: self.model.list.collection.board
+                            board: self.model.list.collection.board,
+                            card: self.model
                         });
                         var view_attachment = self.$('#js-card-attachments-list');
                         view_attachment.append(view.render().el);
