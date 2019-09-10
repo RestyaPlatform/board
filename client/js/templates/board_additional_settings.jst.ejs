@@ -53,7 +53,7 @@
                 <option <% if(board.attributes.sort_by === 'card_voter_count'){ %>selected<% } %> value="card_voter_count"><%- i18next.t('Votes') %></option>
                 <option <% if(board.attributes.sort_by === 'attachment_count'){ %>selected<% } %> value="attachment_count"><%- i18next.t('Attachments') %></option>
                 <option <% if(board.attributes.sort_by === 'comment_count'){ %>selected<% } %> value="comment_count"><%- i18next.t('Comments') %></option>
-                <option <% if(board.attributes.sort_by === 'checklist_item_count'){ %>selected<% } %> value="checklist_item_count"><%- i18next.t('Checklist pending count') %></option>
+                <option <% if(board.attributes.sort_by === 'checklist_item_pending_count'){ %>selected<% } %> value="checklist_item_pending_count"><%- i18next.t('Checklist pending count') %></option>
                 <option <% if(board.attributes.sort_by === 'checklist_item_completed_count'){ %>selected<% } %> value="checklist_item_completed_count"><%- i18next.t('Checklist completed count') %></option>
             </select>
         </div>
