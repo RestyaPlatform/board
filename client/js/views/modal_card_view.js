@@ -3290,6 +3290,7 @@ App.ModalCardView = Backbone.View.extend({
                     card_checklist.set('id', data.uuid);
                 }
                 card_checklist.set('checklist_item_completed_count', 0);
+                card_checklist.set('checklist_item_pending_count', 0);
                 card_checklist.set('name', _.escape(data.name));
                 card_checklist.set('card_id', self.model.id);
                 card_checklist.set('list_id', self.model.attributes.list_id);
@@ -3297,6 +3298,8 @@ App.ModalCardView = Backbone.View.extend({
                 card_checklist.card = self.model;
                 if (!_.isUndefined(response.checklist)) {
                     var checklist_items = response.checklist.checklists_items;
+                    card_checklist.set('checklist_item_count', parseInt(response.checklist.checklist_item_count));
+                    card_checklist.set('checklist_item_pending_count', parseInt(response.checklist.checklist_item_count));
                     card_checklist.set('checklist_items', checklist_items);
                     _.each(response.checklist.checklists_items, function(item) {
                         checklist_item = new App.CheckListItem();
@@ -3351,7 +3354,9 @@ App.ModalCardView = Backbone.View.extend({
                     return parseInt(checklist_item.get('is_completed')) === 1;
                 }).length;
                 var total_count = items.models.length;
+                var pending_count = total_count - completed_count;
                 self.model.set('checklist_item_completed_count', completed_count);
+                self.model.set('checklist_item_pending_count', pending_count);
                 self.model.set('checklist_item_count', total_count);
 
                 if (!_.isUndefined(response.activity)) {

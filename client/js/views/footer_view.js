@@ -1185,6 +1185,8 @@ App.FooterView = Backbone.View.extend({
                                                         return parseInt(checklist_item.get('is_completed')) === 1;
                                                     }).length;
                                                     total_count = items.models.length;
+                                                    var pending_cnt = total_count - completed_count;
+                                                    card.set('checklist_item_pending_count', pending_cnt);
                                                     card.set('checklist_item_completed_count', completed_count);
                                                     card.set('checklist_item_count', total_count);
                                                 }
@@ -1270,7 +1272,11 @@ App.FooterView = Backbone.View.extend({
                                                     return parseInt(checklist_item.get('is_completed')) === 1;
                                                 }).length;
                                                 var added_total_count = items.models.length;
+                                                var added_pending_cnt = added_total_count - added_completed_count;
                                                 card.set('checklist_item_completed_count', added_completed_count, {
+                                                    silent: false
+                                                });
+                                                card.set('checklist_item_pending_count', added_pending_cnt, {
                                                     silent: false
                                                 });
                                                 card.set('checklist_item_count', added_total_count, {
@@ -1314,6 +1320,8 @@ App.FooterView = Backbone.View.extend({
                                                         return ((parseInt(checklist_item.get('is_completed')) === 1) || ((checklist_item.get('is_completed')) === 't'));
                                                     }).length;
                                                     total_count = items.models.length;
+                                                    var updated_pending_cnt = total_count - completed_count;
+                                                    card.set('checklist_item_pending_count', updated_pending_cnt);
                                                     card.set('checklist_item_completed_count', completed_count);
                                                     card.set('checklist_item_count', total_count);
                                                 }
@@ -1600,7 +1608,9 @@ App.FooterView = Backbone.View.extend({
                                                     return parseInt(checklist_item.get('is_completed')) === 1;
                                                 }).length;
                                                 var total_count = items.models.length;
+                                                var pending_count = total_count - completed_count;
                                                 card.set('checklist_item_completed_count', completed_count);
+                                                card.set('checklist_item_pending_count', pending_count);
                                                 card.set('checklist_item_count', total_count);
                                             } else if (activity.attributes.type === 'delete_checklist_item') {
                                                 self.board.checklist_items.remove(self.board.checklist_items.findWhere({
@@ -1619,7 +1629,9 @@ App.FooterView = Backbone.View.extend({
                                                     return parseInt(checklist_item.get('is_completed')) === 1;
                                                 }).length;
                                                 var update_total_count = items.models.length;
+                                                var update_pending_count = update_total_count - update_completed_count;
                                                 card.set('checklist_item_completed_count', update_completed_count);
+                                                card.set('checklist_item_cpending_count', update_pending_count);
                                                 card.set('checklist_item_count', update_total_count);
                                             } else if (activity.attributes.type === 'delete_card_users') {
                                                 card.users.remove(card.users.findWhere({
