@@ -1565,11 +1565,20 @@ App.ModalCardView = Backbone.View.extend({
                 beforeClose: function(event, dialog) {
                     $('.js-modal-settings').removeClass('open');
                     var description;
-                    var comment = $('#js-card-modal-' + self.model.id).find('#inputAddComment').val();
+                    var comment;
+                    if ($.trim($('#js-card-modal-' + self.model.id).find('#inputAddComment').val()).length !== 0) {
+                        comment = $('#js-card-modal-' + self.model.id).find('#inputAddComment').val();
+                    } else {
+                        comment = '';
+                    }
                     if ($('#js-card-modal-' + self.model.id).find('#cardDescriptionEditForm').hasClass('hide')) {
                         description = '';
                     } else {
-                        description = $('#js-card-modal-' + self.model.id).find('#inputCarddescriptions').val();
+                        if ($.trim($('#js-card-modal-' + self.model.id).find('#inputCarddescriptions').val()).length !== 0) {
+                            description = $('#js-card-modal-' + self.model.id).find('#inputCarddescriptions').val();
+                        } else {
+                            description = '';
+                        }
                     }
                     if (!_.isEmpty(comment) || !_.isEmpty(description)) {
                         if (window.confirm(i18next.t('You have unsaved changes on this card. Do you want to close this card and discard your changes or stay on this card?'))) {
