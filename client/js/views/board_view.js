@@ -84,10 +84,31 @@ App.BoardView = Backbone.View.extend({
         var self = this;
         self.model.cards.each(function(card) {
             var checklists = card.get('cards_checklists') || [];
+            var options = {
+                silent: true
+            };
             if (!_.isEmpty(checklists)) {
+                var total_count = 0,
+                    completed_count = 0,
+                    pending_count = 0;
+                total_count = parseInt(card.attributes.checklist_item_count);
+                completed_count = parseInt(card.attributes.checklist_item_completed_count);
+                pending_count = total_count - completed_count;
+                card.set('checklist_item_pending_count', pending_count, options);
+                _.each(checklists, function(checklist) {
+                    total_count = 0;
+                    completed_count = 0;
+                    pending_count = 0;
+                    total_count = checklist.checklist_item_count;
+                    completed_count = checklist.checklist_item_completed_count;
+                    pending_count = total_count - completed_count;
+                    checklist.checklist_item_pending_count = pending_count;
+                });
                 self.model.checklists.add(checklists, {
                     silent: true
                 });
+            } else {
+                card.set('checklist_item_pending_count', 0, options);
             }
         });
     },
@@ -1102,8 +1123,10 @@ App.BoardView = Backbone.View.extend({
                         var new_checklist = new App.CheckList();
                         new_checklist.set(checklist);
                         new_checklist.set('card_id', parseInt(checklist.card_id));
-                        new_checklist.set('checklist_item_completed_count', parseInt(checklist.checklist_item_completed_count));
-                        new_checklist.set('checklist_item_count', parseInt(checklist.checklist_item_count));
+                        var checklist_item_count = parseInt(checklist.checklist_item_count);
+                        new_checklist.set('checklist_item_completed_count', 0);
+                        new_checklist.set('checklist_item_count', checklist_item_count);
+                        new_checklist.set('checklist_item_pending_count', checklist_item_count);
                         var k = 1;
                         _.each(response.list.checklists_items, function(checklist_item) {
                             var options = {

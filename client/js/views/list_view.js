@@ -1134,7 +1134,7 @@ App.ListView = Backbone.View.extend({
         this.$el.html(this.template({
             list: this.model
         }));
-        if (!_.isUndefined(this.model.attributes.custom_fields) && !_.isEmpty(this.model.attributes.custom_fields) && this.model.attributes.custom_fields) {
+        if (!_.isUndefined(this.model.attributes.custom_fields) && !_.isEmpty(this.model.attributes.custom_fields) && this.model.attributes.custom_fields && typeof this.model.attributes.custom_fields === 'string') {
             var list_custom_fields = JSON.parse(this.model.attributes.custom_fields);
             if (!_.isUndefined(list_custom_fields.list_collapse) && list_custom_fields.list_collapse) {
                 this.$el.find('.js-list-' + this.model.attributes.id).addClass('Minimized_list').removeClass('list');
@@ -1553,6 +1553,12 @@ App.ListView = Backbone.View.extend({
                             silent: true
                         });
                         card.board = self.model.board;
+                        if (_.isUndefined(card.attributes.checklist_item_completed_count)) {
+                            var checklist_item_pending_count = card.attributes.checklist_item_count - card.attributes.checklist_item_completed_count;
+                            card.set('checklist_item_pending_count', checklist_item_pending_count, {
+                                silent: false
+                            });
+                        }
                         var view = new App.CardView({
                             tagName: 'div',
                             model: card,
@@ -1727,6 +1733,15 @@ App.ListView = Backbone.View.extend({
             var tmp_card = new App.Card();
             tmp_card.set('is_offline', true);
             tmp_card.set('position', list_cards.length + 1);
+            tmp_card.set('checklist_item_completed_count', 0);
+            if (!_.isEmpty(data.cards_checklist_item_count)) {
+                tmp_card.set('checklist_item_count', parseInt(data.cards_checklist_item_count));
+                tmp_card.set('checklist_item_pending_count', parseInt(data.cards_checklist_item_count));
+            } else {
+                tmp_card.set('checklist_item_count', 0);
+                tmp_card.set('checklist_item_pending_count', 0);
+            }
+
             tmp_card.set({
                 name: data.name,
                 is_archived: 0,
@@ -1771,7 +1786,8 @@ App.ListView = Backbone.View.extend({
                 board_id: parseInt(data.board_id),
                 due_date: null,
                 end: null,
-                checklist_item_count: data.cards_checklist_item_count,
+                checklist_item_count: parseInt(data.cards_checklist_item_count),
+                checklist_item_pending_count: parseInt(data.cards_checklist_item_count),
                 checklist_item_completed_count: 0
             }, {
                 silent: true
@@ -1881,6 +1897,8 @@ App.ListView = Backbone.View.extend({
                                 id: parseInt(checklist.id)
                             });
                             card_checklist.set('checklist_item_completed_count', 0);
+                            card_checklist.set('checklist_item_count', parseInt(checklist.checklist_item_count));
+                            card_checklist.set('checklist_item_pending_count', parseInt(checklist.checklist_item_count));
                             card_checklist.set('name', _.escape(checklist.name));
                             card_checklist.set('card_id', parseInt(response.id));
                             card_checklist.set('list_id', parseInt(card.list.id));
@@ -1913,6 +1931,7 @@ App.ListView = Backbone.View.extend({
                         items.add(__checklist_items, option);
                         var total_count = items.models.length;
                         card.set('checklist_item_completed_count', 0);
+                        card.set('checklist_item_pending_count', total_count);
                         card.set('checklist_item_count', total_count);
                     }
                     var cards_count = isNaN(self.model.attributes.card_count) ? 0 : self.model.attributes.card_count;

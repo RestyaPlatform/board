@@ -1638,12 +1638,6 @@ App.BoardHeaderView = Backbone.View.extend({
      *
      */
     showArchivedListLists: function(e) {
-        if (this.liststart !== 0) {
-            this.liststart = 0;
-        }
-        if (this.listpage !== 1) {
-            this.listpage = 1;
-        }
         var self = this;
         if (this.$el.find('.js-load-more-archived-cards').hasClass('show')) {
             this.$el.find('.js-load-more-archived-cards').removeClass('show').addClass('hide');
@@ -1672,8 +1666,8 @@ App.BoardHeaderView = Backbone.View.extend({
                 });
                 if (!_.isEmpty(filtered_lists)) {
                     $('.js-delete-all-archived-lists-confirm').removeClass('hide');
+                    count = self.listpage_filter * PAGING_COUNT;
                     _.each(filtered_lists, function(list, key) {
-                        count = self.listpage_filter * 9;
                         if (key === self.liststart_filter) {
                             if (count > (self.liststart_filter)) {
                                 self.liststart_filter++;
@@ -1701,8 +1695,8 @@ App.BoardHeaderView = Backbone.View.extend({
                     }).el);
                 }
                 if (!_.isEmpty(filtered_lists)) {
+                    count = self.listpage * PAGING_COUNT;
                     _.each(filtered_lists, function(list, key) {
-                        count = self.listpage * 9;
                         if (key === self.liststart) {
                             if (count > (self.liststart)) {
                                 self.liststart++;
@@ -1736,10 +1730,10 @@ App.BoardHeaderView = Backbone.View.extend({
     loadMoreArchivedListLists: function(e) {
         e.preventDefault();
         if (!_.isEmpty(this.listq)) {
-            this.listpage_filter++;
+            ++this.listpage_filter;
             this.showArchivedListLists();
         } else {
-            this.listpage++;
+            ++this.listpage;
             this.showArchivedListLists();
         }
         return false;
