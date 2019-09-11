@@ -701,7 +701,9 @@
 			   <li class="col-xs-12 clearfix text-center"> <div><span class="col-xs-10"><strong><%- i18next.t('Attach From...') %> </strong></span><a class="js-close-popover pull-right" href="#"><i class="icon-remove "></i></a></div> </li>
 				<li class="col-xs-12 divider"></li>
 				<li class="col-xs-12"><a href="#" title="<%- i18next.t('Computer') %>" class="js-attachment-computer-open row"><%- i18next.t('Computer') %></a></li>
+				<% if (!_.isUndefined(DROPBOX_APPKEY) && !_.isEmpty(DROPBOX_APPKEY)) { %>
 				<li class="col-xs-12"><a href="#" title="<%- i18next.t('Dropbox') %>" class="js-attachment-dropbox-open row"><%- i18next.t('Dropbox') %></a></li>
+				<% } %>
 				<li class="col-xs-12 divider"></li>
 				<li class="col-xs-12">
 				  <span class="col-xs-10 sr-only"><%- i18next.t('Attach a Link') %></span>
