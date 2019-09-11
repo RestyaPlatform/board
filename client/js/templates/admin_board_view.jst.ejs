@@ -186,14 +186,14 @@
 	<%- board.attributes.archived_card_count%> 
 </td> 
 <td class="text-center">
-    <a href="#" class="js-no-action">
+    <a href="javascript:void(0);" class="js-no-action">
 		<% var created = parse_date(board.attributes.created, authuser, 'js-timeago1-admin-board-view-'+board.attributes.id); %>
 		<span class="js-timeago1-admin-board-view-<%- board.attributes.id %>"></span>
 	</a>
 	
 </td>
 <td class="text-center">
-    <a href="#" class="js-no-action">
+    <a href="javascript:void(0);" class="js-no-action">
 		<% var modified = parse_date(board.attributes.modified, authuser, 'js-timeago2-admin-board-view-'+board.attributes.id); %>
 		<span class="js-timeago2-admin-board-view-<%- board.attributes.id %>"></span>
 	</a>
