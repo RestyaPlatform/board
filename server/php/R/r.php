@@ -1274,6 +1274,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         $val_array = array(
             $r_resource_vars['boards']
         );
+        $order = '';
         $board = executeQuery('SELECT board_visibility FROM boards_listing WHERE id = $1', $val_array);
         if (isset($authUser['id']) && $authUser['id'] != 'undefined' && !empty($authUser['id'])) {
             $val_array = array(
@@ -1326,12 +1327,12 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                         array_push($pg_params, 'edit_comment');
                         $i++; */
                 }
+                $order = 'ORDER BY freshness_ts DESC, depth ASC';
             }
             $limit = PAGING_COUNT;
             if (!empty($r_resource_filters['limit'])) {
                 $limit = $r_resource_filters['limit'];
             }
-            $order = 'ORDER BY freshness_ts DESC, depth ASC';
             if (isset($r_resource_filters['mode']) && $r_resource_filters['mode'] == '1') {
                 $order = 'ORDER BY al.id DESC';
             }
