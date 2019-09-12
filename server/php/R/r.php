@@ -392,7 +392,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             }
             if (!empty($r_resource_filters['organization_id'])) {
                 if (!empty($r_resource_filters['last_activity_id'])) {
-                    $condition = ' AND al.id > $4';
+                    $condition = ' AND al.id < $4';
                 }
                 $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM activities_listing al WHERE ((user_id = $1 AND board_id IN (SELECT id FROM boards WHERE organization_id = $2)) OR organization_id  = ANY ( $3 )) ' . $condition . ' ORDER BY id DESC LIMIT ' . PAGING_COUNT . ') as d';
                 $c_sql = 'SELECT COUNT(*) FROM activities_listing al WHERE ((user_id = $1 AND board_id IN (SELECT id FROM boards WHERE organization_id = $2)) OR organization_id  = ANY ( $3 )) ' . $condition;
@@ -2280,15 +2280,20 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             $r_post['password'] = getCryptHash($r_post['password']);
             $r_post['role_id'] = 2; // user
             $r_post['ip_id'] = saveIp();
-            $default_email_notification = 0;
-            if (DEFAULT_EMAIL_NOTIFICATION === 'Periodically') {
-                $default_email_notification = 1;
-            } else if (DEFAULT_EMAIL_NOTIFICATION === 'Instantly') {
-                $default_email_notification = 2;
-            } else if (DEFAULT_EMAIL_NOTIFICATION === 'Daily') {
-                $default_email_notification = 3;
-            } else if (DEFAULT_EMAIL_NOTIFICATION === 'Weekly') {
-                $default_email_notification = 4;
+            // admin selected email notification
+            if (isset($r_post['is_send_newsletter'])) {
+                $default_email_notification = $r_post['is_send_newsletter'];
+            } else {
+                $default_email_notification = 0;
+                if (DEFAULT_EMAIL_NOTIFICATION === 'Periodically') {
+                    $default_email_notification = 1;
+                } else if (DEFAULT_EMAIL_NOTIFICATION === 'Instantly') {
+                    $default_email_notification = 2;
+                } else if (DEFAULT_EMAIL_NOTIFICATION === 'Daily') {
+                    $default_email_notification = 3;
+                } else if (DEFAULT_EMAIL_NOTIFICATION === 'Weekly') {
+                    $default_email_notification = 4;
+                }
             }
             $r_post['is_send_newsletter'] = $default_email_notification;
             $r_post['default_desktop_notification'] = (DEFAULT_DESKTOP_NOTIFICATION === 'Enabled') ? 'true' : 'false';
