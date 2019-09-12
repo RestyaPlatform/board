@@ -28,7 +28,7 @@
 			<% 
 				var cardLink = '<a href="#/board/' + activity.attributes.board_id + '/card/' + activity.attributes.card_id + '">' + (activity.attributes.card_name) + '</a>';
 				var organizationLink = '<a href="#/organization/' + activity.attributes.organization_id + '">' + (activity.attributes.organization_name) + '</a>';
-				if(activity.attributes.type != 'add_comment' || activity.attributes.type != 'edit_comment') {
+				if(activity.attributes.type != 'add_comment') {
 					if (activity.attributes.comment.indexOf('##DESCRIPTION##') != -1){
 						if(activity.attributes.type !== 'add_card_desc') {
 							if(!_.isEmpty(activity.attributes.difference) && !_.isUndefined(activity.attributes.difference) && !_.isUndefined(activity.attributes.difference['0'])){
@@ -94,8 +94,8 @@
 						if(_.contains(_username, authuser.user.username)){
 							comment = filterXSS(activity.attributes.full_name) + ' has mentioned you in card ' + cardLink;
 						} 
+					}
 				}
-			}
 			%>             
 			<div class="col-xs-12 btn-block">  
 						<div class="activities-list js-activity-<%- activity.attributes.id %>">
