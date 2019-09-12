@@ -99,7 +99,7 @@
 			%>             
 			<div class="col-xs-12 btn-block">  
 						<div class="activities-list js-activity-<%- activity.attributes.id %>">
-						<% if((activity.attributes.type == 'add_comment' || activity.attributes.type == 'edit_comment' || activity.attributes.type == 'delete_card_comment')) { %>
+						<% if(activity.attributes.type == 'add_comment') { %>
 							<%if(!_.isUndefined(activity.from_footer)) { %>
 								<span><%= comment %></span>
 							<% } %>
