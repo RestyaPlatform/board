@@ -98,6 +98,8 @@ App.ActivityView = Backbone.View.extend({
                     var col_offset = parseInt(this.model.attributes.depth);
                     this.$el.addClass('col-xs-' + column);
                     this.$el.addClass('col-lg-offset-' + col_offset);
+                } else if (this.$el.attr('class').indexOf('col-xs-12') === -1) {
+                    this.$el.addClass('col-xs-12');
                 }
             } else {
                 this.$el.addClass('col-xs-12');
