@@ -6606,6 +6606,8 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
                 $qry_val_arr = array(
                     $r_put['board_id']
                 );
+                // changing the board id
+                $foreign_ids['board_id'] = $r_put['board_id'];
                 $new_board_name = executeQuery('SELECT name FROM boards WHERE id =  $1', $qry_val_arr);
                 $comment = '##USER_NAME## moved the list ##LIST_NAME## from ' . $current_board_name['name'] . ' to ' . $new_board_name['name'] . '.';
                 $activity_type = 'move_list';

@@ -1674,7 +1674,7 @@ App.FooterView = Backbone.View.extend({
                                         var list = self.board.lists.findWhere({
                                             id: parseInt(activity.attributes.list_id)
                                         });
-                                        if (activity.attributes.type === 'add_list' || (_.isUndefined(list) && activity.attributes.type === 'move_list')) {
+                                        if (activity.attributes.type === 'add_list') {
                                             var new_list = new App.List();
                                             new_list.set(activity.attributes.list);
                                             new_list.set('card_count', 0);
@@ -1693,7 +1693,88 @@ App.FooterView = Backbone.View.extend({
                                             if (!_.isUndefined(App.boards) && !_.isUndefined(App.boards.get(new_list.attributes.board_id))) {
                                                 App.boards.get(new_list.attributes.board_id).lists.add(new_list);
                                             }
+                                        } else if(_.isUndefined(list) && activity.attributes.type === 'move_list') {
+                                            var new_move_list = new App.List();
+                                            var board_id = parseInt(activity.attributes.board_id);
+                                            var list_id = parseInt(activity.attributes.list_id);
+                                            new_move_list.set(activity.attributes.list);
+                                            new_move_list.set('card_count', 0);
+                                            new_move_list.set('id', list_id);
+                                            new_move_list.set('board_id', board_id);
+                                            new_move_list.set('lists_cards', []);
+                                            new_move_list.set('is_archived', 0);
+                                            // new_move_list.set('position', parseFloat(activity.attributes.list.position));
+                                            self.board.lists.add(new_move_list);
+                                            if (self.board.attributes.lists === null) {
+                                                self.board.attributes.lists = [];
+                                            }
+                                            if (self.board.attributes.lists !== null) {
+                                                self.board.attributes.lists.push(new_move_list);
+                                            }
+                                            if (!_.isUndefined(App.boards) && !_.isUndefined(App.boards.get(new_move_list.attributes.board_id))) {
+                                                App.boards.get(new_move_list.attributes.board_id).lists.add(new_move_list);
+                                            }
+                                            $.ajax({
+                                                url: api_url + 'boards' + board_id  + '/lists/'  + list_id + '/cards.json?token=' + authuser.access_token,
+                                                cache: false,
+                                                type: 'GET',
+                                                success: function(response) {
+                                                    if (response.data.length > 0) {
+                                                        _.each(response.data, function(card_data){
+                                                            var new_card = new App.Card();
+                                                            var board_sort_by = (self.board.attributes.sort_by) ? self.board.attributes.sort_by : 'position';
+                                                            var bard_sort_direction = (self.board.attributes.sort_direction) ? self.board.attributes.sort_direction : 'asc';
+                                                            card_data.is_archived = parseInt(card_data.is_archived);
+                                                            new_card.set(card_data);
+                                                            new_card.set('id', parseInt(card_data.id));
+                                                            new_card.set('board_id', parseInt(card_data.board_id));
+                                                            new_card.set('list_id', parseInt(card_data.list_id));
+                                                            new_card.set('user_id', parseInt(card_data.user_id));
+                                                            new_card.set('is_archived', parseInt(card_data.is_archived));
+                                                            var card_list = self.board.lists.findWhere({
+                                                                id: parseInt(list_id)
+                                                            });
+                                                            new_card.list = card_list;
+                                                            new_card.board = self.board;
+                                                            if (!_.isEmpty(card_list) && !_.isUndefined(card_list) && card_list !== null && !_.isEmpty(card_list.cards) && !_.isUndefined(card_list.cards) && card_list.cards !== null) {
+                                                                var tmp_list_cards = card_list.cards;
+                                                                new_card.set('created', card_data.created);
+                                                                new_card.set('position', parseFloat(card_data.position));
+                                                                tmp_list_cards.add(new_card, {
+                                                                    silent: true
+                                                                });
+                                                                if (board_sort_by !== 'position') {
+                                                                    var sort_filter_cards = self.cardsort(board_sort_by, bard_sort_direction, tmp_list_cards);
+                                                                    $.each(sort_filter_cards.models, function(key, filter_card) {
+                                                                        if (parseInt(filter_card.attributes.is_archived) === 0 && parseInt(filter_card.id) === parseInt(new_card.id)) {
+                                                                            new_card.set('position', key + 1);
+                                                                        }
+                                                                    });
+                                                                }
+                                                            }
 
+                                                            if (!_.isUndefined(card_list) && !_.isUndefined(card_list.attributes.card_count) && card_list.attributes.card_count === 0) {
+                                                                // Removing the &nbsp; in the card listing after adding card or copy card
+                                                                $('#js-card-listing-' + card_list.id).find('.js-list-placeholder-' + card_list.id).remove();
+                                                            }
+                                                            self.board.cards.add(new_card);
+                                                            if (!_.isUndefined(card_list) && !_.isUndefined(card_list.cards)) {
+                                                                card_list.cards.add(new_card);
+                                                                var card_list_card_count = isNaN(card_list.attributes.card_count) ? 0 : card_list.attributes.card_count;
+                                                                // Updating the list card count
+                                                                card_list.set('card_count', parseInt(card_list_card_count) + 1);
+                                                                if (card_list !== null && !_.isEmpty(card_list) && wip_enabled) {
+                                                                    $('body').trigger('cardAddRendered', [card_list.id, card_list]);
+                                                                }
+                                                            }
+                                                            if ((!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null) && (activity.attributes.type === "copy_card") && !_.isEmpty(activity.attributes.custom_fields) && !_.isUndefined(activity.attributes.custom_fields) && activity.attributes.custom_fields !== null) {
+                                                                $('body').trigger('CutomFieldsRendered', [parseInt(card_data.id), new_card]);
+                                                            }
+
+                                                        });
+                                                    }
+                                                }
+                                            });
                                         }
                                         if (!_.isUndefined(list)) {
                                             if (activity.attributes.revisions && activity.attributes.revisions.new_value && activity.attributes.type !== 'archived_card') {
