@@ -1274,6 +1274,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         $val_array = array(
             $r_resource_vars['boards']
         );
+        $order = '';
         $board = executeQuery('SELECT board_visibility FROM boards_listing WHERE id = $1', $val_array);
         if (isset($authUser['id']) && $authUser['id'] != 'undefined' && !empty($authUser['id'])) {
             $val_array = array(
@@ -1326,12 +1327,12 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                         array_push($pg_params, 'edit_comment');
                         $i++; */
                 }
+                $order = 'ORDER BY freshness_ts DESC, depth ASC';
             }
             $limit = PAGING_COUNT;
             if (!empty($r_resource_filters['limit'])) {
                 $limit = $r_resource_filters['limit'];
             }
-            $order = 'ORDER BY freshness_ts DESC, depth ASC';
             if (isset($r_resource_filters['mode']) && $r_resource_filters['mode'] == '1') {
                 $order = 'ORDER BY al.id DESC';
             }
@@ -1393,7 +1394,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                             }
                         } else {
                             if ($obj['type'] === 'add_comment') {
-                                $obj['comment'] = '##USER_NAME## added comment in the card ##CARD_LINK## - ' . $obj['comment'];
+                                $obj['comment'] = $obj['comment'];
                             }
                         }
                         $obj = ActivityHandler::getActivitiesObj($obj);
@@ -6356,6 +6357,19 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
         $response['success'] = 'Label has been updated successfully.';
         $response = update_query($table_name, $id, $r_resource_cmd, $r_put);
         echo json_encode($response);
+        $comment = __l('##USER_NAME## updated ' . $r_put['name'] . ' label on ##BOARD_NAME##');
+        $type = 'update_label';
+        $label_id['id'] = $r_resource_vars['labels'];
+        $revision = json_encode($label_id);
+        $qry_val_arr = array(
+            $r_put['board_id'],
+            $authUser['id'],
+            $type,
+            $comment,
+            $_GET['token'],
+            $revision
+        );
+        $activity = pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO activities (created, modified, board_id, user_id, type, comment, token, revisions) VALUES (now(), now(),$1, $2, $3, $4, $5, $6) RETURNING id', $qry_val_arr));
         break;
 
     case '/oauth/clients/?':

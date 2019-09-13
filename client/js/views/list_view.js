@@ -742,6 +742,7 @@ App.ListView = Backbone.View.extend({
             moved_list.attributes.board_id = board_id;
             moved_list.attributes.position = data.position;
             App.boards.get(board_id).lists.add(moved_list);
+            moved_list.collection = App.boards.get(board_id).lists;
             App.boards.get(this.model.attributes.board_id).lists.remove(list_id);
         } else {
             var previous_position = position - 1;
