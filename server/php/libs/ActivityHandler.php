@@ -149,10 +149,13 @@ class ActivityHandler
                 $obj['labels'][] = $row;
             }
         } else if ($obj_type === 'update_label') {
+            $label_id = json_decode($obj['revisions']);
+            $label_id = $label_id->{'id'};
             $obj_val_arr = array(
-                $obj['board_id']
+                $obj['board_id'],
+                $label_id
             );
-            $s_result = pg_query_params($db_lnk, 'SELECT * FROM cards_labels_listing WHERE  board_id = $1 ORDER BY name ASC', $obj_val_arr);
+            $s_result = pg_query_params($db_lnk, 'SELECT * FROM cards_labels_listing WHERE  board_id = $1 AND label_id = $2 ORDER BY name ASC', $obj_val_arr);
             while ($row = pg_fetch_assoc($s_result)) {
                 $obj['labels'][] = $row;
             }

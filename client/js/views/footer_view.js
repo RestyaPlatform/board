@@ -1808,15 +1808,37 @@ App.FooterView = Backbone.View.extend({
                                                 silent: false
                                             });
                                         } else if (activity.attributes.type === 'update_label') {
-                                            var label_value = JSON.parse(activity.attributes.revisions);
-                                            var filter_labels = self.board.labels.filter(function(model) {
-                                                return parseInt(model.get('label_id')) === parseInt(label_value.id);
+                                            var update_label_value = JSON.parse(activity.attributes.revisions);
+                                            var board_labels = activity.attributes.labels;
+                                            var card_filter_labels = self.board.labels.filter(function(model) {
+                                                return parseInt(model.get('label_id')) === parseInt(update_label_value.id);
                                             });
-                                            self.board.labels.remove(filter_labels, {
-                                                silent: false
-                                            });
-                                            self.board.labels.add(filter_labels, {
+                                            self.board.labels.remove(card_filter_labels, {
                                                 silent: true
+                                            });
+                                            _.each(board_labels, function(label) {
+                                                card = self.board.cards.findWhere({
+                                                    id: parseInt(label.card_id)
+                                                });
+                                                card.labels.remove(card_filter_labels, {
+                                                    silent: true
+                                                });
+                                                var card_label = new App.Label();
+                                                card_label.set(label);
+                                                card_label.set('id', parseInt(label.id));
+                                                card_label.set('name', label.name);
+                                                card_label.set('color', label.color);
+                                                card_label.set('label_id', parseInt(label.label_id));
+                                                card_label.set('card_id', parseInt(label.card_id));
+                                                card_label.set('list_id', parseInt(label.list_id));
+                                                card_label.set('board_id', parseInt(label.board_id));
+                                                self.board.labels.add(card_label, {
+                                                    silent: true
+                                                });
+                                                var options = {
+                                                    silent: false
+                                                };
+                                                card.labels.add(card_label, options);
                                             });
                                         } else if (activity.attributes.type == 'change_grid_view_configuration' || activity.attributes.type == 'change_list_view_configuration') {
                                             var board_custom_fields = JSON.parse(activity.attributes.revisions);
