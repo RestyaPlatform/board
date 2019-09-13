@@ -1274,6 +1274,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         $val_array = array(
             $r_resource_vars['boards']
         );
+        $order = '';
         $board = executeQuery('SELECT board_visibility FROM boards_listing WHERE id = $1', $val_array);
         if (isset($authUser['id']) && $authUser['id'] != 'undefined' && !empty($authUser['id'])) {
             $val_array = array(
@@ -1326,12 +1327,12 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                         array_push($pg_params, 'edit_comment');
                         $i++; */
                 }
+                $order = 'ORDER BY freshness_ts DESC, depth ASC';
             }
             $limit = PAGING_COUNT;
             if (!empty($r_resource_filters['limit'])) {
                 $limit = $r_resource_filters['limit'];
             }
-            $order = 'ORDER BY freshness_ts DESC, depth ASC';
             if (isset($r_resource_filters['mode']) && $r_resource_filters['mode'] == '1') {
                 $order = 'ORDER BY al.id DESC';
             }
@@ -1393,7 +1394,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                             }
                         } else {
                             if ($obj['type'] === 'add_comment') {
-                                $obj['comment'] = '##USER_NAME## added comment in the card ##CARD_LINK## - ' . $obj['comment'];
+                                $obj['comment'] = $obj['comment'];
                             }
                         }
                         $obj = ActivityHandler::getActivitiesObj($obj);
@@ -2280,15 +2281,20 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             $r_post['password'] = getCryptHash($r_post['password']);
             $r_post['role_id'] = 2; // user
             $r_post['ip_id'] = saveIp();
-            $default_email_notification = 0;
-            if (DEFAULT_EMAIL_NOTIFICATION === 'Periodically') {
-                $default_email_notification = 1;
-            } else if (DEFAULT_EMAIL_NOTIFICATION === 'Instantly') {
-                $default_email_notification = 2;
-            } else if (DEFAULT_EMAIL_NOTIFICATION === 'Daily') {
-                $default_email_notification = 3;
-            } else if (DEFAULT_EMAIL_NOTIFICATION === 'Weekly') {
-                $default_email_notification = 4;
+            // admin selected email notification
+            if (isset($r_post['is_send_newsletter'])) {
+                $default_email_notification = $r_post['is_send_newsletter'];
+            } else {
+                $default_email_notification = 0;
+                if (DEFAULT_EMAIL_NOTIFICATION === 'Periodically') {
+                    $default_email_notification = 1;
+                } else if (DEFAULT_EMAIL_NOTIFICATION === 'Instantly') {
+                    $default_email_notification = 2;
+                } else if (DEFAULT_EMAIL_NOTIFICATION === 'Daily') {
+                    $default_email_notification = 3;
+                } else if (DEFAULT_EMAIL_NOTIFICATION === 'Weekly') {
+                    $default_email_notification = 4;
+                }
             }
             $r_post['is_send_newsletter'] = $default_email_notification;
             $r_post['default_desktop_notification'] = (DEFAULT_DESKTOP_NOTIFICATION === 'Enabled') ? 'true' : 'false';

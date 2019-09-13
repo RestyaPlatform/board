@@ -28,7 +28,7 @@
 			<% 
 				var cardLink = '<a href="#/board/' + activity.attributes.board_id + '/card/' + activity.attributes.card_id + '">' + (activity.attributes.card_name) + '</a>';
 				var organizationLink = '<a href="#/organization/' + activity.attributes.organization_id + '">' + (activity.attributes.organization_name) + '</a>';
-				if(activity.attributes.type != 'add_comment' || activity.attributes.type != 'edit_comment') {
+				if(activity.attributes.type != 'add_comment') {
 					if (activity.attributes.comment.indexOf('##DESCRIPTION##') != -1){
 						if(activity.attributes.type !== 'add_card_desc') {
 							if(!_.isEmpty(activity.attributes.difference) && !_.isUndefined(activity.attributes.difference) && !_.isUndefined(activity.attributes.difference['0'])){
@@ -94,12 +94,12 @@
 						if(_.contains(_username, authuser.user.username)){
 							comment = filterXSS(activity.attributes.full_name) + ' has mentioned you in card ' + cardLink;
 						} 
+					}
 				}
-			}
 			%>             
 			<div class="col-xs-12 btn-block">  
 						<div class="activities-list js-activity-<%- activity.attributes.id %>">
-						<% if((activity.attributes.type == 'add_comment' || activity.attributes.type == 'edit_comment' || activity.attributes.type == 'delete_card_comment')) { %>
+						<% if(activity.attributes.type == 'add_comment') { %>
 							<%if(!_.isUndefined(activity.from_footer)) { %>
 								<span><%= comment %></span>
 							<% } %>
@@ -158,8 +158,7 @@
 				<% setInterval(function() {%>
 					<% parse_date(activity.attributes.created, authuser,'js-timeago-'+activity.attributes.id); %>
 				<% }, 10000); %>
-				<span class="<% if(!_.isUndefined(type) && !_.isEmpty(type) && type === 'all' && activity.attributes.type !== 'add_organization' && activity.attributes.type !== 'edit_organization') { %>show<% } %> js-timeago-<%- activity.attributes.id %>"></span>
-				<% parse_date(activity.attributes.created, authuser,'js-timeago-'+activity.attributes.id); %>
+				<span class="<% if(!_.isUndefined(type) && !_.isEmpty(type) && type === 'all' && activity.attributes.type !== 'add_organization' && activity.attributes.type !== 'edit_organization') { %>show<% } %> js-timeago-<%- activity.attributes.id %>"><%= parse_date(activity.attributes.created, authuser,'js-timeago-'+activity.attributes.id, true) %></span>
 					<% if(!_.isUndefined(authuser.user) && activity.attributes.type == "add_comment" && type != "all" && (_.isUndefined(activity.from_footer))) { %>
 						<div class="js-acticity-action-<%- activity.attributes.id %> pull-left navbar-btn col-md-10 col-xs-12">
 							<ul class="list-inline">

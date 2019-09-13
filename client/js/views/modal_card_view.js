@@ -1271,6 +1271,13 @@ App.ModalCardView = Backbone.View.extend({
                     var i = 1;
                     card_attachments.add(response.card_attachments);
                     card_attachments.each(function(attachment) {
+                        var is_already_added = self.model.attachments.findWhere({
+                            id: parseInt(attachment.attributes.id)
+                        });
+                        if (_.isUndefined(is_already_added) || _.isEmpty(is_already_added)) {
+                            var previous_attachment_count = isNaN(self.model.attributes.attachment_count) ? 0 : parseInt(self.model.attributes.attachment_count);
+                            self.model.set('attachment_count', previous_attachment_count + 1);
+                        }
                         var options = {
                             silent: true
                         };
@@ -1558,11 +1565,20 @@ App.ModalCardView = Backbone.View.extend({
                 beforeClose: function(event, dialog) {
                     $('.js-modal-settings').removeClass('open');
                     var description;
-                    var comment = $('#js-card-modal-' + self.model.id).find('#inputAddComment').val();
+                    var comment;
+                    if ($.trim($('#js-card-modal-' + self.model.id).find('#inputAddComment').val()).length !== 0) {
+                        comment = $('#js-card-modal-' + self.model.id).find('#inputAddComment').val();
+                    } else {
+                        comment = '';
+                    }
                     if ($('#js-card-modal-' + self.model.id).find('#cardDescriptionEditForm').hasClass('hide')) {
                         description = '';
                     } else {
-                        description = $('#js-card-modal-' + self.model.id).find('#inputCarddescriptions').val();
+                        if ($.trim($('#js-card-modal-' + self.model.id).find('#inputCarddescriptions').val()).length !== 0) {
+                            description = $('#js-card-modal-' + self.model.id).find('#inputCarddescriptions').val();
+                        } else {
+                            description = '';
+                        }
                     }
                     if (!_.isEmpty(comment) || !_.isEmpty(description)) {
                         if (window.confirm(i18next.t('You have unsaved changes on this card. Do you want to close this card and discard your changes or stay on this card?'))) {
@@ -1726,6 +1742,13 @@ App.ModalCardView = Backbone.View.extend({
                 var i = 1;
                 card_attachments.add(response.card_attachments);
                 card_attachments.each(function(attachment) {
+                    var is_already_added = self.model.attachments.findWhere({
+                        id: parseInt(attachment.attributes.id)
+                    });
+                    if (_.isUndefined(is_already_added) || _.isEmpty(is_already_added)) {
+                        var previous_attachment_count = isNaN(self.model.attributes.attachment_count) ? 0 : parseInt(self.model.attributes.attachment_count);
+                        self.model.set('attachment_count', previous_attachment_count + 1);
+                    }
                     var options = {
                         silent: true
                     };
@@ -2671,6 +2694,10 @@ App.ModalCardView = Backbone.View.extend({
                             });
                             i++;
                         });
+                        if (!_.isUndefined(self.model.attributes.attachment_count) && self.model.attributes.attachment_count !== null) {
+                            var previous_attachment_count = isNaN(self.model.attributes.attachment_count) ? 0 : parseInt(self.model.attributes.attachment_count);
+                            self.model.set('attachment_count', previous_attachment_count + response.card_attachments.length);
+                        }
                         var view_attachment = this.$('#js-card-attachments-list');
                         response.activity = activityCommentReplace(response.activity);
                         var activity = new App.Activity();
@@ -2714,7 +2741,8 @@ App.ModalCardView = Backbone.View.extend({
             var view = new App.CardAttachmentView({
                 card_id: self.model.attributes.id,
                 model: attachment,
-                board: self.model.list.collection.board
+                board: self.model.list.collection.board,
+                card: self.model
             });
             view_attachment.append(view.render().el);
             emojify.run();
@@ -3271,6 +3299,7 @@ App.ModalCardView = Backbone.View.extend({
                     card_checklist.set('id', data.uuid);
                 }
                 card_checklist.set('checklist_item_completed_count', 0);
+                card_checklist.set('checklist_item_pending_count', 0);
                 card_checklist.set('name', _.escape(data.name));
                 card_checklist.set('card_id', self.model.id);
                 card_checklist.set('list_id', self.model.attributes.list_id);
@@ -3278,6 +3307,8 @@ App.ModalCardView = Backbone.View.extend({
                 card_checklist.card = self.model;
                 if (!_.isUndefined(response.checklist)) {
                     var checklist_items = response.checklist.checklists_items;
+                    card_checklist.set('checklist_item_count', parseInt(response.checklist.checklist_item_count));
+                    card_checklist.set('checklist_item_pending_count', parseInt(response.checklist.checklist_item_count));
                     card_checklist.set('checklist_items', checklist_items);
                     _.each(response.checklist.checklists_items, function(item) {
                         checklist_item = new App.CheckListItem();
@@ -3332,7 +3363,9 @@ App.ModalCardView = Backbone.View.extend({
                     return parseInt(checklist_item.get('is_completed')) === 1;
                 }).length;
                 var total_count = items.models.length;
+                var pending_count = total_count - completed_count;
                 self.model.set('checklist_item_completed_count', completed_count);
+                self.model.set('checklist_item_pending_count', pending_count);
                 self.model.set('checklist_item_count', total_count);
 
                 if (!_.isUndefined(response.activity)) {
@@ -3881,7 +3914,8 @@ App.ModalCardView = Backbone.View.extend({
                         });
                         var view = new App.CardAttachmentView({
                             model: card_attachment,
-                            board: self.model.list.collection.board
+                            board: self.model.list.collection.board,
+                            card: self.model
                         });
                         var view_attachment = self.$('#js-card-attachments-list');
                         view_attachment.append(view.render().el);

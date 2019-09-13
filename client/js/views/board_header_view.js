@@ -2195,7 +2195,7 @@ App.BoardHeaderView = Backbone.View.extend({
         } else {
             target.toggleClass('selected', !target.hasClass('selected'));
         }
-        this.cardFilter();
+        this.cardFilter('is_triggered');
         return false;
     },
     /**
@@ -2206,81 +2206,83 @@ App.BoardHeaderView = Backbone.View.extend({
      *
      */
     cardFilter: function(e) {
-        $('div#board_view_header').find('.js-clear-filter-btn').removeClass('hide').addClass('show');
         var current_param = Backbone.history.fragment.split('?');
-        $('i.js-filter-icon').remove();
         var self = this;
-        if (!_.isUndefined(self.model) && !_.isEmpty(self.model)) {
-            var dictFilter = filter_getFilterObject(current_param, this.model.cards);
-            var arrays = dictFilter.arrays;
-            var filter_query = dictFilter.filter_query;
-            if (_.isEmpty(arrays) && _.isEmpty(filter_query)) {
-                _.each(this.model.lists.models, function(list) {
-                    if (!_.isUndefined(self.model.cards) && !_.isEmpty(self.model.cards)) {
-                        var cards = self.model.cards.filter(function(card) {
-                            return card.get('is_archived') !== 1 && card.get('list_id') === parseInt(list.id);
-                        });
-                        _.each(cards, function(card, key) {
-                            card.set('is_filtered', false);
-                        });
-                    }
-                });
-            }
-            if (!_.isEmpty(arrays) && !_.isEmpty(filter_query)) {
-                var result = arrays.shift().filter(function(v) {
-                    return arrays.every(function(a) {
-                        return a.indexOf(v) !== -1;
+        if (($('div#board_view_header').find('li.selected > div.js-label', $('ul.js-board-labels')).length !== 0 || $('div#board_view_header').find('li.selected > div.media > span.navbar-btn > span.js-user', $('ul.js-board-users')).length !== 0 || $('div#board_view_header').find('li.selected', $('ul.js-board-colors')).length !== 0 || $('div#board_view_header').find('li.selected > div.media > span.js-due', $('ul.js-board-dues')).length !== 0) || (!_.isUndefined(e) && typeof e === 'string')) {
+            if (!_.isUndefined(self.model) && !_.isEmpty(self.model)) {
+                $('div#board_view_header').find('.js-clear-filter-btn').removeClass('hide').addClass('show');
+                $('i.js-filter-icon').remove();
+                var dictFilter = filter_getFilterObject(current_param, this.model.cards);
+                var arrays = dictFilter.arrays;
+                var filter_query = dictFilter.filter_query;
+                if (_.isEmpty(arrays) && _.isEmpty(filter_query)) {
+                    _.each(this.model.lists.models, function(list) {
+                        if (!_.isUndefined(self.model.cards) && !_.isEmpty(self.model.cards)) {
+                            var cards = self.model.cards.filter(function(card) {
+                                return card.get('is_archived') !== 1 && card.get('list_id') === parseInt(list.id);
+                            });
+                            _.each(cards, function(card, key) {
+                                card.set('is_filtered', false);
+                            });
+                        }
                     });
-                });
-                var unfilteredIds = [];
-                for (var i = 0; i < result.length; i++) {
-                    if (!_.isUndefined(result[i])) {
-                        var card_id = result[i].substring(8, result[i].length);
-                        if ($.inArray(card_id, unfilteredIds) === -1) {
-                            unfilteredIds.push(parseInt(card_id));
+                }
+                if (!_.isEmpty(arrays) && !_.isEmpty(filter_query)) {
+                    var result = arrays.shift().filter(function(v) {
+                        return arrays.every(function(a) {
+                            return a.indexOf(v) !== -1;
+                        });
+                    });
+                    var unfilteredIds = [];
+                    for (var i = 0; i < result.length; i++) {
+                        if (!_.isUndefined(result[i])) {
+                            var card_id = result[i].substring(8, result[i].length);
+                            if ($.inArray(card_id, unfilteredIds) === -1) {
+                                unfilteredIds.push(parseInt(card_id));
+                            }
                         }
                     }
-                }
-                this.model.cards.each(function(card) {
-                    var filter = !_.isEmpty(filter_query) && unfilteredIds.indexOf(card.get('id')) === -1;
-                    card.set('is_filtered', filter);
-                });
-                _.each(this.model.lists.models, function(list) {
-                    if (!$('#js-card-listing-' + list.id).find('.panel').is(':visible') && (!_.isUndefined(list.attributes.card_count) && list.attributes.card_count !== 0 && list.attributes.card_count !== null && !isNaN(list.attributes.card_count))) {
-                        $('#js-card-listing-' + list.id).prepend('<span class="js-list-placeholder-' + list.id + '">&nbsp;</span>');
+                    this.model.cards.each(function(card) {
+                        var filter = !_.isEmpty(filter_query) && unfilteredIds.indexOf(card.get('id')) === -1;
+                        card.set('is_filtered', filter);
+                    });
+                    _.each(this.model.lists.models, function(list) {
+                        if (!$('#js-card-listing-' + list.id).find('.panel').is(':visible') && (!_.isUndefined(list.attributes.card_count) && list.attributes.card_count !== 0 && list.attributes.card_count !== null && !isNaN(list.attributes.card_count))) {
+                            $('#js-card-listing-' + list.id).prepend('<span class="js-list-placeholder-' + list.id + '">&nbsp;</span>');
+                        }
+                    });
+                    if (!_.isUndefined(unfilteredIds) && !_.isEmpty(unfilteredIds)) {
+                        if (!$('#js-empty-filter-cards').hasClass('hide')) {
+                            $('#js-empty-filter-cards').addClass('hide');
+                        }
+                    } else if ($('#js-empty-filter-cards').hasClass('hide')) {
+                        $('#js-empty-filter-cards').removeClass('hide');
                     }
-                });
-                if (!_.isUndefined(unfilteredIds) && !_.isEmpty(unfilteredIds)) {
-                    if (!$('#js-empty-filter-cards').hasClass('hide')) {
-                        $('#js-empty-filter-cards').addClass('hide');
+                }
+                if (filter_query) {
+                    if ($('.js-clear-all').hasClass('text-muted')) {
+                        $('.js-clear-all').removeClass('text-muted');
                     }
-                } else if ($('#js-empty-filter-cards').hasClass('hide')) {
-                    $('#js-empty-filter-cards').removeClass('hide');
+                    filter_query = '?filter=' + filter_query.slice(0, -1);
+                    var split_length = current_param[0].split('board/');
+                    if (split_length.length === 2) {
+                        current_param[0] = 'board/' + split_length[1];
+                    }
+                    app.navigate('#/' + current_param[0] + filter_query, {
+                        trigger: true,
+                        trigger_function: false,
+                        replace: true
+                    });
+                } else {
+                    this.$el.find('.js-clear-filter-btn').removeClass('show').addClass('hide');
+                    app.navigate('#/' + current_param[0], {
+                        trigger: true,
+                        trigger_function: false,
+                        replace: true
+                    });
                 }
+                $('body').trigger('GanttFilterRendered');
             }
-            if (filter_query) {
-                if ($('.js-clear-all').hasClass('text-muted')) {
-                    $('.js-clear-all').removeClass('text-muted');
-                }
-                filter_query = '?filter=' + filter_query.slice(0, -1);
-                var split_length = current_param[0].split('board/');
-                if (split_length.length === 2) {
-                    current_param[0] = 'board/' + split_length[1];
-                }
-                app.navigate('#/' + current_param[0] + filter_query, {
-                    trigger: true,
-                    trigger_function: false,
-                    replace: true
-                });
-            } else {
-                this.$el.find('.js-clear-filter-btn').removeClass('show').addClass('hide');
-                app.navigate('#/' + current_param[0], {
-                    trigger: true,
-                    trigger_function: false,
-                    replace: true
-                });
-            }
-            $('body').trigger('GanttFilterRendered');
         }
     },
     /**
