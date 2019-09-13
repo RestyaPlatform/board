@@ -1394,7 +1394,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                             }
                         } else {
                             if ($obj['type'] === 'add_comment') {
-                                $obj['comment'] = '##USER_NAME## added comment in the card ##CARD_LINK## - ' . $obj['comment'];
+                                $obj['comment'] = $obj['comment'];
                             }
                         }
                         $obj = ActivityHandler::getActivitiesObj($obj);
