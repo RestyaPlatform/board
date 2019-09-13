@@ -1767,10 +1767,9 @@ App.FooterView = Backbone.View.extend({
                                                                     $('body').trigger('cardAddRendered', [card_list.id, card_list]);
                                                                 }
                                                             }
-                                                            if ((!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null) && (activity.attributes.type === "copy_card") && !_.isEmpty(activity.attributes.custom_fields) && !_.isUndefined(activity.attributes.custom_fields) && activity.attributes.custom_fields !== null) {
+                                                            if ((!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null)) {
                                                                 $('body').trigger('CutomFieldsRendered', [parseInt(card_data.id), new_card]);
                                                             }
-
                                                         });
                                                     }
                                                 }
