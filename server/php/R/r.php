@@ -6357,6 +6357,19 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
         $response['success'] = 'Label has been updated successfully.';
         $response = update_query($table_name, $id, $r_resource_cmd, $r_put);
         echo json_encode($response);
+        $comment = __l('##USER_NAME## updated ' . $r_put['name'] . ' label on ##BOARD_NAME##');
+        $type = 'update_label';
+        $label_id['id'] = $r_resource_vars['labels'];
+        $revision = json_encode($label_id);
+        $qry_val_arr = array(
+            $r_put['board_id'],
+            $authUser['id'],
+            $type,
+            $comment,
+            $_GET['token'],
+            $revision
+        );
+        $activity = pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO activities (created, modified, board_id, user_id, type, comment, token, revisions) VALUES (now(), now(),$1, $2, $3, $4, $5, $6) RETURNING id', $qry_val_arr));
         break;
 
     case '/oauth/clients/?':
