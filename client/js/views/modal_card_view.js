@@ -1999,6 +1999,15 @@ App.ModalCardView = Backbone.View.extend({
         card_voter.set('id', voter_id);
         this.model.card_voters.remove(card_voter);
         this.model.list.collection.board.cards.get(self.model.id).card_voters.remove(card_voter);
+        if (!_.isUndefined(self.model.list.collection.board.cards.get(self.model.id).attributes.cards_voters) && self.model.list.collection.board.cards.get(self.model.id).attributes.cards_voters !== null) {
+            var card_voter_attr = self.model.list.collection.board.cards.get(self.model.id).attributes.cards_voters.filter(function(voter) {
+                return ((parseInt(voter.card_id) === parseInt(card_id)) && (parseInt(voter.user_id) === parseInt(authuser.user.id)));
+            });
+            if (card_voter_attr.length > 0) {
+                var card_voter_attr_index = self.model.list.collection.board.cards.get(self.model.id).attributes.cards_voters.indexOf(card_voter_attr[0]);
+                self.model.list.collection.board.cards.get(self.model.id).attributes.cards_voters.splice(card_voter_attr_index, 1);
+            }
+        }
         card_voter.url = api_url + 'boards/' + board_id + '/lists/' + list_id + '/cards/' + card_id + '/card_voters/' + voter_id + '.json';
         self.model.card_voters.remove(card_voter);
         var vote_count = self.model.attributes.card_voter_count;
