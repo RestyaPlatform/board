@@ -114,9 +114,9 @@ if (!_.isUndefined(authuser.user)) {
 						<dt>
 							<div class="btn-group navbar-btn list-activity"> <a href="#" class="btn btn-default js-no-action htruncate">
 							<% setInterval(function() { %>
-								<% parse_date(organization.attributes.modified, authuser, 'js-timeago-'+organization.attributes.username); %>
+								<% parse_date(organization.attributes.modified, authuser, 'js-timeago-activity-'+organization.attributes.id); %>
 							<% }, 10000); %>
-							<span class="js-timeago-<%- organization.attributes.username %>"><%= parse_date(organization.attributes.modified, authuser, 'js-timeago-'+organization.attributes.username, true) %></span>
+							<span class="js-timeago-activity-<%- organization.attributes.id %>"><%= parse_date(organization.attributes.modified, authuser, 'js-timeago-activity-'+organization.attributes.id, true) %></span>
 							</a> </div>
 						</dt>
 						<dd><h6 class="text-center h4 navbar-btn"><%- i18next.t('Recent activity') %></h6></dd>
