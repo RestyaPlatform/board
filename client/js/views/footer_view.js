@@ -1081,6 +1081,9 @@ App.FooterView = Backbone.View.extend({
                                             var card_list = self.board.lists.findWhere({
                                                 id: parseInt(activity.attributes.list_id)
                                             });
+                                            if (activity.attributes.type === 'move_card') {
+                                                new_card.set('list_moved_date', parseInt(activity.attributes.card.list_moved_date));
+                                            }
                                             new_card.list = card_list;
                                             new_card.board = self.board;
                                             if (!_.isEmpty(card_list) && !_.isUndefined(card_list) && card_list !== null && !_.isEmpty(card_list.cards) && !_.isUndefined(card_list.cards) && card_list.cards !== null) {
@@ -1137,9 +1140,15 @@ App.FooterView = Backbone.View.extend({
                                             if (activity.attributes.type === 'add_card_duedate') {
                                                 card.set('end', activity.attributes.revisions.new_value.due_date);
                                                 card.set('start', activity.attributes.revisions.new_value.due_date);
+                                                card.set('due_date', activity.attributes.revisions.new_value.due_date);
+                                            } else if (activity.attributes.type === 'edit_card_duedate') {
+                                                card.set('end', activity.attributes.revisions.new_value.due_date);
+                                                card.set('start', activity.attributes.revisions.new_value.due_date);
+                                                card.set('due_date', activity.attributes.revisions.new_value.due_date);
                                             } else if (activity.attributes.type === 'delete_card_duedate') {
                                                 card.set('end', activity.attributes.revisions.new_value.due_date);
                                                 card.set('start', activity.attributes.revisions.new_value.due_date);
+                                                card.set('due_date', null);
                                             }
                                             if (!_.isEmpty(activity.attributes.revisions)) {
                                                 if (activity.attributes.revisions.new_value.card_id) {
@@ -1245,6 +1254,9 @@ App.FooterView = Backbone.View.extend({
                                                     new_voter.set('user_id', parseInt(activity.attributes.voter.user_id));
                                                     new_voter.set('card_id', parseInt(activity.attributes.voter.card_id));
                                                     card.card_voters.add(new_voter);
+                                                    var add_card_voter_count = isNaN(card.attributes.card_voter_count) ? 0 : card.attributes.card_voter_count;
+                                                    add_card_voter_count = add_card_voter_count + 1;
+                                                    card.set('card_voter_count', add_card_voter_count);
                                                 }
                                             } else if (activity.attributes.type === 'add_card_voter') {
                                                 card.set('cards_users', activity.attributes.user);
@@ -1631,16 +1643,35 @@ App.FooterView = Backbone.View.extend({
                                                 var update_total_count = items.models.length;
                                                 var update_pending_count = update_total_count - update_completed_count;
                                                 card.set('checklist_item_completed_count', update_completed_count);
-                                                card.set('checklist_item_cpending_count', update_pending_count);
+                                                card.set('checklist_item_pending_count', update_pending_count);
                                                 card.set('checklist_item_count', update_total_count);
                                             } else if (activity.attributes.type === 'delete_card_users') {
                                                 card.users.remove(card.users.findWhere({
                                                     id: parseInt(activity.attributes.foreign_id)
                                                 }));
                                             } else if (activity.attributes.type === 'unvote_card') {
-                                                card.card_voters.remove(card.card_voters.findWhere({
-                                                    id: parseInt(activity.attributes.foreign_id)
-                                                }));
+                                                var voted_user = card.card_voters.findWhere({
+                                                    card_id: parseInt(card.id),
+                                                    user_id: parseInt(activity.attributes.user_id)
+                                                });
+                                                var voter_id = parseInt(voted_user.id);
+                                                var card_voter = new App.CardVoter();
+                                                card_voter.set('id', voter_id);
+                                                card.card_voters.remove(card_voter);
+                                                if (!_.isUndefined(card.attributes.cards_voters) && card.attributes.cards_voters !== null) {
+                                                    var card_voter_attr = card.attributes.cards_voters.filter(function(voter) {
+                                                        return ((parseInt(voter.card_id) === parseInt(card.id)) && (parseInt(voter.user_id) === parseInt(activity.attributes.user_id)));
+                                                    });
+                                                    if (card_voter_attr.length > 0) {
+                                                        var card_voter_attr_index = card.attributes.cards_voters.indexOf(card_voter_attr[0]);
+                                                        card.attributes.cards_voters.splice(card_voter_attr_index, 1);
+                                                    }
+                                                }
+                                                var card_voter_count = isNaN(card.attributes.card_voter_count) ? 0 : card.attributes.card_voter_count;
+                                                if (card_voter_count !== 0) {
+                                                    card_voter_count = card_voter_count - 1;
+                                                }
+                                                card.set('card_voter_count', card_voter_count);
                                             } else if (activity.attributes.type === 'delete_card') {
                                                 self.board.cards.remove(card);
                                             }
