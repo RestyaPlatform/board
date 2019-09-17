@@ -72,6 +72,14 @@ App.ListView = Backbone.View.extend({
             this.model.collection.board.cards.bind('add:id', this.renderCardsCollection);
             this.model.collection.board.cards.bind('remove', this.renderCardsCollection);
             this.model.collection.board.cards.bind('change:position', this.renderCardsCollection);
+            this.model.collection.board.cards.bind('change:start_date', this.renderCardsCollection);
+            this.model.collection.board.cards.bind('change:due_date', this.renderCardsCollection);
+            this.model.collection.board.cards.bind('change:name', this.renderCardsCollection);
+            this.model.collection.board.cards.bind('change:list_moved_date', this.renderCardsCollection);
+            this.model.collection.board.cards.bind('change:card_voter_count', this.renderCardsCollection);
+            this.model.collection.board.cards.bind('change:attachment_count', this.renderCardsCollection);
+            this.model.collection.board.cards.bind('change:checklist_item_pending_count', this.renderCardsCollection);
+            this.model.collection.board.cards.bind('change:checklist_item_completed_count', this.renderCardsCollection);
             this.model.collection.board.cards.bind('change:is_archived', this.renderCardsCollection);
             this.model.collection.board.cards.bind('change:is_archived', function(e) {
                 this.renderCardNumbers();
@@ -1439,41 +1447,46 @@ App.ListView = Backbone.View.extend({
                     return true;
                 }
                 if (parseInt(e.attributes.is_archived) === 0) {
+                    var card_exist = false;
                     if ($('#js-card-' + e.attributes.id).length === 1) {
-                        $('#js-card-' + e.attributes.id).replaceWith(view.render().el);
-                    } else {
-                        filtered_cards = self.model.board.cards.where({
-                            is_archived: 0,
-                            list_id: parseInt(self.model.id)
-                        });
-                        if (filtered_cards.length === 1 || self.model.board.cards.length === 0) {
-                            $('#js-card-listing-' + e.attributes.list_id).append(view.render().el);
-                        } else {
-                            self.model.cards.reset(filtered_cards);
-                            if (sort_by !== null && sort_direction !== null) {
-                                self.model.cards.sortByColumn(sort_by, sort_direction);
-                            } else {
-                                self.model.cards.sortByColumn('position');
-                            }
-                            var bool = true;
-                            i = 0;
-                            var cards_length = self.model.cards.length;
-                            self.model.cards.each(function(card) {
-                                if (bool) {
-                                    if (parseInt(card.attributes.id) === parseInt(e.attributes.id)) {
-                                        if (!_.isUndefined(self.model.cards.models[i - 1])) {
-                                            var prev_card_id = self.model.cards.models[i - 1].id;
-                                            $('#js-card-' + prev_card_id).after(view.render().el);
-                                            bool = false;
-                                        } else {
-                                            $('#js-card-listing-' + e.attributes.list_id).prepend(view.render().el);
-                                            bool = false;
-                                        }
-                                    }
-                                    i++;
-                                }
-                            });
+                        if ($('#js-card-modal-' + e.attributes.id).length === 1) {
+                            card_exist = true;
                         }
+                        $('#js-card-' + e.attributes.id).remove();
+                    }
+                    filtered_cards = self.model.board.cards.where({
+                        is_archived: 0,
+                        list_id: parseInt(self.model.id)
+                    });
+                    if (filtered_cards.length === 1 || self.model.board.cards.length === 0) {
+                        $('#js-card-listing-' + e.attributes.list_id).append(view.render().el);
+                    } else {
+                        self.model.cards.reset(filtered_cards);
+                        if (sort_by !== null && sort_direction !== null) {
+                            self.model.cards.sortByColumn(sort_by, sort_direction);
+                        } else {
+                            self.model.cards.sortByColumn('position');
+                        }
+                        var bool = true;
+                        i = 0;
+                        self.model.cards.each(function(card) {
+                            if (bool) {
+                                if (parseInt(card.attributes.id) === parseInt(e.attributes.id)) {
+                                    if (!_.isUndefined(self.model.cards.models[i - 1])) {
+                                        var prev_card_id = self.model.cards.models[i - 1].id;
+                                        $('#js-card-' + prev_card_id).after(view.render().el);
+                                        bool = false;
+                                    } else {
+                                        $('#js-card-listing-' + e.attributes.list_id).prepend(view.render().el);
+                                        bool = false;
+                                    }
+                                }
+                                i++;
+                            }
+                        });
+                    }
+                    if (card_exist) {
+                        $('#js-card-' + e.attributes.id).addClass('active');
                     }
                     _(function() {
                         localforage.getItem('unreaded_cards', function(err, value) {
