@@ -823,7 +823,7 @@ App.ListView = Backbone.View.extend({
         if (!_.isEmpty(this.model.collection.board.acl_links.where({
                 slug: "unsubscribe_list",
                 board_user_role_id: parseInt(this.model.board_user_role_id)
-            })) && !_.isEmpty(subscribe) || (!_.isEmpty(role_links.where({
+            })) || (!_.isEmpty(role_links.where({
                 slug: "unsubscribe_list"
             })) && this.model.collection.board.attributes.board_visibility == 2)) {
             $(e.currentTarget).addClass('js-list-unsubscribe');
@@ -835,11 +835,6 @@ App.ListView = Backbone.View.extend({
         list_subscribe.set('is_subscribed', 1);
         this.model.lists_subscribers.add(list_subscribe);
         if (typeof subscribe_id === 'undefined' || subscribe_id === 'undefined' || subscribe_id === '') {
-            var subscribe = {
-                subscribe: {
-                    is_subscribed: 1
-                }
-            };
             list_subscribe.url = api_url + 'boards/' + this.model.attributes.board_id + '/lists/' + list_id + '/list_subscribers.json';
             list_subscribe.save({
                 is_subscribed: 1
@@ -879,7 +874,7 @@ App.ListView = Backbone.View.extend({
         if (!_.isEmpty(this.model.collection.board.acl_links.where({
                 slug: "subscribe_list",
                 board_user_role_id: parseInt(this.model.board_user_role_id)
-            })) && !_.isEmpty(subscribe) || (!_.isEmpty(role_links.where({
+            })) || (!_.isEmpty(role_links.where({
                 slug: "subscribe_list"
             })) && this.model.collection.board.attributes.board_visibility == 2)) {
             $(e.currentTarget).addClass('js-list-subscribe');
