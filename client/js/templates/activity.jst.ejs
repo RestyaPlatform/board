@@ -85,7 +85,7 @@
 					}
 				} else {
 					if(!_.isUndefined(activity.from_footer)) {
-						var comment = '<span class="h5">' + filterXSS(activity.attributes.full_name) + '</span> commented in card ' + cardLink;
+						var comment = '<span>' + filterXSS(activity.attributes.full_name) + '</span> commented in card ' + cardLink;
 						var matches = activity.attributes.comment.match(/@([^ ]*)/g);
 						var _username = [];
 						_.each(matches, function(match) {
