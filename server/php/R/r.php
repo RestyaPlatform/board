@@ -7487,11 +7487,17 @@ function r_delete($r_resource_cmd, $r_resource_vars, $r_resource_filters)
 
     case '/boards/?/lists': // delete Archived lists
         $sql = 'DELETE FROM lists WHERE board_id = $1 AND is_archived = true';
+        $foreign_id['board_id'] = $r_resource_vars['boards'];
+        $comment = '##USER_NAME## deleted all archived list(s) on ##BOARD_NAME##';
+        $response['activity'] = insertActivity($authUser['id'], $comment, 'delete_archived_list', $foreign_id);
         array_push($pg_params, $r_resource_vars['boards']);
         break;
 
     case '/boards/?/cards': // delete Archived cards
         $sql = 'DELETE FROM cards WHERE board_id = $1 AND is_archived = true';
+        $foreign_id['board_id'] = $r_resource_vars['boards'];
+        $comment = '##USER_NAME## deleted all archived card(s) on ##BOARD_NAME##';
+        $response['activity'] = insertActivity($authUser['id'], $comment, 'delete_archived_card', $foreign_id);
         array_push($pg_params, $r_resource_vars['boards']);
         break;
 
