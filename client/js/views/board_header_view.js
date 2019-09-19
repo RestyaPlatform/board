@@ -66,6 +66,11 @@ App.BoardHeaderView = Backbone.View.extend({
         this.model.bind('change:music_name', this.showChangeBackground, this);
         this.model.bind('change:music_content', this.showChangeBackground, this);
         this.model.bind('change:name', this.renderBoardName, this);
+        this.model.bind('change:is_show_image_front_of_card', this.showAdditionalSettings, this);
+        this.model.bind('change:auto_subscribe_on_board', this.showAdditionalSettings, this);
+        this.model.bind('change:auto_subscribe_on_card', this.showAdditionalSettings, this);
+        this.model.bind('change:sort_by', this.showAdditionalSettings, this);
+        this.model.bind('change:sort_direction', this.showAdditionalSettings, this);
         this.model.board_users.bind('add', this.showFilters, this);
         this.model.board_users.bind('remove', this.showFilters, this);
         this.model.labels.bind('add', this.showFilters, this);
@@ -718,7 +723,6 @@ App.BoardHeaderView = Backbone.View.extend({
      *
      */
     showAdditionalSettings: function(e) {
-        e.preventDefault();
         var el = this.$el;
         el.find('.js-setting-response').html(new App.BoardAdditionalSettingsView({
             model: this.model,
