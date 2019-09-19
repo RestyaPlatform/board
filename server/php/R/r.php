@@ -392,7 +392,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             }
             if (!empty($r_resource_filters['organization_id'])) {
                 if (!empty($r_resource_filters['last_activity_id'])) {
-                    $condition = ' AND al.id > $4';
+                    $condition = ' AND al.id < $4';
                 }
                 $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM activities_listing al WHERE ((user_id = $1 AND board_id IN (SELECT id FROM boards WHERE organization_id = $2)) OR organization_id  = ANY ( $3 )) ' . $condition . ' ORDER BY id DESC LIMIT ' . PAGING_COUNT . ') as d';
                 $c_sql = 'SELECT COUNT(*) FROM activities_listing al WHERE ((user_id = $1 AND board_id IN (SELECT id FROM boards WHERE organization_id = $2)) OR organization_id  = ANY ( $3 )) ' . $condition;
@@ -1274,6 +1274,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         $val_array = array(
             $r_resource_vars['boards']
         );
+        $order = '';
         $board = executeQuery('SELECT board_visibility FROM boards_listing WHERE id = $1', $val_array);
         if (isset($authUser['id']) && $authUser['id'] != 'undefined' && !empty($authUser['id'])) {
             $val_array = array(
@@ -1326,12 +1327,12 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                         array_push($pg_params, 'edit_comment');
                         $i++; */
                 }
+                $order = 'ORDER BY freshness_ts DESC, depth ASC';
             }
             $limit = PAGING_COUNT;
             if (!empty($r_resource_filters['limit'])) {
                 $limit = $r_resource_filters['limit'];
             }
-            $order = 'ORDER BY freshness_ts DESC, depth ASC';
             if (isset($r_resource_filters['mode']) && $r_resource_filters['mode'] == '1') {
                 $order = 'ORDER BY al.id DESC';
             }
@@ -1393,7 +1394,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                             }
                         } else {
                             if ($obj['type'] === 'add_comment') {
-                                $obj['comment'] = '##USER_NAME## added comment in the card ##CARD_LINK## - ' . $obj['comment'];
+                                $obj['comment'] = $obj['comment'];
                             }
                         }
                         $obj = ActivityHandler::getActivitiesObj($obj);
@@ -2280,15 +2281,20 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             $r_post['password'] = getCryptHash($r_post['password']);
             $r_post['role_id'] = 2; // user
             $r_post['ip_id'] = saveIp();
-            $default_email_notification = 0;
-            if (DEFAULT_EMAIL_NOTIFICATION === 'Periodically') {
-                $default_email_notification = 1;
-            } else if (DEFAULT_EMAIL_NOTIFICATION === 'Instantly') {
-                $default_email_notification = 2;
-            } else if (DEFAULT_EMAIL_NOTIFICATION === 'Daily') {
-                $default_email_notification = 3;
-            } else if (DEFAULT_EMAIL_NOTIFICATION === 'Weekly') {
-                $default_email_notification = 4;
+            // admin selected email notification
+            if (isset($r_post['is_send_newsletter'])) {
+                $default_email_notification = $r_post['is_send_newsletter'];
+            } else {
+                $default_email_notification = 0;
+                if (DEFAULT_EMAIL_NOTIFICATION === 'Periodically') {
+                    $default_email_notification = 1;
+                } else if (DEFAULT_EMAIL_NOTIFICATION === 'Instantly') {
+                    $default_email_notification = 2;
+                } else if (DEFAULT_EMAIL_NOTIFICATION === 'Daily') {
+                    $default_email_notification = 3;
+                } else if (DEFAULT_EMAIL_NOTIFICATION === 'Weekly') {
+                    $default_email_notification = 4;
+                }
             }
             $r_post['is_send_newsletter'] = $default_email_notification;
             $r_post['default_desktop_notification'] = (DEFAULT_DESKTOP_NOTIFICATION === 'Enabled') ? 'true' : 'false';
@@ -2694,7 +2700,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 }
                 if ($authUser['role_id'] == 1) {
                     $emailFindReplace = array(
-                        '##PASSWORD##' => $r_post['password']
+                        '##PASSWORD##' => 'Please contact your administrator for your new password.'
                     );
                     sendMail('changepassword', $emailFindReplace, $user['email']);
                     $response = array(
@@ -2757,7 +2763,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                         pg_query_params($db_lnk, 'DELETE FROM oauth_refresh_tokens WHERE user_id= $1', $conditions);
                         if ($authUser['role_id'] == 1) {
                             $emailFindReplace = array(
-                                '##PASSWORD##' => $r_post['password']
+                                '##PASSWORD##' => 'should be known to you already. If not, please use the password reset function to generate a one-time password, and then reset it again.'
                             );
                             sendMail('changepassword', $emailFindReplace, $user['email']);
                             $response = array(
@@ -5533,6 +5539,25 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
         }
         $sql = true;
         if (!empty($sql)) {
+            $r_post['card_voter_count'] = NULL;
+            $r_post['cards_subscriber_count'] = NULL;
+            if ($is_keep_attachment == 'undefined') {
+                $r_post['attachment_count'] = NULL;
+            }
+            if ($is_keep_activity == 'undefined') {
+                $r_post['comment_count'] = NULL;
+            }
+            if ($is_keep_label == 'undefined') {
+                $r_post['label_count'] = NULL;
+            }
+            if ($is_keep_user == 'undefined') {
+                $r_post['cards_user_count'] = NULL;
+            }
+            if ($is_keep_checklist == 'undefined') {
+                $r_post['checklist_count'] = NULL;
+                $r_post['checklist_item_count'] = NULL;
+                $r_post['checklist_item_completed_count'] = NULL;
+            }
             $post = getbindValues($table_name, $r_post);
             $result = pg_execute_insert($table_name, $post);
             if ($result) {
@@ -6332,6 +6357,19 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
         $response['success'] = 'Label has been updated successfully.';
         $response = update_query($table_name, $id, $r_resource_cmd, $r_put);
         echo json_encode($response);
+        $comment = __l('##USER_NAME## updated ' . $r_put['name'] . ' label on ##BOARD_NAME##');
+        $type = 'update_label';
+        $label_id['id'] = $r_resource_vars['labels'];
+        $revision = json_encode($label_id);
+        $qry_val_arr = array(
+            $r_put['board_id'],
+            $authUser['id'],
+            $type,
+            $comment,
+            $_GET['token'],
+            $revision
+        );
+        $activity = pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO activities (created, modified, board_id, user_id, type, comment, token, revisions) VALUES (now(), now(),$1, $2, $3, $4, $5, $6) RETURNING id', $qry_val_arr));
         break;
 
     case '/oauth/clients/?':
@@ -6401,6 +6439,18 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
                 $board['id'] = $id;
                 $board['board_custom_fields'] = json_encode($custom_fields_array);
                 $grid_view_response = update_query('boards', $id, $r_resource_cmd, $board);
+                $comment = __l('##USER_NAME## changed grid view configuration on ##BOARD_NAME##');
+                $type = 'change_grid_view_configuration';
+                $revision = $board['board_custom_fields'];
+                $qry_val_arr = array(
+                    $r_resource_vars['boards'],
+                    $authUser['id'],
+                    $type,
+                    $comment,
+                    $_GET['token'],
+                    $revision
+                );
+                $activity = pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO activities (created, modified, board_id, user_id, type, comment, token, revisions) VALUES (now(), now(),$1, $2, $3, $4, $5, $6) RETURNING id', $qry_val_arr));
                 echo json_encode($grid_view_response);
                 break;
             }
@@ -6426,6 +6476,18 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
                 $board['id'] = $id;
                 $board['board_custom_fields'] = json_encode($custom_fields_array);
                 $grid_view_response = update_query('boards', $id, $r_resource_cmd, $board);
+                $comment = __l('##USER_NAME## changed list view configuration on ##BOARD_NAME##');
+                $type = 'change_list_view_configuration';
+                $revision = $board['board_custom_fields'];
+                $qry_val_arr = array(
+                    $r_resource_vars['boards'],
+                    $authUser['id'],
+                    $type,
+                    $comment,
+                    $_GET['token'],
+                    $revision
+                );
+                $activity = pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO activities (created, modified, board_id, user_id, type, comment, token, revisions) VALUES (now(), now(),$1, $2, $3, $4, $5, $6) RETURNING id', $qry_val_arr));
             }
         }
         if (isset($r_put['r_listview_configure_position'])) {
@@ -6558,6 +6620,8 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
                 $qry_val_arr = array(
                     $r_put['board_id']
                 );
+                // changing the board id
+                $foreign_ids['board_id'] = $r_put['board_id'];
                 $new_board_name = executeQuery('SELECT name FROM boards WHERE id =  $1', $qry_val_arr);
                 $comment = '##USER_NAME## moved the list ##LIST_NAME## from ' . $current_board_name['name'] . ' to ' . $new_board_name['name'] . '.';
                 $activity_type = 'move_list';
@@ -6571,10 +6635,10 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
             $foreign_ids['board_id'] = $r_resource_vars['boards'];
             $foreign_ids['list_id'] = $r_resource_vars['lists'];
             if (empty($r_put['is_archived'])) {
-                $comment = '##USER_NAME## unarchived ##LIST_NAME##';
+                $comment = '##USER_NAME## unarchived list "' . $previous_value['name'] . '"';
                 $activity_type = 'unarchive_list';
             } else {
-                $comment = '##USER_NAME## archived ##LIST_NAME##';
+                $comment = '##USER_NAME## archived list "' . $previous_value['name'] . '"';
                 $activity_type = 'archive_list';
             }
         } else if (isset($r_put['custom_fields'])) {
@@ -6774,10 +6838,10 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
                 }
             }
             if ($r_put['is_archived']) {
-                $comment = '##USER_NAME## archived ' . $previous_value['name'];
+                $comment = '##USER_NAME## archived card ' . $previous_value['name'];
                 $activity_type = 'archived_card';
             } else {
-                $comment = '##USER_NAME## send back ' . $previous_value['name'] . ' to board';
+                $comment = '##USER_NAME## send back card ' . $previous_value['name'] . ' to board';
                 $activity_type = 'unarchived_card';
             }
             $foreign_ids['board_id'] = $r_resource_vars['boards'];
@@ -7422,7 +7486,7 @@ function r_delete($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         $previous_value = pg_fetch_assoc($s_result);
         $foreign_id['board_id'] = $r_resource_vars['boards'];
         $foreign_id['list_id'] = $r_resource_vars['lists'];
-        $comment = '##USER_NAME## deleted "' . $previous_value['name'] . '"';
+        $comment = '##USER_NAME## deleted list "' . $previous_value['name'] . '"';
         $response['activity'] = insertActivity($authUser['id'], $comment, 'delete_list', $foreign_id);
         $sql = 'DELETE FROM lists WHERE id= $1';
         array_push($pg_params, $r_resource_vars['lists']);

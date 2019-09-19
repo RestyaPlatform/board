@@ -1463,7 +1463,7 @@ function importTrelloBoard($board = array())
                 } else if ($action['type'] == 'updateList') {
                     if (isset($action['data']['list']['closed'])) {
                         $type = 'archive_list';
-                        $comment = __l('##USER_NAME## archived ##LIST_NAME##');
+                        $comment = __l('##USER_NAME## archived list ##LIST_NAME##');
                     } else if (!empty($action['data']['list']['pos'])) {
                         $type = 'change_list_position';
                         $listName = '';
@@ -2544,7 +2544,7 @@ function importWekanBoard($board = array())
                     $comment = __l('##USER_NAME## created board');
                 } else if ($action['activityType'] == 'archivedList') {
                     $type = 'archive_list';
-                    $comment = __l('##USER_NAME## archived ##LIST_NAME##');
+                    $comment = __l('##USER_NAME## archived list ##LIST_NAME##');
                 } else if ($action['activityType'] == 'moveCard') {
                     $type = 'moved_list_card';
                     $comment = sprintf(__l('##USER_NAME## moved cards FROM %s to %s') , utf8_decode($lists_data[$action['listId']]) , utf8_decode($lists_data[$action['listId']]));

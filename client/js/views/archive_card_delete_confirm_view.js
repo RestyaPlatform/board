@@ -41,6 +41,12 @@ App.ArchiveCardDeleteConfirmView = Backbone.View.extend({
                         card.collection.remove(card);
                     }
                 });
+                var archived_cards = self.model.cards.where({
+                    is_archived: 1
+                });
+                self.model.cards.remove(archived_cards, {
+                    silent: true
+                });
                 self.flash('success', i18next.t('Cards deleted successfully.'));
                 $('.js-archived-items').trigger('click');
             }
