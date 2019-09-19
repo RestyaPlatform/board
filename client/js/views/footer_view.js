@@ -1819,6 +1819,42 @@ App.FooterView = Backbone.View.extend({
                                         if (!_.isUndefined(activity.attributes.revisions) && !_.isEmpty(activity.attributes.revisions)) {
                                             self.board.set(activity.attributes.revisions.new_value);
                                         }
+                                        if (activity.attributes.type === 'delete_archived_list') {
+                                            self.board.lists.each(function(list) {
+                                                if (!_.isUndefined(list) && !_.isUndefined(list.attributes) && list.attributes.is_archived === 1) {
+                                                    list.collection.remove(list);
+                                                }
+                                            });
+                                            var archived_lists = self.board.lists.where({
+                                                is_archived: 1
+                                            });
+                                            if (archived_lists.length > 0) {
+                                                _.each(archived_lists, function(list) {
+                                                    var removed_list_cards = self.board.cards.where({
+                                                        list_id: parseInt(list.attributes.id)
+                                                    });
+                                                    self.board.cards.remove(removed_list_cards, {
+                                                        silent: true
+                                                    });
+                                                    list.collection.board.lists.remove(list);
+                                                    self.board.lists.remove(list, {
+                                                        silent: true
+                                                    });
+                                                });
+                                            }
+                                        }
+                                        if (activity.attributes.type === 'delete_archived_card') {
+                                            var archived_cards = self.board.cards.where({
+                                                is_archived: 1
+                                            });
+                                            if (archived_cards.length > 0) {
+                                                _.each(archived_cards, function(card) {
+                                                    self.board.cards.remove(card);
+                                                });
+                                                card_count = self.board.attributes.card_count - archived_cards.length;
+                                                self.board.set('card_count', card_count);
+                                            }
+                                        }
                                         if (activity.attributes.type === 'add_board_user') {
                                             activity.attributes.board_user.board_id = parseInt(activity.attributes.board_user.board_id);
                                             activity.attributes.board_user.board_user_role_id = parseInt(activity.attributes.board_user.board_user_role_id);
