@@ -1728,9 +1728,9 @@ App.FooterView = Backbone.View.extend({
                                             var new_move_list = new App.List();
                                             var board_id = parseInt(activity.attributes.board_id);
                                             var list_id = parseInt(activity.attributes.list_id);
-                                            new_move_list.set(activity.attributes.list);
                                             new_move_list.set('card_count', 0);
                                             new_move_list.set('id', list_id);
+                                            new_move_list.set('name', activity.attributes.list_name);
                                             new_move_list.set('board_id', board_id);
                                             new_move_list.set('lists_cards', []);
                                             new_move_list.set('is_archived', 0);
@@ -1767,7 +1767,7 @@ App.FooterView = Backbone.View.extend({
                                                             new_card.set('modified', card_data.modified);
                                                             new_card.set('name', card_data.name);
                                                             new_card.set('description', card_data.description);
-                                                            new_card.set('due_date', card_data.description);
+                                                            new_card.set('due_date', card_data.due_date);
                                                             new_card.set('is_archived', card_data.is_archived);
                                                             new_card.set('attachment_count', card_data.is_archived);
                                                             new_card.set('checklist_count', card_data.checklist_count);
@@ -1829,7 +1829,7 @@ App.FooterView = Backbone.View.extend({
                                                                 });
                                                             }
                                                             if (!_.isEmpty(card_data.cards_labels) && !_.isUndefined(card_data.cards_labels) && card_data.cards_labels !== null) {
-                                                                _.each(card_data, function(label) {
+                                                                _.each(card_data.cards_labels, function(label) {
                                                                     var new_card_label = new App.Label();
                                                                     new_card_label.set(label);
                                                                     new_card_label.set('id', parseInt(label.id));
@@ -1854,8 +1854,8 @@ App.FooterView = Backbone.View.extend({
                                                                     new_card_checklist.set('id', parseInt(checklist.id));
                                                                     new_card_checklist.set('user_id', parseInt(checklist.user_id));
                                                                     new_card_checklist.set('card_id', parseInt(checklist.card_id));
-                                                                    new_card_checklist.set('name', parseInt(checklist.name));
-                                                                    new_card_checklist.set('position', parseInt(checklist.position));
+                                                                    new_card_checklist.set('name', checklist.name);
+                                                                    new_card_checklist.set('position', checklist.position);
                                                                     self.board.checklists.add(new_card_checklist, {
                                                                         silent: true
                                                                     });
@@ -1868,8 +1868,8 @@ App.FooterView = Backbone.View.extend({
                                                                             new_checklist_item.set('card_id', parseInt(checklists_item.card_id));
                                                                             new_checklist_item.set('checklist_id', parseInt(checklists_item.checklist_id));
                                                                             new_checklist_item.set('position', parseFloat(checklists_item.position));
-                                                                            new_checklist_item.set('is_completed', parseFloat(checklists_item.is_completed));
-                                                                            new_checklist_item.set('name', parseFloat(checklists_item.name));
+                                                                            new_checklist_item.set('is_completed', checklists_item.is_completed);
+                                                                            new_checklist_item.set('name', checklists_item.name);
                                                                             self.board.checklist_items.add(new_checklist_item, {
                                                                                 silent: true
                                                                             });
@@ -1912,15 +1912,11 @@ App.FooterView = Backbone.View.extend({
                                                             new_card_attachment.set('board_id', parseInt(attachment.board_id));
                                                             new_card_attachment.set('list_id', parseInt(attachment.list_id));
                                                             new_card_attachment.set('card_id', parseInt(attachment.card_id));
-                                                            self.board.attachments.unshift(new_card_attachment, {
-                                                                silent: true
-                                                            });
+                                                            self.board.attachments.unshift(new_card_attachment);
                                                             var attachment_card = self.board.cards.findWhere({
                                                                 id: parseInt(attachment.card_id)
                                                             });
-                                                            attachment_card.attachments.unshift(new_card_attachment, {
-                                                                silent: true
-                                                            });
+                                                            attachment_card.attachments.unshift(new_card_attachment);
                                                         });
                                                     }
                                                 }
