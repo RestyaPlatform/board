@@ -562,6 +562,19 @@ App.CardCheckListItemView = Backbone.View.extend({
         card.save({}, {
             success: function(model, response) {
                 self.deleteItem('convert_to_card');
+                if (!_.isUndefined(response.activity)) {
+                    response.activity = activityCommentReplace(response.activity);
+                    var activity = new App.Activity();
+                    activity.set(response.activity);
+                    var view_act = new App.ActivityView({
+                        model: activity
+                    });
+                    self.model.set('activities', activity, {
+                        silent: true
+                    });
+                    var view_activity = $('#js-card-activities-' + parseInt(self.model.attributes.card_id));
+                    view_activity.prepend(view_act.render().el);
+                }
                 card.set(response.cards);
                 card.set('id', parseInt(response.cards.id));
                 card.set('list_id', parseInt(response.cards.list_id));
