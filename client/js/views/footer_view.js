@@ -2197,7 +2197,8 @@ App.FooterView = Backbone.View.extend({
                         var view = new App.ActivityView({
                             model: activity,
                             board: self.board,
-                            flag: '2'
+                            flag: '2',
+                            type: 'board'
                         });
                         if (activity.attributes.token !== authuser.access_token) {
                             $('.js-unread-activity').parent().addClass('bg-danger navbar-btn');
