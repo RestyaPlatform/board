@@ -5681,9 +5681,10 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                         $r_post['user_id'],
                         $r_post['list_id'],
                         $r_post['board_id'],
-                        $copied_card_id
+                        $copied_card_id,
+                        $_GET['token']
                     );
-                    pg_query_params($db_lnk, 'INSERT INTO activities (created, modified, card_id, user_id, list_id, board_id, foreign_id, type, comment, revisions, root, freshness_ts, depth, path, materialized_path) SELECT created, modified, $1, $2, $3, $4, foreign_id, type, comment, revisions, root, freshness_ts, depth, path, materialized_path FROM activities WHERE type = \'add_comment\' AND card_id = $5 ORDER BY id', $qry_val_arr);
+                    pg_query_params($db_lnk, 'INSERT INTO activities (created, modified, card_id, user_id, list_id, board_id, foreign_id, token, type, comment, revisions, root, freshness_ts, depth, path, materialized_path) SELECT created, modified, $1, $2, $3, $4, foreign_id, $6, type, comment, revisions, root, freshness_ts, depth, path, materialized_path FROM activities WHERE type = \'add_comment\' AND card_id = $5 ORDER BY id', $qry_val_arr);
                 }
                 if ($is_keep_checklist) {
                     $qry_val_arr = array(
