@@ -13,9 +13,6 @@
         "version": "1.0.0"
     },
     "basePath": "/v1",
-    "schemes": [
-        "http"
-    ],
     "consumes": [
         "application/json"
     ],
