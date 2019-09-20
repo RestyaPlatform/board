@@ -1564,6 +1564,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         array_push($pg_params, $r_resource_vars['boards']);
         array_push($pg_params, $r_resource_vars['lists']);
         if ($result = pg_query_params($db_lnk, $sql, $pg_params)) {
+            $data = array();
             $board_lists = array();
             while ($row = pg_fetch_row($result)) {
                 $obj = json_decode($row[0], true);
