@@ -1724,7 +1724,7 @@ App.FooterView = Backbone.View.extend({
                                             if (!_.isUndefined(App.boards) && !_.isUndefined(App.boards.get(new_list.attributes.board_id))) {
                                                 App.boards.get(new_list.attributes.board_id).lists.add(new_list);
                                             }
-                                        } else if(_.isUndefined(list) && activity.attributes.type === 'move_list') {
+                                        } else if (_.isUndefined(list) && activity.attributes.type === 'move_list') {
                                             var new_move_list = new App.List();
                                             var board_id = parseInt(activity.attributes.board_id);
                                             var list_id = parseInt(activity.attributes.list_id);
@@ -1746,20 +1746,36 @@ App.FooterView = Backbone.View.extend({
                                                 App.boards.get(new_move_list.attributes.board_id).lists.add(new_move_list);
                                             }
                                             $.ajax({
-                                                url: api_url + 'boards/' + board_id  + '/lists/'  + list_id + '/cards.json?token=' + authuser.access_token,
+                                                url: api_url + 'boards/' + board_id + '/lists/' + list_id + '/cards.json?token=' + authuser.access_token,
                                                 cache: false,
                                                 type: 'GET',
                                                 success: function(response) {
                                                     if (response.data.length > 0) {
-                                                        _.each(response.data, function(card_data){
+                                                        _.each(response.data, function(card_data) {
                                                             var new_card = new App.Card();
                                                             var board_sort_by = (self.board.attributes.sort_by) ? self.board.attributes.sort_by : 'position';
                                                             var bard_sort_direction = (self.board.attributes.sort_direction) ? self.board.attributes.sort_direction : 'asc';
                                                             card_data.is_archived = parseInt(card_data.is_archived);
+                                                            var card_checklist_item_count = isNaN(card_data.checklist_item_count) ? 0 : parseInt(card_data.checklist_item_count);
+                                                            var card_checklist_item_completed_count = isNaN(card_data.checklist_item_completed_count) ? 0 : parseInt(card_data.checklist_item_completed_count);
+                                                            var card_checklist_item_pending_count = card_checklist_item_count - card_checklist_item_completed_count;
                                                             new_card.set(card_data);
                                                             new_card.set('id', parseInt(card_data.id));
                                                             new_card.set('board_id', parseInt(card_data.board_id));
                                                             new_card.set('list_id', parseInt(card_data.list_id));
+                                                            new_card.set('created', card_data.created);
+                                                            new_card.set('modified', card_data.modified);
+                                                            new_card.set('name', card_data.name);
+                                                            new_card.set('description', card_data.description);
+                                                            new_card.set('due_date', card_data.description);
+                                                            new_card.set('is_archived', card_data.is_archived);
+                                                            new_card.set('attachment_count', card_data.is_archived);
+                                                            new_card.set('checklist_count', card_data.checklist_count);
+                                                            new_card.set('checklist_item_count', card_checklist_item_count);
+                                                            new_card.set('checklist_item_completed_count', card_checklist_item_completed_count);
+                                                            new_card.set('checklist_item_pending_count', card_checklist_item_pending_count);
+                                                            new_card.set('card_voter_count', parseInt(card_data.card_voter_count));
+                                                            new_card.set('position', parseFloat(card_data.position));
                                                             new_card.set('user_id', parseInt(card_data.user_id));
                                                             new_card.set('is_archived', parseInt(card_data.is_archived));
                                                             var card_list = self.board.lists.findWhere({
@@ -1769,8 +1785,6 @@ App.FooterView = Backbone.View.extend({
                                                             new_card.board = self.board;
                                                             if (!_.isEmpty(card_list) && !_.isUndefined(card_list) && card_list !== null && !_.isEmpty(card_list.cards) && !_.isUndefined(card_list.cards) && card_list.cards !== null) {
                                                                 var tmp_list_cards = card_list.cards;
-                                                                new_card.set('created', card_data.created);
-                                                                new_card.set('position', parseFloat(card_data.position));
                                                                 tmp_list_cards.add(new_card, {
                                                                     silent: true
                                                                 });
@@ -1782,6 +1796,93 @@ App.FooterView = Backbone.View.extend({
                                                                         }
                                                                     });
                                                                 }
+                                                            }
+                                                            if (!_.isEmpty(card_data.cards_users) && !_.isUndefined(card_data.cards_users) && card_data.cards_users !== null) {
+                                                                _.each(card_data.cards_users, function(user) {
+                                                                    var new_card_user = new App.CardUser();
+                                                                    new_card_user.set(user);
+                                                                    new_card_user.set('id', parseInt(user.id));
+                                                                    new_card_user.set('user_id', parseInt(user.user_id));
+                                                                    new_card_user.set('card_id', parseInt(user.card_id));
+                                                                    new_card_user.set('profile_picture_path', user.profile_picture_path);
+                                                                    new_card_user.set('username', user.username);
+                                                                    new_card_user.set('initials', user.initials);
+                                                                    new_card_user.set('full_name', user.full_name);
+                                                                    new_card.users.add(new_card_user, {
+                                                                        silent: true
+                                                                    });
+                                                                    new_card.set('users', new_card_user, {
+                                                                        silent: true
+                                                                    });
+                                                                });
+                                                            }
+                                                            if (!_.isEmpty(card_data.cards_voters) && !_.isUndefined(card_data.cards_voters) && card_data.cards_voters !== null) {
+                                                                new_card.attributes.cards_voters = [];
+                                                                _.each(card_data.cards_voters, function(voter) {
+                                                                    new_card.attributes.cards_voters.push(voter);
+                                                                    var new_voter = new App.CardVoter();
+                                                                    new_voter.set(voter);
+                                                                    new_voter.set('id', parseInt(voter.id));
+                                                                    new_voter.set('user_id', parseInt(voter.user_id));
+                                                                    new_voter.set('card_id', parseInt(voter.card_id));
+                                                                    new_card.card_voters.add(new_voter);
+                                                                });
+                                                            }
+                                                            if (!_.isEmpty(card_data.cards_labels) && !_.isUndefined(card_data.cards_labels) && card_data.cards_labels !== null) {
+                                                                _.each(card_data, function(label) {
+                                                                    var new_card_label = new App.Label();
+                                                                    new_card_label.set(label);
+                                                                    new_card_label.set('id', parseInt(label.id));
+                                                                    new_card_label.set('label_id', parseInt(label.label_id));
+                                                                    new_card_label.set('card_id', parseInt(label.card_id));
+                                                                    new_card_label.set('list_id', parseInt(label.list_id));
+                                                                    new_card_label.set('board_id', parseInt(label.board_id));
+                                                                    self.board.labels.add(new_card_label, {
+                                                                        silent: true
+                                                                    });
+                                                                    var options = {
+                                                                        silent: true
+                                                                    };
+                                                                    new_card.labels.add(new_card_label, options);
+                                                                });
+                                                                new_card.set('cards_labels', card_data.cards_labels);
+                                                            }
+                                                            if (!_.isEmpty(card_data.cards_checklists) && !_.isUndefined(card_data.cards_checklists) && card_data.cards_checklists !== null) {
+                                                                _.each(card_data.cards_checklists, function(checklist) {
+                                                                    var new_card_checklist = new App.CheckList();
+                                                                    new_card_checklist.set(checklist);
+                                                                    new_card_checklist.set('id', parseInt(checklist.id));
+                                                                    new_card_checklist.set('user_id', parseInt(checklist.user_id));
+                                                                    new_card_checklist.set('card_id', parseInt(checklist.card_id));
+                                                                    new_card_checklist.set('name', parseInt(checklist.name));
+                                                                    new_card_checklist.set('position', parseInt(checklist.position));
+                                                                    self.board.checklists.add(new_card_checklist, {
+                                                                        silent: true
+                                                                    });
+                                                                    if (checklist.checklists_items !== null) {
+                                                                        _.each(checklist.checklists_items, function(checklists_item) {
+                                                                            var new_checklist_item = new App.CheckListItem();
+                                                                            new_checklist_item.set(checklists_item);
+                                                                            new_checklist_item.set('id', parseInt(checklists_item.id));
+                                                                            new_checklist_item.set('user_id', parseInt(checklists_item.user_id));
+                                                                            new_checklist_item.set('card_id', parseInt(checklists_item.card_id));
+                                                                            new_checklist_item.set('checklist_id', parseInt(checklists_item.checklist_id));
+                                                                            new_checklist_item.set('position', parseFloat(checklists_item.position));
+                                                                            new_checklist_item.set('is_completed', parseFloat(checklists_item.is_completed));
+                                                                            new_checklist_item.set('name', parseFloat(checklists_item.name));
+                                                                            self.board.checklist_items.add(new_checklist_item, {
+                                                                                silent: true
+                                                                            });
+                                                                        });
+                                                                        checklist_items = self.board.checklist_items.where({
+                                                                            card_id: parseInt(checklist.card_id)
+                                                                        });
+                                                                        items = new App.CheckListItemCollection();
+                                                                        items.add(checklist_items, {
+                                                                            silent: true
+                                                                        });
+                                                                    }
+                                                                });
                                                             }
 
                                                             if (!_.isUndefined(card_list) && !_.isUndefined(card_list.attributes.card_count) && card_list.attributes.card_count === 0) {
@@ -1801,6 +1902,25 @@ App.FooterView = Backbone.View.extend({
                                                             if ((!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null)) {
                                                                 $('body').trigger('CutomFieldsRendered', [parseInt(card_data.id), new_card]);
                                                             }
+                                                        });
+                                                    }
+                                                    if (response.attachments.length > 0) {
+                                                        _.each(response.attachments, function(attachment) {
+                                                            var new_card_attachment = new App.CardAttachment();
+                                                            new_card_attachment.set(attachment);
+                                                            new_card_attachment.set('id', parseInt(attachment.id));
+                                                            new_card_attachment.set('board_id', parseInt(attachment.board_id));
+                                                            new_card_attachment.set('list_id', parseInt(attachment.list_id));
+                                                            new_card_attachment.set('card_id', parseInt(attachment.card_id));
+                                                            self.board.attachments.unshift(new_card_attachment, {
+                                                                silent: true
+                                                            });
+                                                            var attachment_card = self.board.cards.findWhere({
+                                                                id: parseInt(attachment.card_id)
+                                                            });
+                                                            attachment_card.attachments.unshift(new_card_attachment, {
+                                                                silent: true
+                                                            });
                                                         });
                                                     }
                                                 }
