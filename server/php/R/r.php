@@ -1551,7 +1551,6 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
 
     case '/boards/?/lists/?/cards':
         $_metadata = array();
-        $data = array();
         $fields = !empty($r_resource_filters['fields']) ? $r_resource_filters['fields'] : '*';
         $sql = 'SELECT row_to_json(d) FROM (SELECT ' . $fields . ' FROM cards_listing cll WHERE board_id = $1 AND list_id = $2) as d ';
         if (empty($r_resource_filters['from']) || (!empty($r_resource_filters['from']) && $r_resource_filters['from'] != 'app')) {
@@ -1564,13 +1563,6 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         }
         array_push($pg_params, $r_resource_vars['boards']);
         array_push($pg_params, $r_resource_vars['lists']);
-        $qry_val_arr = array(
-            $r_resource_vars['lists']
-        );
-        $attachments = pg_query_params($db_lnk, 'SELECT * FROM card_attachments WHERE list_id = $1 order by created DESC', $qry_val_arr);
-        while ($attachment = pg_fetch_assoc($attachments)) {
-            $data['attachments'][] = $attachment;
-        }
         if ($result = pg_query_params($db_lnk, $sql, $pg_params)) {
             $board_lists = array();
             while ($row = pg_fetch_row($result)) {
@@ -6637,22 +6629,8 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
             );
             pg_query_params($db_lnk, 'UPDATE card_attachments SET board_id = $1 WHERE list_id = $2', $qry_val_arr);
             pg_query_params($db_lnk, 'UPDATE activities SET board_id = $1 WHERE list_id = $2', $qry_val_arr);
-            if ($previous_value['board_id'] !== $r_put['board_id']) {
-                $qry_val_arr = array(
-                    $previous_value['board_id']
-                );
-                $current_board_name = executeQuery('SELECT name FROM boards WHERE id =  $1', $qry_val_arr);
-                $qry_val_arr = array(
-                    $r_put['board_id']
-                );
-                // changing the board id
-                $foreign_ids['board_id'] = $r_put['board_id'];
-                $new_board_name = executeQuery('SELECT name FROM boards WHERE id =  $1', $qry_val_arr);
-                $comment = '##USER_NAME## moved the list ##LIST_NAME## from ' . $current_board_name['name'] . ' to ' . $new_board_name['name'] . '.';
-                $activity_type = 'move_list';
-            }
         }
-        if (isset($r_put['position']) && $previous_value['board_id'] === $r_put['board_id']) {
+        if (isset($r_put['position'])) {
             $comment = '##USER_NAME## changed list ' . $previous_value['name'] . ' position.';
             $activity_type = 'change_list_position';
         } else if (isset($previous_value) && isset($r_put['is_archived'])) {
@@ -6755,7 +6733,7 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
                     $activity_type = 'edit_list_color';
                 }
             }
-        } else if (!isset($r_put['board_id'])) {
+        } else {
             $id = $r_resource_vars['lists'];
             $comment = '##USER_NAME## renamed this list.';
             $activity_type = 'edit_list';
