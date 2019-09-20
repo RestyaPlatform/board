@@ -151,7 +151,8 @@ App.ModalUserActivitiesListView = Backbone.View.extend({
                 activity.from_footer = true;
                 var view = new App.ActivityView({
                     model: activity,
-                    is_from: self.is_from
+                    is_from: self.is_from,
+                    type: 'board_user_activity'
                 });
                 view_user_activities.append(view.render().el);
             }

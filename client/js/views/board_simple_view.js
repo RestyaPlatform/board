@@ -74,7 +74,7 @@ App.BoardSimpleView = Backbone.View.extend({
                 if (!list.attributes.is_archived) {
                     var _data = {};
                     _data.title = list.attributes.name;
-                    _data.value = list.attributes.card_count;
+                    _data.value = parseInt(list.attributes.card_count);
                     if (!_.isEmpty(list.attributes.color) && !_.isUndefined(list.attributes.color) && list.attributes.color !== null && list.attributes.color !== 'null' && list.attributes.color !== 'NULL') {
                         _data.color = list.attributes.color;
                     } else {

@@ -301,6 +301,12 @@ App.CardCheckListItemView = Backbone.View.extend({
             this.model.checklist.card.list.collection.board.cards.get(this.model.checklist.card).set('checklist_item_completed_count', this.model.checklist.card.attributes.checklist_item_completed_count, {
                 silent: true
             });
+        } else {
+            this.model.checklist.set('checklist_item_pending_count', parseInt(this.model.checklist.get('checklist_item_pending_count')) - 1);
+            this.model.checklist.card.set('checklist_item_pending_count', parseInt(this.model.checklist.card.attributes.checklist_item_pending_count) - 1);
+            this.model.checklist.card.list.collection.board.cards.get(this.model.checklist.card).set('checklist_item_pending_count', this.model.checklist.card.attributes.checklist_item_pending_count, {
+                silent: true
+            });
         }
         this.model.checklist.set('checklist_item_count', parseInt(this.model.checklist.get('checklist_item_count')) - 1);
         this.model.checklist.card.set('checklist_item_count', parseInt(this.model.checklist.card.attributes.checklist_item_count) - 1);
@@ -339,8 +345,11 @@ App.CardCheckListItemView = Backbone.View.extend({
         this.model.url = api_url + 'boards/' + this.model.card.get('board_id') + '/lists/' + this.model.card.get('list_id') + '/cards/' + this.model.card.id + '/checklists/' + this.model.attributes.checklist_id + '/items/' + this.model.id + '.json';
         this.model.set('is_completed', 1);
         this.model.checklist.checklist_item_completed_count = parseInt(this.model.checklist.get('checklist_item_completed_count')) + 1;
+        this.model.checklist.checklist_item_pending_count = parseInt(this.model.checklist.get('checklist_item_pending_count')) - 1;
         this.model.checklist.card.list.collection.board.cards.get(this.model.checklist.card).checklist_item_completed_count = this.model.checklist.card.attributes.checklist_item_completed_count;
+        this.model.checklist.card.list.collection.board.cards.get(this.model.checklist.card).checklist_item_pending_count = this.model.checklist.card.attributes.checklist_item_pending_count;
         this.model.checklist.card.set('checklist_item_completed_count', parseInt(this.model.checklist.card.attributes.checklist_item_completed_count) + 1);
+        this.model.checklist.card.set('checklist_item_pending_count', parseInt(this.model.checklist.card.attributes.checklist_item_pending_count) - 1);
         this.model.save({
             is_completed: 1
         }, {
@@ -374,8 +383,11 @@ App.CardCheckListItemView = Backbone.View.extend({
         this.model.url = api_url + 'boards/' + this.model.card.get('board_id') + '/lists/' + this.model.card.get('list_id') + '/cards/' + this.model.card.id + '/checklists/' + this.model.attributes.checklist_id + '/items/' + this.model.id + '.json';
         this.model.set('is_completed', 0);
         this.model.checklist.checklist_item_completed_count = parseInt(this.model.checklist.get('checklist_item_completed_count')) - 1;
+        this.model.checklist.checklist_item_pending_count = parseInt(this.model.checklist.get('checklist_item_pending_count')) + 1;
         this.model.checklist.card.set('checklist_item_completed_count', parseInt(this.model.checklist.card.attributes.checklist_item_completed_count) - 1);
+        this.model.checklist.card.set('checklist_item_pending_count', parseInt(this.model.checklist.card.attributes.checklist_item_pending_count) + 1);
         this.model.checklist.card.list.collection.board.cards.get(this.model.checklist.card).checklist_item_completed_count = this.model.checklist.card.attributes.checklist_item_completed_count;
+        this.model.checklist.card.list.collection.board.cards.get(this.model.checklist.card).checklist_item_pending_count = this.model.checklist.card.attributes.checklist_item_pending_count;
         this.model.save({
             is_completed: 0
         }, {
@@ -465,6 +477,78 @@ App.CardCheckListItemView = Backbone.View.extend({
     convertToCard: function(e) {
         var self = this;
         e.preventDefault();
+        var checklist_item_id = self.model.id;
+        var checkList_item;
+        _.each(self.model.card.list.collection.board.checklist_items.models, function(checklistItem) {
+            if (checklist_item_id === checklistItem.attributes.id) {
+                checkList_item = checklistItem;
+            }
+        });
+        var option = {
+            silent: true
+        };
+        var bool = checkList_item.attributes.is_completed;
+        if (bool) {
+            self.model.set('is_completed', 1, option);
+            self.model.checklist.set('checklist_item_completed_count', parseInt(self.model.checklist.get('checklist_item_completed_count')) - 1, option);
+            self.model.checklist.card.set('checklist_item_completed_count', parseInt(self.model.checklist.card.attributes.checklist_item_completed_count) - 1, option);
+            self.model.checklist.card.list.collection.board.cards.get(self.model.checklist.card).set('checklist_item_completed_count', self.model.checklist.card.attributes.checklist_item_completed_count, {
+                silent: true
+            });
+        } else {
+            self.model.checklist.set('checklist_item_pending_count', parseInt(self.model.checklist.get('checklist_item_pending_count')) - 1, option);
+            self.model.checklist.card.set('checklist_item_pending_count', parseInt(self.model.checklist.card.attributes.checklist_item_pending_count) - 1, option);
+            self.model.checklist.card.list.collection.board.cards.get(self.model.checklist.card).set('checklist_item_pending_count', self.model.checklist.card.attributes.checklist_item_pending_count, {
+                silent: true
+            });
+        }
+        self.model.checklist.set('checklist_item_count', parseInt(self.model.checklist.get('checklist_item_count')) - 1, option);
+        self.model.checklist.card.set('checklist_item_count', parseInt(self.model.checklist.card.attributes.checklist_item_count) - 1, option);
+        self.model.checklist.card.list.collection.board.cards.get(self.model.checklist.card).set('checklist_item_count', self.model.checklist.card.attributes.checklist_item_count, {
+            silent: true
+        });
+        var cards = self.model.card.list.collection.board.cards.where({
+            list_id: parseInt(self.model.card.attributes.list_id)
+        });
+        var list_cards = new App.CardCollection();
+        list_cards.add(cards);
+        var currentdate = new Date();
+        var tmp_created_date = currentdate.getFullYear() + '-' + (((currentdate.getMonth() + 1) < 10) ? '0' + (currentdate.getMonth() + 1) : (currentdate.getMonth() + 1)) + '-' + ((currentdate.getDate() < 10) ? '0' + currentdate.getDate() : currentdate.getDate()) + 'T' + currentdate.getHours() + ':' + (currentdate.getMinutes() < 10 ? '0' : '') + currentdate.getMinutes() + ':' + (currentdate.getSeconds() < 10 ? '0' : '') + currentdate.getSeconds();
+        var tmp_card = new App.Card();
+        tmp_card.set('is_offline', true);
+        tmp_card.set('position', list_cards.length + 1);
+        tmp_card.set('checklist_item_completed_count', 0);
+        tmp_card.set('checklist_item_count', 0);
+        tmp_card.set('checklist_item_pending_count', 0);
+        var uuid = new Date().getTime();
+        tmp_card.set({
+            name: self.model.attributes.name,
+            is_archived: 0,
+            id: uuid,
+            list_id: parseInt(self.model.card.attributes.list_id),
+            board_id: parseInt(self.model.card.attributes.board_id),
+            created: tmp_created_date,
+            card_voter_count: 0,
+            attachment_count: 0,
+        }, {
+            silent: true
+        });
+        list_cards.add(tmp_card);
+        if (sort_by !== null && sort_direction !== null) {
+            list_cards.sortByColumn(sort_by, sort_direction);
+        } else {
+            list_cards.sortByColumn('position');
+        }
+        var newpostionIndex;
+        if (list_cards.models.length > 0) {
+            for (i = 0; i < list_cards.models.length; i++) {
+                if (list_cards.models[i].id === uuid) {
+                    newpostionIndex = i;
+                    break;
+                }
+            }
+        }
+        var position = newpostionIndex + 1;
         var card = new App.Card();
         card.url = api_url + 'boards/' + self.model.card.get('board_id') + '/lists/' + self.model.card.get('list_id') + '/cards/' + self.model.card.id + '/checklists/' + self.model.attributes.id + '/items/' + self.model.id + '/convert_to_card.json';
         card.save({}, {
@@ -474,6 +558,19 @@ App.CardCheckListItemView = Backbone.View.extend({
                 card.set('id', parseInt(response.cards.id));
                 card.set('list_id', parseInt(response.cards.list_id));
                 card.set('board_id', parseInt(response.cards.board_id));
+                card.set('created', tmp_created_date);
+                card.set('is_archived', 0);
+                card.set('activity_count', 0);
+                card.set('comment_count', 0);
+                card.set('attachment_count', 0);
+                card.set('card_voter_count', 0);
+                card.set('cards_subscriber_count', 0);
+                card.set('cards_user_count', 0);
+                card.set('checklist_count', 0);
+                card.set('checklist_item_count', 0);
+                card.set('checklist_item_completed_count', 0);
+                card.set('checklist_item_pending_count', 0);
+                card.set('position', position);
                 self.model.card.list.collection.board.cards.add(card);
             }
         });

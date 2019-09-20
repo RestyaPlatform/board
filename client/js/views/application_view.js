@@ -570,8 +570,14 @@ App.ApplicationView = Backbone.View.extend({
         } else {
             if (view_type === 'list') {
                 view_type = null;
+                if ($('#listview_table').length === 0) {
+                    $('.js-switch-list-view').trigger('click');
+                }
             } else if (view_type === 'calendar') {
                 view_type = null;
+                if ($('.calendar-view').length === 0) {
+                    $('.js-switch-calendar-view').trigger('click');
+                }
             } else if (view_type === 'gantt') {
                 $('div.js-board-view-' + self.id).html('<div class="well-sm"></div><div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 well-lg"><div class="panel panel-default"><div class="panel-body text-center"><i class="fa fa-cog fa-spin"></i><h4 class="lead">' + i18next.t('Loading ....') + '</h4></div></div></div>');
                 _(function() {

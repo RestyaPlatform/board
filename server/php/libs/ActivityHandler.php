@@ -34,7 +34,7 @@ class ActivityHandler
     {
         global $r_debug, $db_lnk, $authUser, $_server_domain_url;
         $obj_type = $obj['type'];
-        if (!empty($obj['revisions']) && trim($obj['revisions']) !== '') {
+        if (!empty($obj['revisions']) && trim($obj['revisions']) !== '' && $obj_type !== 'delete_label' && $obj_type !== 'change_grid_view_configuration' && $obj_type !== 'change_list_view_configuration' && $obj_type !== 'update_label') {
             $revisions = unserialize($obj['revisions']);
             $obj['revisions'] = $revisions;
             $diff = array();
@@ -96,6 +96,25 @@ class ActivityHandler
                     $obj['custom_fields'][] = $custom_field;
                 }
             }
+        } else if ($obj_type === 'move_card') {
+            $obj_val_arr = array(
+                $obj['card_id']
+            );
+            $obj['card'] = executeQuery('SELECT * FROM cards_listing WHERE id = $1', $obj_val_arr);
+            $card_attachments = pg_query_params($db_lnk, 'SELECT * FROM card_attachments WHERE card_id = $1 ORDER BY id DESC', $obj_val_arr);
+            while ($card_attachment = pg_fetch_assoc($card_attachments)) {
+                $obj['card']['card_attachments'][] = $card_attachment;
+            }
+            if (is_plugin_enabled('r_custom_fields')) {
+                $obj['custom_fields'] = array();
+                $conditions = array(
+                    $obj['card']['board_id']
+                );
+                $custom_fields = pg_query_params($db_lnk, 'SELECT * FROM custom_fields_listing WHERE board_id IS NULL or board_id = $1 ORDER BY position ASC', $conditions);
+                while ($custom_field = pg_fetch_assoc($custom_fields)) {
+                    $obj['custom_fields'][] = $custom_field;
+                }
+            }
         } else if ($obj_type === 'copy_card') {
             $obj_val_arr = array(
                 $obj['foreign_id']
@@ -126,6 +145,17 @@ class ActivityHandler
                 $obj['card_id']
             );
             $s_result = pg_query_params($db_lnk, 'SELECT * FROM cards_labels_listing WHERE  card_id = $1 ORDER BY name ASC', $obj_val_arr);
+            while ($row = pg_fetch_assoc($s_result)) {
+                $obj['labels'][] = $row;
+            }
+        } else if ($obj_type === 'update_label') {
+            $label_id = json_decode($obj['revisions']);
+            $label_id = $label_id->{'id'};
+            $obj_val_arr = array(
+                $obj['board_id'],
+                $label_id
+            );
+            $s_result = pg_query_params($db_lnk, 'SELECT * FROM cards_labels_listing WHERE  board_id = $1 AND label_id = $2 ORDER BY name ASC', $obj_val_arr);
             while ($row = pg_fetch_assoc($s_result)) {
                 $obj['labels'][] = $row;
             }

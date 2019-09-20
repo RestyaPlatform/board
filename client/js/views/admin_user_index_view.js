@@ -25,6 +25,10 @@ App.AdminUserIndexView = Backbone.View.extend({
                 var query_param = options.page.split('&filter=');
                 page_no = query_param[0].replace('page=', '');
                 this.current_page = page_no + '&filter=' + query_param[1];
+                if (query_param[1].indexOf('&sort=') !== -1) {
+                    var filter_page = query_param[1].split('&sort=');
+                    query_param[1] = filter_page[0];
+                }
                 this.current_param = query_param[1];
             } else {
                 page_no = options.page.split('page=');
@@ -81,7 +85,11 @@ App.AdminUserIndexView = Backbone.View.extend({
                 });
                 $('#header').html(_this.headerView.el);
                 $('#js-navbar-default').remove();
-                var view = $('#content').html(new App.UserIndexContainerView({
+                if (_this.current_param.indexOf('&sort=') !== -1) {
+                    var filter_page = _this.current_param.split('&sort=');
+                    _this.current_param = filter_page[0];
+                }
+                $('#content').html(new App.UserIndexContainerView({
                     filter_count: response.filter_count,
                     roles: response.roles,
                     'current_param': _this.current_param
@@ -106,6 +114,10 @@ App.AdminUserIndexView = Backbone.View.extend({
                                 _this.pagination = 2;
                                 if (!_.isUndefined(_this.current_param) && _this.current_param !== null && _this.current_param !== 'all') {
                                     _this.current_page = page + '&filter=' + _this.current_param;
+                                    page = _this.current_page;
+                                } else if (!_.isUndefined(_this.current_param) && _this.current_param !== null && _this.current_param === 'all' && typeof _this.current_page === 'string') {
+                                    var current_page = _this.current_page.split('&sort=');
+                                    _this.current_page = page + '&sort=' + current_page['1'];
                                     page = _this.current_page;
                                 } else {
                                     _this.current_page = page;

@@ -78,8 +78,10 @@
 </td>
 <td class="text-center">
 	<% if(user.get('last_login_date') !== null){ %>
-	<% var last_login_date = parse_date(user.get('last_login_date'), authuser, 'js-timeago-user-'+user.attributes.id); %>
-	<span class="js-timeago-user-<%- user.attributes.id %>"></span>
+	<% setInterval(function() { %>
+		<% parse_date(user.get('last_login_date'), authuser, 'js-timeago-user-'+user.attributes.id); %>
+	<% }, 10000); %>
+	<span class="js-timeago-user-<%- user.attributes.id %>"><%= parse_date(user.get('last_login_date'), authuser, 'js-timeago-user-'+user.attributes.id, true) %></span>
 	<%}else{%>-
 	<%}%>
 
@@ -98,8 +100,10 @@
 	<% } %>
 </td>
 <td class="text-center">
-	<% var created = parse_date(user.get('created'), authuser, 'js-timeago-user2-'+user.attributes.id); %>
-	<span class="js-timeago-user2-<%- user.attributes.id %>"></span>
+	<% setInterval(function() { %>
+		<% parse_date(user.get('created'), authuser, 'js-timeago-user2-'+user.attributes.id); %>
+	<% }, 10000); %>
+	<span class="js-timeago-user2-<%- user.attributes.id %>"><%= parse_date(user.get('created'), authuser, 'js-timeago-user2-'+user.attributes.id, true) %></span>
 </td>
 <td class="text-center">
 	<span class="show">

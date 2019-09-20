@@ -555,6 +555,9 @@ App.CardView = Backbone.View.extend({
                 card: self.model,
                 converter: this.converter
             }));
+            if (!_.isUndefined(this.model.attributes.name) && this.model.attributes.name !== '') {
+                this.$el.addClass('panel js-show-modal-card-view js-board-list-card non-select cur').removeAttr('id').attr('data-toggle', 'modal').attr('data-target', '#myModal').attr('data-card_id', this.model.id).attr('id', 'js-card-' + this.model.id).css("border-left-color", this.model.attributes.color).css("border-left-width", "8px");
+            }
             if (filter_count < total_filter && (query_params)) {
                 if (_.isUndefined(ops) && ops !== null) {
                     this.model.set('is_filtered', true);
@@ -608,27 +611,29 @@ App.CardView = Backbone.View.extend({
      *
      */
     sortLabelPosition: function() {
-        var board_id = this.model.get('board_id');
-        var wrapper = $('.js-card-list-view-' + board_id + ' #js-card-' + this.model.id),
-            items = wrapper.children(),
-            r_listview_configure_positions, temp_dom = [];
-        if (!_.isUndefined(this.model.board) && !_.isEmpty(this.model.board) && !_.isUndefined(this.model.board.attributes.board_custom_fields) && !_.isEmpty(this.model.board.attributes.board_custom_fields)) {
-            board_custom_fields = JSON.parse(this.model.board.attributes.board_custom_fields);
-            if (!_.isUndefined(board_custom_fields.r_listview_configure_position) && !_.isUndefined(board_custom_fields.r_listview_configure_position)) {
-                r_listview_configure_positions = board_custom_fields.r_listview_configure_position.split(',');
-                items.each(function(label, key) {
-                    temp_dom.push(key.id);
-                });
-                wrapper.prepend($.map(r_listview_configure_positions, function(v) {
-                    var list_index = temp_dom.findIndex(function(item) {
-                        return item === 'list_view_config_data-' + v;
+        if (!_.isUndefined(this) && !_.isEmpty(this) && !_.isUndefined(this.model) && !_.isEmpty(this.model)) {
+            var board_id = this.model.get('board_id');
+            var wrapper = $('.js-card-list-view-' + board_id + ' #js-card-' + this.model.id),
+                items = wrapper.children(),
+                r_listview_configure_positions, temp_dom = [];
+            if (!_.isUndefined(this.model.board) && !_.isEmpty(this.model.board) && !_.isUndefined(this.model.board.attributes.board_custom_fields) && !_.isEmpty(this.model.board.attributes.board_custom_fields)) {
+                board_custom_fields = JSON.parse(this.model.board.attributes.board_custom_fields);
+                if (!_.isUndefined(board_custom_fields.r_listview_configure_position) && !_.isUndefined(board_custom_fields.r_listview_configure_position)) {
+                    r_listview_configure_positions = board_custom_fields.r_listview_configure_position.split(',');
+                    items.each(function(label, key) {
+                        temp_dom.push(key.id);
                     });
-                    return items[list_index];
-                }));
+                    wrapper.prepend($.map(r_listview_configure_positions, function(v) {
+                        var list_index = temp_dom.findIndex(function(item) {
+                            return item === 'list_view_config_data-' + v;
+                        });
+                        return items[list_index];
+                    }));
 
+                }
             }
+            this.$el.show();
         }
-        this.$el.show();
     },
     /**
      * renderAdd()

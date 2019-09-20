@@ -206,7 +206,7 @@ var favicon = new Favico({
     animation: 'popFade'
 });
 
-function parse_date(dateTime, logged_user, classname) {
+function parse_date(dateTime, logged_user, classname, isAbbrReturn) {
     var s = dateTime.replace("T", " "),
         current_timezone;
     new_date = moment.tz(s, 'YYYY-MM-DD HH:mm:ss', SITE_TIMEZONE).utc().format('YYYY-MM-DD HH:mm:ss');
@@ -219,10 +219,13 @@ function parse_date(dateTime, logged_user, classname) {
     if (!moment.isMoment(tz)) {
         tz = moment(tz);
     }
-    _(function() {
-        $('.' + classname).html('<abbr title="' + tz.format() + '">' + tz.fromNow() + '</abbr>');
-    }).defer();
-    return true;
+    var timestr = '<abbr title="' + tz.format() + '">' + tz.fromNow() + '</abbr>';
+    if (isAbbrReturn !== undefined) {
+        return timestr;
+    } else {
+        $('.' + classname).html(timestr);
+        return true;
+    }
 }
 
 

@@ -20,6 +20,7 @@ App.CardAttachmentView = Backbone.View.extend({
             this.card_id = options.card_id;
         }
         this.model.board = options.board;
+        this.card = options.card;
         if (!_.isUndefined(this.model) && this.model !== null) {
             this.model.showImage = this.showImage;
             this.model.downloadLink = this.downloadLink;
@@ -62,10 +63,13 @@ App.CardAttachmentView = Backbone.View.extend({
      */
     deleteAttachment: function() {
         this.$el.remove();
+        var card = this.card;
         this.model.url = api_url + 'boards/' + this.model.attributes.board_id + '/lists/' + this.model.attributes.list_id + '/cards/' + this.model.attributes.card_id + '/attachments/' + this.model.id + '.json';
         this.model.destroy({
             success: function(model, response, options) {
                 if (!_.isUndefined(response.activity)) {
+                    var previous_attachment_count = card.attributes.attachment_count;
+                    card.set('attachment_count', previous_attachment_count - 1);
                     response.activity = activityCommentReplace(response.activity);
                     var activity = new App.Activity();
                     activity.set(response.activity);
