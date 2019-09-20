@@ -283,9 +283,15 @@ App.CardCheckListItemView = Backbone.View.extend({
      * @return false
      *
      */
-    deleteItem: function() {
+    deleteItem: function(e) {
         this.$el.remove();
-        this.model.url = api_url + 'boards/' + this.model.card.get('board_id') + '/lists/' + this.model.card.get('list_id') + '/cards/' + this.model.card.id + '/checklists/' + this.model.attributes.checklist_id + '/items/' + this.model.id + '.json';
+        var convert_card_trigger = false;
+        if (typeof e === 'string') {
+            convert_card_trigger = true;
+        }
+        if (!convert_card_trigger) {
+            this.model.url = api_url + 'boards/' + this.model.card.get('board_id') + '/lists/' + this.model.card.get('list_id') + '/cards/' + this.model.card.id + '/checklists/' + this.model.attributes.checklist_id + '/items/' + this.model.id + '.json';
+        }
         var checklist_item_id = this.model.id;
         var checkList_item;
         _.each(this.model.card.list.collection.board.checklist_items.models, function(checklistItem) {
@@ -315,21 +321,23 @@ App.CardCheckListItemView = Backbone.View.extend({
         });
         this.render();
         this.renderProgress();
-        this.model.destroy({
-            success: function(model, response) {
-                if (!_.isUndefined(response.activity)) {
-                    response.activity = activityCommentReplace(response.activity);
-                    var activity = new App.Activity();
-                    activity.set(response.activity);
-                    var view_act = new App.ActivityView({
-                        model: activity
-                    });
-                    self.model.activities.unshift(activity);
-                    var view_activity = $('#js-card-activities-' + parseInt(response.activity.card_id));
-                    view_activity.prepend(view_act.render().el);
+        if (!convert_card_trigger) {
+            this.model.destroy({
+                success: function(model, response) {
+                    if (!_.isUndefined(response.activity)) {
+                        response.activity = activityCommentReplace(response.activity);
+                        var activity = new App.Activity();
+                        activity.set(response.activity);
+                        var view_act = new App.ActivityView({
+                            model: activity
+                        });
+                        self.model.activities.unshift(activity);
+                        var view_activity = $('#js-card-activities-' + parseInt(response.activity.card_id));
+                        view_activity.prepend(view_act.render().el);
+                    }
                 }
-            }
-        });
+            });
+        }
         return false;
     },
     /**
@@ -553,7 +561,7 @@ App.CardCheckListItemView = Backbone.View.extend({
         card.url = api_url + 'boards/' + self.model.card.get('board_id') + '/lists/' + self.model.card.get('list_id') + '/cards/' + self.model.card.id + '/checklists/' + self.model.attributes.id + '/items/' + self.model.id + '/convert_to_card.json';
         card.save({}, {
             success: function(model, response) {
-                self.deleteItem();
+                self.deleteItem('convert_to_card');
                 card.set(response.cards);
                 card.set('id', parseInt(response.cards.id));
                 card.set('list_id', parseInt(response.cards.list_id));

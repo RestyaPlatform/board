@@ -6560,7 +6560,7 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
         } else if (isset($r_put['sort_by']) && !empty($r_put['sort_by'])) {
             $comment = '##USER_NAME## updated the sort of cards on ##BOARD_NAME## board.';
             $activity_type = 'update_sort_card';
-        } else if(isset($r_put['is_show_image_front_of_card'])) {
+        } else if (isset($r_put['is_show_image_front_of_card'])) {
             if ($r_put['is_show_image_front_of_card']) {
                 $comment = '##USER_NAME## enabled card cover image on ##BOARD_NAME## board.';
             } else {
