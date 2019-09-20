@@ -5321,6 +5321,10 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
         );
         $result = pg_query_params($db_lnk, 'SELECT name FROM checklist_items WHERE id = $1', $qry_val_arr);
         $row = pg_fetch_assoc($result);
+        $qry_val_arr = array(
+            $r_resource_vars['items']
+        );
+        pg_query_params($db_lnk, 'DELETE FROM checklist_items WHERE id = $1', $qry_val_arr);
         $r_post['board_id'] = $r_resource_vars['boards'];
         $r_post['list_id'] = $r_resource_vars['lists'];
         $r_post['name'] = $row['name'];
