@@ -1545,6 +1545,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
 
     case '/boards/?/lists/?/cards':
         $_metadata = array();
+        $data = array();
         $fields = !empty($r_resource_filters['fields']) ? $r_resource_filters['fields'] : '*';
         $sql = 'SELECT row_to_json(d) FROM (SELECT ' . $fields . ' FROM cards_listing cll WHERE board_id = $1 AND list_id = $2) as d ';
         if (empty($r_resource_filters['from']) || (!empty($r_resource_filters['from']) && $r_resource_filters['from'] != 'app')) {
@@ -1557,8 +1558,14 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         }
         array_push($pg_params, $r_resource_vars['boards']);
         array_push($pg_params, $r_resource_vars['lists']);
+        $qry_val_arr = array(
+            $r_resource_vars['lists']
+        );
+        $attachments = pg_query_params($db_lnk, 'SELECT * FROM card_attachments WHERE list_id = $1 order by created DESC', $qry_val_arr);
+        while ($attachment = pg_fetch_assoc($attachments)) {
+            $data['attachments'][] = $attachment;
+        }
         if ($result = pg_query_params($db_lnk, $sql, $pg_params)) {
-            $data = array();
             $board_lists = array();
             while ($row = pg_fetch_row($result)) {
                 $obj = json_decode($row[0], true);
