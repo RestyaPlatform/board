@@ -5690,7 +5690,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                         $response['id'],
                         $copied_card_id
                     );
-                    pg_query_params($db_lnk, 'INSERT INTO checklists (created, modified, user_id, card_id, name, checklist_item_count, checklist_item_completed_count, position) SELECT created, modified, user_id, $1, name, checklist_item_count, checklist_item_completed_count, position FROM checklists WHERE card_id = $2 ORDER BY id', $qry_val_arr);
+                    pg_query_params($db_lnk, 'INSERT INTO checklists (created, modified, user_id, card_id, name, checklist_item_count, position) SELECT created, modified, user_id, $1, name, checklist_item_count, position FROM checklists WHERE card_id = $2 ORDER BY id', $qry_val_arr);
                     $qry_val_arr = array(
                         $response['id']
                     );
@@ -5710,7 +5710,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                             $checklist_id['id'],
                             $prev_checklist_ids[$i]
                         );
-                        pg_query_params($db_lnk, 'INSERT INTO checklist_items (created, modified, user_id, card_id, name, checklist_id, is_completed, position) SELECT created, modified, user_id, $1, name , $2, is_completed, position FROM checklist_items WHERE checklist_id = $3 ORDER BY id', $qry_val_arr);
+                        pg_query_params($db_lnk, 'INSERT INTO checklist_items (created, modified, user_id, card_id, name, checklist_id, position) SELECT created, modified, user_id, $1, name , $2, position FROM checklist_items WHERE checklist_id = $3 ORDER BY id', $qry_val_arr);
                         $i++;
                     }
                 }
