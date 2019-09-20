@@ -1311,7 +1311,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 array_push($pg_params, $r_resource_filters['filter']);
                 $i++;
             }
-            if (!empty($r_resource_filters['mode']) && $r_resource_filters['mode'] != 'all') {
+            if (!empty($r_resource_filters['mode']) && ($r_resource_filters['mode'] != 'all' || (isset($r_resource_filters['view']) && $r_resource_filters['view'] == 'modal_card'))) {
                 if ($r_resource_filters['mode'] == 'activity') {
                     $condition.= ' AND (al.type != $' . $i;
                     array_push($pg_params, 'add_comment');
@@ -1333,7 +1333,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             if (!empty($r_resource_filters['limit'])) {
                 $limit = $r_resource_filters['limit'];
             }
-            if (isset($r_resource_filters['mode']) && $r_resource_filters['mode'] == '1') {
+            if (isset($r_resource_filters['mode']) && $r_resource_filters['mode'] == '1' || (!isset($r_resource_filters['view']) && $r_resource_filters['mode'] == 'comment')) {
                 $order = 'ORDER BY al.id DESC';
             }
             if (isset($r_resource_filters['page'])) {
