@@ -1392,6 +1392,12 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                             if ($obj['type'] === 'add_card') {
                                 $obj['comment'] = '##USER_NAME## added this card';
                             }
+                            if ($obj['type'] === 'convert_card') {
+                                $replaceContent = array(
+                                    ' to list ##LIST_NAME##' => '',
+                                );
+                                $obj['comment'] = strtr($obj['comment'], $replaceContent);
+                            }
                         } else {
                             if ($obj['type'] === 'add_comment') {
                                 $obj['comment'] = $obj['comment'];
@@ -5328,6 +5334,10 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
         );
         $result = pg_query_params($db_lnk, 'SELECT name FROM checklist_items WHERE id = $1', $qry_val_arr);
         $row = pg_fetch_assoc($result);
+        $qry_val_arr = array(
+            $r_resource_vars['items']
+        );
+        pg_query_params($db_lnk, 'DELETE FROM checklist_items WHERE id = $1', $qry_val_arr);
         $r_post['board_id'] = $r_resource_vars['boards'];
         $r_post['list_id'] = $r_resource_vars['lists'];
         $r_post['name'] = $row['name'];
@@ -5357,8 +5367,8 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 $foreign_ids['board_id'] = $r_post['board_id'];
                 $foreign_ids['card_id'] = $response['id'];
                 $foreign_ids['list_id'] = $r_post['list_id'];
-                $comment = '##USER_NAME## added card ##CARD_LINK## to list "' . $list['name'] . '".';
-                $response['activity'] = insertActivity($authUser['id'], $comment, 'add_card', $foreign_ids, '', $r_post['list_id']);
+                $comment = '##USER_NAME## converted this checklist item ' . $row['name'] . ' to the card ##CARD_LINK## to list ##LIST_NAME##';
+                insertActivity($authUser['id'], $comment, 'convert_card', $foreign_ids, null, $r_resource_vars['items']);
                 if (!empty($r_post['members'])) {
                     foreach ($r_post['members'] as $member) {
                         $s_usql = 'INSERT INTO cards_users (created, modified, card_id, user_id) VALUES(now(), now(), ' . $response['id'] . ', ' . $member . ') RETURNING id';
