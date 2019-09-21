@@ -22,8 +22,10 @@
 			  <% } %>
 			  <%if(!_.isUndefined(authuser.user)) {%>
 			  <div class="pull-right col-xs-6 clearfix js-list-header-<%- list.id %> js-list-header-section">
-				  <div class="pull-right left-mar"><a href="javascript:void(0);" <% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(list.board.acl_links.where({slug: "edit_list",board_user_role_id: parseInt(list.board_user_role_id)})))){ %>class="js-trigger-minimize"<% } %> title="<%- i18next.t('Minimize') %>" data-list_id="<%- list.id %>"><span class="pull-right"><strong><i class="icon-resize-small text-primary" style="margin-right: -4px;"></i> </strong></span></a>
+				  <% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(list.board.acl_links.where({slug: "edit_list",board_user_role_id: parseInt(list.board_user_role_id)})))){ %>
+				  <div class="pull-right left-mar"><a href="javascript:void(0);" class="js-trigger-minimize" title="<%- i18next.t('Minimize') %>" data-list_id="<%- list.id %>"><span class="pull-right"><strong><i class="icon-resize-small text-primary" style="margin-right: -4px;"></i> </strong></span></a>
 				  </div>
+				  <% } %>
 				  <div class="dropdown">
 				  <a href="#" class="dropdown-toggle pull-right js-show-list-actions" id="js-show-list-actions-<%- list.attributes.id %>" data-toggle="dropdown" title="<%- i18next.t('List Actions') %>" data-list-id="<%- list.attributes.id %>"><i class="icon-cog text-primary"></i></a>
 				  </div>
