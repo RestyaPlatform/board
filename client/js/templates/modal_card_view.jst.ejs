@@ -192,7 +192,7 @@
 					<a class="hide js-app-activity-trigger"></a>
 					<ul class="js-card-actions js-card-add list-inline action-list navbar-btn">
 						<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: "edit_card",board_user_role_id: parseInt(list.board_user_role_id)})))){ %>
-						<li class="dropdown js-color-dropdown">
+						<li class="dropdown js-color-dropdown-<%- card.id %>">
 								<% if(!_.isEmpty(card.attributes.color)){ %>
 									<a class="pr btn btn-default dropdown-toggle even-action htruncate" role="button" data-toggle="dropdown" title="<%- i18next.t('Color') %>" href="#"><span class="dycolorblk" id="js-card-color-demo-<%- card.id %>" style="background-color:<%- card.attributes.color %>;"></span><i class="icon-pencil">&nbsp;</i><%- i18next.t('Color') %></a>
 								<% } else {%>
@@ -238,7 +238,7 @@
 										<li class="list-inline cur">
 												<label for="js-card-custom-color"><%- i18next.t('Custom color') %></label>
 												<div class="col-xs-8">
-														<div id="custom-color-picker" class="input-group">
+														<div id="custom-color-picker-<%- card.id%>" class="input-group">
 																<input type="text" value="<%- card.attributes.color %>" id="js-card-custom-color" class="form-control input-sm"/>
 																<span class="input-group-addon"><i class="custom-background-box"></i></span>
 														</div>
@@ -528,7 +528,7 @@
   <a aria-expanded="true" data-toggle="dropdown" id="dropdownMenu1" class="dropdown-toggle label"> <i class="icon-cog h3"></i></a>
   <ul role="menu" class="dropdown-menu arrow">
 		<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: "edit_card",board_user_role_id: parseInt(list.board_user_role_id)})))){ %>
-		<li class="dropdown js-show-color-settings-dropdown"><a class="dropdown-toggle js-show-color-settings" href="#" title="Color" data-toggle="dropdown"><i class="text-primary"></i>Color</a>
+		<li class="dropdown js-show-color-settings-dropdown-<%- card.id %>"><a class="dropdown-toggle js-show-color-settings" href="#" title="Color" data-toggle="dropdown"><i class="text-primary"></i>Color</a>
 				<ul class="dropdown-menu dropdown-menu-left dropdown-new arrow selectcolourdown col-xs-12">
 					<li class="col-xs-12 clearfix text-center">
 							<div><span class="col-xs-10"><strong><%- i18next.t('Select a color') %></strong></span><a class="js-close-popover pull-right"
@@ -572,7 +572,7 @@
 							<li class="list-inline cur">
 									<label for="card-action-customcolor"><%- i18next.t('Custom color') %></label>
 									<div class="col-xs-8">
-											<div id="cardaction-color-picker" class="input-group">
+											<div id="cardaction-color-picker-<%- card.id %>" class="input-group">
 													<input type="text" value="<%- card.attributes.color %>" id="card-action-customcolor" class="form-control input-sm"/>
 													<span class="input-group-addon"><i class="custom-background-box"></i></span>
 											</div>
