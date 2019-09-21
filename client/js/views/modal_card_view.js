@@ -234,7 +234,7 @@ App.ModalCardView = Backbone.View.extend({
     showColorPicker: function(e) {
         e.preventDefault();
         $(e.target).parents('.js-dropdown-submenu, .docmodal-submenu').addClass('open');
-        $('.js-show-color-settings-dropdown').addClass('open');
+        $('.js-show-color-settings-dropdown-' + this.model.id).addClass('open');
         return false;
     },
     /**
@@ -254,11 +254,11 @@ App.ModalCardView = Backbone.View.extend({
         var card_id = self.model.id;
         if ($(e.target).parents().find('#js-card-custom-color').length > 0) {
             $(e.target).parents().find('#js-card-custom-color').val(' ');
-            $('#custom-color-picker .custom-background-box').css("background-color", color_label);
+            $('#custom-color-picker-'+ card_id + ' .custom-background-box').css("background-color", color_label);
         }
         if ($(e.target).parents().find('#card-action-customcolor').length > 0) {
             $(e.target).parents().find('#card-action-customcolor').val(' ');
-            $('#cardaction-color-picker .custom-background-box').css("background-color", color_label);
+            $('#cardaction-color-picker-'+ card_id + ' .custom-background-box').css("background-color", color_label);
         }
         $('#js-card-color-demo-' + card_id).css("background-color", color_label);
         $('#js-card-' + card_id).css("border-left-color", color_label).css("border-left-width", "8px");
@@ -306,15 +306,15 @@ App.ModalCardView = Backbone.View.extend({
         };
         if ($(e.target).parents().find('#js-card-custom-color').length > 0 && color_label) {
             $(e.target).parents().find('#js-card-custom-color').val(color_label);
-            self.$el.find('#custom-color-picker .custom-background-box').css("background-color", color_label);
+            self.$el.find('#custom-color-picker-' + self.model.id + ' .custom-background-box').css("background-color", color_label);
             self.$el.find('#card-action-customcolor').val(color_label);
-            self.$el.find('#cardaction-color-picker .custom-background-box').css("background-color", color_label);
+            self.$el.find('#cardaction-color-picker-'+ self.model.id + ' .custom-background-box').css("background-color", color_label);
         }
         if ($(e.target).parents().find('#card-action-customcolor').length > 0 && color_label) {
             $(e.target).parents().find('#card-action-customcolor').val(color_label);
-            self.$el.find('#custom-color-picker .custom-background-box').css("background-color", color_label);
+            self.$el.find('#custom-color-picker-' + self.model.id + ' .custom-background-box').css("background-color", color_label);
             self.$el.find('#card-action-customcolor').val(color_label);
-            self.$el.find('#cardaction-color-picker .custom-background-box').css("background-color", color_label);
+            self.$el.find('#cardaction-color-picker-'+ self.model.id + ' .custom-background-box').css("background-color", color_label);
         }
         var card_id = self.model.id;
         $('#js-card-color-demo-' + card_id).css("background-color", color_label);
@@ -357,21 +357,21 @@ App.ModalCardView = Backbone.View.extend({
      *
      */
     customColorPickerCard: function(e) {
+        var self = this;
         var form = $(e.target).attr('data-form');
         var color_label;
         if (form === 'card-menu') {
             color_label = $(e.target).parents().find('#js-card-custom-color').val();
             this.$el.find('#card-action-customcolor').val(color_label);
-            $('#cardaction-color-picker .custom-background-box').css("background-color", color_label);
+            $('#cardaction-color-picker-'+ self.model.id + ' .custom-background-box').css("background-color", color_label);
         } else if (form === 'card-action') {
             color_label = $(e.target).parents().find('#card-action-customcolor').val();
             this.$el.find('#js-card-custom-color').val(color_label);
-            $('#custom-color-picker .custom-background-box').css("background-color", color_label);
+            $('#custom-color-picker-' + self.model.id + ' .custom-background-box').css("background-color", color_label);
         }
         var data = {
             color: color_label
         };
-        var self = this;
         var card_id = self.model.id;
         $('#js-card-color-demo-' + card_id).css("background-color", color_label);
         $('#js-card-' + card_id).css("border-left-color", color_label).css("border-left-width", "8px");
@@ -1621,24 +1621,24 @@ App.ModalCardView = Backbone.View.extend({
                 }
             });
 
-            $('#custom-color-picker').colorpicker({
+            self.$el.find('#custom-color-picker-' + this.model.id).colorpicker({
                 format: 'hex',
-                container: '#custom-color-picker',
+                container: '#custom-color-picker-' + this.model.id,
             }).on('changeColor', function(e) {
-                $('.js-color-dropdown').addClass('open');
+                self.$el.find('.js-color-dropdown-'+ self.model.id).addClass('open');
                 return false;
             }).on('click', function(e) {
-                $('.js-color-dropdown').addClass('open');
+                self.$el.find('.js-color-dropdown-'+ self.model.id).addClass('open');
                 return false;
             });
-            $('#cardaction-color-picker').colorpicker({
+            self.$el.find('#cardaction-color-picker-'+ self.model.id).colorpicker({
                 format: 'hex',
-                container: '#cardaction-color-picker',
+                container: '#cardaction-color-picker-'+ self.model.id,
             }).on('changeColor', function(e) {
-                $('.js-color-dropdown').addClass('open');
+                $(e.target).parents().find('.js-show-color-settings-dropdown-'+ self.model.id).addClass('open');
                 return false;
             }).on('click', function(e) {
-                $('.js-color-dropdown').addClass('open');
+                $(e.target).parents().find('.js-show-color-settings-dropdown-'+ self.model.id).addClass('open');
                 return false;
             });
             $('.js-card-duedate-edit-' + self.model.id).datetimepicker({
