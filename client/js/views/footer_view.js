@@ -2275,9 +2275,18 @@ App.FooterView = Backbone.View.extend({
         }
     },
     showNotification: function(e) {
+        var user;
+        if (!_.isUndefined(authuser.user) && !_.isEmpty(authuser.user) && !_.isUndefined(App.current_board) && !_.isEmpty(App.current_board)) {
+            user = App.current_board.board_users.findWhere({
+                user_id: parseInt(authuser.user.id)
+            });
+        }
         e.preventDefault();
         $('#js-board-activities, #js-all-activities').empty();
-        if (!_.isEmpty(this.board_id)) {
+        if (!_.isEmpty(this.board_id) && ((!_.isUndefined(user) && !_.isEmpty(App.current_board.acl_links.where({
+                slug: "view_board_activities",
+                board_user_role_id: parseInt(user.attributes.board_user_role_id)
+            }))) || authuser.user.role_id == 1)) {
             this.$el.find('.js-board-activities').click();
         } else {
             this.$el.find('.js-all-activities').click();
