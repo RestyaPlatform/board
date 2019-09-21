@@ -492,29 +492,6 @@ App.CardCheckListItemView = Backbone.View.extend({
                 checkList_item = checklistItem;
             }
         });
-        var option = {
-            silent: true
-        };
-        var bool = checkList_item.attributes.is_completed;
-        if (bool) {
-            self.model.set('is_completed', 1, option);
-            self.model.checklist.set('checklist_item_completed_count', parseInt(self.model.checklist.get('checklist_item_completed_count')) - 1, option);
-            self.model.checklist.card.set('checklist_item_completed_count', parseInt(self.model.checklist.card.attributes.checklist_item_completed_count) - 1, option);
-            self.model.checklist.card.list.collection.board.cards.get(self.model.checklist.card).set('checklist_item_completed_count', self.model.checklist.card.attributes.checklist_item_completed_count, {
-                silent: true
-            });
-        } else {
-            self.model.checklist.set('checklist_item_pending_count', parseInt(self.model.checklist.get('checklist_item_pending_count')) - 1, option);
-            self.model.checklist.card.set('checklist_item_pending_count', parseInt(self.model.checklist.card.attributes.checklist_item_pending_count) - 1, option);
-            self.model.checklist.card.list.collection.board.cards.get(self.model.checklist.card).set('checklist_item_pending_count', self.model.checklist.card.attributes.checklist_item_pending_count, {
-                silent: true
-            });
-        }
-        self.model.checklist.set('checklist_item_count', parseInt(self.model.checklist.get('checklist_item_count')) - 1, option);
-        self.model.checklist.card.set('checklist_item_count', parseInt(self.model.checklist.card.attributes.checklist_item_count) - 1, option);
-        self.model.checklist.card.list.collection.board.cards.get(self.model.checklist.card).set('checklist_item_count', self.model.checklist.card.attributes.checklist_item_count, {
-            silent: true
-        });
         var cards = self.model.card.list.collection.board.cards.where({
             list_id: parseInt(self.model.card.attributes.list_id)
         });
