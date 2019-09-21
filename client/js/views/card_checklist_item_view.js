@@ -580,6 +580,7 @@ App.CardCheckListItemView = Backbone.View.extend({
                 card.set('list_id', parseInt(response.cards.list_id));
                 card.set('board_id', parseInt(response.cards.board_id));
                 card.set('created', tmp_created_date);
+                card.set('card_created_user', authuser.user.full_name);
                 card.set('is_archived', 0);
                 card.set('activity_count', 0);
                 card.set('comment_count', 0);
