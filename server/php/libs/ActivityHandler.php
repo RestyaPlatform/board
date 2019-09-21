@@ -215,6 +215,12 @@ class ActivityHandler
                     $obj['custom_fields'][] = $custom_field;
                 }
             }
+        } else if ($obj_type === 'move_list') {
+            $conditions = array(
+                $obj['list_id']
+            );
+            $list = executeQuery('SELECT * FROM lists WHERE id = $1', $conditions);
+            $obj['list'] = $list;
         }
         return $obj;
     }
