@@ -354,7 +354,7 @@
 								  <label for="card-title"><%- i18next.t('Title') %></label>
 								  <input type="text" id="card-title" class="form-control" name="name" value="<%- card.attributes.name%>" required>
 								</div>
-								<div class="js-show-copy-card-form-response-copy"> </div>
+								<div class="js-show-copy-card-form-response-copy-card-<%- card.id %>"> </div>
 								<div class="form-group clearfix">
 								  <label class="sr-only"><%- i18next.t('Create card') %></label>
 								  <input type="submit" class="btn btn-primary col-xs-12" value="<%- i18next.t('Create card') %>">
@@ -751,7 +751,7 @@
 						<label for="card-title"><%- i18next.t('Title') %></label>
 						<input type="text" id="card-title" class="form-control" name="name" value="<%- card.attributes.name%>" required>
 					</div>
-					<div class="js-show-copy-card-form-response"> </div>
+					<div class="js-show-copy-card-form-response-card-<%- card.id %>"> </div>
 					<div class="form-group clearfix">
 						<label class="sr-only"><%- i18next.t('Create card') %></label>
 						<input type="submit" class="btn btn-primary col-xs-12" value="<%- i18next.t('Create card') %>">

@@ -4,8 +4,8 @@
 		<% if (card.attachments.length > 0) {%>
 			<div class="form-group">
 				<div class="checkbox">
-				<input id="Attachments" class="hide" type="checkbox" name="keep_attachments" value="1" checked="checked">
-					<label for="Attachments">
+				<input id="Attachments-<%- card.id %>" class="hide" type="checkbox" name="keep_attachments" value="1" checked="checked">
+					<label for="Attachments-card-<%- card.id %>">
 					<%- i18next.t('Attachments') %>(<%- card.attachments.length %>)
 					</label>
 				</div>
@@ -14,8 +14,8 @@
 	   if (parseInt(card.attributes.comment_count) > 0) { %>
 		<div class="form-group">
 			<div class="checkbox">
-				 <input id="Activities" class="hide" type="checkbox" name="keep_activities" value="1" checked="checked">
-				 <label for="Activities">
+				 <input id="Activities-card-<%- card.id %>" class="hide" type="checkbox" name="keep_activities" value="1" checked="checked">
+				 <label for="Activities-card-<%- card.id %>">
 					 <%- i18next.t('Comments') %> (<%- card.attributes.comment_count %>)
 				 </label>
 			 </div>
@@ -24,8 +24,8 @@
 		if (card.labels.length > 0) { %>
 		   <div class="form-group">
 			   <div class="checkbox">
-					<input id="Labels" class="hide" type="checkbox" name="keep_labels" value="1" checked="checked">
-					<label for="Labels">
+					<input id="Labels-card-<%- card.id %>" class="hide" type="checkbox" name="keep_labels" value="1" checked="checked">
+					<label for="Labels-card-<%- card.id %>">
 						<%- i18next.t('Labels') %> (<%- card.labels.length %>)
 					</label>
 				</div>
@@ -34,8 +34,8 @@
 		 if (card.checklists.length > 0) { %>
 			<div class="form-group">
 				<div class="checkbox">
-					<input id="Checklists" class="hide" type="checkbox" name="keep_checklists" value="1" checked="checked">
-					<label for="Checklists">
+					<input id="Checklists-card-<%- card.id %>" class="hide" type="checkbox" name="keep_checklists" value="1" checked="checked">
+					<label for="Checklists-card-<%- card.id %>">
 						<%- i18next.t('Checklists') %> (<%- card.checklists.length %>)
 					</label>
 				</div>
@@ -44,8 +44,8 @@
 		if (card.users.length > 0) { %>
 			<div class="form-group">
 				<div class="checkbox">
-					<input id="users" class="hide" type="checkbox" name="keep_users" value="1" checked="checked">
-					<label for="users">
+					<input id="users-card-<%- card.id %>" class="hide" type="checkbox" name="keep_users" value="1" checked="checked">
+					<label for="users-card-<%- card.id %>">
 						<%- i18next.t('Members') %> (<%- card.users.length %>)
 					</label>
 				</div>
@@ -54,8 +54,8 @@
 	   <% if (!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && $.inArray('r_custom_fields', APPS.enabled_apps) !== -1) { %>
 			<div class="form-group">
 				<div class="checkbox">
-					<input id="custom_fields" class="hide" type="checkbox" name="keep_custom_fields" value="1" checked="checked">
-					<label for="custom_fields">
+					<input id="custom_fields-card-<%- card.id %>" class="hide" type="checkbox" name="keep_custom_fields" value="1" checked="checked">
+					<label for="custom_fields-card-<%- card.id %>">
 						<%- i18next.t('Custom Fields') %> 
 					</label>
 				</div>
