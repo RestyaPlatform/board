@@ -225,7 +225,7 @@ App.CardCheckListItemView = Backbone.View.extend({
         e.preventDefault();
         var form = $('form.js-item-edit-form');
         form.prev('.js-show-item-edit-form').removeClass('hide');
-        $('#js-checklist-item-' + this.model.id).html(this.converter.makeHtml($('textarea', form).val()));
+        $('#js-checklist-item-' + this.model.id).html(this.converter.makeHtml(this.model.attributes.name));
         form.remove();
         emojify.run();
     },
