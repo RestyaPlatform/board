@@ -975,7 +975,6 @@ App.ModalCardView = Backbone.View.extend({
                 start: data.start_date + 'T' + data.start_time
             };
         }
-        this.model.set(data);
         var target = $(e.currentTarget);
         self.$el.find('.js-show-side-card-title-edit-form').parents().find('.dropdown').removeClass('open');
         if (!_.isUndefined(data.name)) {
@@ -1007,6 +1006,7 @@ App.ModalCardView = Backbone.View.extend({
             }
         }
         if (validation) {
+            this.model.set(data);
             this.model.url = api_url + 'boards/' + this.model.attributes.board_id + '/lists/' + this.model.attributes.list_id + '/cards/' + this.model.id + '.json';
             $('.js-close-popover').click();
             this.model.save(data, {
