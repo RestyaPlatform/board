@@ -254,11 +254,11 @@ App.ModalCardView = Backbone.View.extend({
         var card_id = self.model.id;
         if ($(e.target).parents().find('#js-card-custom-color').length > 0) {
             $(e.target).parents().find('#js-card-custom-color').val(' ');
-            $('#custom-color-picker-'+ card_id + ' .custom-background-box').css("background-color", color_label);
+            $('#custom-color-picker-' + card_id + ' .custom-background-box').css("background-color", color_label);
         }
         if ($(e.target).parents().find('#card-action-customcolor').length > 0) {
             $(e.target).parents().find('#card-action-customcolor').val(' ');
-            $('#cardaction-color-picker-'+ card_id + ' .custom-background-box').css("background-color", color_label);
+            $('#cardaction-color-picker-' + card_id + ' .custom-background-box').css("background-color", color_label);
         }
         $('#js-card-color-demo-' + card_id).css("background-color", color_label);
         $('#js-card-' + card_id).css("border-left-color", color_label).css("border-left-width", "8px");
@@ -308,13 +308,13 @@ App.ModalCardView = Backbone.View.extend({
             $(e.target).parents().find('#js-card-custom-color').val(color_label);
             self.$el.find('#custom-color-picker-' + self.model.id + ' .custom-background-box').css("background-color", color_label);
             self.$el.find('#card-action-customcolor').val(color_label);
-            self.$el.find('#cardaction-color-picker-'+ self.model.id + ' .custom-background-box').css("background-color", color_label);
+            self.$el.find('#cardaction-color-picker-' + self.model.id + ' .custom-background-box').css("background-color", color_label);
         }
         if ($(e.target).parents().find('#card-action-customcolor').length > 0 && color_label) {
             $(e.target).parents().find('#card-action-customcolor').val(color_label);
             self.$el.find('#custom-color-picker-' + self.model.id + ' .custom-background-box').css("background-color", color_label);
             self.$el.find('#card-action-customcolor').val(color_label);
-            self.$el.find('#cardaction-color-picker-'+ self.model.id + ' .custom-background-box').css("background-color", color_label);
+            self.$el.find('#cardaction-color-picker-' + self.model.id + ' .custom-background-box').css("background-color", color_label);
         }
         var card_id = self.model.id;
         $('#js-card-color-demo-' + card_id).css("background-color", color_label);
@@ -363,7 +363,7 @@ App.ModalCardView = Backbone.View.extend({
         if (form === 'card-menu') {
             color_label = $(e.target).parents().find('#js-card-custom-color').val();
             this.$el.find('#card-action-customcolor').val(color_label);
-            $('#cardaction-color-picker-'+ self.model.id + ' .custom-background-box').css("background-color", color_label);
+            $('#cardaction-color-picker-' + self.model.id + ' .custom-background-box').css("background-color", color_label);
         } else if (form === 'card-action') {
             color_label = $(e.target).parents().find('#card-action-customcolor').val();
             this.$el.find('#js-card-custom-color').val(color_label);
@@ -1625,20 +1625,20 @@ App.ModalCardView = Backbone.View.extend({
                 format: 'hex',
                 container: '#custom-color-picker-' + this.model.id,
             }).on('changeColor', function(e) {
-                self.$el.find('.js-color-dropdown-'+ self.model.id).addClass('open');
+                self.$el.find('.js-color-dropdown-' + self.model.id).addClass('open');
                 return false;
             }).on('click', function(e) {
-                self.$el.find('.js-color-dropdown-'+ self.model.id).addClass('open');
+                self.$el.find('.js-color-dropdown-' + self.model.id).addClass('open');
                 return false;
             });
-            self.$el.find('#cardaction-color-picker-'+ self.model.id).colorpicker({
+            self.$el.find('#cardaction-color-picker-' + self.model.id).colorpicker({
                 format: 'hex',
-                container: '#cardaction-color-picker-'+ self.model.id,
+                container: '#cardaction-color-picker-' + self.model.id,
             }).on('changeColor', function(e) {
-                $(e.target).parents().find('.js-show-color-settings-dropdown-'+ self.model.id).addClass('open');
+                $(e.target).parents().find('.js-show-color-settings-dropdown-' + self.model.id).addClass('open');
                 return false;
             }).on('click', function(e) {
-                $(e.target).parents().find('.js-show-color-settings-dropdown-'+ self.model.id).addClass('open');
+                $(e.target).parents().find('.js-show-color-settings-dropdown-' + self.model.id).addClass('open');
                 return false;
             });
             $('.js-card-duedate-edit-' + self.model.id).datetimepicker({
@@ -4216,14 +4216,14 @@ App.ModalCardView = Backbone.View.extend({
             $('.js-copy-card #card-title').val(this.model.attributes.name);
         }
         if (form_parent == 'modalcard-actions') {
-            $('.js-show-copy-card-form-response').html('');
-            $('.js-show-copy-card-form-response-copy').html(new App.CopyCardView({
+            $('.js-show-copy-card-form-response-card-' + this.model.id).html('');
+            $('.js-show-copy-card-form-response-copy-card-' + this.model.id).html(new App.CopyCardView({
                 model: this.model,
                 boards: this.boards
             }).el);
         } else {
-            $('.js-show-copy-card-form-response-copy').html('');
-            $('.js-show-copy-card-form-response').html(new App.CopyCardView({
+            $('.js-show-copy-card-form-response-copy-card-' + this.model.id).html('');
+            $('.js-show-copy-card-form-response-card-' + this.model.id).html(new App.CopyCardView({
                 model: this.model,
                 boards: this.boards
             }).el);
