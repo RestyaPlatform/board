@@ -4216,14 +4216,14 @@ App.ModalCardView = Backbone.View.extend({
             $('.js-copy-card #card-title').val(this.model.attributes.name);
         }
         if (form_parent == 'modalcard-actions') {
-            $('.js-show-copy-card-form-response').html('');
-            $('.js-show-copy-card-form-response-copy').html(new App.CopyCardView({
+            $('.js-show-copy-card-form-response-card-' + this.model.id).html('');
+            $('.js-show-copy-card-form-response-copy-card-' + this.model.id).html(new App.CopyCardView({
                 model: this.model,
                 boards: this.boards
             }).el);
         } else {
-            $('.js-show-copy-card-form-response-copy').html('');
-            $('.js-show-copy-card-form-response').html(new App.CopyCardView({
+            $('.js-show-copy-card-form-response-copy-card-' + this.model.id).html('');
+            $('.js-show-copy-card-form-response-card-' + this.model.id).html(new App.CopyCardView({
                 model: this.model,
                 boards: this.boards
             }).el);
