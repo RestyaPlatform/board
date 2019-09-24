@@ -1336,6 +1336,9 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             if (isset($r_resource_filters['mode']) && $r_resource_filters['mode'] == '1' || (!isset($r_resource_filters['view']) && $r_resource_filters['mode'] == 'comment')) {
                 $order = 'ORDER BY al.id DESC';
             }
+            if (!isset($r_resource_vars['lists']) && !isset($r_resource_vars['cards'])) {
+                $order = 'ORDER BY al.id DESC';
+            }
             if (isset($r_resource_filters['page'])) {
                 $offset_val = ($r_resource_filters['page'] - 1) * PAGING_COUNT;
                 if ($offset_val < 0) {
