@@ -352,7 +352,7 @@
 							  <form role="form" method="post" class="js-copy-card">
 								<div class="form-group">
 								  <label for="card-title"><%- i18next.t('Title') %></label>
-								  <input type="text" id="card-title" class="form-control" name="name" value="<%- card.attributes.name%>">
+								  <input type="text" id="card-title" class="form-control" name="name" value="<%- card.attributes.name%>" required>
 								</div>
 								<div class="js-show-copy-card-form-response-copy"> </div>
 								<div class="form-group clearfix">
@@ -749,7 +749,7 @@
 					<form role="form" method="post" class="js-copy-card">
 					<div class="form-group">
 						<label for="card-title"><%- i18next.t('Title') %></label>
-						<input type="text" id="card-title" class="form-control" name="name" value="<%- card.attributes.name%>">
+						<input type="text" id="card-title" class="form-control" name="name" value="<%- card.attributes.name%>" required>
 					</div>
 					<div class="js-show-copy-card-form-response"> </div>
 					<div class="form-group clearfix">
