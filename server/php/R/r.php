@@ -5307,6 +5307,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     $r_post['checklist_id']
                 );
                 $position = executeQuery('SELECT max(position) as position FROM checklist_items WHERE checklist_id = $1', $qry_val_arr);
+                $checklist_name = executeQuery('SELECT name FROM checklists WHERE id = $1', $qry_val_arr);
                 $r_post['position'] = $position['position'];
                 if (empty($r_post['position'])) {
                     $r_post['position'] = 0;
@@ -5322,7 +5323,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 $foreign_ids['board_id'] = $r_resource_vars['boards'];
                 $foreign_ids['list_id'] = $r_resource_vars['lists'];
                 $foreign_ids['card_id'] = $r_post['card_id'];
-                $comment = '##USER_NAME## added item ##CHECKLIST_ITEM_NAME## in checklist ##CHECKLIST_ITEM_PARENT_NAME## of the card ##CARD_LINK##';
+                $comment = '##USER_NAME## added item ' . $r_post['name'] . ' in checklist ' . $checklist_name['name'] . ' of the card ##CARD_LINK##';
                 $response['activities'][] = insertActivity($authUser['id'], $comment, 'add_checklist_item', $foreign_ids, '', $item['id']);
             }
         }
@@ -7132,16 +7133,16 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
         $prev_value = executeQuery('SELECT * FROM ' . $table_name . ' WHERE id =  $1', $qry_val_arr);
         $activity_type = 'update_card_checklist_item';
         if (!empty($r_put['is_completed'])) {
-            $comment = '##USER_NAME## updated ##CHECKLIST_ITEM_NAME## as completed on the card ##CARD_LINK##';
+            $comment = '##USER_NAME## updated ' . $prev_value['name'] . ' as completed on the card ##CARD_LINK##';
         } else if (isset($r_put['position'])) {
             $comment = '##USER_NAME## moved checklist item on card ##CARD_LINK##';
             if (isset($r_put['checklist_id']) && $r_put['checklist_id'] != $prev_value['checklist_id']) {
                 $activity_type = 'moved_card_checklist_item';
             }
         } else if (isset($r_put['is_completed']) && $r_put['is_completed'] == 'false') {
-            $comment = '##USER_NAME## updated ##CHECKLIST_ITEM_NAME## as incomplete on the card ##CARD_LINK##';
+            $comment = '##USER_NAME## updated ' . $prev_value['name'] . ' as incomplete on the card ##CARD_LINK##';
         } else {
-            $comment = '##USER_NAME## updated item name of ##CHECKLIST_ITEM_NAME## in the card ##CARD_LINK##';
+            $comment = '##USER_NAME## updated item name of ' . $r_put['name'] . ' in the card ##CARD_LINK##';
         }
         $response = update_query($table_name, $id, $r_resource_cmd, $r_put, $comment, $activity_type, $foreign_ids);
         echo json_encode($response);
