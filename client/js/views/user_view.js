@@ -239,6 +239,10 @@ App.UserView = Backbone.View.extend({
      *
      */
     renderType: function() {
+        if (!_.isUndefined(App.boards.sortField) && App.boards.sortField !== null && App.boards.sortField !== 'name') {
+            App.boards.setSortField('name', 'asc');
+            App.boards.sort();
+        }
         var is_send_newsletter_val = this.model.attributes.is_send_newsletter;
         changeTitle('User - ' + _.escape(this.model.attributes.username) + ' - ' + this.profile_tab_title[this.type]);
         this.$el.html(this.template({

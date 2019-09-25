@@ -546,6 +546,10 @@ App.FooterView = Backbone.View.extend({
      *
      */
     renderMyBoards: function() {
+        if (!_.isUndefined(App.boards.sortField) && App.boards.sortField !== null && App.boards.sortField !== 'name') {
+            App.boards.setSortField('name', 'asc');
+            App.boards.sort();
+        }
         this.boards = App.boards;
         if (!_.isEmpty(this.boards) && !_.isEmpty(role_links.where({
                 slug: 'view_my_boards'
@@ -2014,7 +2018,12 @@ App.FooterView = Backbone.View.extend({
                                         }
                                     } else if (!_.isUndefined(self.board) && !_.isUndefined(activity.attributes.board_id) && !_.isUndefined(activity.attributes.board_id) && parseInt(activity.attributes.board_id) === parseInt(self.board_id)) { // Update Board
                                         if (!_.isUndefined(activity.attributes.revisions) && !_.isEmpty(activity.attributes.revisions)) {
-                                            var board_fields = activity.attributes.revisions.new_value;
+                                            var board_fields;
+                                            if (!_.isUndefined(activity.attributes.revisions.new_value) && !_.isEmpty(activity.attributes.revisions.new_value) && activity.attributes.revisions.new_value !== null) {
+                                                board_fields = activity.attributes.revisions.new_value;
+                                            } else {
+                                                board_fields = JSON.parse(activity.attributes.revisions);
+                                            }
                                             self.board.set(activity.attributes.revisions.new_value);
                                             if (!_.isUndefined(board_fields.is_show_image_front_of_card)) {
                                                 if (board_fields.is_show_image_front_of_card) {
