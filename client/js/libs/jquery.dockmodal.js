@@ -59,8 +59,6 @@
         init: function (options) {
 
             return this.each(function () {
-                
-    
                 var $this = $(this);
                 var data = $this.data('dockmodal');
                 $this.options = $.extend({}, defaults, options);
