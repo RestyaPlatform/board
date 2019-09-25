@@ -33,6 +33,7 @@ App.ArchiveCardsDeleteConfirmView = Backbone.View.extend({
     },
     deleteArchivedCard: function(e) {
         var self = this;
+        $('.js-delete-archived-card').addClass('disabled');
         var card_id = self.model.id;
         self.model.collection.remove(self.model);
         self.model.url = api_url + 'boards/' + self.model.attributes.board_id + '/lists/' + self.model.attributes.list_id + '/cards/' + card_id + '.json';
