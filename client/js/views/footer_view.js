@@ -546,6 +546,10 @@ App.FooterView = Backbone.View.extend({
      *
      */
     renderMyBoards: function() {
+        if (!_.isUndefined(App.boards.sortField) && App.boards.sortField !== null && App.boards.sortField !== 'name') {
+            App.boards.setSortField('name', 'asc');
+            App.boards.sort();
+        }
         this.boards = App.boards;
         if (!_.isEmpty(this.boards) && !_.isEmpty(role_links.where({
                 slug: 'view_my_boards'
