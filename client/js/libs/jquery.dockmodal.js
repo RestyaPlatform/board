@@ -59,7 +59,6 @@
         init: function (options) {
 
             return this.each(function () {
-
                 var $this = $(this);
                 var data = $this.data('dockmodal');
                 $this.options = $.extend({}, defaults, options);
@@ -85,6 +84,9 @@
                     $dockModal.addClass("popped-out");
                 } else if ($this.options.initialState == "minimized") {
                     $dockModal.addClass("minimized");
+                }
+                if ($this.options.id) {
+                    $dockModal.attr("id", $this.options.id);
                 }
                 //$dockModal.width($this.options.width);
                 $dockModal.height(0);
