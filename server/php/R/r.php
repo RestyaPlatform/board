@@ -1501,7 +1501,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         $metadata = array();
         $data = array();
         array_push($pg_params, $r_resource_vars['boards']);
-        $sql = 'SELECT distinct(label_id) FROM cards_labels_listing cll WHERE board_id = $1';
+        $sql = 'SELECT DISTINCT label_id, MAX(name) FROM  cards_labels_listing cll WHERE board_id = $1 GROUP BY label_id ORDER BY MAX(name) ASC';
         if ($res = pg_query_params($db_lnk, $sql, $pg_params)) {
             while ($row = pg_fetch_assoc($res)) {
                 $val_arr = array(
