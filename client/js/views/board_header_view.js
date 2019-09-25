@@ -995,80 +995,82 @@ App.BoardHeaderView = Backbone.View.extend({
         var current_param_split = Backbone.history.fragment.split('/');
         if (!_.isUndefined(current_param_split['2']) && current_param_split['2'] !== null && current_param_split['2'].indexOf('list') !== -1) {
             if (!_.isUndefined(e) && e.storeName === 'card') {
-                if (_.isUndefined(e.list) && self.model.lists.length) {
-                    e.list = self.model.lists.findWhere({
-                        id: parseInt(e.attributes.list_id)
-                    });
-                }
-                if (_.isUndefined(e.list_name) || _.isEmpty(e.list_name)) {
-                    e.list_name = _.escape(e.list.attributes.name);
-                }
-                if (!_.isUndefined(e.board_users) && !_.isEmpty(e.board_users) && e.board_users !== null) {
-                    if (_.isUndefined(e.board_users.board) || _.isEmpty(e.board_users.board) || e.board_users.board === null) {
-                        e.board_users.board = self.model;
+                if (e.attributes.board_id == self.model.id) {
+                    if (_.isUndefined(e.list) && self.model.lists.length) {
+                        e.list = self.model.lists.findWhere({
+                            id: parseInt(e.attributes.list_id)
+                        });
                     }
-                } else {
-                    e.board_users = self.model.board_users;
-                }
-                view = new App.CardView({
-                    tagName: 'tr',
-                    className: 'card-list-view js-show-modal-card-view cur txt-aligns js-listview-list-id-' + e.attributes.list_id,
-                    id: 'js-card-' + e.attributes.id,
-                    model: e,
-                    template: 'list_view'
-                });
-                if (parseInt(e.attributes.is_archived) === 0) {
-                    var card_exist = false;
-                    if ($('#js-card-' + e.attributes.id).length === 1) {
-                        if ($('#js-card-modal-' + e.attributes.id).length === 1) {
-                            card_exist = true;
+                    if (_.isUndefined(e.list_name) || _.isEmpty(e.list_name)) {
+                        e.list_name = _.escape(e.list.attributes.name);
+                    }
+                    if (!_.isUndefined(e.board_users) && !_.isEmpty(e.board_users) && e.board_users !== null) {
+                        if (_.isUndefined(e.board_users.board) || _.isEmpty(e.board_users.board) || e.board_users.board === null) {
+                            e.board_users.board = self.model;
                         }
+                    } else {
+                        e.board_users = self.model.board_users;
+                    }
+                    view = new App.CardView({
+                        tagName: 'tr',
+                        className: 'card-list-view js-show-modal-card-view cur txt-aligns js-listview-list-id-' + e.attributes.list_id,
+                        id: 'js-card-' + e.attributes.id,
+                        model: e,
+                        template: 'list_view'
+                    });
+                    if (parseInt(e.attributes.is_archived) === 0) {
+                        var card_exist = false;
+                        if ($('#js-card-' + e.attributes.id).length === 1) {
+                            if ($('#js-card-modal-' + e.attributes.id).length === 1) {
+                                card_exist = true;
+                            }
+                            $('#js-card-' + e.attributes.id).remove();
+                        }
+                        var filtered_cards = self.model.cards.where({
+                            is_archived: 0
+                        });
+                        if (filtered_cards.length === 1 || self.model.cards.length === 0) {
+                            $('.js-card-list-view-' + self.model.attributes.id).html('');
+                            $('.js-card-list-view-' + self.model.attributes.id).append(view.render().el);
+                        } else {
+                            if (sort_by !== null && sort_direction !== null) {
+                                self.model.cards.sortByColumn(sort_by, sort_direction);
+                            } else {
+                                self.model.cards.sortByColumn('position');
+                            }
+                            var list_filtered_cards = self.model.cards.where({
+                                is_archived: 0,
+                                list_id: parseInt(e.attributes.list_id),
+                            });
+                            e.list.cards.reset(list_filtered_cards);
+                            var bool = true;
+                            i = 0;
+                            _.each(list_filtered_cards, (function(card) {
+                                if (bool) {
+                                    if (parseInt(card.attributes.id) === parseInt(e.attributes.id)) {
+                                        if (!_.isUndefined(list_filtered_cards[i - 1])) {
+                                            var prev_card_id = list_filtered_cards[i - 1].id;
+                                            $('#js-card-' + prev_card_id).after(view.render().el);
+                                            bool = false;
+                                        } else if (!_.isUndefined(list_filtered_cards[i + 1])) {
+                                            var next_card_id = list_filtered_cards[i + 1].id;
+                                            $('#js-card-' + next_card_id).before(view.render().el);
+                                            bool = false;
+                                        } else {
+                                            $('.js-card-list-view-' + self.model.attributes.id).append(view.render().el);
+                                            bool = false;
+                                        }
+                                    }
+                                    i++;
+                                }
+                            }));
+                        }
+                        if (card_exist) {
+                            $('#js-card-' + e.attributes.id).addClass('active');
+                        }
+                    } else {
                         $('#js-card-' + e.attributes.id).remove();
                     }
-                    var filtered_cards = self.model.cards.where({
-                        is_archived: 0
-                    });
-                    if (filtered_cards.length === 1 || self.model.cards.length === 0) {
-                        $('.js-card-list-view-' + self.model.attributes.id).html('');
-                        $('.js-card-list-view-' + self.model.attributes.id).append(view.render().el);
-                    } else {
-                        if (sort_by !== null && sort_direction !== null) {
-                            self.model.cards.sortByColumn(sort_by, sort_direction);
-                        } else {
-                            self.model.cards.sortByColumn('position');
-                        }
-                        var list_filtered_cards = self.model.cards.where({
-                            is_archived: 0,
-                            list_id: parseInt(e.attributes.list_id),
-                        });
-                        e.list.cards.reset(list_filtered_cards);
-                        var bool = true;
-                        i = 0;
-                        _.each(list_filtered_cards, (function(card) {
-                            if (bool) {
-                                if (parseInt(card.attributes.id) === parseInt(e.attributes.id)) {
-                                    if (!_.isUndefined(list_filtered_cards[i - 1])) {
-                                        var prev_card_id = list_filtered_cards[i - 1].id;
-                                        $('#js-card-' + prev_card_id).after(view.render().el);
-                                        bool = false;
-                                    } else if (!_.isUndefined(list_filtered_cards[i + 1])) {
-                                        var next_card_id = list_filtered_cards[i + 1].id;
-                                        $('#js-card-' + next_card_id).before(view.render().el);
-                                        bool = false;
-                                    } else {
-                                        $('.js-card-list-view-' + self.model.attributes.id).append(view.render().el);
-                                        bool = false;
-                                    }
-                                }
-                                i++;
-                            }
-                        }));
-                    }
-                    if (card_exist) {
-                        $('#js-card-' + e.attributes.id).addClass('active');
-                    }
-                } else {
-                    $('#js-card-' + e.attributes.id).remove();
                 }
             } else {
                 if (!_.isUndefined(e.attributes.id)) {
