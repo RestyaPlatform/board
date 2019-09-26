@@ -49,7 +49,6 @@ App.BoardHeaderView = Backbone.View.extend({
         this.model.cards.bind('change:is_archived', this.updateListView);
         this.model.cards.bind('change:list_id', this.updateListView);
         this.model.cards.bind('change:position', this.updateListView);
-        this.model.cards.bind('change:is_archived', this.updateListView);
         this.model.cards.bind('change:comment_count', this.updateListView);
         this.model.cards.bind('change:start_date', this.updateListView);
         this.model.cards.bind('change:due_date', this.updateListView);
@@ -992,8 +991,10 @@ App.BoardHeaderView = Backbone.View.extend({
         return false;
     },
     updateListView: function(e) {
-        var current_param_split = Backbone.history.fragment.split('/');
-        if (!_.isUndefined(current_param_split['2']) && current_param_split['2'] !== null && current_param_split['2'].indexOf('list') !== -1) {
+        var currenturl = window.location;
+        var currentss = currenturl.hash;
+        var get_match_url = currentss.split("/");
+        if (!_.isUndefined(get_match_url['3']) && get_match_url['3'] === 'list') {
             if (!_.isUndefined(e) && e.storeName === 'card') {
                 if (e.attributes.board_id == self.model.id) {
                     if (_.isUndefined(e.list) && self.model.lists.length) {
