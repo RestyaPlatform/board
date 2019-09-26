@@ -24,7 +24,7 @@ App.ArchiveCardDeleteConfirmView = Backbone.View.extend({
         }
         this.render();
     },
-    template: JST['templates/archive_card_delete_confirm'],
+    template: JST['templates/archived_cards_delete_confirm'],
     tagName: 'div',
 
     events: {
