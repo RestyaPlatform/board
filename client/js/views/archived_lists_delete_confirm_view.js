@@ -26,7 +26,6 @@ App.ArchivedListsDeleteConfirmView = Backbone.View.extend({
     },
     template: JST['templates/archive_list_delete_confirm'],
     tagName: 'div',
-    className: 'clearfix col-xs-12',
     /**
      * Events
      * functions to fire on events (Mouse events, Keyboard Events, Frame/Object Events, Form Events, Drag Events, etc...)
