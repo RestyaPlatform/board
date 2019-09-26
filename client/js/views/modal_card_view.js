@@ -1451,7 +1451,7 @@ App.ModalCardView = Backbone.View.extend({
                 initialState: initialState,
                 height: 450,
                 width: 600,
-                id: 'js-card-modal-card-block-'  + self.model.id,
+                id: 'js-card-modal-card-block-' + self.model.id,
                 title: '<div class="card-id inline-show"><strong>#' + this.model.id + '</strong></div><span class="title-color' + class_name + '" id="js-title-color-' + this.model.id + '">' + title + '</span>',
                 beforePopout: function(event) {
                     if (!_.isUndefined(authuser.user)) {
@@ -4169,9 +4169,9 @@ App.ModalCardView = Backbone.View.extend({
             });
             self.$el.find('.js-change-position').html(content_list);
             if (position_visiblity) {
-              if (self.$el.find('.js-position').parent().hasClass('hide')) {
-                self.$el.find('.js-position').parent().removeClass('hide');
-              }
+                if (self.$el.find('.js-position').parent().hasClass('hide')) {
+                    self.$el.find('.js-position').parent().removeClass('hide');
+                }
             } else {
                 self.$el.find('.js-position').parent().addClass('hide');
             }
