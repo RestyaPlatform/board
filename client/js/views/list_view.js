@@ -1437,8 +1437,10 @@ App.ListView = Backbone.View.extend({
                     model: e,
                     converter: self.converter
                 });
-                var current_param_split = Backbone.history.fragment.split('/');
-                if (!_.isUndefined(current_param_split['2']) && current_param_split['2'] !== null && (current_param_split['2'].indexOf('list') !== -1 || current_param_split['2'].indexOf('gantt') !== -1 || current_param_split['2'].indexOf('report') !== -1 || current_param_split['2'].indexOf('calendar') !== -1)) {
+                var currenturl = window.location;
+                var currentss = currenturl.hash;
+                var get_match_url = currentss.split("/");
+                if (!_.isUndefined(get_match_url['3']) && get_match_url['3'] !== null && (get_match_url['3'].indexOf('list') !== -1 || get_match_url['3'].indexOf('gantt') !== -1 || get_match_url['3'].indexOf('report') !== -1 || get_match_url['3'].indexOf('calendar') !== -1)) {
                     return true;
                 }
                 if (parseInt(e.attributes.is_archived) === 0) {
@@ -1468,11 +1470,13 @@ App.ListView = Backbone.View.extend({
                             if (bool) {
                                 if (parseInt(card.attributes.id) === parseInt(e.attributes.id)) {
                                     if (!_.isUndefined(self.model.cards.models[i - 1])) {
+                                        console.log("Grid ater");
                                         var prev_card_id = self.model.cards.models[i - 1].id;
                                         $('#js-card-' + prev_card_id).after(view.render().el);
                                         bool = false;
                                     } else {
                                         $('#js-card-listing-' + e.attributes.list_id).prepend(view.render().el);
+                                        console.log("list prepend");
                                         bool = false;
                                     }
                                 }
