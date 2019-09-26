@@ -13,7 +13,7 @@ if (typeof App === 'undefined') {
  * @constructor
  * @extends Backbone.View
  */
-App.ArchiveListDeleteConfirmView = Backbone.View.extend({
+App.ArchivedListsDeleteConfirmView = Backbone.View.extend({
     /**
      * Constructor
      * initialize default values and actions
