@@ -4168,8 +4168,12 @@ App.ModalCardView = Backbone.View.extend({
                 }
             });
             self.$el.find('.js-change-position').html(content_list);
-            if (position_visiblity && self.$el.find('.js-position').parent().hasClass('hide')) {
+            if (position_visiblity) {
+              if (self.$el.find('.js-position').parent().hasClass('hide')) {
                 self.$el.find('.js-position').parent().removeClass('hide');
+              }
+            } else {
+                self.$el.find('.js-position').parent().addClass('hide');
             }
             self.$el.find('.js-position').html(content_position);
         }
