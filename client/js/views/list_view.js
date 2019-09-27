@@ -1470,13 +1470,11 @@ App.ListView = Backbone.View.extend({
                             if (bool) {
                                 if (parseInt(card.attributes.id) === parseInt(e.attributes.id)) {
                                     if (!_.isUndefined(self.model.cards.models[i - 1])) {
-                                        console.log("Grid ater");
                                         var prev_card_id = self.model.cards.models[i - 1].id;
                                         $('#js-card-' + prev_card_id).after(view.render().el);
                                         bool = false;
                                     } else {
                                         $('#js-card-listing-' + e.attributes.list_id).prepend(view.render().el);
-                                        console.log("list prepend");
                                         bool = false;
                                     }
                                 }
