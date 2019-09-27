@@ -199,14 +199,16 @@ App.HeaderView = Backbone.View.extend({
         var self = this;
         var url = location.hash;
         url = url.replace('#/users?', '');
+        var query_param;
         if (url.indexOf('filter') !== -1) {
-            var query_param = url.split('&filter=');
+            query_param = url.split('&filter=');
             page_no = query_param[0].replace('page=', '');
-            self.current_page = page_no + '&filter=' + query_param[1];
+            self.current_page = page_no + '&filter=' + query_param[1] + '&sort=' + self.sortField + '&direction=' + self.sortDirection;
             self.current_param = query_param[1];
         } else if (url.indexOf('page') !== -1) {
-            page_no = url.split('page=');
-            self.current_page = page_no[1];
+            query_param = url.split('page=');
+            page_no = query_param[1].split('&sort=');
+            self.current_page = page_no[0] + '&sort=' + self.sortField + '&direction=' + self.sortDirection;
             self.current_param = 'all';
         } else {
             self.current_page = 1;
@@ -214,6 +216,10 @@ App.HeaderView = Backbone.View.extend({
         }
         var users = new App.UserCollection();
         users.url = api_url + 'users.json?page=' + self.current_page;
+        app.navigate('#/' + 'users?page=' + self.current_page, {
+            trigger: false,
+            trigger_function: false,
+        });
         users.fetch({
             cache: false,
             abortPending: true,
