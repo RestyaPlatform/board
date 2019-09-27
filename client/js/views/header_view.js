@@ -211,10 +211,11 @@ App.HeaderView = Backbone.View.extend({
             self.current_page = page_no[0] + '&sort=' + self.sortField + '&direction=' + self.sortDirection;
             self.current_param = 'all';
         } else {
-            self.current_page = 1;
+            self.current_page = 1 + '&sort=' + self.sortField + '&direction=' + self.sortDirection;
             self.current_param = 'all';
         }
         var users = new App.UserCollection();
+        users.setSortField(self.sortField, self.sortDirection);
         users.url = api_url + 'users.json?page=' + self.current_page;
         app.navigate('#/' + 'users?page=' + self.current_page, {
             trigger: false,
