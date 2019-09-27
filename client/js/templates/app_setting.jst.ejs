@@ -1,4 +1,5 @@
-<%  var currenturl = window.location; %>
+<%  var currenturl = window.location; 
+	if (app_settings.length > 0 ) { %>
 <div class="well-sm">
 	<h3><%- i18next.t(app_settings[0].app_name) %> - <%- i18next.t('Settings') %></h3>
 </div>
@@ -8,7 +9,7 @@
 <div class="well-sm"></div>
 <% if(!_.isUndefined(currenturl.hash) && (currenturl.hash !== '#/apps/r_multiple_ldap_login')){ %>
 <form class="js-app-setting-form" role="form" id="js-app-setting-form">
-<% if (app_settings.length > 0 ) { 
+<% 
 var folder = '';
 _.each(app_settings, function(app_setting) { 
 	folder = app_setting.folder;

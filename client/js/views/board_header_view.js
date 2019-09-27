@@ -518,14 +518,10 @@ App.BoardHeaderView = Backbone.View.extend({
     showArchivedCardsList: function(e) {
         if (!_.isUndefined(e)) {
             this.start = 0;
-            this.liststart = 0;
-            this.page = 1;
             this.listpage = 1;
         }
         this.start = (this.start !== 0) ? this.start : 0;
         this.page = (this.page !== 1) ? this.page : 1;
-        this.liststart = (this.liststart !== 0) ? this.liststart : 0;
-        this.listpage = (this.listpage !== 1) ? this.listpage : 1;
         if (this.$el.find('#js-load-more-archived-cards').hasClass('hide')) {
             this.$el.find('#js-load-more-archived-cards').removeClass('hide').addClass('show');
         }
@@ -557,7 +553,7 @@ App.BoardHeaderView = Backbone.View.extend({
                 if (!_.isEmpty(filtered_cards)) {
                     $('.js-delete-all-archived-cards-confirm').removeClass('hide');
                     _.each(filtered_cards, function(card, key) {
-                        count = self.page_filter * 9;
+                        count = self.page_filter * PAGING_COUNT;
                         if (key === self.start_filter) {
                             if (count > (self.start_filter)) {
                                 self.start_filter++;
@@ -592,7 +588,7 @@ App.BoardHeaderView = Backbone.View.extend({
                 if (!_.isEmpty(filtered_cards)) {
                     $('.js-delete-all-archived-cards-confirm').removeClass('hide');
                     _.each(filtered_cards, function(card, key) {
-                        count = self.page * 10;
+                        count = self.page * PAGING_COUNT;
                         if (key === self.start) {
                             if (count > (self.start)) {
                                 self.start++;
@@ -665,7 +661,7 @@ App.BoardHeaderView = Backbone.View.extend({
             el.find('.js-archived-cards-container').html('');
             if (!_.isEmpty(filtered_cards)) {
                 _.each(filtered_cards, function(card, key) {
-                    count = self.page_filter * 9;
+                    count = self.page_filter * PAGING_COUNT;
                     if (key === self.start_filter) {
                         if (count >= (self.start_filter)) {
                             self.start_filter++;
@@ -1675,6 +1671,12 @@ App.BoardHeaderView = Backbone.View.extend({
      */
     showArchivedListLists: function(e) {
         var self = this;
+        if (!_.isUndefined(e)) {
+            self.liststart = 0;
+            self.listpage = 1;
+        }
+        self.liststart = (self.liststart !== 0) ? self.liststart : 0;
+        self.listpage = (self.listpage !== 1) ? self.listpage : 1;
         if (this.$el.find('.js-load-more-archived-cards').hasClass('show')) {
             this.$el.find('.js-load-more-archived-cards').removeClass('show').addClass('hide');
         } else {
@@ -1800,7 +1802,7 @@ App.BoardHeaderView = Backbone.View.extend({
             el.find('.js-archived-lists-container').html('');
             if (!_.isEmpty(filtered_lists)) {
                 _.each(filtered_lists, function(list, key) {
-                    count = self.listpage_filter * 9;
+                    count = self.listpage_filter * PAGING_COUNT;
                     if (key === self.liststart_filter) {
                         if (count >= (self.liststart_filter)) {
                             self.liststart_filter++;

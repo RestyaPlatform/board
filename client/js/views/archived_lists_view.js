@@ -41,7 +41,7 @@ App.ArchivedListsView = Backbone.View.extend({
         'click .js-delete-all-archived-lists-confirm': 'deleteAllArchivedlistsConfirm'
     },
     deleteAllArchivedlistsConfirm: function(e) {
-        $('.js-setting-response').html(new App.ArchiveListDeleteConfirmView({
+        $('.js-setting-response').html(new App.ArchivedListsDeleteConfirmView({
             model: this.model,
         }).el);
         return false;

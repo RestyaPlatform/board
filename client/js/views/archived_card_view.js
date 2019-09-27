@@ -96,7 +96,7 @@ App.ArchivedCardView = Backbone.View.extend({
      *
      */
     deleteArchivedCardConfirm: function(e) {
-        $('.js-setting-response').html(new App.ArchiveCardsDeleteConfirmView({
+        $('.js-setting-response').html(new App.ArchivedCardDeleteConfirmView({
             model: this.model,
         }).el);
         return false;
