@@ -915,6 +915,9 @@ App.FooterView = Backbone.View.extend({
                             }
                         }
                         activities.each(function(activity) {
+                            if ($('.js-list-activity-' + activity.id).length > 0) {
+                                return true;
+                            }
                             var card_id = activity.attributes.card_id;
                             Auth = JSON.parse($.cookie('auth'));
                             if (_.isUndefined(Auth.user.unread_activity_id) || (parseInt(Auth.user.unread_activity_id) < parseInt(activity.attributes.id))) {
