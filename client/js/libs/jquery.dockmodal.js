@@ -350,7 +350,7 @@
                         $this.options.restore($this);
                     }
                 }, $this.options.animationSpeed);
-                if($this.minimize_set_interval !== undefined){
+                if(typeof minimize_set_interval !== undefined){
                     clearTimeout(minimize_set_interval);
                 }
                 methods.refreshLayout();
