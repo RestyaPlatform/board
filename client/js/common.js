@@ -4,7 +4,7 @@ $(window).resize(function() {
     var windowH = $(window).height();
     var notificationH = windowH - footerH;
     var boardH;
-    if (!_.isEmpty(footerH)) {
+    if (footerH) {
         boardH = windowH - headerH - footerH - 14;
     } else {
         boardH = windowH - headerH - 50;
