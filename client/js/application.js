@@ -743,6 +743,13 @@ app.on('route', function(route, params) {
     }
 });
 $(window).on('hashchange', function() {
+    if (location.hash === '#/boards' && $('#boards-index').length === 0) {
+        app.navigate('#/boards', {
+            trigger: true,
+            replace: true
+        });
+        $('.js-footer-board-link').trigger('click');
+    }
     if (!_.isUndefined(appsurlFunc)) {
         _.each(appsurlFunc, function(funct_names, url) {
             if (location.hash.match('/' + url)) {
