@@ -1759,7 +1759,7 @@ App.FooterView = Backbone.View.extend({
                                                 cache: false,
                                                 type: 'GET',
                                                 success: function(response) {
-                                                    if (response.data.length > 0) {
+                                                    if (!_.isUndefined(response.data) && response.data !== null && response.data.length > 0) {
                                                         _.each(response.data, function(card_data) {
                                                             var new_card = new App.Card();
                                                             var board_sort_by = (self.board.attributes.sort_by) ? self.board.attributes.sort_by : 'position';
@@ -1912,7 +1912,7 @@ App.FooterView = Backbone.View.extend({
                                                             }
                                                         });
                                                     }
-                                                    if (response.attachments.length > 0) {
+                                                    if (!_.isUndefined(response.attachments) && response.attachments !== null && response.attachments.length > 0) {
                                                         _.each(response.attachments, function(attachment) {
                                                             var new_card_attachment = new App.CardAttachment();
                                                             new_card_attachment.set(attachment);
