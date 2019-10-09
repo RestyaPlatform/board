@@ -29,17 +29,20 @@ App.UserCollection = Backbone.Collection.extend({
     },
     comparator: function(item) {
         var self = this;
-        var str = '' + item.get(this.sortField);
-        if (this.sortField !== 'id') {
-            str = str.toLowerCase();
-            str = str.split('');
-            str = _.map(str, function(letter) {
-                if (self.sortDirection.toLowerCase() === 'desc') {
-                    return String.fromCharCode(-(letter.charCodeAt(0)));
-                } else {
-                    return String.fromCharCode((letter.charCodeAt(0)));
-                }
-            });
+        var str = item.get(this.sortField);
+        if (this.sortField === 'username') {
+            if (typeof str === 'string') {
+                str = '' + item.get(this.sortField);
+                str = str.toLowerCase();
+                str = str.split('');
+                str = _.map(str, function(letter) {
+                    if (self.sortDirection.toLowerCase() === 'desc') {
+                        return String.fromCharCode(-(letter.charCodeAt(0)));
+                    } else {
+                        return String.fromCharCode((letter.charCodeAt(0)));
+                    }
+                });
+            }
             return str;
         } else if (this.sortField === 'created' || this.sortField === 'last_login_date') {
             if (item.get(this.sortField) !== null) {
