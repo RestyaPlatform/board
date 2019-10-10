@@ -22,7 +22,7 @@
 					<div class="panel-body pl0"> 
 						<ul class="list-inline navbar-btn clearfix js-open-model-car-view" data-id="<%- user_card.id%>">
 							<li class="col-md-1 col-xs-2 pl0"><span class="card-id">#<%- user_card.id%></span></li>
-							<li class="col-md-4 col-xs-3 pl0"><span class="js-open-model-car-view" data-id="<%- user_card.id%>" title="<%- user_card.attributes.name %>"><%- user_card.attributes.name %></span></li> 
+							<li class="col-md-4 col-xs-3 pl0"><span class="js-open-model-car-view" data-id="<%- user_card.id%>" title="<%- user_card.attributes.name %>"><%= filterXSS(user_card.attributes.name) %></span></li> 
 							<li class="col-md-4 col-xs-3 pl0"><span title="<%- user_card.attributes.list_name %>"><%- user_card.attributes.list_name %></span></li>
 							<li class="col-md-3 col-xs-4 pl0">
 								<ul class="list-inline text-muted clearfix">
