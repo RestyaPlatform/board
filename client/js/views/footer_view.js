@@ -1498,8 +1498,14 @@ App.FooterView = Backbone.View.extend({
                                                     var updated_card_list_cards = self.board.cards.where({
                                                         list_id: parseInt(activity.attributes.list_id)
                                                     });
-                                                    card.list.collection.board.lists.get(parseInt(activity.attributes.list_id)).cards.remove(card);
-                                                    App.boards.get(parseInt(activity.attributes.board_id)).lists.get(parseInt(activity.attributes.list_id)).set('card_count', (updated_card_list_cards.length === 0) ? 0 : updated_card_list_cards.length - 1);
+                                                    var cards_list = card.list.collection.board.lists.get(parseInt(activity.attributes.list_id));
+                                                    if (!_.isUndefined(cards_list) && cards_list !== null) {
+                                                        cards_list.cards.remove(card);
+                                                    }
+                                                    var boards_list = App.boards.get(parseInt(activity.attributes.board_id)).lists.get(parseInt(activity.attributes.list_id));
+                                                    if (!_.isUndefined(boards_list) && boards_list !== null) {
+                                                        boards_list.set('card_count', (updated_card_list_cards.length === 0) ? 0 : updated_card_list_cards.length - 1);
+                                                    }
                                                 }
                                                 // Reducing the card count of the old list
                                                 if (!_.isEmpty(card_old_list) && !_.isUndefined(card_old_list) && card_old_list !== null) {
