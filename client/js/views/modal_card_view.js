@@ -3195,6 +3195,9 @@ App.ModalCardView = Backbone.View.extend({
                     } else {
                         noon = 'PM';
                         hours_mins[0] = hours_mins[0] - 12;
+                        if (hours_mins[0] < 10) {
+                            hours_mins[0] = '0' + hours_mins[0];
+                        }
                     }
                     hours_mins = hours_mins[0] + ':' + hours_mins[1] + ' ' + noon;
                 }
