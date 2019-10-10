@@ -1168,7 +1168,7 @@ App.ModalCardView = Backbone.View.extend({
                 class_name = ' label label-warning';
                 text = i18next.t('This card is archived.');
             }
-            $('.title-text', doc.parent().prev('.dockmodal-header')).html('<div class="card-id inline-show"><strong>#' + this.model.id + '</strong></div><span class="title-color' + class_name + '" id="js-title-color-' + this.model.id + '">' + text + '</span>');
+            $('.title-text', doc.parent().prev('.dockmodal-header')).html('<div class="card-id inline-show"><strong>#' + this.model.id + '</strong></div><span class="js-card-emoji-name title-color' + class_name + '" id="js-title-color-' + this.model.id + '">' + text + '</span>');
         }
     },
     /**
@@ -1196,7 +1196,7 @@ App.ModalCardView = Backbone.View.extend({
                 class_name = ' label label-warning';
                 text = i18next.t('This card is archived.');
             }
-            $('.title-text', doc.parent().prev('.dockmodal-header')).html('<div class="card-id inline-show"><strong>#' + this.model.id + '</strong></div><span class="title-color' + class_name + '" id="js-title-color-' + this.model.id + '">' + text + '</span>');
+            $('.title-text', doc.parent().prev('.dockmodal-header')).html('<div class="card-id inline-show"><strong>#' + this.model.id + '</strong></div><span class="js-card-emoji-name title-color' + class_name + '" id="js-title-color-' + this.model.id + '">' + text + '</span>');
             var comment = this.$el.find('#inputAddComment').val();
             var description = this.$el.find('#inputCarddescriptions').val();
             var checklistEditName = this.$el.find('#checklistEditName').val();
@@ -1452,7 +1452,7 @@ App.ModalCardView = Backbone.View.extend({
                 height: 450,
                 width: 600,
                 id: 'js-card-modal-card-block-' + self.model.id,
-                title: '<div class="card-id inline-show"><strong>#' + this.model.id + '</strong></div><span class="title-color' + class_name + '" id="js-title-color-' + this.model.id + '">' + title + '</span>',
+                title: '<div class="card-id inline-show"><strong>#' + this.model.id + '</strong></div><span class="js-card-emoji-name title-color' + class_name + '" id="js-title-color-' + this.model.id + '">' + title + '</span>',
                 beforePopout: function(event) {
                     if (!_.isUndefined(authuser.user)) {
                         $('#js-title-color-' + self.model.id).parent('.title-text').css('margin-left', '34px');
