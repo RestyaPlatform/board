@@ -1377,17 +1377,21 @@ App.FooterView = Backbone.View.extend({
                                                 if (!_.isEmpty(card.cards)) {
                                                     activity.cards.add(card.cards);
                                                 }
-                                                card.list.collection.board.activities.add(activity);
+                                                if (!_.isUndefined(card.list)) {
+                                                    card.list.collection.board.activities.add(activity);
+                                                }
                                                 if (!_.isUndefined(card.activities) && !_.isEmpty(card.activities) && card.activities !== null) {
                                                     card.activities.add(activity, {
                                                         silent: true
                                                     });
                                                 }
-                                                var current_card = card.list.collection.board.cards.get(activity.attributes.card_id);
-                                                var comment_count = (!_.isUndefined(current_card)) ? (parseInt(current_card.attributes.comment_count) + 1) : 0;
-                                                comment_count = isNaN(comment_count) ? 1 : comment_count;
-                                                card.set('comment_count', comment_count);
-                                                card.attributes.comment_count = comment_count;
+                                                if (!_.isUndefined(card.list)) {
+                                                    var current_card = card.list.collection.board.cards.get(activity.attributes.card_id);
+                                                    var comment_count = (!_.isUndefined(current_card)) ? (parseInt(current_card.attributes.comment_count) + 1) : 0;
+                                                    comment_count = isNaN(comment_count) ? 1 : comment_count;
+                                                    card.set('comment_count', comment_count);
+                                                    card.attributes.comment_count = comment_count;
+                                                }
                                                 if ($('#js-card-modal-' + activity.attributes.card_id).length === 1) {
                                                     if ($('#js-card-activities-' + activity.attributes.card_id).length === 1) {
                                                         if ($('#js-list-activity-' + activity.attributes.id).length === 0) {
