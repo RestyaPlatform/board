@@ -1454,6 +1454,9 @@ App.ModalCardView = Backbone.View.extend({
                 id: 'js-card-modal-card-block-' + self.model.id,
                 title: '<div class="card-id inline-show"><strong>#' + this.model.id + '</strong></div><span class="js-card-emoji-name title-color' + class_name + '" id="js-title-color-' + this.model.id + '">' + title + '</span>',
                 beforePopout: function(event) {
+                    setTimeout(function() {
+                        self.$el.find('.js-modal-settings').removeClass('hide');
+                    }, 100);
                     if (!_.isUndefined(authuser.user)) {
                         $('#js-title-color-' + self.model.id).parent('.title-text').css('margin-left', '34px');
                     }
@@ -1565,7 +1568,6 @@ App.ModalCardView = Backbone.View.extend({
                             $('.action-close', $('.dockmodal.active')).trigger('click');
                         }
                     });
-                    self.$el.find('.js-modal-settings').removeClass('hide');
                 },
                 beforeClose: function(event, dialog) {
                     $('.js-modal-settings').removeClass('open');
