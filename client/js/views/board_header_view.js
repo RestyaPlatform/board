@@ -1210,7 +1210,7 @@ App.BoardHeaderView = Backbone.View.extend({
             },
             eventMouseover: function(calEvent, jsEvent, view) {
                 var target = $(jsEvent.currentTarget);
-                if (!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && $.inArray('r_custom_fields', APPS.enabled_apps) !== -1) {
+                if (!_.isUndefined(authuser.user) && !_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && $.inArray('r_custom_fields', APPS.enabled_apps) !== -1) {
                     $.ajax({
                         url: api_url + 'cards/' + calEvent.id + '/cards_custom_fields.json?token=' + authuser.access_token,
                         cache: false,
