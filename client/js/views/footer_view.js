@@ -1085,6 +1085,9 @@ App.FooterView = Backbone.View.extend({
                                             new_card.set('list_id', parseInt(activity.attributes.card.list_id));
                                             new_card.set('user_id', parseInt(activity.attributes.card.user_id));
                                             new_card.set('is_archived', parseInt(activity.attributes.card.is_archived));
+                                            if (activity.attributes.type === 'add_card') {
+                                                new_card.set('comment_count', 0);
+                                            }
                                             var card_list = self.board.lists.findWhere({
                                                 id: parseInt(activity.attributes.list_id)
                                             });
