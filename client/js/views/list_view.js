@@ -73,6 +73,7 @@ App.ListView = Backbone.View.extend({
             this.model.collection.board.cards.bind('remove', this.renderCardsCollection);
             this.model.collection.board.cards.bind('change:position', this.renderCardsCollection);
             this.model.collection.board.cards.bind('change:start_date', this.renderCardsCollection);
+            this.model.collection.board.cards.bind('change:custom_fields', this.renderCardsCollection);
             this.model.collection.board.cards.bind('change:due_date', this.renderCardsCollection);
             this.model.collection.board.cards.bind('change:name', this.renderCardsCollection);
             this.model.collection.board.cards.bind('change:list_moved_date', this.renderCardsCollection);

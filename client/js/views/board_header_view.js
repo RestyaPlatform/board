@@ -50,6 +50,7 @@ App.BoardHeaderView = Backbone.View.extend({
         this.model.cards.bind('change:list_id', this.updateListView);
         this.model.cards.bind('change:position', this.updateListView);
         this.model.cards.bind('change:comment_count', this.updateListView);
+        this.model.cards.bind('change:custom_fields', this.updateListView);
         this.model.cards.bind('change:start_date', this.updateListView);
         this.model.cards.bind('change:due_date', this.updateListView);
         this.model.cards.bind('change:name', this.updateListView);
