@@ -2912,12 +2912,12 @@ App.ModalCardView = Backbone.View.extend({
         var content = '';
         var self = this;
         this.model.users.each(function(user) {
-            var content_img = '<i class="avatar avatar-color-194 img-rounded" title="' + user.get('full_name') + ' (' + user.get('username') + ')" data-container="body" data-toggle="tooltip">' + user.get('initials') + '</i>';
+            var content_img = '<i class="avatar avatar-color-194 img-rounded" title="' + user.get('full_name') + ' (' + user.get('username') + ')" data-placement="right" data-container="#js-card-modal-card-block-' + self.model.id + '" data-toggle="tooltip">' + user.get('initials') + '</i>';
             var profile_picture_path = user.get('profile_picture_path');
             if (!_.isEmpty(profile_picture_path)) {
                 var hash = calcMD5(SecuritySalt + 'User' + user.attributes.user_id + 'png' + 'small_thumb');
                 profile_picture_path = window.location.pathname + 'img/small_thumb/User/' + user.attributes.user_id + '.' + hash + '.png';
-                content_img = '<img src="' + profile_picture_path + '" alt="' + user.get('username') + '" title="' + user.get('full_name') + ' (' + user.get('username') + ')" class="img-rounded img-responsive avatar" data-container="body" data-toggle="tooltip">';
+                content_img = '<img src="' + profile_picture_path + '" alt="' + user.get('username') + '" title="' + user.get('full_name') + ' (' + user.get('username') + ')" class="img-rounded img-responsive avatar" data-placement="right" data-container="#js-card-modal-card-block-' + self.model.id + '" data-toggle="tooltip">';
             }
             var add_member_permission = '';
             if (!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(self.model.list.collection.board.acl_links.where({
@@ -3448,11 +3448,11 @@ App.ModalCardView = Backbone.View.extend({
             var user_initial = target.data('user-initial');
             var user_profile_picture_path = target.data('user-profile-picture-path');
             var full_name = target.data('user-fullname');
-            var content_img = '<i class="avatar avatar-color-194 img-rounded" title="' + full_name + ' (' + user_name + ')">' + user_initial + '</i>';
+            var content_img = '<i class="avatar avatar-color-194 img-rounded" title="' + full_name + ' (' + user_name + ')" data-placement="right" data-container="#js-card-modal-card-block-' + self.model.id + '" data-toggle="tooltip">' + user_initial + '</i>';
             if (!_.isEmpty(user_profile_picture_path)) {
                 var hash = calcMD5(SecuritySalt + 'User' + user_id + 'png' + 'small_thumb');
                 var profile_picture_path = window.location.pathname + 'img/small_thumb/User/' + user_id + '.' + hash + '.png';
-                content_img = '<img src="' + profile_picture_path + '" alt="' + user_name + '" title="' + full_name + ' (' + user_name + ')" class="img-rounded img-responsive avatar">';
+                content_img = '<img src="' + profile_picture_path + '" alt="' + user_name + '" title="' + full_name + ' (' + user_name + ')" class="img-rounded img-responsive avatar" data-placement="right" data-container="#js-card-modal-card-block-' + self.model.id + '" data-toggle="tooltip">';
             }
             var view_user = $('#js-card-users-list-' + self.model.id).prepend('<li class="js-added-card-user-' + user_id + '">' + content_img + '</li>');
             var card_user = new App.CardUser();
