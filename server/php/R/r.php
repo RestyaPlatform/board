@@ -6651,9 +6651,45 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
                 $r_put['board_id'],
                 $r_resource_vars['lists']
             );
+            $customFields = array();
             pg_query_params($db_lnk, 'UPDATE card_attachments SET board_id = $1 WHERE list_id = $2', $qry_val_arr);
             pg_query_params($db_lnk, 'UPDATE activities SET board_id = $1 WHERE list_id = $2', $qry_val_arr);
             if ($previous_value['board_id'] !== $r_put['board_id']) {
+                if (is_plugin_enabled('r_custom_fields')) {
+                    $qry_val_arr = array(
+                        $previous_value['board_id']
+                    );
+                    $s_sql = 'SELECT * FROM custom_fields WHERE board_id = $1';
+                    $custom_fields = pg_query_params($db_lnk, $s_sql, $qry_val_arr);
+                    while ($custom_field = pg_fetch_assoc($custom_fields)) {
+                        $data = array(
+                            'user_id' => $authUser['id'],
+                            'type' => $custom_field['type'],
+                            'name' => $custom_field['name'],
+                            'description' => $custom_field['description'],
+                            'options' => $custom_field['options'],
+                            'label' => $custom_field['label'],
+                            'position' => $custom_field['position'],
+                            'visibility' => $custom_field['visibility'],
+                            'color' => $custom_field['color'],
+                            'board_id' => $r_put['board_id'],
+                        );
+                        $result = pg_execute_insert('custom_fields', $data);
+                        $row = pg_fetch_assoc($result);
+                        $customFields[$custom_field['id']] = (int)($row['id']);
+                    }
+                    $s_sql = 'SELECT * FROM custom_fields WHERE board_id = $1';
+                    $custom_fields = pg_query_params($db_lnk, $s_sql, $qry_val_arr);
+                    while ($custom_field = pg_fetch_assoc($custom_fields)) {
+                        $qry_val_arr = array(
+                            $r_put['board_id'],
+                            $customFields[$custom_field['id']],
+                            $r_resource_vars['lists'],
+                            $custom_field['id']
+                        );
+                        pg_query_params($db_lnk, 'UPDATE cards_custom_fields SET board_id = $1, custom_field_id = $2 WHERE list_id = $3 AND custom_field_id = $4', $qry_val_arr);
+                    }
+                }
                 $qry_val_arr = array(
                     $previous_value['board_id']
                 );
