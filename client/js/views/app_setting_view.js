@@ -38,6 +38,11 @@ App.AppSettingsView = Backbone.View.extend({
             success: function(model, response) {
                 if (!_.isEmpty(response.success)) {
                     self.flash('success', i18next.t('App updated successfully'));
+                    _.each(data, function(val, field) {
+                        if (field !== 'folder' && field in window) {
+                            window[field] = val;
+                        }
+                    });
                 } else {
                     self.flash('danger', i18next.t('App not updated successfully.'));
                 }
