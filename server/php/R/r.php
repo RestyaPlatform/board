@@ -1556,7 +1556,19 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         $_metadata = array();
         $data = array();
         $fields = !empty($r_resource_filters['fields']) ? $r_resource_filters['fields'] : '*';
-        $sql = 'SELECT row_to_json(d) FROM (SELECT ' . $fields . ' FROM cards_listing cll WHERE board_id = $1 AND list_id = $2) as d ';
+        $qry_val_arr = array(
+            $r_resource_vars['boards']
+        );
+        $sort_by_data = pg_query_params($db_lnk, 'SELECT sort_by, sort_direction FROM boards WHERE id = $1', $qry_val_arr);
+        $sort_by = pg_fetch_assoc($sort_by_data);
+        if(!empty($sort_by['sort_by']) && !empty($sort_by['sort_direction']))
+        {
+            $sql = 'SELECT row_to_json(d) FROM (SELECT ' . $fields . ' FROM cards_listing cll WHERE board_id = $1 AND list_id = $2 ORDER BY ' . $sort_by['sort_by'] . ' ' . $sort_by['sort_direction'] . ' ) as d ';
+        }
+        else
+        {
+            $sql = 'SELECT row_to_json(d) FROM (SELECT ' . $fields . ' FROM cards_listing cll WHERE board_id = $1 AND list_id = $2) as d ';
+        }
         if (empty($r_resource_filters['from']) || (!empty($r_resource_filters['from']) && $r_resource_filters['from'] != 'app')) {
             $c_sql = 'SELECT COUNT(*) FROM cards_listing cll';
             if (!empty($c_sql)) {
