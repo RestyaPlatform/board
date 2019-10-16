@@ -788,7 +788,8 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             if (!empty($r_resource_filters['sort'])) {
                 $order_by = $r_resource_filters['sort'];
                 $direction = $r_resource_filters['direction'];
-            } else if (!empty($r_resource_filters['filter'])) {
+            }
+            if (!empty($r_resource_filters['filter'])) {
                 $filter_condition = 'WHERE ';
                 if ($r_resource_filters['filter'] == 'open') {
                     $filter_condition.= 'is_closed = 0';
@@ -1561,12 +1562,9 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         );
         $sort_by_data = pg_query_params($db_lnk, 'SELECT sort_by, sort_direction FROM boards WHERE id = $1', $qry_val_arr);
         $sort_by = pg_fetch_assoc($sort_by_data);
-        if(!empty($sort_by['sort_by']) && !empty($sort_by['sort_direction']))
-        {
+        if (!empty($sort_by['sort_by']) && !empty($sort_by['sort_direction'])) {
             $sql = 'SELECT row_to_json(d) FROM (SELECT ' . $fields . ' FROM cards_listing cll WHERE board_id = $1 AND list_id = $2 ORDER BY ' . $sort_by['sort_by'] . ' ' . $sort_by['sort_direction'] . ' ) as d ';
-        }
-        else
-        {
+        } else {
             $sql = 'SELECT row_to_json(d) FROM (SELECT ' . $fields . ' FROM cards_listing cll WHERE board_id = $1 AND list_id = $2) as d ';
         }
         if (empty($r_resource_filters['from']) || (!empty($r_resource_filters['from']) && $r_resource_filters['from'] != 'app')) {
@@ -1766,7 +1764,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
 
     case '/boards/?/cards/search':
         $user_id = (!empty($authUser['id'])) ? $authUser['id'] : 0;
-        $sql = 'SELECT row_to_json(d) FROM (SELECT DISTINCT c.id, c.name, bu.board_id, c.list_id FROM boards_users bu join cards c on c.board_id = bu.board_id WHERE bu.board_id IN (SELECT board_id FROM boards_users WHERE user_id = $1 ) AND LOWER(c.name)  LIKE $2 AND  c.board_id = $3 ORDER BY id ASC) as d';
+        $sql = 'SELECT row_to_json(d) FROM (SELECT DISTINCT c.id, c.name, bu.board_id, c.list_id FROM boards_users bu join cards c on c.board_id = bu.board_id WHERE bu.board_id IN (SELECT board_id FROM boards_users WHERE user_id = $1 ) AND LOWER(c.name)  LIKE $2 AND  c.board_id = $3 ORDER BY name ASC) as d';
         array_push($pg_params, $user_id, '%' . strtolower($r_resource_filters['q']) . '%', $r_resource_vars['boards']);
         if (empty($r_resource_filters['q'])) {
             $sql = false;

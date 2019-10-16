@@ -4062,6 +4062,7 @@ App.ModalCardView = Backbone.View.extend({
             },
             success: function() {
                 self.$el.find('.js_activity_card_search_response').nextAll().remove();
+                cards.sortByColumn('name', 'desc');
                 if (!_.isEmpty(cards.models)) {
                     _.each(cards.models, function(card) {
                         $(new App.ActivityCardSearchView({
