@@ -1562,9 +1562,23 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         $sort_by_data = pg_query_params($db_lnk, 'SELECT sort_by, sort_direction FROM boards WHERE id = $1', $qry_val_arr);
         $sort_by = pg_fetch_assoc($sort_by_data);
         if (!empty($sort_by['sort_by']) && !empty($sort_by['sort_direction'])) {
-            $sql = 'SELECT row_to_json(d) FROM (SELECT ' . $fields . ' FROM cards_listing cll WHERE board_id = $1 AND list_id = $2 ORDER BY ' . $sort_by['sort_by'] . ' ' . $sort_by['sort_direction'] . ' ) as d ';
+            $sort_by_field = "";
+            $sort_by_direction = $sort_by['sort_direction'];
+            if ($sort_by['sort_by'] == "position" || $sort_by['sort_by'] == "id" || $sort_by['sort_by'] == "name" || $sort_by['sort_by'] == "card_voter_count" || $sort_by['sort_by'] == "attachment_count" || $sort_by['sort_by'] == "comment_count" || $sort_by['sort_by'] == "checklist_item_completed_count" || $sort_by['sort_by'] == "due_date" || $sort_by['sort_by'] == "list_moved_date") {
+                $sort_by_field = $sort_by['sort_by'];
+            }
+            if ($sort_by['sort_by'] == "created_date") {
+                $sort_by_field = "created";
+            }
+            if ($sort_by['sort_by'] == "checklist_item_pending_count") {
+                $sort_by_field = "checklist_item_count - checklist_item_completed_count";
+            }
+            if ($sort_by['sort_by'] == "start_date") {
+                $sort_by_field = "custom_fields::json#>>'{start_date}'";
+            }
+            $sql = 'SELECT row_to_json(d) FROM (SELECT ' . $fields . ' FROM cards_listing cll WHERE board_id = $1 AND list_id = $2 ORDER BY ' . $sort_by_field . ' ' . $sort_by_direction . ' ) as d ';
         } else {
-            $sql = 'SELECT row_to_json(d) FROM (SELECT ' . $fields . ' FROM cards_listing cll WHERE board_id = $1 AND list_id = $2) as d ';
+            $sql = 'SELECT row_to_json(d) FROM (SELECT ' . $fields . ' FROM cards_listing cll WHERE board_id = $1 AND list_id = $2 ORDER BY position asc) as d ';
         }
         if (empty($r_resource_filters['from']) || (!empty($r_resource_filters['from']) && $r_resource_filters['from'] != 'app')) {
             $c_sql = 'SELECT COUNT(*) FROM cards_listing cll';
