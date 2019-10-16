@@ -3899,15 +3899,17 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                                                 );
                                                 $cardsCustomFields = pg_query_params($db_lnk, 'SELECT * FROM cards_custom_fields WHERE card_id = $1 ORDER BY id', $qry_val_arr);
                                                 while ($cardsCustomField = pg_fetch_assoc($cardsCustomFields)) {
-                                                    $data = array(
-                                                        $new_card_id,
-                                                        $customFields[$cardsCustomField['custom_field_id']],
-                                                        $cardsCustomField['value'],
-                                                        $cardsCustomField['is_active'],
-                                                        $new_board_id,
-                                                        $new_list_id
-                                                    );
-                                                    pg_query_params($db_lnk, 'INSERT INTO cards_custom_fields (created, modified, card_id, custom_field_id, value,is_active, board_id, list_id) VALUES (now(), now(), $1, $2, $3, $4, $5, $6)', $data);
+                                                    if(isset($customFields[$cardsCustomField['custom_field_id']])) {
+                                                        $data = array(
+                                                            $new_card_id,
+                                                            $customFields[$cardsCustomField['custom_field_id']],
+                                                            $cardsCustomField['value'],
+                                                            $cardsCustomField['is_active'],
+                                                            $new_board_id,
+                                                            $new_list_id
+                                                        );
+                                                        pg_query_params($db_lnk, 'INSERT INTO cards_custom_fields (created, modified, card_id, custom_field_id, value,is_active, board_id, list_id) VALUES (now(), now(), $1, $2, $3, $4, $5, $6)', $data);
+                                                    }
                                                 }
                                             }
                                         }
@@ -5697,15 +5699,17 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                                 );
                                 $cardsCustomFields = pg_query_params($db_lnk, 'SELECT * FROM cards_custom_fields WHERE card_id = $1 ORDER BY id', $qry_val_arr);
                                 while ($cardsCustomField = pg_fetch_assoc($cardsCustomFields)) {
-                                    $data = array(
-                                        $response['id'],
-                                        $customFields[$cardsCustomField['custom_field_id']],
-                                        $cardsCustomField['value'],
-                                        $cardsCustomField['is_active'],
-                                        $r_post['board_id'],
-                                        $r_post['list_id']
-                                    );
-                                    pg_query_params($db_lnk, 'INSERT INTO cards_custom_fields (created, modified, card_id, custom_field_id, value,is_active, board_id, list_id) VALUES (now(), now(), $1, $2, $3, $4, $5, $6)', $data);
+                                    if (isset($customFields[$cardsCustomField['custom_field_id']])) {
+                                        $data = array(
+                                            $response['id'],
+                                            $customFields[$cardsCustomField['custom_field_id']],
+                                            $cardsCustomField['value'],
+                                            $cardsCustomField['is_active'],
+                                            $r_post['board_id'],
+                                            $r_post['list_id']
+                                        );
+                                        pg_query_params($db_lnk, 'INSERT INTO cards_custom_fields (created, modified, card_id, custom_field_id, value,is_active, board_id, list_id) VALUES (now(), now(), $1, $2, $3, $4, $5, $6)', $data);
+                                    }
                                 }
                             }
                         } else {
@@ -7091,13 +7095,15 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
                     );
                     $cardsCustomFields = pg_query_params($db_lnk, 'SELECT * FROM cards_custom_fields WHERE card_id = $1 ORDER BY id', $qry_val_arr);
                     while ($cardsCustomField = pg_fetch_assoc($cardsCustomFields)) {
-                        $data = array(
-                            $customFields[$cardsCustomField['custom_field_id']],
-                            $r_put['board_id'],
-                            $r_put['list_id'],
-                            $cardsCustomField['id']
-                        );
-                        pg_query_params($db_lnk, 'UPDATE cards_custom_fields SET custom_field_id = $1, board_id = $2, list_id = $3 WHERE id = $4', $data);
+                        if (isset($customFields[$cardsCustomField['custom_field_id']])) {
+                            $data = array(
+                                $customFields[$cardsCustomField['custom_field_id']],
+                                $r_put['board_id'],
+                                $r_put['list_id'],
+                                $cardsCustomField['id']
+                            );
+                            pg_query_params($db_lnk, 'UPDATE cards_custom_fields SET custom_field_id = $1, board_id = $2, list_id = $3 WHERE id = $4', $data);
+                        }
                     }
                 }
             }
