@@ -1561,12 +1561,9 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         );
         $sort_by_data = pg_query_params($db_lnk, 'SELECT sort_by, sort_direction FROM boards WHERE id = $1', $qry_val_arr);
         $sort_by = pg_fetch_assoc($sort_by_data);
-        if(!empty($sort_by['sort_by']) && !empty($sort_by['sort_direction']))
-        {
+        if (!empty($sort_by['sort_by']) && !empty($sort_by['sort_direction'])) {
             $sql = 'SELECT row_to_json(d) FROM (SELECT ' . $fields . ' FROM cards_listing cll WHERE board_id = $1 AND list_id = $2 ORDER BY ' . $sort_by['sort_by'] . ' ' . $sort_by['sort_direction'] . ' ) as d ';
-        }
-        else
-        {
+        } else {
             $sql = 'SELECT row_to_json(d) FROM (SELECT ' . $fields . ' FROM cards_listing cll WHERE board_id = $1 AND list_id = $2) as d ';
         }
         if (empty($r_resource_filters['from']) || (!empty($r_resource_filters['from']) && $r_resource_filters['from'] != 'app')) {
@@ -6662,22 +6659,51 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
                     $s_sql = 'SELECT * FROM custom_fields WHERE board_id = $1';
                     $custom_fields = pg_query_params($db_lnk, $s_sql, $qry_val_arr);
                     while ($custom_field = pg_fetch_assoc($custom_fields)) {
-                        $data = array(
-                            'user_id' => $authUser['id'],
-                            'type' => $custom_field['type'],
-                            'name' => $custom_field['name'],
-                            'description' => $custom_field['description'],
-                            'options' => $custom_field['options'],
-                            'label' => $custom_field['label'],
-                            'position' => $custom_field['position'],
-                            'visibility' => $custom_field['visibility'],
-                            'color' => $custom_field['color'],
-                            'board_id' => $r_put['board_id'],
+                        $qry_val_arr = array(
+                            $r_put['board_id'],
+                            $custom_field['name']
                         );
-                        $result = pg_execute_insert('custom_fields', $data);
-                        $row = pg_fetch_assoc($result);
-                        $customFields[$custom_field['id']] = (int)($row['id']);
+                        $customField = executeQuery('SELECT * FROM custom_fields WHERE board_id = $1 AND name = $2', $qry_val_arr);
+                        if (empty($customField)) {
+                            $data = array(
+                                'user_id' => $authUser['id'],
+                                'type' => $custom_field['type'],
+                                'name' => $custom_field['name'],
+                                'description' => $custom_field['description'],
+                                'options' => $custom_field['options'],
+                                'label' => $custom_field['label'],
+                                'position' => $custom_field['position'],
+                                'visibility' => $custom_field['visibility'],
+                                'color' => $custom_field['color'],
+                                'board_id' => $r_put['board_id'],
+                            );
+                            $result = pg_execute_insert('custom_fields', $data);
+                            $row = pg_fetch_assoc($result);
+                            $customFields[$custom_field['id']] = (int)($row['id']);
+                        } else {
+                            $qry_val_arr = array(
+                                $previous_value['board_id'],
+                                $custom_field['name']
+                            );
+                            $previous_customField = executeQuery('SELECT * FROM custom_fields WHERE board_id = $1 AND name = $2', $qry_val_arr);
+                            if (!empty($previous_customField) && !empty($customField)) {
+                                if ($previous_customField['type'] === 'dropdown') {
+                                    $new_customfield_options = explode(',', $customField['options']);
+                                    $previous_customfield_options = explode(',', $previous_customField['options']);
+                                    $new_unique_option = array_unique(array_merge($new_customfield_options, $previous_customfield_options));
+                                    $data = array(
+                                        $customField['id'],
+                                        implode(',', $new_unique_option)
+                                    );
+                                    pg_query_params($db_lnk, 'UPDATE custom_fields SET options = $2 WHERE id = $1', $data);
+                                }
+                            }
+                            $customFields[$custom_field['id']] = $customField['id'];
+                        }
                     }
+                    $qry_val_arr = array(
+                        $previous_value['board_id']
+                    );
                     $s_sql = 'SELECT * FROM custom_fields WHERE board_id = $1';
                     $custom_fields = pg_query_params($db_lnk, $s_sql, $qry_val_arr);
                     while ($custom_field = pg_fetch_assoc($custom_fields)) {
