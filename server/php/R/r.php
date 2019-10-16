@@ -1570,7 +1570,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             if ($sort_by['sort_by'] == "created_date") {
                 $sort_by_field = "created";
             }
-            if ($sort_by['sort_by'] == "created_date") {
+            if ($sort_by['sort_by'] == "checklist_item_pending_count") {
                 $sort_by_field = "checklist_item_count - checklist_item_completed_count";
             }
             if ($sort_by['sort_by'] == "start_date") {
@@ -1578,7 +1578,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             }
             $sql = 'SELECT row_to_json(d) FROM (SELECT ' . $fields . ' FROM cards_listing cll WHERE board_id = $1 AND list_id = $2 ORDER BY ' . $sort_by_field . ' ' . $sort_by_direction . ' ) as d ';
         } else {
-            $sql = 'SELECT row_to_json(d) FROM (SELECT ' . $fields . ' FROM cards_listing cll WHERE board_id = $1 AND list_id = $2) as d ';
+            $sql = 'SELECT row_to_json(d) FROM (SELECT ' . $fields . ' FROM cards_listing cll WHERE board_id = $1 AND list_id = $2 ORDER BY position asc) as d ';
         }
         if (empty($r_resource_filters['from']) || (!empty($r_resource_filters['from']) && $r_resource_filters['from'] != 'app')) {
             $c_sql = 'SELECT COUNT(*) FROM cards_listing cll';
