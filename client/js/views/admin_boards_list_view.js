@@ -64,9 +64,11 @@ App.AdminBoardsListView = Backbone.View.extend({
                 });
                 $('#header').html(_this.headerView.el);
                 $('#js-navbar-default').remove();
-                var view = $('#content').html(new App.AdminBoardsIndexView({
+                $('#content').html(new App.AdminBoardsIndexView({
+                    model: boards,
                     filter_count: response.filter_count,
-                    'current_param': _this.current_param
+                    'current_param': _this.current_param,
+                    'current_page': _this.current_page
                 }).el);
                 boards.each(function(board) {
                     $('.js-my-boards').append(new App.AdminBoardView({
