@@ -358,7 +358,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM activities_listing al ' . $condition . ' ORDER BY id ' . $direction . ' LIMIT ' . PAGING_COUNT . ') as d';
             $c_sql = 'SELECT COUNT(*) FROM activities_listing al' . $condition;
         } else {
-            if (!empty($authUser) && $authUser['id'] != $r_resource_vars['users']) {
+            if (!empty($authUser) && $authUser['id'] != $r_resource_vars['users'] && $authUser['role_id'] != 1) {
                 $val_array = array(
                     $authUser['id']
                 );
