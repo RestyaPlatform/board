@@ -3900,7 +3900,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                                                 );
                                                 $cardsCustomFields = pg_query_params($db_lnk, 'SELECT * FROM cards_custom_fields WHERE card_id = $1 ORDER BY id', $qry_val_arr);
                                                 while ($cardsCustomField = pg_fetch_assoc($cardsCustomFields)) {
-                                                    if(isset($customFields[$cardsCustomField['custom_field_id']])) {
+                                                    if (isset($customFields[$cardsCustomField['custom_field_id']])) {
                                                         $data = array(
                                                             $new_card_id,
                                                             $customFields[$cardsCustomField['custom_field_id']],
