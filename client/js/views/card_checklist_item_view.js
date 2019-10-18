@@ -321,6 +321,7 @@ App.CardCheckListItemView = Backbone.View.extend({
         });
         this.render();
         this.renderProgress();
+        this.model.card.list.collection.board.checklist_items.remove(this.model);
         if (!convert_card_trigger) {
             this.model.destroy({
                 success: function(model, response) {

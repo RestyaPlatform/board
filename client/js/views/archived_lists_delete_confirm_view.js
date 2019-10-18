@@ -13,7 +13,7 @@ if (typeof App === 'undefined') {
  * @constructor
  * @extends Backbone.View
  */
-App.ArchiveListDeleteConfirmView = Backbone.View.extend({
+App.ArchivedListsDeleteConfirmView = Backbone.View.extend({
     /**
      * Constructor
      * initialize default values and actions
@@ -26,7 +26,6 @@ App.ArchiveListDeleteConfirmView = Backbone.View.extend({
     },
     template: JST['templates/archive_list_delete_confirm'],
     tagName: 'div',
-    className: 'clearfix col-xs-12',
     /**
      * Events
      * functions to fire on events (Mouse events, Keyboard Events, Frame/Object Events, Form Events, Drag Events, etc...)

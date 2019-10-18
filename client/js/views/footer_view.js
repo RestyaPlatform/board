@@ -546,7 +546,7 @@ App.FooterView = Backbone.View.extend({
      *
      */
     renderMyBoards: function() {
-        if (!_.isUndefined(App.boards.sortField) && App.boards.sortField !== null && App.boards.sortField !== 'name') {
+        if (!_.isUndefined(App.boards) && !_.isUndefined(App.boards.sortField) && App.boards.sortField !== null && App.boards.sortField !== 'name') {
             App.boards.setSortField('name', 'asc');
             App.boards.sort();
         }
@@ -915,6 +915,9 @@ App.FooterView = Backbone.View.extend({
                             }
                         }
                         activities.each(function(activity) {
+                            if ($('.js-list-activity-' + activity.id).length > 0) {
+                                return true;
+                            }
                             var card_id = activity.attributes.card_id;
                             Auth = JSON.parse($.cookie('auth'));
                             if (_.isUndefined(Auth.user.unread_activity_id) || (parseInt(Auth.user.unread_activity_id) < parseInt(activity.attributes.id))) {
@@ -1082,6 +1085,9 @@ App.FooterView = Backbone.View.extend({
                                             new_card.set('list_id', parseInt(activity.attributes.card.list_id));
                                             new_card.set('user_id', parseInt(activity.attributes.card.user_id));
                                             new_card.set('is_archived', parseInt(activity.attributes.card.is_archived));
+                                            if (activity.attributes.type === 'add_card') {
+                                                new_card.set('comment_count', 0);
+                                            }
                                             var card_list = self.board.lists.findWhere({
                                                 id: parseInt(activity.attributes.list_id)
                                             });
@@ -1371,17 +1377,21 @@ App.FooterView = Backbone.View.extend({
                                                 if (!_.isEmpty(card.cards)) {
                                                     activity.cards.add(card.cards);
                                                 }
-                                                card.list.collection.board.activities.add(activity);
+                                                if (!_.isUndefined(card.list)) {
+                                                    card.list.collection.board.activities.add(activity);
+                                                }
                                                 if (!_.isUndefined(card.activities) && !_.isEmpty(card.activities) && card.activities !== null) {
                                                     card.activities.add(activity, {
                                                         silent: true
                                                     });
                                                 }
-                                                var current_card = card.list.collection.board.cards.get(activity.attributes.card_id);
-                                                var comment_count = (!_.isUndefined(current_card)) ? (parseInt(current_card.attributes.comment_count) + 1) : 0;
-                                                comment_count = isNaN(comment_count) ? 1 : comment_count;
-                                                card.set('comment_count', comment_count);
-                                                card.attributes.comment_count = comment_count;
+                                                if (!_.isUndefined(card.list)) {
+                                                    var current_card = card.list.collection.board.cards.get(activity.attributes.card_id);
+                                                    var comment_count = (!_.isUndefined(current_card)) ? (parseInt(current_card.attributes.comment_count) + 1) : 0;
+                                                    comment_count = isNaN(comment_count) ? 1 : comment_count;
+                                                    card.set('comment_count', comment_count);
+                                                    card.attributes.comment_count = comment_count;
+                                                }
                                                 if ($('#js-card-modal-' + activity.attributes.card_id).length === 1) {
                                                     if ($('#js-card-activities-' + activity.attributes.card_id).length === 1) {
                                                         if ($('#js-list-activity-' + activity.attributes.id).length === 0) {
@@ -1495,8 +1505,14 @@ App.FooterView = Backbone.View.extend({
                                                     var updated_card_list_cards = self.board.cards.where({
                                                         list_id: parseInt(activity.attributes.list_id)
                                                     });
-                                                    card.list.collection.board.lists.get(parseInt(activity.attributes.list_id)).cards.remove(card);
-                                                    App.boards.get(parseInt(activity.attributes.board_id)).lists.get(parseInt(activity.attributes.list_id)).set('card_count', (updated_card_list_cards.length === 0) ? 0 : updated_card_list_cards.length - 1);
+                                                    var cards_list = card.list.collection.board.lists.get(parseInt(activity.attributes.list_id));
+                                                    if (!_.isUndefined(cards_list) && cards_list !== null) {
+                                                        cards_list.cards.remove(card);
+                                                    }
+                                                    var boards_list = App.boards.get(parseInt(activity.attributes.board_id)).lists.get(parseInt(activity.attributes.list_id));
+                                                    if (!_.isUndefined(boards_list) && boards_list !== null) {
+                                                        boards_list.set('card_count', (updated_card_list_cards.length === 0) ? 0 : updated_card_list_cards.length - 1);
+                                                    }
                                                 }
                                                 // Reducing the card count of the old list
                                                 if (!_.isEmpty(card_old_list) && !_.isUndefined(card_old_list) && card_old_list !== null) {
@@ -1756,7 +1772,7 @@ App.FooterView = Backbone.View.extend({
                                                 cache: false,
                                                 type: 'GET',
                                                 success: function(response) {
-                                                    if (response.data.length > 0) {
+                                                    if (!_.isUndefined(response.data) && response.data !== null && response.data.length > 0) {
                                                         _.each(response.data, function(card_data) {
                                                             var new_card = new App.Card();
                                                             var board_sort_by = (self.board.attributes.sort_by) ? self.board.attributes.sort_by : 'position';
@@ -1909,7 +1925,7 @@ App.FooterView = Backbone.View.extend({
                                                             }
                                                         });
                                                     }
-                                                    if (response.attachments.length > 0) {
+                                                    if (!_.isUndefined(response.attachments) && response.attachments !== null && response.attachments.length > 0) {
                                                         _.each(response.attachments, function(attachment) {
                                                             var new_card_attachment = new App.CardAttachment();
                                                             new_card_attachment.set(attachment);

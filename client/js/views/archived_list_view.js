@@ -32,7 +32,7 @@ App.ArchivedListView = Backbone.View.extend({
      * functions to fire on events (Mouse events, Keyboard Events, Frame/Object Events, Form Events, Drag Events, etc...)
      */
     events: {
-        'click .js-delete-archived-list': 'deleteArchivedList',
+        'click .js-delete-archived-list-confirm': 'deleteArchivedListConfirm',
     },
     /**
      * render()
@@ -47,6 +47,20 @@ App.ArchivedListView = Backbone.View.extend({
         }));
         this.showTooltip();
         return this;
+    },
+    /**
+     * deleteArchivedListConfirm()
+     * delete archived list
+     * @param e
+     * @type Object(DOM event)
+     * @return false
+     *
+     */
+    deleteArchivedListConfirm: function(e) {
+        $('.js-setting-response').html(new App.ArchivedListDeleteConfirmView({
+            model: this.model,
+        }).el);
+        return false;
     },
     /**
      * deleteArchivedList()

@@ -4,7 +4,7 @@ $(window).resize(function() {
     var windowH = $(window).height();
     var notificationH = windowH - footerH;
     var boardH;
-    if (!_.isEmpty(footerH)) {
+    if (footerH) {
         boardH = windowH - headerH - footerH - 14;
     } else {
         boardH = windowH - headerH - 50;
@@ -180,7 +180,7 @@ function CheckFieldExists(board, field_name, field_value, return_type, plugin_na
                     if (!_.isUndefined(board_custom_fields[plugin_name])) {
                         r_gridview_configurations = board_custom_fields[plugin_name].split(',');
                         if (r_gridview_configurations.length > 0) {
-                            if (r_gridview_configurations.indexOf(field_name) !== -1) {
+                            if (r_gridview_configurations.indexOf(field_name) !== -1 || r_gridview_configurations.indexOf('selectall') !== -1) {
                                 checked_value = (return_type === 'Value') ? field_value : true;
                             } else {
                                 checked_value = (return_type === 'Value') ? '' : false;

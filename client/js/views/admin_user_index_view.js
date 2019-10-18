@@ -69,6 +69,11 @@ App.AdminUserIndexView = Backbone.View.extend({
         _this.current_page = (!_.isUndefined(_this.current_page)) ? _this.current_page : 1;
         _this.pagination = (!_.isUndefined(_this.pagination)) ? _this.pagination : 1;
         _this.users = new App.UserCollection();
+        if (typeof _this.current_page === 'string' && _this.current_page.indexOf('&sort=') !== -1) {
+            var sort_fields = _this.current_page.split('&sort=');
+            var sort_direction = sort_fields['1'].split('&direction=');
+            _this.users.setSortField(sort_direction['0'], sort_direction['1']);
+        }
         var colspan = "15";
         if (!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && $.inArray('r_groups', APPS.enabled_apps) !== -1) {
             colspan = "16";

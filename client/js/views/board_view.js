@@ -617,7 +617,7 @@ App.BoardView = Backbone.View.extend({
         sort_by = this.model.attributes.sort_by;
         sort_direction = (this.model.attributes.sort_direction) ? this.model.attributes.sort_direction : 'asc';
         $('body').addClass('modal-open');
-        if (!_.isUndefined(App.boards.sortField) && App.boards.sortField !== null && App.boards.sortField !== 'name') {
+        if (!_.isUndefined(App.boards) && !_.isUndefined(App.boards.sortField) && App.boards.sortField !== null && App.boards.sortField !== 'name') {
             App.boards.setSortField('name', 'asc');
             App.boards.sort();
         }

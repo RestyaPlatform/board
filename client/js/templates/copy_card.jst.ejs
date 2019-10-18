@@ -4,7 +4,7 @@
 		<% if (card.attachments.length > 0) {%>
 			<div class="form-group">
 				<div class="checkbox">
-				<input id="Attachments-<%- card.id %>" class="hide" type="checkbox" name="keep_attachments" value="1" checked="checked">
+				<input id="Attachments-card-<%- card.id %>" class="hide" type="checkbox" name="keep_attachments" value="1" checked="checked">
 					<label for="Attachments-card-<%- card.id %>">
 					<%- i18next.t('Attachments') %>(<%- card.attachments.length %>)
 					</label>

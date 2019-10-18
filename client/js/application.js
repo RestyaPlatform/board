@@ -308,7 +308,9 @@ function addResponseCallback(callback) {
 
 function fireResponseCallbacksIfCompleted(xhr) {
     if (xhr.readyState === 4) {
-        fireResponseCallbacks(responseCallbacks, xhr);
+        if (xhr.responseURL.indexOf(window.location.origin) !== -1) {
+            fireResponseCallbacks(responseCallbacks, xhr);
+        }
     }
 }
 
@@ -743,6 +745,13 @@ app.on('route', function(route, params) {
     }
 });
 $(window).on('hashchange', function() {
+    if (location.hash === '#/boards' && $('#boards-index').length === 0) {
+        app.navigate('#/boards', {
+            trigger: true,
+            replace: true
+        });
+        $('.js-footer-board-link').trigger('click');
+    }
     if (!_.isUndefined(appsurlFunc)) {
         _.each(appsurlFunc, function(funct_names, url) {
             if (location.hash.match('/' + url)) {

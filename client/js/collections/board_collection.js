@@ -26,17 +26,20 @@ App.BoardCollection = Backbone.Collection.extend({
     comparator: function(item) {
         if (!_.isUndefined(this.sortDirection)) {
             var self = this;
-            var str = '' + item.get(this.sortField);
-            if (this.sortField !== 'id') {
-                str = str.toLowerCase();
-                str = str.split('');
-                str = _.map(str, function(letter) {
-                    if (self.sortDirection.toLowerCase() === 'desc') {
-                        return String.fromCharCode(-(letter.charCodeAt(0)));
-                    } else {
-                        return String.fromCharCode((letter.charCodeAt(0)));
-                    }
-                });
+            var str = item.get(this.sortField);
+            if (this.sortField === 'name' || this.sortField === 'organization_name' || this.sortField === 'username') {
+                if (typeof str === 'string') {
+                    str = '' + item.get(this.sortField);
+                    str = str.toLowerCase();
+                    str = str.split('');
+                    str = _.map(str, function(letter) {
+                        if (self.sortDirection.toLowerCase() === 'desc') {
+                            return String.fromCharCode(-(letter.charCodeAt(0)));
+                        } else {
+                            return String.fromCharCode((letter.charCodeAt(0)));
+                        }
+                    });
+                }
                 return str;
             } else if (this.sortField === 'created' || this.sortField === 'modified') {
                 if (item.get(this.sortField) !== null) {

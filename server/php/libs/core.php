@@ -428,7 +428,7 @@ function checkAclLinks($r_request_method = 'GET', $r_resource_cmd = '/users', $r
 {
     global $r_debug, $db_lnk, $authUser;
     $role = 3; // Guest role id
-    if (is_plugin_enabled('r_support_app')) {
+    if (is_plugin_enabled('r_support_app') && !isset($_POST['is_instant_add_Card'])) {
         require_once PLUGIN_PATH . DS . 'SupportApp' . DS . 'functions.php';
         if (checkSupportAppEnabled($r_resource_vars, $r_request_method, $r_resource_cmd)) {
             return true;

@@ -1168,7 +1168,7 @@ App.ModalCardView = Backbone.View.extend({
                 class_name = ' label label-warning';
                 text = i18next.t('This card is archived.');
             }
-            $('.title-text', doc.parent().prev('.dockmodal-header')).html('<div class="card-id inline-show"><strong>#' + this.model.id + '</strong></div><span class="title-color' + class_name + '" id="js-title-color-' + this.model.id + '">' + text + '</span>');
+            $('.title-text', doc.parent().prev('.dockmodal-header')).html('<div class="card-id inline-show"><strong>#' + this.model.id + '</strong></div><span class="js-card-emoji-name title-color' + class_name + '" id="js-title-color-' + this.model.id + '">' + text + '</span>');
         }
     },
     /**
@@ -1196,7 +1196,7 @@ App.ModalCardView = Backbone.View.extend({
                 class_name = ' label label-warning';
                 text = i18next.t('This card is archived.');
             }
-            $('.title-text', doc.parent().prev('.dockmodal-header')).html('<div class="card-id inline-show"><strong>#' + this.model.id + '</strong></div><span class="title-color' + class_name + '" id="js-title-color-' + this.model.id + '">' + text + '</span>');
+            $('.title-text', doc.parent().prev('.dockmodal-header')).html('<div class="card-id inline-show"><strong>#' + this.model.id + '</strong></div><span class="js-card-emoji-name title-color' + class_name + '" id="js-title-color-' + this.model.id + '">' + text + '</span>');
             var comment = this.$el.find('#inputAddComment').val();
             var description = this.$el.find('#inputCarddescriptions').val();
             var checklistEditName = this.$el.find('#checklistEditName').val();
@@ -1403,7 +1403,7 @@ App.ModalCardView = Backbone.View.extend({
                 subscribed = ' <span class="icon-eye-open"></span>';
             }
         }
-        if (!_.isUndefined(App.boards.sortField) && App.boards.sortField !== null && App.boards.sortField !== 'name') {
+        if (!_.isUndefined(App.boards) && !_.isUndefined(App.boards.sortField) && App.boards.sortField !== null && App.boards.sortField !== 'name') {
             App.boards.setSortField('name', 'asc');
             App.boards.sort();
         }
@@ -1452,8 +1452,11 @@ App.ModalCardView = Backbone.View.extend({
                 height: 450,
                 width: 600,
                 id: 'js-card-modal-card-block-' + self.model.id,
-                title: '<div class="card-id inline-show"><strong>#' + this.model.id + '</strong></div><span class="title-color' + class_name + '" id="js-title-color-' + this.model.id + '">' + title + '</span>',
+                title: '<div class="card-id inline-show"><strong>#' + this.model.id + '</strong></div><span class="js-card-emoji-name title-color' + class_name + '" id="js-title-color-' + this.model.id + '">' + title + '</span>',
                 beforePopout: function(event) {
+                    setTimeout(function() {
+                        self.$el.find('.js-modal-settings').removeClass('hide');
+                    }, 100);
                     if (!_.isUndefined(authuser.user)) {
                         $('#js-title-color-' + self.model.id).parent('.title-text').css('margin-left', '34px');
                     }
@@ -1565,7 +1568,6 @@ App.ModalCardView = Backbone.View.extend({
                             $('.action-close', $('.dockmodal.active')).trigger('click');
                         }
                     });
-                    self.$el.find('.js-modal-settings').removeClass('hide');
                 },
                 beforeClose: function(event, dialog) {
                     $('.js-modal-settings').removeClass('open');
@@ -2974,12 +2976,12 @@ App.ModalCardView = Backbone.View.extend({
         var content = '';
         var self = this;
         this.model.users.each(function(user) {
-            var content_img = '<i class="avatar avatar-color-194 img-rounded" title="' + user.get('full_name') + ' (' + user.get('username') + ')" data-container="body" data-toggle="tooltip">' + user.get('initials') + '</i>';
+            var content_img = '<i class="avatar avatar-color-194 img-rounded" title="' + user.get('full_name') + ' (' + user.get('username') + ')" data-placement="right" data-container="#js-card-modal-card-block-' + self.model.id + '" data-toggle="tooltip">' + user.get('initials') + '</i>';
             var profile_picture_path = user.get('profile_picture_path');
             if (!_.isEmpty(profile_picture_path)) {
                 var hash = calcMD5(SecuritySalt + 'User' + user.attributes.user_id + 'png' + 'small_thumb');
                 profile_picture_path = window.location.pathname + 'img/small_thumb/User/' + user.attributes.user_id + '.' + hash + '.png';
-                content_img = '<img src="' + profile_picture_path + '" alt="' + user.get('username') + '" title="' + user.get('full_name') + ' (' + user.get('username') + ')" class="img-rounded img-responsive avatar" data-container="body" data-toggle="tooltip">';
+                content_img = '<img src="' + profile_picture_path + '" alt="' + user.get('username') + '" title="' + user.get('full_name') + ' (' + user.get('username') + ')" class="img-rounded img-responsive avatar" data-placement="right" data-container="#js-card-modal-card-block-' + self.model.id + '" data-toggle="tooltip">';
             }
             var add_member_permission = '';
             if (!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(self.model.list.collection.board.acl_links.where({
@@ -3510,11 +3512,11 @@ App.ModalCardView = Backbone.View.extend({
             var user_initial = target.data('user-initial');
             var user_profile_picture_path = target.data('user-profile-picture-path');
             var full_name = target.data('user-fullname');
-            var content_img = '<i class="avatar avatar-color-194 img-rounded" title="' + full_name + ' (' + user_name + ')">' + user_initial + '</i>';
+            var content_img = '<i class="avatar avatar-color-194 img-rounded" title="' + full_name + ' (' + user_name + ')" data-placement="right" data-container="#js-card-modal-card-block-' + self.model.id + '" data-toggle="tooltip">' + user_initial + '</i>';
             if (!_.isEmpty(user_profile_picture_path)) {
                 var hash = calcMD5(SecuritySalt + 'User' + user_id + 'png' + 'small_thumb');
                 var profile_picture_path = window.location.pathname + 'img/small_thumb/User/' + user_id + '.' + hash + '.png';
-                content_img = '<img src="' + profile_picture_path + '" alt="' + user_name + '" title="' + full_name + ' (' + user_name + ')" class="img-rounded img-responsive avatar">';
+                content_img = '<img src="' + profile_picture_path + '" alt="' + user_name + '" title="' + full_name + ' (' + user_name + ')" class="img-rounded img-responsive avatar" data-placement="right" data-container="#js-card-modal-card-block-' + self.model.id + '" data-toggle="tooltip">';
             }
             var view_user = $('#js-card-users-list-' + self.model.id).prepend('<li class="js-added-card-user-' + user_id + '">' + content_img + '</li>');
             var card_user = new App.CardUser();
@@ -4124,6 +4126,7 @@ App.ModalCardView = Backbone.View.extend({
             },
             success: function() {
                 self.$el.find('.js_activity_card_search_response').nextAll().remove();
+                cards.sortByColumn('name', 'desc');
                 if (!_.isEmpty(cards.models)) {
                     _.each(cards.models, function(card) {
                         $(new App.ActivityCardSearchView({
@@ -4232,8 +4235,12 @@ App.ModalCardView = Backbone.View.extend({
                 }
             });
             self.$el.find('.js-change-position').html(content_list);
-            if (position_visiblity && self.$el.find('.js-position').parent().hasClass('hide')) {
-                self.$el.find('.js-position').parent().removeClass('hide');
+            if (position_visiblity) {
+                if (self.$el.find('.js-position').parent().hasClass('hide')) {
+                    self.$el.find('.js-position').parent().removeClass('hide');
+                }
+            } else {
+                self.$el.find('.js-position').parent().addClass('hide');
             }
             self.$el.find('.js-position').html(content_position);
         }
