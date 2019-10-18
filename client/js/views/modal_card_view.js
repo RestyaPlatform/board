@@ -2228,18 +2228,19 @@ App.ModalCardView = Backbone.View.extend({
         var current_board = self.boards.findWhere({
             id: parseInt(current_board_id)
         });
+        var change_list_cards, change_list_cards_collection, i = 1,
+            change_prev_card, change_next_card;
         var currentdate = new Date();
         var tmp_move_date = currentdate.getFullYear() + '-' + (((currentdate.getMonth() + 1) < 10) ? '0' + (currentdate.getMonth() + 1) : (currentdate.getMonth() + 1)) + '-' + ((currentdate.getDate() < 10) ? '0' + currentdate.getDate() : currentdate.getDate()) + 'T' + currentdate.getHours() + ':' + (currentdate.getMinutes() < 10 ? '0' : '') + currentdate.getMinutes() + ':' + (currentdate.getSeconds() < 10 ? '0' : '') + currentdate.getSeconds();
         this.model.set('list_moved_date', tmp_move_date);
         if (((!_.isUndefined(current_board.attributes.sort_by) && current_board.attributes.sort_by !== null && current_board.attributes.sort_by === 'position') || (_.isUndefined(current_board.attributes.sort_by) || current_board.attributes.sort_by === null)) && parseInt(data.board_id) === parseInt(current_board_id)) {
-            var change_list_cards = this.model.list.collection.board.cards.where({
+            change_list_cards = this.model.list.collection.board.cards.where({
                 list_id: data.list_id
             });
 
-            var change_list_cards_collection = new App.CardCollection();
+            change_list_cards_collection = new App.CardCollection();
             change_list_cards_collection.add(change_list_cards);
-            var i = 1;
-            var change_prev_card, change_next_card;
+            i = 1;
             change_list_cards_collection.each(function(card) {
                 if (!card.attributes.is_archived && _.isUndefined(change_next_card)) {
                     if (i === data.position) {
@@ -2303,6 +2304,69 @@ App.ModalCardView = Backbone.View.extend({
             this.model.set({
                 position: data.position
             });
+        } else if (parseInt(data.board_id) !== parseInt(current_board_id)) {
+            var board = App.boards.get(data.board_id);
+            change_list_cards = board.cards.where({
+                list_id: data.list_id
+            });
+            change_list_cards_collection = new App.CardCollection();
+            change_list_cards_collection.add(change_list_cards);
+            if ((!_.isUndefined(board.attributes.sort_by) && board.attributes.sort_by !== null && board.attributes.sort_by === 'position') || (_.isUndefined(current_board.attributes.sort_by) || current_board.attributes.sort_by === null)) {
+                i = 1;
+                change_list_cards_collection.each(function(card) {
+                    if (!card.attributes.is_archived && _.isUndefined(change_next_card)) {
+                        if (i === data.position) {
+                            change_next_card = card;
+                        } else {
+                            change_prev_card = card;
+                        }
+                        i++;
+                    }
+                });
+                if (change_list_cards.length === 0) {
+                    data.position = 1;
+                    this.model.set({
+                        position: data.position
+                    });
+                } else {
+                    if (_.isUndefined(change_prev_card) && !_.isUndefined(change_next_card)) {
+                        data.position = (change_next_card.attributes.position) / 2;
+                        this.model.set({
+                            position: data.position
+                        });
+                    } else if (_.isUndefined(change_next_card) && !_.isUndefined(change_prev_card)) {
+                        data.position = (change_prev_card.attributes.position) + 1;
+                        this.model.set({
+                            position: data.position
+                        });
+                    } else if (!_.isUndefined(change_prev_card) && !_.isUndefined(change_next_card)) {
+                        data.position = (change_prev_card.attributes.position + change_next_card.attributes.position) / 2;
+                        this.model.set({
+                            position: data.position
+                        });
+                    } else {
+                        data.position = 1;
+                        this.model.set({
+                            position: data.position
+                        });
+                    }
+                }
+            } else if (!_.isUndefined(board.attributes.sort_by) && board.attributes.sort_by !== null && board.attributes.sort_by !== 'position') {
+                change_list_cards_collection.add(this.model, {
+                    silent: true
+                });
+                if (sort_by !== null && sort_direction !== null) {
+                    change_list_cards_collection.sortByColumn(board.attributes.sort_by, board.attributes.sort_direction);
+                } else {
+                    change_list_cards_collection.sortByColumn('position');
+                }
+                $.each(change_list_cards_collection.models, function(key, filter_card) {
+                    if (parseInt(filter_card.attributes.is_archived) === 0 && parseInt(filter_card.id) === parseInt(self.model.id)) {
+                        self.model.set('position', key);
+                        data.position = key;
+                    }
+                });
+            }
         }
         if (data.list_id !== current_list_id && data.board_id === current_board_id) {
             var new_lists = this.model.list.collection.board.lists.get(data.list_id);
