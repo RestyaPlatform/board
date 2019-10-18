@@ -672,6 +672,7 @@ App.ApplicationView = Backbone.View.extend({
                 success: function(model, response) {
                     App.boards = boards;
                     page.populateLists();
+                    page.populateCards();
                     page.populateBoardStarred();
                     var organizations = new App.OrganizationCollection();
                     organizations.url = api_url + 'organizations.json?type=simple';
@@ -719,6 +720,11 @@ App.ApplicationView = Backbone.View.extend({
     populateLists: function() {
         App.boards.each(function(board) {
             board.lists.add(board.attributes.lists);
+        });
+    },
+    populateCards: function() {
+        App.boards.each(function(board) {
+            board.cards.add(board.attributes.cards);
         });
     },
     populateBoardStarred: function() {
