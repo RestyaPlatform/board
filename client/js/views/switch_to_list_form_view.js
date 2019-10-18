@@ -68,6 +68,7 @@ App.SwitchToListView = Backbone.View.extend({
         e.preventDefault();
         var self = this;
         var sort_by = $(e.target).data('sort-by');
+        App.current_board.set('listviewsortby', sort_by);
         var filtered_cards = self.model.cards.filter(function(card) {
             return parseInt(card.attributes.is_archived) === 0;
         });
@@ -99,25 +100,43 @@ App.SwitchToListView = Backbone.View.extend({
                 });
             });
             var cards = new App.CardCollection();
+            if (!_.isUndefined(App.current_board) && !_.isUndefined(App.current_board) && App.current_board !== null && !_.isUndefined(App.current_board.attributes.listviewsortby) && App.current_board.attributes.listviewsortby !== null) {
+                if (App.current_board.attributes.listviewsortdirection === 'desc' && App.current_board.attributes.listviewsortby === sort_by) {
+                    this.sort_by = App.current_board.attributes.listviewsortby;
+                }
+            }
+            if (this.sort_by === null && sort_by === 'id' && $(e.target).children('span').hasClass('icon-caret-down')) {
+                this.sort_by = 'id';
+            }
             if (this.sort_by === sort_by) {
                 cards.sortDirection = 'asc';
-                this.sort_by = '-' + sort_by;
-                if ($(e.target).children('span').hasClass('icon-caret-down')) {
-                    $('.js-sort-by').children('span').removeClass('icon-caret-up hide icon-caret-down');
+                App.current_board.set('listviewsortdirection', 'asc');
+                this.sort_by = null;
+                $.each($('.js-sort-by'), function(key, data) {
+                    if ($(data).attr('class').indexOf('icon-') !== -1) {
+                        $(data).parent().children('span').removeClass('icon-caret-up hide icon-caret-down');
+                    }
+                });
+                $('.js-sort-by').children('span').removeClass('icon-caret-up hide icon-caret-down');
+                if ($(e.target).attr('class').indexOf('icon-') === -1) {
                     $(e.target).children('span').removeClass('icon-caret-down').addClass('icon-caret-up');
                 } else {
-                    $('.js-sort-by').children('span').removeClass('icon-caret-up hide icon-caret-down');
-                    $(e.target).children('span').removeClass('icon-caret-up').addClass('icon-caret-down');
+                    $(e.target).parent().children('span').removeClass('icon-caret-down').addClass('icon-caret-up');
                 }
             } else {
                 cards.sortDirection = 'desc';
+                App.current_board.set('listviewsortdirection', 'desc');
                 this.sort_by = sort_by;
-                if ($(e.target).children('span').hasClass('icon-caret-up')) {
-                    $('.js-sort-by').children('span').removeClass('icon-caret-up hide icon-caret-down');
+                $.each($('.js-sort-by'), function(key, data) {
+                    if ($(data).attr('class').indexOf('icon-') !== -1) {
+                        $(data).parent().children('span').removeClass('icon-caret-up hide icon-caret-down');
+                    }
+                });
+                $('.js-sort-by').children('span').removeClass('icon-caret-up hide icon-caret-down');
+                if ($(e.target).attr('class').indexOf('icon-') === -1) {
                     $(e.target).children('span').removeClass('icon-caret-up').addClass('icon-caret-down');
                 } else {
-                    $('.js-sort-by').children('span').removeClass('icon-caret-up hide icon-caret-down');
-                    $(e.target).children('span').removeClass('icon-caret-down').addClass('icon-caret-up');
+                    $(e.target).parent().children('span').removeClass('icon-caret-up hide').addClass('icon-caret-down');
                 }
             }
             cards.comparator = function(item) {
@@ -145,6 +164,20 @@ App.SwitchToListView = Backbone.View.extend({
                         }
                         sort_date = new Date(_date);
                         return cards.sortDirection === 'desc' ? -sort_date.getTime() : sort_date.getTime();
+                    }
+                } else if (sort_by === 'start_date') {
+                    if (item.get('custom_fields') !== null && !_.isUndefined(item.get('custom_fields')) && !_.isEmpty(item.get('custom_fields'))) {
+                        var inputArr = item.get('custom_fields');
+                        var start_date_time = JSON.parse(inputArr);
+                        if (!_.isUndefined(start_date_time.start_date) && !_.isEmpty(start_date_time.start_date) && !_.isUndefined(start_date_time.start_time) && !_.isEmpty(start_date_time.start_time)) {
+                            _date = start_date_time.start_date + 'T' + start_date_time.start_time;
+                            sort_date = new Date(_date);
+                            return cards.sortDirection === 'desc' ? -sort_date.getTime() : sort_date.getTime();
+                        }
+                    }
+                } else if (sort_by === 'checklist_item_completed_count') {
+                    if (!_.isUndefined(item.checklists) && !_.isEmpty(item.checklists) && item.checklists !== null && item.checklists.length > 0) {
+                        return cards.sortDirection === 'desc' ? -item.get('checklist_item_completed_count') : item.get('checklist_item_completed_count');
                     }
                 } else {
                     if (cards.sortDirection === 'desc') {
