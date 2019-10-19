@@ -2455,6 +2455,8 @@ App.ModalCardView = Backbone.View.extend({
         }, {
             patch: true,
             success: function(model, response, options) {
+                self.model.set('modified', response.activity.created);
+                self.model.list.collection.board.cards.get(self.model.id).set('modified', response.activity.created);
                 if (_.isUndefined(options.temp_id)) {
                     self.model.set('is_offline', false, {
                         silent: true

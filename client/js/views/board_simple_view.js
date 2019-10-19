@@ -66,7 +66,7 @@ App.BoardSimpleView = Backbone.View.extend({
             starred_boards: this.starred_boards
         }));
         if (this.model !== null) {
-            this.model.lists.sortByColumn('position');
+            this.model.lists.sortByColumn('position', 'asc');
             var data = [];
             var color_codes = ['#DB7093', '#F47564', '#EDA287', '#FAC1AD', '#FFE4E1', '#D3ABF0', '#DC9CDC', '#69BFBA', '#66CDAA', '#8FBC8F', '#CBFDCA', '#EEE8AA', '#BC8F8F', '#CD853F', '#D2B48C', '#F5DEB3', '#64BCF2', '#87CEFA', '#B0C4DE', '#D6E2F7'];
             var i = 0;

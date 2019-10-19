@@ -5,7 +5,7 @@ boards.each(function(board) {
 	if (list.attributes.board_id == board.id) {
 		var board_lists = new App.ListCollection();
 		board_lists.reset(board.lists.where({is_archived: 0}));
-		board_lists.sortByColumn('position');
+		board_lists.sortByColumn('position', 'asc');
 		content_board += '<option value="' + board.id + '" selected="selected">' + _.escape(board.attributes.name) + ' '+ i18next.t('(current)')+'</option>';
 		 var i = 1;
 		 board_lists.each(function(lists) {

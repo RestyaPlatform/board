@@ -25,7 +25,7 @@ App.CardCollection = Backbone.Collection.extend({
                     }
                 });
                 return str;
-            } else if (this.sortKey === 'due_date' || this.sortKey === 'list_moved_date') {
+            } else if (this.sortKey === 'due_date' || this.sortKey === 'list_moved_date' || this.sortKey === 'modified') {
                 if (item.get(this.sortKey) !== null && item.get(this.sortKey) !== 'NULL' && !_.isUndefined(item.get(this.sortKey)) && !_.isEmpty(item.get(this.sortKey))) {
                     var date = item.get(this.sortKey).split(' ');
                     if (!_.isUndefined(date[1])) {
