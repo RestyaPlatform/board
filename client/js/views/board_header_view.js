@@ -50,7 +50,9 @@ App.BoardHeaderView = Backbone.View.extend({
         this.model.cards.bind('change:list_id', this.updateListView, this);
         this.model.cards.bind('change:comment_count', this.updateListView, this);
         this.model.cards.bind('change:custom_fields', this.updateListView, this);
+        this.model.cards.bind('change:custom_fields', this.switchCalendarView, this);
         this.model.cards.bind('change:due_date', this.updateListView, this);
+        this.model.cards.bind('change:due_date', this.switchCalendarView, this);
         this.model.cards.bind('change:name', this.updateListView, this);
         this.model.cards.bind('change:card_voter_count', this.updateListView, this);
         this.model.cards.bind('change:attachment_count', this.updateListView, this);
@@ -1210,223 +1212,250 @@ App.BoardHeaderView = Backbone.View.extend({
      * @type Object(DOM event)
      *
      */
-    switchCalendarView: function() {
+    switchCalendarView: function(e) {
         var self = this;
-        $('body').removeClass('modal-open');
-        $('.js-boards-view').attr('id', 'boards-view');
-        $('#boards-view').addClass('col-xs-12');
-        $('#switch-board-view').addClass('calendar-view');
-        $('#listview_table').attr("id", "switch-board-view");
-        $('#switch-board-view').removeClass('board-viewlist col-xs-12');
-        $('li.js-switch-view').removeClass('active');
-        $('a.js-switch-calendar-view').parent().addClass('active');
-        $('.js-list-form').removeClass('hide');
-        var current_param = Backbone.history.fragment;
-        if (current_param.indexOf('/calendar') === -1) {
-            app.navigate('#/board/' + this.model.id + '/calendar', {
-                trigger: false,
-                trigger_function: false,
-            });
+        var currenturl = window.location;
+        var currentss = currenturl.hash;
+        var get_match_url = currentss.split("/");
+        var calendar_view = false;
+        var trigger_calendar_view = false;
+        if (!_.isUndefined(get_match_url['3']) && get_match_url['3'] === 'calendar') {
+            calendar_view = true;
         }
-        changeTitle('Board - ' + _.escape(self.model.attributes.name) + '- Calendar');
-        if ($('div.js-board-view-' + self.model.id).length === 0) {
-            $('#content').html('<section id="boards-view" class="clearfix js-boards-view col-xs-12"><section class="row body-no-webkit-scrollbars"><div id="listview_table" class="clearfix js-board-view-' + self.model.id + ' col-xs-12 calendar-view"></div><section></section>');
+        if (e.originalEvent !== undefined || e.type === 'click') {
+            trigger_calendar_view = true;
+        } else if (e.changed !== undefined && calendar_view) {
+            trigger_calendar_view = true;
         }
-        $('div.js-board-view-' + this.model.id).html('');
-        $('div.js-board-view-' + this.model.id).fullCalendar({
-            header: {
-                left: 'prev,next today',
-                center: 'title',
-                right: 'month,basicWeek,basicDay'
-            },
-            selectable: true,
-            selectHelper: true,
-            editable: false,
-            ignoreTimezone: false,
-            aspectRatio: 3.35,
-            eventRender: function(event, element) {
-                var content = '';
-                var card = self.model.cards.findWhere({
-                    id: event.id
+        if ($('div.js-board-view-' + this.model.id).length > 0 && !_.isUndefined(App.current_board) && $('div.js-board-view-' + this.model.id).attr('class').indexOf('calendar-view') !== -1) {
+            var selected_month = $('div.js-board-view-' + this.model.id).fullCalendar('getDate');
+            App.current_board.set('calendar_date', selected_month);
+        }
+        if (trigger_calendar_view) {
+            $('body').removeClass('modal-open');
+            $('.js-boards-view').attr('id', 'boards-view');
+            $('#boards-view').addClass('col-xs-12');
+            $('#switch-board-view').addClass('calendar-view');
+            $('#listview_table').attr("id", "switch-board-view");
+            $('#switch-board-view').removeClass('board-viewlist col-xs-12');
+            $('li.js-switch-view').removeClass('active');
+            $('a.js-switch-calendar-view').parent().addClass('active');
+            $('.js-list-form').removeClass('hide');
+            var current_param = Backbone.history.fragment;
+            if (current_param.indexOf('/calendar') === -1) {
+                app.navigate('#/board/' + this.model.id + '/calendar', {
+                    trigger: false,
+                    trigger_function: false,
                 });
-                if (card.get('is_archived') === 1) {
-                    element.addClass('card-archived hide');
-                    element.find('.fc-event-skin').addClass('card-archived');
-                }
-                if (card.get('due_date') !== null && parseInt(card.get('is_archived')) === 0) {
-                    element.addClass('js-show-modal-card-view cur');
-                    element.attr('id', 'js-card-' + event.id);
-                    var today = new Date();
-                    card_due_date = card.get('due_date').split('T');
-                    var due_date = new Date(card_due_date[0]);
-                    var diff = Math.floor(due_date.getTime() - today.getTime());
-                    var day = 1000 * 60 * 60 * 24;
-                    var days = Math.floor(diff / day);
-                    if ($.trim(CALENDAR_VIEW_CARD_COLOR) === 'Past Present Future colors based on Due Date') {
-                        if (days < -1) {
-                            element.addClass('label-danger');
-                            element.find('.fc-event-skin').addClass('label-danger');
-                        } else if (days == -1) {
-                            element.addClass('label-present');
-                            element.find('.fc-event-skin').addClass('label-present');
-                        } else if (days > -1) {
-                            element.addClass('label-future');
-                            element.find('.fc-event-skin').addClass('label-future');
-                        }
-                    } else if ($.trim(CALENDAR_VIEW_CARD_COLOR) === 'Card Color') {
-                        element.css({
-                            "background-color": card.attributes.color,
-                            "color": "#fff",
-                            "border-color": "transparent"
-                        });
-                        element.find('.fc-event-skin').attr('style', 'background-color: ' + card.attributes.color + ' !important;color: #fff;border-color:transparent !important');
-                    } else if ($.trim(CALENDAR_VIEW_CARD_COLOR) === 'Color of first Label') {
-                        if (card.labels.length > 0) {
-                            var label_color = new App.CardView({
-                                model: card
-                            }).getLabelcolor(card.labels.models[0].attributes.name);
+            }
+            changeTitle('Board - ' + _.escape(self.model.attributes.name) + '- Calendar');
+            if ($('div.js-board-view-' + self.model.id).length === 0) {
+                $('#content').html('<section id="boards-view" class="clearfix js-boards-view col-xs-12"><section class="row body-no-webkit-scrollbars"><div id="listview_table" class="clearfix js-board-view-' + self.model.id + ' col-xs-12 calendar-view"></div><section></section>');
+            }
+            $('div.js-board-view-' + this.model.id).html('');
+            $('div.js-board-view-' + this.model.id).fullCalendar({
+                header: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'month,basicWeek,basicDay'
+                },
+                selectable: true,
+                selectHelper: true,
+                editable: false,
+                ignoreTimezone: false,
+                aspectRatio: 3.35,
+                eventRender: function(event, element) {
+                    var content = '';
+                    var card = self.model.cards.findWhere({
+                        id: event.id
+                    });
+                    if (card.get('is_archived') === 1) {
+                        element.addClass('card-archived hide');
+                        element.find('.fc-event-skin').addClass('card-archived');
+                    }
+                    if (card.get('due_date') !== null && parseInt(card.get('is_archived')) === 0) {
+                        element.addClass('js-show-modal-card-view cur');
+                        element.attr('id', 'js-card-' + event.id);
+                        var today = new Date();
+                        card_due_date = card.get('due_date').split('T');
+                        var due_date = new Date(card_due_date[0]);
+                        var diff = Math.floor(due_date.getTime() - today.getTime());
+                        var day = 1000 * 60 * 60 * 24;
+                        var days = Math.floor(diff / day);
+                        if ($.trim(CALENDAR_VIEW_CARD_COLOR) === 'Past Present Future colors based on Due Date') {
+                            if (days < -1) {
+                                element.addClass('label-danger');
+                                element.find('.fc-event-skin').addClass('label-danger');
+                            } else if (days == -1) {
+                                element.addClass('label-present');
+                                element.find('.fc-event-skin').addClass('label-present');
+                            } else if (days > -1) {
+                                element.addClass('label-future');
+                                element.find('.fc-event-skin').addClass('label-future');
+                            }
+                        } else if ($.trim(CALENDAR_VIEW_CARD_COLOR) === 'Card Color') {
                             element.css({
-                                "background-color": '#' + label_color,
+                                "background-color": card.attributes.color,
                                 "color": "#fff",
                                 "border-color": "transparent"
                             });
-                            element.find('.fc-event-skin').attr('style', 'background-color: #' + label_color + ' !important;color: #fff;border-color:transparent !important');
-                        }
-                    }
-                    content += '<ul class="unstyled hide js-card-labels">';
-                    var filtered_labels = card.labels.where({
-                        card_id: event.id
-                    });
-                    var labels = new App.CardLabelCollection();
-                    labels.add(filtered_labels);
-                    labels.each(function(label) {
-                        if (_.escape(label.attributes.name) !== "") {
-                            content += '<li class="' + _.escape(label.attributes.name) + '">' + _.escape(label.attributes.name) + '</li>';
-                        }
-                    });
-                    content += '</ul>';
-                    content += '<ul class="unstyled js-card-users hide">';
-                    card.users.each(function(user) {
-                        content += '<li>user-filter-' + user.get('user_id') + '</li>';
-                    });
-                    content += '</ul>';
-                    content += '<ul class="unstyled js-card-due hide">';
-                    content += self.getDue(card.get('due_date'));
-                    content += '</ul>';
-                    element.append(content);
-                }
-
-            },
-            eventMouseover: function(calEvent, jsEvent, view) {
-                var target = $(jsEvent.currentTarget);
-                if (!_.isUndefined(authuser.user) && !_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && $.inArray('r_custom_fields', APPS.enabled_apps) !== -1) {
-                    $.ajax({
-                        url: api_url + 'cards/' + calEvent.id + '/cards_custom_fields.json?token=' + authuser.access_token,
-                        cache: false,
-                        type: 'GET',
-                        success: function(response) {
-                            if (!_.isEmpty(response.response) && !_.isUndefined(response.response) && response.response.length !== 0) {
-                                $(target).data('toggle', 'tooltip');
-                                $(target).data('container', 'body');
-                                $(target).data('placement', 'top');
-                                $(target).data('html', 'true');
-                                var card_customfield_value = '';
-                                _.each(response.response, function(customfield, key) {
-                                    if (customfield) {
-                                        if (customfield.type === 'date') {
-                                            card_customfield_value += customfield.label + ' : ' + dateFormat(customfield.value, "mediumDate");
-                                        } else if (customfield.type === 'time') {
-                                            var field_time = customfield.value.split(':');
-                                            var time_noon = '';
-                                            if (field_time[0] <= 12) {
-                                                time_noon = 'AM';
-                                            } else {
-                                                time_noon = 'PM';
-                                                field_time[0] = field_time[0] - 12;
-                                            }
-                                            card_customfield_value += customfield.label + ' : ' + field_time[0] + ':' + field_time[1] + ' ' + time_noon;
-                                        } else if (customfield.type === 'datetime') {
-                                            if (customfield.value.indexOf('T') > -1) {
-                                                var custom_field_val;
-                                                custom_field_val = customfield.value.replace('T', ' ');
-                                                var date = custom_field_val.split(' ');
-                                                custom_field_val = date['0'];
-                                                custom_field_val = dateFormat(custom_field_val, "mediumDate");
-                                                if (!_.isEmpty(date[1])) {
-                                                    hours_mins = date[1].split(':');
-                                                    var noon = '';
-                                                    if (hours_mins[0] <= 12) {
-                                                        noon = 'AM';
-                                                    } else {
-                                                        noon = 'PM';
-                                                        hours_mins[0] = hours_mins[0] - 12;
-                                                    }
-                                                    hours_mins = hours_mins[0] + ':' + hours_mins[1] + ' ' + noon;
-                                                }
-                                                card_customfield_value += customfield.label + ' : ' + custom_field_val + ' at ' + hours_mins;
-                                            }
-                                        } else if (customfield.type === 'text' || customfield.type === 'textarea') {
-                                            if (!_.isEmpty(customfield.value)) {
-                                                customfield.value = customfield.value.substring(0, 124 - 3) + '...';
-                                            }
-                                            card_customfield_value += customfield.label + ' : ' + customfield.value;
-                                        } else {
-                                            card_customfield_value += customfield.label + ' : ' + customfield.value;
-                                        }
-                                        if (key + 1 !== response.response.length) {
-                                            card_customfield_value += '<br/> ';
-                                        }
-                                    }
+                            element.find('.fc-event-skin').attr('style', 'background-color: ' + card.attributes.color + ' !important;color: #fff;border-color:transparent !important');
+                        } else if ($.trim(CALENDAR_VIEW_CARD_COLOR) === 'Color of first Label') {
+                            if (card.labels.length > 0) {
+                                var label_color = new App.CardView({
+                                    model: card
+                                }).getLabelcolor(card.labels.models[0].attributes.name);
+                                element.css({
+                                    "background-color": '#' + label_color,
+                                    "color": "#fff",
+                                    "border-color": "transparent"
                                 });
-                                if (!_.isEmpty(card_customfield_value)) {
-                                    card_customfield_value = card_customfield_value.substring(0, 400 - 3) + '...';
-                                }
-                                $(target).tooltip({
-                                    title: card_customfield_value,
-                                    html: true,
-                                    placement: 'bottom'
-                                });
+                                element.find('.fc-event-skin').attr('style', 'background-color: #' + label_color + ' !important;color: #fff;border-color:transparent !important');
                             }
                         }
-                    });
-                }
-            },
-            eventClick: function(info) {
-                if (info.id) {
-                    trigger_dockmodal = true;
-                    var card = self.model.cards.findWhere({
-                        id: parseInt(info.id)
-                    });
-                    if (!_.isUndefined(card)) {
-                        card.list = self.model.lists.findWhere({
-                            id: card.attributes.list_id
+                        content += '<ul class="unstyled hide js-card-labels">';
+                        var filtered_labels = card.labels.where({
+                            card_id: event.id
                         });
-                        new App.CardView({
-                            model: card
-                        }).showCardModal();
-                    }
-                    trigger_dockmodal = false;
-                }
-            }
-        });
-        if (!_.isEmpty(self.model.cards)) {
-            var start_date, cards_custom_fields;
-            self.model.cards.each(function(card) {
-                var board_card = self.model.cards.get(parseInt(card.attributes.id));
-                if (!_.isUndefined(board_card) && !_.isEmpty(board_card) && board_card !== null) {
-                    card.set('start', board_card.attributes.due_date);
-                    if (!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && $.inArray('r_gantt_view', APPS.enabled_apps) !== -1) {
-                        if (!_.isEmpty(board_card.attributes.custom_fields) && board_card.attributes.custom_fields != 'NULL' && !_.isUndefined(board_card.attributes.custom_fields)) {
-                            cards_custom_fields = JSON.parse(board_card.attributes.custom_fields);
-                            if (!_.isUndefined(cards_custom_fields.start_date) && !_.isUndefined(cards_custom_fields.start_time) && !_.isEmpty(cards_custom_fields.start_date) && cards_custom_fields.start_date !== '') {
-                                start_date = cards_custom_fields.start_date + 'T' + cards_custom_fields.start_time;
-                                self.model.cards.get(board_card.attributes.id).set('start', start_date);
+                        var labels = new App.CardLabelCollection();
+                        labels.add(filtered_labels);
+                        labels.each(function(label) {
+                            if (_.escape(label.attributes.name) !== "") {
+                                content += '<li class="' + _.escape(label.attributes.name) + '">' + _.escape(label.attributes.name) + '</li>';
                             }
+                        });
+                        content += '</ul>';
+                        content += '<ul class="unstyled js-card-users hide">';
+                        card.users.each(function(user) {
+                            content += '<li>user-filter-' + user.get('user_id') + '</li>';
+                        });
+                        content += '</ul>';
+                        content += '<ul class="unstyled js-card-due hide">';
+                        content += self.getDue(card.get('due_date'));
+                        content += '</ul>';
+                        element.append(content);
+                    }
+
+                },
+                eventMouseover: function(calEvent, jsEvent, view) {
+                    var target = $(jsEvent.currentTarget);
+                    if (!_.isUndefined(authuser.user) && !_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && $.inArray('r_custom_fields', APPS.enabled_apps) !== -1) {
+                        $.ajax({
+                            url: api_url + 'cards/' + calEvent.id + '/cards_custom_fields.json?token=' + authuser.access_token,
+                            cache: false,
+                            type: 'GET',
+                            success: function(response) {
+                                if (!_.isEmpty(response.response) && !_.isUndefined(response.response) && response.response.length !== 0) {
+                                    $(target).data('toggle', 'tooltip');
+                                    $(target).data('container', 'body');
+                                    $(target).data('placement', 'top');
+                                    $(target).data('html', 'true');
+                                    var card_customfield_value = '';
+                                    _.each(response.response, function(customfield, key) {
+                                        if (customfield) {
+                                            if (customfield.type === 'date') {
+                                                card_customfield_value += customfield.label + ' : ' + dateFormat(customfield.value, "mediumDate");
+                                            } else if (customfield.type === 'time') {
+                                                var field_time = customfield.value.split(':');
+                                                var time_noon = '';
+                                                if (field_time[0] <= 12) {
+                                                    time_noon = 'AM';
+                                                } else {
+                                                    time_noon = 'PM';
+                                                    field_time[0] = field_time[0] - 12;
+                                                }
+                                                card_customfield_value += customfield.label + ' : ' + field_time[0] + ':' + field_time[1] + ' ' + time_noon;
+                                            } else if (customfield.type === 'datetime') {
+                                                if (customfield.value.indexOf('T') > -1) {
+                                                    var custom_field_val;
+                                                    custom_field_val = customfield.value.replace('T', ' ');
+                                                    var date = custom_field_val.split(' ');
+                                                    custom_field_val = date['0'];
+                                                    custom_field_val = dateFormat(custom_field_val, "mediumDate");
+                                                    if (!_.isEmpty(date[1])) {
+                                                        hours_mins = date[1].split(':');
+                                                        var noon = '';
+                                                        if (hours_mins[0] <= 12) {
+                                                            noon = 'AM';
+                                                        } else {
+                                                            noon = 'PM';
+                                                            hours_mins[0] = hours_mins[0] - 12;
+                                                        }
+                                                        hours_mins = hours_mins[0] + ':' + hours_mins[1] + ' ' + noon;
+                                                    }
+                                                    card_customfield_value += customfield.label + ' : ' + custom_field_val + ' at ' + hours_mins;
+                                                }
+                                            } else if (customfield.type === 'text' || customfield.type === 'textarea') {
+                                                if (!_.isEmpty(customfield.value)) {
+                                                    customfield.value = customfield.value.substring(0, 124 - 3) + '...';
+                                                }
+                                                card_customfield_value += customfield.label + ' : ' + customfield.value;
+                                            } else {
+                                                card_customfield_value += customfield.label + ' : ' + customfield.value;
+                                            }
+                                            if (key + 1 !== response.response.length) {
+                                                card_customfield_value += '<br/> ';
+                                            }
+                                        }
+                                    });
+                                    if (!_.isEmpty(card_customfield_value)) {
+                                        card_customfield_value = card_customfield_value.substring(0, 400 - 3) + '...';
+                                    }
+                                    $(target).tooltip({
+                                        title: card_customfield_value,
+                                        html: true,
+                                        placement: 'bottom'
+                                    });
+                                }
+                            }
+                        });
+                    }
+                },
+                eventClick: function(info) {
+                    if (info.id) {
+                        trigger_dockmodal = true;
+                        var card = self.model.cards.findWhere({
+                            id: parseInt(info.id)
+                        });
+                        if (!_.isUndefined(card)) {
+                            card.list = self.model.lists.findWhere({
+                                id: card.attributes.list_id
+                            });
+                            new App.CardView({
+                                model: card
+                            }).showCardModal();
                         }
+                        trigger_dockmodal = false;
                     }
                 }
             });
-            $('div.js-board-view-' + self.model.id).fullCalendar('addEventSource', self.model.cards.invoke('pick', ['id', 'title', 'start', 'end']));
+            if (!_.isEmpty(self.model.cards)) {
+                var start_date, cards_custom_fields;
+                self.model.cards.each(function(card) {
+                    if (!_.isUndefined(card) && !_.isEmpty(card) && card !== null && !_.isUndefined(card.attributes.due_date) && !_.isEmpty(card.attributes.due_date) && card.attributes.due_date !== null) {
+                        card.set('start', card.attributes.due_date);
+                        card.set('end', card.attributes.due_date);
+                        if (!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && $.inArray('r_gantt_view', APPS.enabled_apps) !== -1) {
+                            if (!_.isEmpty(card.attributes.custom_fields) && card.attributes.custom_fields != 'NULL' && !_.isUndefined(card.attributes.custom_fields)) {
+                                cards_custom_fields = JSON.parse(card.attributes.custom_fields);
+                                if (!_.isUndefined(cards_custom_fields.start_date) && !_.isUndefined(cards_custom_fields.start_time) && !_.isEmpty(cards_custom_fields.start_date) && cards_custom_fields.start_date !== '') {
+                                    start_date = cards_custom_fields.start_date + 'T' + cards_custom_fields.start_time;
+                                    card.set('start', start_date);
+                                }
+                            }
+                        }
+                    }
+                });
+                $('div.js-board-view-' + self.model.id).fullCalendar('addEventSource', self.model.cards.invoke('pick', ['id', 'title', 'start', 'end']));
+            }
+            if (!_.isUndefined(App.current_board) && !_.isEmpty(App.current_board) && App.current_board !== null && !_.isUndefined(App.current_board.attributes) && App.current_board.attributes !== null) {
+                if (!_.isUndefined(App.current_board.attributes.calendar_date) && App.current_board.attributes.calendar_date !== null) {
+                    var calendar_date = App.current_board.attributes.calendar_date;
+                    var calendar_year = calendar_date.getFullYear();
+                    var calendar_month = calendar_date.getMonth();
+                    $('div.js-board-view-' + self.model.id).fullCalendar('gotoDate', calendar_year, calendar_month);
+                }
+            }
         }
         return false;
     },
