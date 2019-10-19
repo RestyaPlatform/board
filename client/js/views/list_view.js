@@ -195,7 +195,7 @@ App.ListView = Backbone.View.extend({
                         }
                     });
                 }
-                self.model.collection.sortByColumn('position');
+                self.model.collection.sortByColumn('position', 'asc');
             }
         });
     },
@@ -704,7 +704,7 @@ App.ListView = Backbone.View.extend({
         if (sort_by !== null && sort_direction !== null) {
             this.model.collection.sortByColumn(sort_by, sort_direction);
         } else {
-            this.model.collection.sortByColumn('position');
+            this.model.collection.sortByColumn('position', 'asc');
         }
         if (board_id !== this.model.attributes.board_id) {
             this.model.collection.remove({
@@ -716,7 +716,7 @@ App.ListView = Backbone.View.extend({
             if (sort_by !== null && sort_direction !== null) {
                 App.boards.get(board_id).lists.sortByColumn(sort_by, sort_direction);
             } else {
-                App.boards.get(board_id).lists.sortByColumn('position');
+                App.boards.get(board_id).lists.sortByColumn('position', 'asc');
             }
             App.boards.get(board_id).lists.each(function(list) {
                 i++;
@@ -1093,17 +1093,24 @@ App.ListView = Backbone.View.extend({
         card.save({
             is_archived: 1
         }, {
-            patch: true
-        });
-        $('#js-card-listing-' + self.model.id).html('<span class="js-list-placeholder-' + self.model.id + '">&nbsp;</span>');
-        // $('#js-card-listing-' + self.model.id).html('&nbsp;');
-        _(function() {
-            if (self.model !== null && !_.isUndefined(self.model) && !_.isEmpty(self.model)) {
-                if (!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && $.inArray('r_agile_wip', APPS.enabled_apps) !== -1) {
-                    $('body').trigger('cardAddRendered', [self.model.id, self.model]);
-                }
+            patch: true,
+            success: function(model, response, options) {
+                _.each(archived_cards, function(archived_card) {
+                    self.model.collection.board.cards.get(archived_card.attributes.id).set('modified', response.activity.created, {
+                        silent: true
+                    });
+                });
+                $('#js-card-listing-' + self.model.id).html('<span class="js-list-placeholder-' + self.model.id + '">&nbsp;</span>');
+                // $('#js-card-listing-' + self.model.id).html('&nbsp;');
+                _(function() {
+                    if (self.model !== null && !_.isUndefined(self.model) && !_.isEmpty(self.model)) {
+                        if (!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && $.inArray('r_agile_wip', APPS.enabled_apps) !== -1) {
+                            $('body').trigger('cardAddRendered', [self.model.id, self.model]);
+                        }
+                    }
+                }).defer();
             }
-        }).defer();
+        });
         return false;
     },
     /**
