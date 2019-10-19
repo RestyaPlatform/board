@@ -577,6 +577,12 @@ App.ListView = Backbone.View.extend({
         }, {
             patch: true,
             success: function(model, response) {
+                var board_list = self.model.collection.board.lists.findWhere({
+                    id: parseInt(list_id)
+                });
+                board_list.set('is_archived', 1);
+                board_list.set('modified', response.activity.created);
+                App.boards.get(self.model.attributes.board_id).lists.get(list_id).set('modified', response.activity.created);
                 self.board.attributes.lists.forEach(function(list, index) {
                     if (list.id === parseInt(list_id)) {
                         list.is_archived = 1;
@@ -1096,9 +1102,7 @@ App.ListView = Backbone.View.extend({
             patch: true,
             success: function(model, response, options) {
                 _.each(archived_cards, function(archived_card) {
-                    self.model.collection.board.cards.get(archived_card.attributes.id).set('modified', response.activity.created, {
-                        silent: true
-                    });
+                    self.model.collection.board.cards.get(archived_card.attributes.id).set('modified', response.activity.created);
                 });
                 $('#js-card-listing-' + self.model.id).html('<span class="js-list-placeholder-' + self.model.id + '">&nbsp;</span>');
                 // $('#js-card-listing-' + self.model.id).html('&nbsp;');
