@@ -293,11 +293,33 @@ SELECT board.id,
                   WHERE (bs.board_id = board.id)
                   ORDER BY bs.id) l) AS stars,
     org.name AS organization_name,
+    org.organization_visibility,
     org.logo_url AS organization_logo_url,
     board.music_content,
     board.music_name,
     board.sort_by,
-    board.sort_direction
+    board.sort_direction,
+    ( SELECT array_to_json(array_agg(row_to_json(cl.*))) AS array_to_json
+      FROM ( SELECT cards_listing.id,
+              cards_listing.created,
+              cards_listing.modified,
+              cards_listing.board_id,
+              cards_listing.list_id,
+              cards_listing.name,
+              cards_listing.due_date,
+              cards_listing."position",
+              cards_listing.list_moved_date,
+              ((cards_listing.is_archived)::boolean)::integer AS is_archived,
+              cards_listing.card_voter_count,
+              cards_listing.attachment_count,
+              cards_listing.comment_count,
+              cards_listing.checklist_item_count,
+              cards_listing.checklist_item_completed_count,
+              ((cards_listing.checklist_item_count)::integer - (cards_listing.checklist_item_completed_count)::integer) AS checklist_item_pending_count,
+              cards_listing.custom_fields
+              FROM public.cards_listing cards_listing
+            WHERE (cards_listing.board_id = board.id)
+            ORDER BY cards_listing."position") cl) AS cards
    FROM (boards board
      LEFT JOIN organizations org ON ((org.id = board.organization_id)))
   ORDER BY board.name;

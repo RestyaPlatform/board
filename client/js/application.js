@@ -308,7 +308,9 @@ function addResponseCallback(callback) {
 
 function fireResponseCallbacksIfCompleted(xhr) {
     if (xhr.readyState === 4) {
-        fireResponseCallbacks(responseCallbacks, xhr);
+        if (xhr.responseURL.indexOf(window.location.origin) !== -1) {
+            fireResponseCallbacks(responseCallbacks, xhr);
+        }
     }
 }
 

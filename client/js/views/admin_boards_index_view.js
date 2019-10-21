@@ -19,10 +19,28 @@ App.AdminBoardsIndexView = Backbone.View.extend({
      * initialize default values and actions
      */
     initialize: function(options) {
-        this.sortField = options.sortField;
+        if (typeof options.current_page !== 'number') {
+            var query_param;
+            var filter_fields;
+            if (options.current_page.indexOf('filter') !== -1) {
+                query_param = options.current_page.split('&filter=');
+                query_param = query_param[1].split('&sort=');
+                if (query_param.length > 1) {
+                    filter_fields = query_param[1].split('&direction=');
+                    this.sortField = filter_fields[0];
+                    this.sortDirection = filter_fields[1];
+                }
+            } else {
+                query_param = options.current_page.split('&sort=');
+                if (query_param.length > 1) {
+                    filter_fields = query_param[1].split('&direction=');
+                    this.sortField = filter_fields[0];
+                    this.sortDirection = filter_fields[1];
+                }
+            }
+        }
         this.filter_count = options.filter_count;
         this.current_param = options.current_param;
-        this.sortDirection = options.sortDirection;
         if (!_.isUndefined(this.model) && this.model !== null) {
             this.model.showImage = this.showImage;
         }
@@ -193,8 +211,12 @@ App.AdminBoardsIndexView = Backbone.View.extend({
         _this.searchField = $('#board_search').val();
         var boards = new App.BoardCollection();
         $('.js-my-boards').html('<tr class="js-loader"><td colspan="12"><span class="cssloader"></span></td></tr>');
+        var page = _this.current_page;
+        if (!_.isUndefined(_this.sortField) && !_.isUndefined(_this.sortDirection)) {
+            page = _this.current_page + '&sort=' + _this.sortField + '&direction=' + _this.sortDirection;
+        }
         if (!_.isUndefined(_this.searchField) && !_.isUndefined(_this.searchField)) {
-            boards.url = api_url + 'boards.json?page=' + _this.current_page + '&search=' + _this.searchField;
+            boards.url = api_url + 'boards.json?page=' + page + '&search=' + _this.searchField;
         }
         boards.fetch({
             cache: false,

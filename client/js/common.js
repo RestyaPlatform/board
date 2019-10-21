@@ -180,7 +180,7 @@ function CheckFieldExists(board, field_name, field_value, return_type, plugin_na
                     if (!_.isUndefined(board_custom_fields[plugin_name])) {
                         r_gridview_configurations = board_custom_fields[plugin_name].split(',');
                         if (r_gridview_configurations.length > 0) {
-                            if (r_gridview_configurations.indexOf(field_name) !== -1) {
+                            if (r_gridview_configurations.indexOf(field_name) !== -1 || r_gridview_configurations.indexOf('selectall') !== -1) {
                                 checked_value = (return_type === 'Value') ? field_value : true;
                             } else {
                                 checked_value = (return_type === 'Value') ? '' : false;
