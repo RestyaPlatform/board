@@ -293,6 +293,7 @@ SELECT board.id,
                   WHERE (bs.board_id = board.id)
                   ORDER BY bs.id) l) AS stars,
     org.name AS organization_name,
+    org.organization_visibility,
     org.logo_url AS organization_logo_url,
     board.music_content,
     board.music_name,

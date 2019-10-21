@@ -105,20 +105,41 @@ App.BoardSimpleView = Backbone.View.extend({
      *
      */
     showBoardListAddForm: function(e) {
-        var workflow_template = new App.WorkFlowTemplateCollection();
-        workflow_template.url = api_url + 'workflow_templates.json';
-        workflow_template.fetch({
-            success: function(model, response) {
-                var templates = '';
-                var target = $(e.target);
-                var organization_id;
-                if (target.parents('.js-organization_boards')) {
-                    organization_id = target.parents('.js-organization_boards').data('organization_id');
-                }
-                var parent = target.parents('.js-show-add-boards-list-simple');
-                target.parents('li.js-back').addClass('hide');
-                var data = {};
-                data = workflow_template;
+        if (!_.isUndefined(authuser.user) && !_.isEmpty(authuser.user) && authuser.user !== null) {
+            var organization_id;
+            var target = $(e.target);
+            var data = {};
+            var parent = target.parents('.js-show-add-boards-list-simple');
+            if (target.parents('.js-organization_boards')) {
+                organization_id = target.parents('.js-organization_boards').data('organization_id');
+            }
+            var load_workflow_template = false;
+            load_workflow_template = (parseInt(authuser.user.role_id) === 1 || !_.isEmpty(role_links.where({
+                slug: "view_workflow_templates"
+            })));
+            target.parents('li.js-back').addClass('hide');
+            if (load_workflow_template) {
+                var workflow_template = new App.WorkFlowTemplateCollection();
+                workflow_template.url = api_url + 'workflow_templates.json';
+                workflow_template.fetch({
+                    success: function(model, response) {
+                        data = workflow_template;
+                        data.page_mode = 1;
+                        if (organization_id) {
+                            data.organization_id = organization_id;
+                            data.page_mode = 2;
+                        }
+                        $('.js-show-boards-list-simple-response', parent).html(new App.BoardAddView({
+                            model: data
+                        }).el).find('#inputtemplatelist').select2({
+                            formatResult: function(repo) {
+                                markup = '<div class="clearfix"><span class="show">' + repo.text + '</span><span class="show small">' + repo.id + '</span></div>';
+                                return markup;
+                            }
+                        });
+                    }
+                });
+            } else {
                 data.page_mode = 1;
                 if (organization_id) {
                     data.organization_id = organization_id;
@@ -126,15 +147,10 @@ App.BoardSimpleView = Backbone.View.extend({
                 }
                 $('.js-show-boards-list-simple-response', parent).html(new App.BoardAddView({
                     model: data
-                }).el).find('#inputtemplatelist').select2({
-                    formatResult: function(repo) {
-                        markup = '<div class="clearfix"><span class="show">' + repo.text + '</span><span class="show small">' + repo.id + '</span></div>';
-                        return markup;
-                    }
-                });
+                }).el);
             }
-        });
-        $('footer').trigger('footerActionRendered');
+            $('footer').trigger('footerActionRendered');
+        }
         return false;
     },
     /**

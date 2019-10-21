@@ -17,7 +17,7 @@
 		<% if (!_.isUndefined(templates.organization_id) && !_.isEmpty(templates.organization_id)) { %>
 			<input type="hidden" name="organization_id" value="<%- templates.organization_id %>">
 		<% } %>
-		<% if (templates.models.length > 0 && !_.isEmpty(role_links.where({slug: "view_organization_visibility"}))) { %>
+		<% if (!_.isUndefined(templates.models) && templates.models.length > 0 && !_.isEmpty(role_links.where({slug: "view_workflow_templates"}))) { %>
 			<div class="form-group">
 				<label for="inputchecklist"><%- i18next.t("Template") %></label>
 				<select id="inputtemplatelist" class="js-chosen-select" name="template">
@@ -25,32 +25,36 @@
 					<% _.each(templates.models, function(template) { %>
 					<option value="<%= template.get('value') %>"><%- template.get('name') %></option>
 					<% });%>
-				</select></div><% } %>
-				<div id="js-board-add-organization"></div>
-				<% if (templates.page_mode && templates.page_mode === 2) { %>
-					<input id="inputBoardAddVisibility" name="board_visibility" type="hidden" value="1">
-				<% } else { %>
-					<input id="inputBoardAddVisibility" name="board_visibility" type="hidden" value="0">
-				<% } %>
-				<% if (!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && $.inArray('r_codenames',APPS.enabled_apps) !== -1) { %>
-					<input id="codename_template" name="codename_template" type="hidden" value="true">
-				<% } %>
-				<% if (!templates.page_mode || (templates.page_mode && templates.page_mode === 1)) { %>
-					<div class="clearfix js-open-dropdown js-board-add-dropdown board-add-dropdown dropdown"> 
-						<span class="js-visibility-container">
-							<span class="pull-left">
-								<span class="pull-left navbar-btn"><%- i18next.t("This board will be") %> </span>
-							</span>
-							<div class="btn-group pull-right">
-								<button type="button" class="btn btn-default btn-sm js-change-visibility"><i class="icon-lock"></i><%- i18next.t("Private") %></button>
-								<button type="button" class="btn btn-default btn-sm dropdown-toggle js-change-visibility" data-toggle="dropdown" aria-expanded="false">
-									<span><i class="icon-caret-down"></i></span>
-									<span class="sr-only"><%- i18next.t("Toggle Dropdown") %></span>
-								</button>
-							</div>
-						</span>
-						<div class="js-visibility-chooser dropdown-menu"></div>
+				</select>
+			</div>
+		<% } %>
+		<div id="js-board-add-organization"></div>
+		<% if (templates.page_mode && templates.page_mode === 2) { %>
+			<input id="inputBoardAddVisibility" name="board_visibility" type="hidden" value="1">
+		<% } else { %>
+			<input id="inputBoardAddVisibility" name="board_visibility" type="hidden" value="0">
+		<% } %>
+		<% if (!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && $.inArray('r_codenames',APPS.enabled_apps) !== -1) { %>
+			<input id="codename_template" name="codename_template" type="hidden" value="true">
+		<% } %>
+		<% if (!templates.page_mode || (templates.page_mode && templates.page_mode === 1)) { %>
+			<div class="clearfix js-open-dropdown js-board-add-dropdown board-add-dropdown dropdown"> 
+				<span class="js-visibility-container">
+					<span class="pull-left">
+						<span class="pull-left navbar-btn"><%- i18next.t("This board will be") %> </span>
+					</span>
+					<div class="btn-group pull-right">
+						<button type="button" class="btn btn-default btn-sm js-change-visibility"><i class="icon-lock"></i><%- i18next.t("Private") %></button>
+						<button type="button" class="btn btn-default btn-sm dropdown-toggle js-change-visibility" data-toggle="dropdown" aria-expanded="false">
+							<span><i class="icon-caret-down"></i></span>
+							<span class="sr-only"><%- i18next.t("Toggle Dropdown") %></span>
+						</button>
 					</div>
-				<% } %>
-				<div id="js-board-add-group"></div>
-					<div class="submit"><input type="submit" value="<%- i18next.t('Add') %>" id="submitBoardAdd" class="btn btn-primary"></div></form></li>
+				</span>
+				<div class="js-visibility-chooser dropdown-menu"></div>
+			</div>
+		<% } %>
+		<div id="js-board-add-group"></div>
+		<div class="submit"><input type="submit" value="<%- i18next.t('Add') %>" id="submitBoardAdd" class="btn btn-primary"></div>
+	</form>
+</li>
