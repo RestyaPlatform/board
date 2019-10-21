@@ -109,9 +109,9 @@ App.OrganizationBoardView = Backbone.View.extend({
             var current_url = current_param[0].split('/');
             var organization_id = (current_url[0] == 'organization') ? current_url[1] : null;
             var load_workflow_template = false;
-            load_workflow_template = !_.isEmpty(role_links.where({
+            load_workflow_template = (parseInt(authuser.user.role_id) === 1 || !_.isEmpty(role_links.where({
                 slug: "view_workflow_templates"
-            }));
+            })));
             self.$el.find('li.js-back').addClass('hide');
             if (load_workflow_template) {
                 var workflow_template = new App.WorkFlowTemplateCollection();
