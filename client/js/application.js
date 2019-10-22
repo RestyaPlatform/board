@@ -50,7 +50,7 @@ var AppsFunction = [];
 var appsurlFunc = {};
 var overallApps = [];
 
-Backbone.View.prototype.flash = function(type, message, delay, position) {
+Backbone.View.prototype.flash = function(type, message, delay, position, align) {
     if (!delay) {
         delay = 4000;
     }
@@ -59,6 +59,11 @@ Backbone.View.prototype.flash = function(type, message, delay, position) {
     } else {
         position = 'top';
     }
+    if (align) {
+        align = align;
+    } else {
+        align = 'right';
+    }
 
     $.bootstrapGrowl(message, {
         type: type,
@@ -66,7 +71,7 @@ Backbone.View.prototype.flash = function(type, message, delay, position) {
             from: position,
             amount: 20
         },
-        align: 'right',
+        align: align,
         width: 250,
         delay: delay,
         allow_dismiss: true,
