@@ -3413,11 +3413,13 @@ function update_query($table_name, $id, $r_resource_cmd, $r_put, $comment = '', 
                     $id
                 );
                 $revisions['old_value'] = executeQuery('SELECT ' . $sfields . ' FROM ' . $table_name . ' WHERE id =  $1', $qry_va_arr);
-                if (!empty($r_put['position'])) {
-                    unset($r_put['position']);
-                }
-                if (!empty($r_put['id'])) {
-                    unset($r_put['id']);
+                if ($activity_type != 'change_list_position' && $activity_type != 'change_card_position') {
+                    if (!empty($r_put['position'])) {
+                        unset($r_put['position']);
+                    }
+                    if (!empty($r_put['id'])) {
+                        unset($r_put['id']);
+                    }
                 }
                 $revisions['new_value'] = $r_put;
                 $revision = serialize($revisions);

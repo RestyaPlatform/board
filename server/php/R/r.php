@@ -6749,7 +6749,7 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
                 $activity_type = 'move_list';
             }
         }
-        if (isset($r_put['position']) && isset($r_put['board_id']) && $previous_value['board_id'] === $r_put['board_id']) {
+        if (isset($r_put['position']) && (!isset($r_put['board_id']) && $previous_value['position'] != $r_put['position']) || (isset($r_put['board_id']) && $previous_value['board_id'] == $r_put['board_id'])) {
             $comment = '##USER_NAME## changed list ' . $previous_value['name'] . ' position.';
             $activity_type = 'change_list_position';
         } else if (isset($previous_value) && isset($r_put['is_archived'])) {
@@ -6944,10 +6944,11 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
                 $current_list_id
             );
             $current_list_name = executeQuery('SELECT name FROM lists WHERE id =  $1', $qry_val_arr);
-            $comment = '##USER_NAME## moved the card ##CARD_LINK## to ' . $current_list_name['name'];
+            $comment = '##USER_NAME## changed the card ##CARD_LINK## position';
             $activity_type = 'change_card_position';
-            if (!empty($r_put['list_id'])) {
+            if (!empty($r_put['list_id']) && $previous_value['list_id'] != $r_put['list_id']) {
                 $foreign_ids['list_id'] = $r_resource_vars['lists'];
+                $comment = '##USER_NAME## moved the card ##CARD_LINK## to ' . $current_list_name['name'];
                 $activity_type = 'move_card';
             }
         }
