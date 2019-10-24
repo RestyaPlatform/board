@@ -9,7 +9,7 @@ Trello like kanban board. Tasks, to-dos, chat, etc., [Restyaboard](http://restya
 Whether you’re creating a personal todo list, planning your holidays with some friends, or working in a team on your next revolutionary concept, Restyaboard is an simple and effective tool to keep your tasks organized. The boards of restyaboard will give you a visual overview of the current state of your projects, and make you productive by allowing you to focus on the few items that matter the most.
 
 ### Why use Restyaboard?
-Since Restyaboard is a free software, you don’t have to give us your data and you can install the Restyaboard on your own internal server. You can also increase the productivity even more by reducing the time of managing the projects with the help of Restyaboard plugin which is available in [RestyaPlatform](http://restya.com/board/apps).
+Since Restyaboard is free software, you don’t have to give us your data and you can install the Restyaboard on your own internal server. You can also increase your productivity even more by reducing the time of managing the projects with the help of the Restyaboard plugin which is available in [RestyaPlatform](http://restya.com/board/apps).
 
 # For Free Installation, [contact us](http://restya.com/contact?category=free-installation) 
 
@@ -95,17 +95,17 @@ To give you some idea about of our plans:
 
 ### FAQ (Frequently Asked Questions)
 
-#### Do you have any installation instruction for Windows?
+#### Do you have any installation instructions for Windows?
 
 Please find in [Restyaboard Install in Windows](http://restya.com/board/docs/windows) document. If you face any issue, please feel free to [open a ticket](https://github.com/RestyaPlatform/board/issues/new)
 
-#### Do you have any installation instruction for Apache?
+#### Do you have any installation instructions for Apache?
 
 Please check [Restyaboard Install in Apache](http://restya.com/board/docs/apache)
 
 #### Getting blank page after install
 
-Most likely it is related to your DB credentials. Please also check install log and see if your setup was complete without any errors.
+Most likely it is related to your DB credentials. Please check the install log and see if your setup was complete without any errors.
 
 #### How can I contribute to Restyaboard translation?
 
