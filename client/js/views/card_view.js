@@ -776,6 +776,10 @@ App.CardView = Backbone.View.extend({
         if (!_.isUndefined(e) && (e.ctrlKey || e.metaKey)) {
             initialState = 'modal';
         }
+        var triggerdock = this.$el.attr('data-triggerModal');
+        if (!_.isUndefined(triggerdock) && triggerdock !== null) {
+            initialState = 'docked';
+        }
         if (!_.isUndefined(this.model.id)) {
             var modalView = new App.ModalCardView({
                 model: this.model,

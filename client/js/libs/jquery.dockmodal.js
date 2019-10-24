@@ -254,7 +254,9 @@
                         $this.removeData('dockmodal');
                         $this.placeholder.replaceWith($this);
                         $dockModal.remove();
-                        $("." + dClass + "-overlay").hide();
+                        if ($('.dockmodal').length === 0 || !$('.dockmodal').hasClass('popped-out')) {
+                            $("." + dClass + "-overlay").hide();
+                        }
                         methods.refreshLayout();
 
                         // raise close event
@@ -340,7 +342,9 @@
                     "bottom": 42 + "px"
                 });
 
-                $("." + dClass + "-overlay").hide();
+                if (!$('.dockmodal').hasClass('popped-out')) {
+                    $("." + dClass + "-overlay").hide();
+                }
                 $dockModal.find(".action-minimize").attr("title", "Minimize");
                 $dockModal.find(".action-popout").attr("title", "Pop-out (ctrl+click)");
 
