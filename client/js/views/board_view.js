@@ -850,6 +850,9 @@ App.BoardView = Backbone.View.extend({
                             }).showCardModal();
                         }
                     } else {
+                        if (i !== trigger_card_ids.length - 1) {
+                            card_view.attr('data-triggerModal', 'true');
+                        }
                         card_view.trigger('click');
                     }
                 }
