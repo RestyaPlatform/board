@@ -2317,6 +2317,123 @@ App.FooterView = Backbone.View.extend({
                                         if (!_.isUndefined(existing_board) && !_.isEmpty(existing_board) && existing_board !== null) {
                                             existing_board.set('board_visibility', activity.attributes.revisions.new_value.board_visibility);
                                         }
+                                    } else if (activity.attributes.type === 'close_board') {
+                                        App.boards.get(parseInt(activity.attributes.board_id)).set('is_closed', 1);
+                                    } else if (activity.attributes.type === 'reopen_board') {
+                                        App.boards.get(parseInt(activity.attributes.board_id)).set('is_closed', 0);
+                                    } else if (activity.attributes.type === 'add_list') {
+                                        var board_new_list = new App.List();
+                                        board_new_list.set(activity.attributes.list);
+                                        board_new_list.set('card_count', 0);
+                                        board_new_list.set('id', parseInt(activity.attributes.list.id));
+                                        board_new_list.set('board_id', parseInt(activity.attributes.list.board_id));
+                                        board_new_list.set('lists_cards', []);
+                                        board_new_list.set('is_archived', 0);
+                                        board_new_list.set('position', parseFloat(activity.attributes.list.position));
+                                        if (!_.isUndefined(App.boards) && !_.isUndefined(App.boards.get(board_new_list.attributes.board_id))) {
+                                            var is_list_exist = App.boards.get(parseInt(board_new_list.attributes.board_id)).lists.get(parseInt(activity.attributes.list.id));
+                                            if (_.isUndefined(is_list_exist) || _.isEmpty(is_list_exist) || is_list_exist === null) {
+                                                if (App.boards.get(parseInt(board_new_list.attributes.board_id)).attributes.lists === null) {
+                                                    App.boards.get(parseInt(board_new_list.attributes.board_id)).attributes.lists = [];
+                                                }
+                                                if (App.boards.get(parseInt(board_new_list.attributes.board_id)).attributes.lists !== null) {
+                                                    App.boards.get(parseInt(board_new_list.attributes.board_id)).lists.add(board_new_list);
+                                                    App.boards.get(parseInt(board_new_list.attributes.board_id)).attributes.lists.push(board_new_list);
+                                                }
+                                            }
+                                        }
+                                    } else if (activity.attributes.type === 'move_list') {
+                                        var old_list_board_id = parseInt(activity.attributes.revisions.old_value.board_id);
+                                        var old_list_position = parseFloat(activity.attributes.revisions.old_value.position);
+                                        var old_board_list_details = App.boards.get(old_list_board_id).lists.get(parseInt(activity.attributes.list.id));
+                                        var oldBoardlist = new App.List();
+                                        oldBoardlist.set(old_board_list_details.attributes);
+                                        oldBoardlist.set('id', parseInt(activity.attributes.list.id));
+                                        oldBoardlist.set('name', activity.attributes.list.name);
+                                        oldBoardlist.set('board_id', old_list_board_id);
+                                        oldBoardlist.set('card_count', activity.attributes.list.card_count);
+                                        oldBoardlist.set('lists_cards', []);
+                                        oldBoardlist.set('is_archived', parseInt(old_board_list_details.attributes.is_archived));
+                                        oldBoardlist.set('position', old_list_position);
+                                        App.boards.get(old_list_board_id).lists.remove(oldBoardlist);
+                                        if (App.boards.get(old_list_board_id).attributes && !_.isUndefined(App.boards.get(old_list_board_id).attributes.lists) && App.boards.get(old_list_board_id).attributes.lists !== null) {
+                                            if (App.boards.get(old_list_board_id).attributes.lists.length > 0) {
+                                                var boards_attr_list = App.boards.get(old_list_board_id).attributes.lists.filter(function(list) {
+                                                    return parseInt(list.id) === parseInt(activity.attributes.list.id);
+                                                });
+                                                if (boards_attr_list.length > 0) {
+                                                    var boards_attr_list_index = App.boards.get(old_list_board_id).attributes.lists.indexOf(boards_attr_list[0]);
+                                                    App.boards.get(old_list_board_id).attributes.lists.splice(boards_attr_list_index, 1);
+                                                }
+                                            }
+                                        }
+                                        var newBoardlist = new App.List();
+                                        newBoardlist.set(activity.attributes.list);
+                                        newBoardlist.set('card_count', 0);
+                                        newBoardlist.set('id', parseInt(activity.attributes.list.id));
+                                        newBoardlist.set('board_id', parseInt(activity.attributes.list.board_id));
+                                        newBoardlist.set('lists_cards', []);
+                                        newBoardlist.set('is_archived', 0);
+                                        newBoardlist.set('position', parseFloat(activity.attributes.list.position));
+                                        if (!_.isUndefined(App.boards) && !_.isUndefined(App.boards.get(newBoardlist.attributes.board_id))) {
+                                            var list_already_exist = App.boards.get(parseInt(newBoardlist.attributes.board_id)).lists.get(parseInt(activity.attributes.list.id));
+                                            if (_.isUndefined(list_already_exist) || _.isEmpty(list_already_exist) || list_already_exist === null) {
+                                                if (App.boards.get(parseInt(newBoardlist.attributes.board_id)).attributes.lists === null) {
+                                                    App.boards.get(parseInt(newBoardlist.attributes.board_id)).attributes.lists = [];
+                                                }
+                                                if (App.boards.get(parseInt(newBoardlist.attributes.board_id)).attributes.lists !== null) {
+                                                    App.boards.get(parseInt(newBoardlist.attributes.board_id)).lists.add(newBoardlist);
+                                                    App.boards.get(parseInt(newBoardlist.attributes.board_id)).attributes.lists.push(newBoardlist);
+                                                }
+                                            }
+                                        }
+                                    } else if (activity.attributes.type === 'archive_list' || activity.attributes.type === 'unarchive_list') {
+                                        if (!_.isUndefined(activity.attributes.revisions) && !_.isEmpty(activity.attributes.revisions)) {
+                                            var list_board_id = parseInt(activity.attributes.board_id);
+                                            if (activity.attributes.type === 'archive_list') {
+                                                App.boards.get(list_board_id).lists.get(parseInt(activity.attributes.list_id)).set('is_archived', 1);
+                                            } else {
+                                                App.boards.get(list_board_id).lists.get(parseInt(activity.attributes.list_id)).set('is_archived', 0);
+                                            }
+                                            if (App.boards.get(list_board_id).attributes && !_.isUndefined(App.boards.get(list_board_id).attributes.lists) && App.boards.get(list_board_id).attributes.lists !== null) {
+                                                if (App.boards.get(list_board_id).attributes.lists.length > 0) {
+                                                    var boards_list_attr = App.boards.get(list_board_id).attributes.lists.filter(function(list) {
+                                                        return parseInt(list.id) === parseInt(activity.attributes.list_id);
+                                                    });
+                                                    if (boards_list_attr.length > 0) {
+                                                        var boards_list_attr_index = App.boards.get(list_board_id).attributes.lists.indexOf(boards_list_attr[0]);
+                                                        if (activity.attributes.type === 'archive_list') {
+                                                            App.boards.get(list_board_id).attributes.lists[boards_list_attr_index].is_archived = 1;
+                                                        } else {
+                                                            App.boards.get(list_board_id).attributes.lists[boards_list_attr_index].is_archived = 0;
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    } else if (activity.attributes.type === 'delete_list') {
+                                        var delete_list_id = parseInt(activity.attributes.list_id);
+                                        var delete_board_id = parseInt(activity.attributes.board_id);
+                                        var board_delete_list = App.boards.get(delete_board_id).lists.get(delete_list_id);
+                                        var delete_list = new App.List();
+                                        delete_list.set(board_delete_list.attributes);
+                                        delete_list.set('card_count', parseInt(board_delete_list.attributes.card_count));
+                                        delete_list.set('id', delete_list_id);
+                                        delete_list.set('board_id', delete_board_id);
+                                        delete_list.set('lists_cards', []);
+                                        delete_list.set('is_archived', parseInt(board_delete_list.attributes.is_archived));
+                                        App.boards.get(delete_board_id).lists.remove(delete_list);
+                                        if (App.boards.get(delete_board_id).attributes && !_.isUndefined(App.boards.get(delete_board_id).attributes.lists) && App.boards.get(delete_board_id).attributes.lists !== null) {
+                                            if (App.boards.get(delete_board_id).attributes.lists.length > 0) {
+                                                var board_attr_list = App.boards.get(delete_board_id).attributes.lists.filter(function(list) {
+                                                    return parseInt(list.id) === delete_list_id;
+                                                });
+                                                if (board_attr_list.length > 0) {
+                                                    var board_attr_list_index = App.boards.get(delete_board_id).attributes.lists.indexOf(board_attr_list[0]);
+                                                    App.boards.get(delete_board_id).attributes.lists.splice(board_attr_list_index, 1);
+                                                }
+                                            }
+                                        }
                                     }
                                 }
                             }
