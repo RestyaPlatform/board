@@ -1730,6 +1730,7 @@ App.ListView = Backbone.View.extend({
             return false;
         } else {
             $('.error-msg').remove();
+            e.stopPropagation();
             e.preventDefault();
             var self = this;
             var data = $(e.target).serializeObject();
@@ -1891,6 +1892,23 @@ App.ListView = Backbone.View.extend({
                         card.set('cards_users', response.cards_users);
                         card.users.add(response.cards_users);
                     }
+                    var cards_count = isNaN(self.model.attributes.card_count) ? 0 : self.model.attributes.card_count;
+                    self.model.set('card_count', parseInt(cards_count) + 1);
+                    if (parseInt(self.model.attributes.card_count) === 1) {
+                        // Removing the &nbsp; in the card listing after adding card
+                        $('#js-card-listing-' + self.model.id).find('.js-list-placeholder-' + self.model.id).remove();
+                    }
+                    var list = App.boards.get(card.attributes.board_id).lists.get(card.attributes.list_id);
+                    if (!_.isUndefined(list)) {
+                        list.set('card_count', parseInt(cards_count) + 1);
+                    }
+                    _(function() {
+                        if (!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && $.inArray('r_agile_wip', APPS.enabled_apps) !== -1) {
+                            if (self.model !== null && !_.isUndefined(self.model) && !_.isEmpty(self.model)) {
+                                $('body').trigger('cardAddRendered', [self.model.id, self.model]);
+                            }
+                        }
+                    }).defer();
                     if (!_.isUndefined(response.cards_labels) && response.cards_labels.length > 0) {
                         response.cards_labels.forEach(function(label) {
                             label.card_id = parseInt(label.card_id);
@@ -1957,19 +1975,7 @@ App.ListView = Backbone.View.extend({
                         card.set('checklist_item_pending_count', total_count);
                         card.set('checklist_item_count', total_count);
                     }
-                    var cards_count = isNaN(self.model.attributes.card_count) ? 0 : self.model.attributes.card_count;
-                    self.model.set('card_count', parseInt(cards_count) + 1);
-                    if (parseInt(self.model.attributes.card_count) === 1) {
-                        // Removing the &nbsp; in the card listing after adding card
-                        $('#js-card-listing-' + self.model.id).find('.js-list-placeholder-' + self.model.id).remove();
-                        /* $('#js-card-listing-' + self.model.id).html(function(i, h) {
-                            return h.replace(/&nbsp;/g, '');
-                        }); */
-                    }
-                    var list = App.boards.get(card.attributes.board_id).lists.get(card.attributes.list_id);
-                    if (!_.isUndefined(list)) {
-                        list.set('card_count', parseInt(cards_count) + 1);
-                    }
+
                     if (!_.isUndefined(response.id) && _.isUndefined(options.temp_id)) {
                         card.set({
                             id: parseInt(response.id)
@@ -1981,13 +1987,6 @@ App.ListView = Backbone.View.extend({
                     card.set('comment_count', 0);
                     self.model.collection.board.cards.add(card);
                     self.model.cards.add(card);
-                    _(function() {
-                        if (!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && $.inArray('r_agile_wip', APPS.enabled_apps) !== -1) {
-                            if (self.model !== null && !_.isUndefined(self.model) && !_.isEmpty(self.model)) {
-                                $('body').trigger('cardAddRendered', [self.model.id, self.model]);
-                            }
-                        }
-                    }).defer();
                 }
             });
         }
