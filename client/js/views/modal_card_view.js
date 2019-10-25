@@ -2311,7 +2311,7 @@ App.ModalCardView = Backbone.View.extend({
             });
             change_list_cards_collection = new App.CardCollection();
             change_list_cards_collection.add(change_list_cards);
-            if ((!_.isUndefined(board.attributes.sort_by) && board.attributes.sort_by !== null && board.attributes.sort_by === 'position') || (_.isUndefined(current_board.attributes.sort_by) || current_board.attributes.sort_by === null)) {
+            if ((!_.isUndefined(board.attributes.sort_by) && board.attributes.sort_by !== null && board.attributes.sort_by === 'position') || (_.isUndefined(board.attributes.sort_by) || board.attributes.sort_by === null)) {
                 i = 1;
                 change_list_cards_collection.each(function(card) {
                     if (!card.attributes.is_archived && _.isUndefined(change_next_card)) {
