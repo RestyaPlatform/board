@@ -1144,8 +1144,11 @@ App.FooterView = Backbone.View.extend({
                                             card.set('description', activity.attributes.revisions.new_value.description);
                                         }
                                         if (!_.isUndefined(card)) {
-                                            if ((!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null) && (activity.attributes.type === "add_card_custom_field" || activity.attributes.type === "update_card_custom_field" || activity.attributes.type === "delete_card_custom_field") && !_.isEmpty(activity.attributes.custom_fields) && !_.isUndefined(activity.attributes.custom_fields) && activity.attributes.custom_fields !== null) {
+                                            if ((!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && $.inArray('r_custom_fields', APPS.enabled_apps)) && (activity.attributes.type === "add_card_custom_field" || activity.attributes.type === "update_card_custom_field" || activity.attributes.type === "delete_card_custom_field") && !_.isEmpty(activity.attributes.custom_fields) && !_.isUndefined(activity.attributes.custom_fields) && activity.attributes.custom_fields !== null) {
                                                 $('body').trigger('CutomFieldsRendered', [parseInt(activity.attributes.card_id), card]);
+                                            }
+                                            if ((!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && $.inArray('r_gantt_view', APPS.enabled_apps)) && (activity.attributes.type === "add_card_dependency" || activity.attributes.type === "delete_card_dependency")) {
+                                                $('body').trigger('DependencyRendered', [activity.attributes, card]);
                                             }
                                             if (activity.attributes.type === 'add_card_duedate') {
                                                 card.set('end', activity.attributes.revisions.new_value.due_date);
@@ -1160,20 +1163,22 @@ App.FooterView = Backbone.View.extend({
                                                 card.set('start', activity.attributes.revisions.new_value.due_date);
                                                 card.set('due_date', null);
                                             }
-                                            if (!_.isEmpty(activity.attributes.revisions)) {
-                                                if (activity.attributes.revisions.new_value.card_id) {
-                                                    activity.attributes.revisions.new_value.id = parseInt(activity.attributes.revisions.new_value.card_id);
-                                                }
-                                                if (activity.attributes.revisions.new_value.board_id) {
-                                                    activity.attributes.revisions.new_value.board_id = parseInt(activity.attributes.revisions.new_value.board_id);
-                                                }
-                                                if (activity.attributes.revisions.new_value.list_id) {
-                                                    activity.attributes.revisions.new_value.list_id = parseInt(activity.attributes.revisions.new_value.list_id);
+                                            if (!_.isEmpty(activity.attributes.revisions) && activity.attributes.type !== 'update_card_checklist') {
+                                                if (!_.isUndefined(activity.attributes.revisions.new_value) && activity.attributes.revisions.new_value !== null) {
+                                                    if (activity.attributes.revisions.new_value.card_id) {
+                                                        activity.attributes.revisions.new_value.id = parseInt(activity.attributes.revisions.new_value.card_id);
+                                                    }
+                                                    if (activity.attributes.revisions.new_value.board_id) {
+                                                        activity.attributes.revisions.new_value.board_id = parseInt(activity.attributes.revisions.new_value.board_id);
+                                                    }
+                                                    if (activity.attributes.revisions.new_value.list_id) {
+                                                        activity.attributes.revisions.new_value.list_id = parseInt(activity.attributes.revisions.new_value.list_id);
+                                                    }
+                                                    card.set(activity.attributes.revisions.new_value);
                                                 }
                                                 if (activity.attributes.type === "archived_card") {
                                                     card.set('modeified', activity.attributes.created);
                                                 }
-                                                card.set(activity.attributes.revisions.new_value);
                                             }
                                             if ((!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null) && (activity.attributes.type === "add_card_estimatedtime" || activity.attributes.type === "edit_card_estimatedtime" || activity.attributes.type === "delete_card_estimatedtime" || activity.attributes.type === "add_card_spenttime" || activity.attributes.type === "edit_card_spenttime" || activity.attributes.type === "delete_card_spenttime" || activity.attributes.type === "add_card_startdate" || activity.attributes.type === "edit_card_startdate" || activity.attributes.type === "delete_card_startdate") && !_.isEmpty(activity.attributes.revisions.new_value.custom_fields)) {
                                                 $('body').trigger('cardCutomFieldsRendered', [parseInt(activity.attributes.revisions.new_value.id), card]);
