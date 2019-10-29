@@ -34,7 +34,7 @@ class ActivityHandler
     {
         global $r_debug, $db_lnk, $authUser, $_server_domain_url;
         $obj_type = $obj['type'];
-        if (!empty($obj['revisions']) && trim($obj['revisions']) !== '' && $obj_type !== 'delete_label' && $obj_type !== 'change_grid_view_configuration' && $obj_type !== 'change_list_view_configuration' && $obj_type !== 'update_label') {
+        if (!empty($obj['revisions']) && trim($obj['revisions']) !== '' && $obj_type !== 'delete_label' && $obj_type !== 'change_grid_view_configuration' && $obj_type !== 'change_list_view_configuration' && $obj_type !== 'update_label' && $obj_type !== 'delete_card_dependency') {
             $revisions = unserialize($obj['revisions']);
             $obj['revisions'] = $revisions;
             $diff = array();
@@ -221,6 +221,36 @@ class ActivityHandler
             );
             $list = executeQuery('SELECT * FROM lists WHERE id = $1', $conditions);
             $obj['list'] = $list;
+        } else if ($obj['type'] == 'add_card_dependency') {
+            if (is_plugin_enabled('r_gantt_view')) {
+                $val_array = array(
+                    $obj['card_id']
+                );
+                $child_cards = pg_query_params($db_lnk, 'SELECT child_card_id FROM card_dependencies WHERE parent_card_id = $1', $val_array);
+                $childcards = array();
+                while ($row = pg_fetch_assoc($child_cards)) {
+                    if (!empty($row)) {
+                        $condition = array(
+                            $row['child_card_id']
+                        );
+                        $childCard = executeQuery('SELECT id, created, board_id, list_id, due_date, custom_fields FROM cards where id = $1', $condition);
+                        $childcards[] = $childCard;
+                    }
+                }
+                $obj['child_cards'] = $childcards;
+                $parent_cards = pg_query_params($db_lnk, 'SELECT parent_card_id FROM card_dependencies WHERE child_card_id = $1', $val_array);
+                $parentcards = array();
+                while ($row = pg_fetch_assoc($parent_cards)) {
+                    if (!empty($row)) {
+                        $condition = array(
+                            $row['parent_card_id']
+                        );
+                        $parentCard = executeQuery('SELECT id, created, board_id, list_id, due_date, custom_fields FROM cards where id = $1', $condition);
+                        $parentcards[] = $parentCard;
+                    }
+                }
+                $obj['parent_cards'] = $parentcards;
+            }
         }
         return $obj;
     }
