@@ -34,7 +34,7 @@ class ActivityHandler
     {
         global $r_debug, $db_lnk, $authUser, $_server_domain_url;
         $obj_type = $obj['type'];
-        if (!empty($obj['revisions']) && trim($obj['revisions']) !== '' && $obj_type !== 'delete_label' && $obj_type !== 'change_grid_view_configuration' && $obj_type !== 'change_list_view_configuration' && $obj_type !== 'update_label') {
+        if (!empty($obj['revisions']) && trim($obj['revisions']) !== '' && $obj_type !== 'delete_label' && $obj_type !== 'change_grid_view_configuration' && $obj_type !== 'change_list_view_configuration' && $obj_type !== 'update_label' && $obj_type !== 'delete_card_dependency') {
             $revisions = unserialize($obj['revisions']);
             $obj['revisions'] = $revisions;
             $diff = array();
