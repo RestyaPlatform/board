@@ -1952,7 +1952,7 @@ App.FooterView = Backbone.View.extend({
                                             });
                                         }
                                         if (!_.isUndefined(list)) {
-                                            if (activity.attributes.revisions && activity.attributes.revisions.new_value && activity.attributes.type !== 'archived_card' && activity.attributes.type !== 'archive_list') {
+                                            if (activity.attributes.revisions && activity.attributes.revisions.new_value && activity.attributes.type !== 'archived_card') {
                                                 if (!_.isUndefined(activity.attributes.revisions) && !_.isEmpty(activity.attributes.revisions)) {
                                                     list.set(activity.attributes.revisions.new_value);
                                                 }
@@ -2015,7 +2015,7 @@ App.FooterView = Backbone.View.extend({
                                                     $('#js-card-listing-' + list.id).html('<span class="js-list-placeholder-' + list.id + '">&nbsp;</span>');
                                                     // $('#js-card-listing-' + list.id).html('&nbsp;');
                                                 }
-                                            } else if (activity.attributes.type === 'archived_card' || activity.attributes.type === 'archive_list') {
+                                            } else if (activity.attributes.type === 'archived_card') {
                                                 var list_cards = self.board.cards.where({
                                                     list_id: parseInt(activity.attributes.list_id)
                                                 });
@@ -2034,10 +2034,6 @@ App.FooterView = Backbone.View.extend({
                                                     }
                                                     $('#js-card-listing-' + list.id).find('.js-list-placeholder-' + list.id).remove();
                                                     $('#js-card-listing-' + list.id).html('<span class="js-list-placeholder-' + list.id + '">&nbsp;</span>');
-                                                    // $('#js-card-listing-' + list.id).html('&nbsp;');
-                                                }
-                                                if (!_.isUndefined(activity.attributes.revisions) && !_.isEmpty(activity.attributes.revisions)) {
-                                                    list.set(activity.attributes.revisions.new_value);
                                                 }
                                             }
                                         }
