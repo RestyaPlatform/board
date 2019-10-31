@@ -2049,6 +2049,10 @@ App.FooterView = Backbone.View.extend({
                                             } else {
                                                 board_fields = JSON.parse(activity.attributes.revisions);
                                             }
+                                            if (activity.attributes.type === 'update_sort_card') {
+                                                window.sort_by = activity.attributes.revisions.new_value.sort_by;
+                                                window.sort_direction = activity.attributes.revisions.new_value.sort_direction;
+                                            }
                                             self.board.set(activity.attributes.revisions.new_value);
                                             if (!_.isUndefined(board_fields.is_show_image_front_of_card)) {
                                                 if (board_fields.is_show_image_front_of_card) {

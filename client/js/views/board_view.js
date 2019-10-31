@@ -46,8 +46,8 @@ App.BoardView = Backbone.View.extend({
         _.bindAll(this, 'render', 'renderListsCollection', 'renderActivitiesCollection', 'setBoardBackground', 'renderBoarduserCollection');
         this.model.bind('change:name change:is_closed', this.render);
         this.model.bind('change:background_color change:background_picture_url change:background_pattern_url', this.setBoardBackground);
-        this.model.bind('change:sort_by', this.render);
-        this.model.bind('change:sort_direction', this.render);
+        this.model.bind('change:sort_by', this.renderListsCollection);
+        this.model.bind('change:sort_direction', this.renderListsCollection);
         this.model.bind('change:music_content', this.musical);
         this.model.labels.bind('remove', this.renderListsCollection);
         this.model.lists.bind('add', this.renderListsCollection);
