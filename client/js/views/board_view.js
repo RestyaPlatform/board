@@ -841,7 +841,7 @@ App.BoardView = Backbone.View.extend({
                         var card = self.model.cards.findWhere({
                             id: parseInt(trigger_card_ids[i])
                         });
-                        if (!_.isUndefined(card)) {
+                        if (!_.isUndefined(card) && card !== null && parseInt(card.board_id) === parseInt(self.model.id)) {
                             card.list = self.model.lists.findWhere({
                                 id: card.attributes.list_id
                             });
