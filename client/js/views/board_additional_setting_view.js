@@ -42,19 +42,21 @@ App.BoardAdditionalSettingsView = Backbone.View.extend({
     updateSortBy: function(e) {
         e.preventDefault();
         var target = $(e.target);
-        var sort_by = target.find('.js-sort-by-group').val();
-        var sort_direction = target.find('.js-sort-direction-group').val();
+        var board_sort_by = target.find('.js-sort-by-group').val();
+        var board_sort_direction = target.find('.js-sort-direction-group').val();
         var board = new App.Board();
         board.url = api_url + 'boards/' + this.model.id + '.json';
-        App.boards.get(this.model.id).set('sort_by', sort_by);
-        App.boards.get(this.model.id).set('sort_direction', sort_direction);
-        this.model.set('sort_by', sort_by);
-        this.model.set('sort_direction', sort_direction);
+        App.boards.get(this.model.id).set('sort_by', board_sort_by);
+        App.boards.get(this.model.id).set('sort_direction', board_sort_direction);
+        window.sort_by = board_sort_by;
+        window.sort_direction = board_sort_direction;
+        this.model.set('sort_by', board_sort_by);
+        this.model.set('sort_direction', board_sort_direction);
         $('.js-back-to-sidebar').trigger('click');
         $('.js-show-board-actions').parent('.dropdown').removeClass('open');
         board.save({
-            sort_by: sort_by,
-            sort_direction: sort_direction,
+            sort_by: board_sort_by,
+            sort_direction: board_sort_direction,
             id: this.model.id
         }, {
             success: function(model, response) {}
