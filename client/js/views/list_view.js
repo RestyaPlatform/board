@@ -707,11 +707,7 @@ App.ListView = Backbone.View.extend({
             position = $(e.target).find('#list_position').val();
         }
         var board_id = parseInt(data.board_id);
-        if (sort_by !== null && sort_direction !== null) {
-            this.model.collection.sortByColumn(sort_by, sort_direction);
-        } else {
-            this.model.collection.sortByColumn('position', 'asc');
-        }
+        this.model.collection.sortByColumn('position', 'asc');
         if (board_id !== this.model.attributes.board_id) {
             this.model.collection.remove({
                 id: list_id
@@ -721,19 +717,21 @@ App.ListView = Backbone.View.extend({
             var current_position = 0;
             App.boards.get(board_id).lists.sortByColumn('position', 'asc');
             App.boards.get(board_id).lists.each(function(list) {
-                i++;
-                if (typeof next_list_id != 'undefined') {
-                    return false;
-                }
-                if (position == i) {
-                    current_position = list.get('position');
-                    if (position == 1) {
-                        next_list_id = list.get('id');
+                if (list.attributes.is_archived === 0) {
+                    i++;
+                    if (typeof next_list_id != 'undefined') {
+                        return false;
                     }
-                } else if (current_position !== 0) {
-                    next_list_id = list.get('id');
-                } else {
-                    previous_list_id = list.get('id');
+                    if (position == i) {
+                        current_position = list.get('position');
+                        if (position == 1) {
+                            next_list_id = list.get('id');
+                        }
+                    } else if (current_position !== 0) {
+                        next_list_id = list.get('id');
+                    } else {
+                        previous_list_id = list.get('id');
+                    }
                 }
             });
             var moved_list;
