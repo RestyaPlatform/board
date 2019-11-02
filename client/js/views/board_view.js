@@ -614,7 +614,7 @@ App.BoardView = Backbone.View.extend({
     render: function() {
         touchPunchDelay = 100;
         var self = this;
-        sort_by = (this.model.attributes.sort_by) ? this.model.attributes.sort_direction : 'position';
+        sort_by = (this.model.attributes.sort_by) ? this.model.attributes.sort_by : 'position';
         sort_direction = (this.model.attributes.sort_direction) ? this.model.attributes.sort_direction : 'asc';
         $('body').addClass('modal-open');
         if (!_.isUndefined(App.boards) && !_.isUndefined(App.boards.sortField) && App.boards.sortField !== null && App.boards.sortField !== 'name') {
