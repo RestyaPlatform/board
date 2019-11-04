@@ -1047,7 +1047,11 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             }
             $check_visibility = executeQuery($s_sql, $arr);
             if (!empty($check_visibility)) {
-                $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM boards_listing ul WHERE id = $1 ORDER BY id DESC) as d';
+                if (isset($_GET["type"]) && $_GET["type"] == "instant_card") {
+                    $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM instant_board_listing ul WHERE id = $1 ORDER BY id DESC) as d';
+                } else {
+                    $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM boards_listing ul WHERE id = $1 ORDER BY id DESC) as d';
+                }
                 array_push($pg_params, $r_resource_vars['boards']);
                 if (!empty($sql)) {
                     if ($result = pg_query_params($db_lnk, $sql, $pg_params)) {
@@ -1081,15 +1085,17 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                             }
                             $data = $obj;
                         }
-                        if (is_plugin_enabled('r_custom_fields')) {
-                            require_once PLUGIN_PATH . DS . 'CustomFields' . DS . 'functions.php';
-                            $data = customFieldAfterFetchBoard($r_resource_cmd, $r_resource_vars, $r_resource_filters, $data);
-                            array_merge($data, $data);
-                        }
-                        if (is_plugin_enabled('r_gantt_view')) {
-                            require_once PLUGIN_PATH . DS . 'Gantt' . DS . 'functions.php';
-                            $data = cardDependencyAfterFetchBoard($r_resource_cmd, $r_resource_vars, $r_resource_filters, $data);
-                            array_merge($data, $data);
+                        if (isset($_GET["type"]) && $_GET["type"] != "instant_card") {
+                            if (is_plugin_enabled('r_custom_fields')) {
+                                require_once PLUGIN_PATH . DS . 'CustomFields' . DS . 'functions.php';
+                                $data = customFieldAfterFetchBoard($r_resource_cmd, $r_resource_vars, $r_resource_filters, $data);
+                                array_merge($data, $data);
+                            }
+                            if (is_plugin_enabled('r_gantt_view')) {
+                                require_once PLUGIN_PATH . DS . 'Gantt' . DS . 'functions.php';
+                                $data = cardDependencyAfterFetchBoard($r_resource_cmd, $r_resource_vars, $r_resource_filters, $data);
+                                array_merge($data, $data);
+                            }
                         }
                         echo json_encode($data);
                         pg_free_result($result);
