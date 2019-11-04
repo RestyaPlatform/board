@@ -1945,7 +1945,9 @@ App.FooterView = Backbone.View.extend({
                                                             var attachment_card = self.board.cards.findWhere({
                                                                 id: parseInt(attachment.card_id)
                                                             });
-                                                            attachment_card.attachments.unshift(new_card_attachment);
+                                                            if (!_.isUndefined(attachment_card) && attachment_card !== null) {
+                                                                attachment_card.attachments.unshift(new_card_attachment);
+                                                            }
                                                         });
                                                     }
                                                 }
@@ -2349,8 +2351,9 @@ App.FooterView = Backbone.View.extend({
                                         }
                                     } else if (activity.attributes.type === 'move_list') {
                                         var old_list_board_id = parseInt(activity.attributes.revisions.old_value.board_id);
+                                        var lists_id = parseInt(activity.attributes.list.id);
                                         var old_list_position = parseFloat(activity.attributes.revisions.old_value.position);
-                                        var old_board_list_details = App.boards.get(old_list_board_id).lists.get(parseInt(activity.attributes.list.id));
+                                        var old_board_list_details = App.boards.get(old_list_board_id).lists.get(lists_id);
                                         var oldBoardlist = new App.List();
                                         oldBoardlist.set(old_board_list_details.attributes);
                                         oldBoardlist.set('id', parseInt(activity.attributes.list.id));
