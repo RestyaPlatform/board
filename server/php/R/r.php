@@ -1085,7 +1085,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                             }
                             $data = $obj;
                         }
-                        if (isset($_GET["type"]) && $_GET["type"] != "instant_card") {
+                        if (!isset($_GET["type"]) || (isset($_GET["type"]) && $_GET["type"] != "instant_card")) {
                             if (is_plugin_enabled('r_custom_fields')) {
                                 require_once PLUGIN_PATH . DS . 'CustomFields' . DS . 'functions.php';
                                 $data = customFieldAfterFetchBoard($r_resource_cmd, $r_resource_vars, $r_resource_filters, $data);
