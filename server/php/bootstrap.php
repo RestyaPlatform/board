@@ -44,11 +44,6 @@ function main()
         $r_resource_cmd = preg_replace('/\/\d+/', '/?', $_url_parts_with_ext[0]);
         header('Content-Type: application/json');
         if (!defined('STDIN') && !file_exists(CLIENT_INFORMATION) && !empty($_server_domain_url)) {
-            doPost('http://restya.com/clients', array(
-                'app' => 'board',
-                'ver' => '0.6.7',
-                'url' => $_server_domain_url
-            ));
             $fh = fopen(CLIENT_INFORMATION, 'a');
             fwrite($fh, '<?php' . "\n");
             fwrite($fh, '$_server_domain_url = \'' . $_server_domain_url . '\';');
