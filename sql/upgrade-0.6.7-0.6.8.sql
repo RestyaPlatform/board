@@ -244,6 +244,8 @@ INSERT INTO "acl_links_roles" ("created", "modified", "acl_link_id", "role_id") 
 (now(), now(), (select id from acl_links where slug='unsubscribe_card'), '1'),
 (now(), now(), (select id from acl_links where slug='unsubscribe_card'), '2');
 
+DROP VIEW "simple_board_listing";
+
 CREATE OR REPLACE VIEW simple_board_listing AS
 SELECT board.id,
     board.name,

@@ -7131,7 +7131,7 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
             }
             $activity_type = 'edit_card_desc';
         }
-        if (isset($previous_value['list_id']) && isset($r_put['list_id']) && $r_put['list_id'] != $previous_value['list_id']) {
+        if (isset($previous_value['list_id']) && isset($r_put['list_id']) && $r_put['list_id'] != $previous_value['list_id'] && isset($previous_value['board_id']) && isset($r_put['board_id']) && $r_put['board_id'] == $previous_value['board_id']) {
             $qry_val_arr = array(
                 $r_put['list_id']
             );

@@ -3408,12 +3408,12 @@ function update_query($table_name, $id, $r_resource_cmd, $r_put, $comment = '', 
         }
         if (!empty($comment)) {
             $revision = '';
-            if ($activity_type != 'reopen_board' && $activity_type != 'close_board' && $activity_type != 'moved_list_card' && $activity_type != 'moved_card_checklist_item' && $activity_type != 'delete_organization_attachment' && $activity_type != 'move_card') {
+            if ($activity_type != 'reopen_board' && $activity_type != 'close_board' && $activity_type != 'moved_list_card' && $activity_type != 'moved_card_checklist_item' && $activity_type != 'delete_organization_attachment') {
                 $qry_va_arr = array(
                     $id
                 );
                 $revisions['old_value'] = executeQuery('SELECT ' . $sfields . ' FROM ' . $table_name . ' WHERE id =  $1', $qry_va_arr);
-                if ($activity_type != 'change_list_position' && $activity_type != 'change_card_position') {
+                if ($activity_type != 'change_list_position' && $activity_type != 'change_card_position' && $activity_type != 'move_card') {
                     if (!empty($r_put['position'])) {
                         unset($r_put['position']);
                     }

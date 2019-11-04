@@ -2442,6 +2442,116 @@ App.FooterView = Backbone.View.extend({
                                                 }
                                             }
                                         }
+                                    } else if (activity.attributes.type === 'add_card' || activity.attributes.type === 'copy_card') {
+                                        var board_new_card = new App.Card();
+                                        board_new_card.set(activity.attributes.card);
+                                        var new_card_voter = isNaN(activity.attributes.card.card_voter_count) ? 0 : activity.attributes.card.card_voter_count;
+                                        new_card_voter = parseInt(new_card_voter);
+                                        var new_card_checklist_count = isNaN(activity.attributes.card.checklist_item_count) ? 0 : activity.attributes.card.checklist_item_count;
+                                        new_card_checklist_count = parseInt(new_card_checklist_count);
+                                        var new_card_attachment = isNaN(activity.attributes.card.attachment_count) ? 0 : activity.attributes.card.attachment_count;
+                                        new_card_attachment = parseInt(new_card_attachment);
+                                        board_new_card.set('id', parseInt(activity.attributes.card.id));
+                                        board_new_card.set('board_id', parseInt(activity.attributes.card.board_id));
+                                        board_new_card.set('list_id', parseInt(activity.attributes.card.list_id));
+                                        board_new_card.set('list_name', parseInt(activity.attributes.card.list_name));
+                                        board_new_card.set('is_archived', 0);
+                                        board_new_card.set('position', parseFloat(activity.attributes.card.position));
+                                        board_new_card.set('comment_count', 0);
+                                        board_new_card.set('card_voter_count', new_card_voter);
+                                        board_new_card.set('checklist_item_count', new_card_checklist_count);
+                                        board_new_card.set('checklist_item_completed_count', 0);
+                                        board_new_card.set('checklist_item_pending_count', new_card_checklist_count);
+                                        board_new_card.set('attachment_count', new_card_attachment);
+                                        board_new_card.set('created', activity.attributes.card.created);
+                                        if (!_.isUndefined(activity.attributes.card.due_date) && activity.attributes.card.due_date !== null) {
+                                            board_new_card.set('created', activity.attributes.card.created);
+                                        }
+                                        if (!_.isUndefined(App.boards) && !_.isUndefined(App.boards.get(board_new_card.attributes.board_id))) {
+                                            var is_card_exist = App.boards.get(parseInt(board_new_card.attributes.board_id)).cards.get(parseInt(activity.attributes.card.id));
+                                            if (_.isUndefined(is_card_exist) || _.isEmpty(is_card_exist) || is_card_exist === null) {
+                                                var board_new_card_list = App.boards.get(parseInt(board_new_card.attributes.board_id)).lists.get(parseInt(board_new_card.attributes.list_id));
+                                                var board_new_card_list_count = isNaN(board_new_card_list.attributes.card_count) ? 0 : board_new_card_list.attributes.card_count;
+                                                board_new_card_list_count = board_new_card_list_count + 1;
+                                                App.boards.get(parseInt(board_new_card.attributes.board_id)).lists.get(parseInt(board_new_card.attributes.list_id)).set('card_count', board_new_card_list_count);
+                                                App.boards.get(parseInt(board_new_card.attributes.board_id)).cards.add(board_new_card);
+                                                if (App.boards.get(parseInt(board_new_card.attributes.board_id)).attributes.cards === null) {
+                                                    App.boards.get(parseInt(board_new_card.attributes.board_id)).attributes.cards = [];
+                                                }
+                                                if (App.boards.get(parseInt(board_new_card.attributes.board_id)).attributes.cards !== null) {
+                                                    App.boards.get(parseInt(board_new_card.attributes.board_id)).cards.add(board_new_card);
+                                                    App.boards.get(parseInt(board_new_card.attributes.board_id)).attributes.cards.push(board_new_card);
+                                                }
+                                            }
+                                        }
+                                    } else if (activity.attributes.type === 'move_card') {
+                                        var card_revision = activity.attributes.revisions;
+                                        var cardDetails = activity.attributes.card;
+                                        var old_card_list = parseInt(activity.attributes.revisions.old_value.list_id);
+                                        var new_card_list = parseInt(activity.attributes.revisions.new_value.list_id);
+                                        var new_card_position = parseFloat(activity.attributes.revisions.new_value.position);
+                                        var moved_card, oldList, newCardList, oldListCardCount, newListCardCount;
+                                        if (!_.isUndefined(card_revision.new_value.board_id) && card_revision.new_value.board_id !== null) {
+                                            var old_card_board_id = parseInt(activity.attributes.revisions.old_value.board_id);
+                                            var new_card_board_id = parseInt(activity.attributes.revisions.new_value.board_id);
+                                            moved_card = App.boards.get(old_card_board_id).cards.get(parseInt(cardDetails.id));
+                                            moved_card.attributes.list_id = parseInt(cardDetails.list_id);
+                                            moved_card.attributes.board_id = parseInt(cardDetails.board_id);
+                                            moved_card.attributes.position = parseFloat(cardDetails.position);
+                                            App.boards.get(new_card_board_id).cards.add(moved_card);
+                                            moved_card.collection = App.boards.get(new_card_board_id).cards;
+                                            App.boards.get(old_card_board_id).cards.remove(parseInt(cardDetails.id));
+                                            oldList = App.boards.get(old_card_board_id).lists.get(old_card_list);
+                                            oldListCardCount = isNaN(oldList.attributes.card_count) ? 0 : oldList.attributes.card_count;
+                                            oldListCardCount = parseInt(oldListCardCount);
+                                            if (oldListCardCount > 0) {
+                                                oldListCardCount = oldListCardCount - 1;
+                                            }
+                                            App.boards.get(old_card_board_id).lists.get(old_card_list).set('card_count', oldListCardCount);
+                                            newCardList = App.boards.get(new_card_board_id).lists.get(new_card_list);
+                                            newListCardCount = isNaN(newCardList.attributes.card_count) ? 0 : newCardList.attributes.card_count;
+                                            newListCardCount = parseInt(newListCardCount);
+                                            newListCardCount = newListCardCount + 1;
+                                            App.boards.get(new_card_board_id).lists.get(new_card_list).set('card_count', newListCardCount);
+                                            App.boards.get(new_card_board_id).cards.get(parseInt(cardDetails.id)).set('position', new_card_position);
+                                        } else {
+                                            var card_board_id = parseInt(activity.attributes.board_id);
+                                            moved_card = App.boards.get(card_board_id).cards.get(parseInt(cardDetails.id));
+                                            moved_card.attributes.list_id = parseInt(cardDetails.list_id);
+                                            moved_card.attributes.board_id = parseInt(card_board_id);
+                                            moved_card.attributes.position = parseFloat(cardDetails.position);
+                                            oldList = App.boards.get(card_board_id).lists.get(old_card_list);
+                                            oldListCardCount = isNaN(oldList.attributes.card_count) ? 0 : oldList.attributes.card_count;
+                                            oldListCardCount = parseInt(oldListCardCount);
+                                            if (oldListCardCount > 0) {
+                                                oldListCardCount = oldListCardCount - 1;
+                                            }
+                                            App.boards.get(card_board_id).lists.get(old_card_list).set('card_count', oldListCardCount);
+                                            newCardList = App.boards.get(card_board_id).lists.get(new_card_list);
+                                            newListCardCount = isNaN(newCardList.attributes.card_count) ? 0 : newCardList.attributes.card_count;
+                                            newListCardCount = parseInt(newListCardCount);
+                                            newListCardCount = newListCardCount + 1;
+                                            App.boards.get(card_board_id).lists.get(new_card_list).set('card_count', newListCardCount);
+                                        }
+                                    } else if (activity.attributes.type === 'moved_list_card') {
+                                        var cardOldListId = parseInt(activity.attributes.list_id);
+                                        var moveCardListId = parseInt(activity.attributes.foreign_id);
+                                        var movecardBoard = parseInt(activity.attributes.board_id);
+                                        var moveCards = App.boards.get(movecardBoard).cards.where({
+                                            'list_id': cardOldListId
+                                        });
+                                        var OldCardList = App.boards.get(movecardBoard).lists.get(cardOldListId);
+                                        var OldCardListCardCount = isNaN(OldCardList.attributes.card_count) ? 0 : OldCardList.attributes.card_count;
+                                        OldCardListCardCount = parseInt(OldCardListCardCount);
+                                        var moveCardList = App.boards.get(movecardBoard).lists.get(moveCardListId);
+                                        var moveListCardCount = isNaN(moveCardList.attributes.card_count) ? 0 : moveCardList.attributes.card_count;
+                                        moveListCardCount = parseInt(moveListCardCount);
+                                        var totalCardCount = OldCardListCardCount + moveListCardCount;
+                                        moveCardList.set('card_count', totalCardCount);
+                                        OldCardList.set('card_count', 0);
+                                        _.each(moveCards, function(card) {
+                                            card.set('list_id', moveCardListId);
+                                        });
                                     }
                                 }
                             }
