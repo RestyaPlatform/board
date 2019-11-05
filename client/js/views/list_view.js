@@ -1451,7 +1451,7 @@ App.ListView = Backbone.View.extend({
                 }
                 if (parseInt(e.attributes.is_archived) === 0) {
                     var card_exist = false;
-                    if (sort_by !== 'position' && $('#js-card-' + e.attributes.id).length === 1) {
+                    if ($('#js-card-' + e.attributes.id).length === 1) {
                         if ($('#js-card-modal-' + e.attributes.id).length === 1) {
                             card_exist = true;
                         }
@@ -1472,23 +1472,21 @@ App.ListView = Backbone.View.extend({
                         }
                         var bool = true;
                         i = 0;
-                        if ($('#js-card-' + e.attributes.id).length === 0) {
-                            self.model.cards.each(function(card) {
-                                if (bool) {
-                                    if (parseInt(card.attributes.id) === parseInt(e.attributes.id)) {
-                                        if (!_.isUndefined(self.model.cards.models[i - 1])) {
-                                            var prev_card_id = self.model.cards.models[i - 1].id;
-                                            $('#js-card-' + prev_card_id).after(view.render().el);
-                                            bool = false;
-                                        } else {
-                                            $('#js-card-listing-' + e.attributes.list_id).prepend(view.render().el);
-                                            bool = false;
-                                        }
+                        self.model.cards.each(function(card) {
+                            if (bool) {
+                                if (parseInt(card.attributes.id) === parseInt(e.attributes.id)) {
+                                    if (!_.isUndefined(self.model.cards.models[i - 1])) {
+                                        var prev_card_id = self.model.cards.models[i - 1].id;
+                                        $('#js-card-' + prev_card_id).after(view.render().el);
+                                        bool = false;
+                                    } else {
+                                        $('#js-card-listing-' + e.attributes.list_id).prepend(view.render().el);
+                                        bool = false;
                                     }
-                                    i++;
                                 }
-                            });
-                        }
+                                i++;
+                            }
+                        });
                     }
                     if (card_exist) {
                         $('#js-card-' + e.attributes.id).addClass('active');
