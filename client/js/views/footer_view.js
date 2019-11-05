@@ -1174,10 +1174,10 @@ App.FooterView = Backbone.View.extend({
                                                     if (activity.attributes.revisions.new_value.list_id) {
                                                         activity.attributes.revisions.new_value.list_id = parseInt(activity.attributes.revisions.new_value.list_id);
                                                     }
+                                                    if (activity.attributes.type === "archived_card") {
+                                                        card.set('modified', activity.attributes.created);
+                                                    }
                                                     card.set(activity.attributes.revisions.new_value);
-                                                }
-                                                if (activity.attributes.type === "archived_card") {
-                                                    card.set('modeified', activity.attributes.created);
                                                 }
                                             }
                                             if ((!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null) && (activity.attributes.type === "add_card_estimatedtime" || activity.attributes.type === "edit_card_estimatedtime" || activity.attributes.type === "delete_card_estimatedtime" || activity.attributes.type === "add_card_spenttime" || activity.attributes.type === "edit_card_spenttime" || activity.attributes.type === "delete_card_spenttime" || activity.attributes.type === "add_card_startdate" || activity.attributes.type === "edit_card_startdate" || activity.attributes.type === "delete_card_startdate") && !_.isEmpty(activity.attributes.revisions.new_value.custom_fields)) {
