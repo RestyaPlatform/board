@@ -42,12 +42,12 @@ App.BoardHeaderView = Backbone.View.extend({
         this.model.bind('change:is_closed', this.render, this);
         this.model.lists.bind('remove', this.showArchivedListLists, this);
         this.model.cards.bind('change:name', this.showArchivedCardsList, this);
+        this.model.cards.bind('change:is_archived', this.updateListView, this);
         this.model.cards.bind('change:is_archived', this.showArchivedCardsList, this);
         this.model.cards.bind('remove', this.showArchivedCardsList, this);
         this.model.cards.bind('add', this.cardFilter, this);
         this.model.cards.bind('add', this.updateListView, this);
         this.model.cards.bind('remove', this.updateListView, this);
-        this.model.cards.bind('change:is_archived', this.updateListView, this);
         this.model.cards.bind('change:list_id', this.updateListView, this);
         this.model.cards.bind('change:comment_count', this.updateListView, this);
         this.model.cards.bind('change:custom_fields', this.updateListView, this);
@@ -1145,7 +1145,8 @@ App.BoardHeaderView = Backbone.View.extend({
                                     });
                                 }
                             });
-                            self.model.cards.reset(filtered_cards);
+                            var cards = new App.CardCollection();
+                            cards.reset(filtered_cards);
                             var listviewsortby, listviewsortdirection;
                             if (!_.isUndefined(App.current_board) && !_.isUndefined(App.current_board) && App.current_board !== null && !_.isUndefined(App.current_board.attributes.listviewsortby) && App.current_board.attributes.listviewsortby !== null) {
                                 listviewsortby = App.current_board.attributes.listviewsortby;
@@ -1154,23 +1155,23 @@ App.BoardHeaderView = Backbone.View.extend({
                                 listviewsortby = 'id';
                                 listviewsortdirection = 'desc';
                             }
-                            self.model.cards.sortByColumn(listviewsortby, listviewsortdirection);
-                            var list_filtered_cards = self.model.cards.where({
+                            cards.sortByColumn(listviewsortby, listviewsortdirection);
+                            var list_filtered_cards = cards.where({
                                 is_archived: 0,
                                 list_id: parseInt(e.attributes.list_id),
                             });
                             e.list.cards.reset(list_filtered_cards);
                             var bool = true;
                             i = 0;
-                            self.model.cards.each(function(card) {
+                            cards.each(function(card) {
                                 if (bool && !_.isUndefined(card.list) && parseInt(card.list.get('is_archived')) === 0) {
                                     if (parseInt(card.attributes.id) === parseInt(e.attributes.id)) {
-                                        if (!_.isUndefined(self.model.cards.models[i - 1])) {
-                                            var prev_card_id = self.model.cards.models[i - 1].id;
+                                        if (!_.isUndefined(cards.models[i - 1])) {
+                                            var prev_card_id = cards.models[i - 1].id;
                                             $('#js-card-' + prev_card_id).after(view.render().el);
                                             bool = false;
-                                        } else if (!_.isUndefined(self.model.cards.models[i + 1])) {
-                                            var next_card_id = self.model.cards.models[i + 1].id;
+                                        } else if (!_.isUndefined(cards.models[i + 1])) {
+                                            var next_card_id = cards.models[i + 1].id;
                                             $('#js-card-' + next_card_id).before(view.render().el);
                                             bool = false;
                                         } else {
@@ -2026,6 +2027,9 @@ App.BoardHeaderView = Backbone.View.extend({
         var card = new App.Card();
         card.set('id', card_id);
         card.set('is_archived', 0);
+        card.unset('is_filtered', {
+            silent: true
+        });
         card.url = api_url + 'boards/' + this.model.attributes.id + '/lists/' + find_card.attributes.list_id + '/cards/' + card_id + '.json';
         card.save({
             success: function(model, response) {}

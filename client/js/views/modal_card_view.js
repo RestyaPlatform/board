@@ -1612,8 +1612,17 @@ App.ModalCardView = Backbone.View.extend({
                                 changeTitle('Board - ' + _.escape(App.current_board.attributes.name));
                             } else {
                                 var board_id = window.location.hash.split("/");
-                                current_param = 'board/' + board_id['2'];
-                                changeTitle('Board - ' + _.escape(App.current_board.attributes.name));
+                                if (!_.isUndefined(board_id['3']) && !_.isEmpty(board_id['3']) && board_id['3'] !== null) {
+                                    current_param = 'board/' + board_id['2'] + '/' + board_id['3'];
+                                    if (board_id['3'] === 'list') {
+                                        changeTitle('Board - ' + _.escape(App.current_board.attributes.name) + '- List');
+                                    } else if (board_id['3'] === 'calendar') {
+                                        changeTitle('Board - ' + _.escape(App.current_board.attributes.name) + '- Calendar');
+                                    }
+                                } else {
+                                    current_param = 'board/' + board_id['2'];
+                                    changeTitle('Board - ' + _.escape(App.current_board.attributes.name));
+                                }
                             }
                             current_param = current_param.replace("//", '');
                             current_param = current_param.replace("/board", 'board');
