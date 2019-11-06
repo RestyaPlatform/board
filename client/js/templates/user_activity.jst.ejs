@@ -37,11 +37,13 @@
 					<div class="media-heading">
 						<% if(activity.attributes.type == 'add_comment' || activity.attributes.type == 'edit_comment') { %>	
 							<span><%= comment %></span>
-							<%= makeLink(converter.makeHtml((activity.attributes.comment)), activity.attributes.board_id) %>
+							<% if(activity.attributes.type == 'add_comment') { %><div class="thumbnail media-body no-mar"><% } %>
+								<%= makeLink(converter.makeHtml((activity.attributes.comment)), activity.attributes.board_id) %>
+							<% if(activity.attributes.type == 'add_comment') { %></div><% } %>
 						<% } else{%>
 							<%= makeLink(converter.makeHtml(activity.attributes.comment), activity.attributes.board_id) %> 
 						<% } %>
-						<% if(activity.attributes.difference != null && _.contains(['edit_comment', 'edit_list', 'edit_organization', 'edit_board', 'update_card_checklist', 'update_profile', 'edit_card', 'delete_card_comment', 'edit_list_color', 'delete_list_color'], activity.attributes.type)) { %>
+						<% if(activity.attributes.difference != null && _.contains(['edit_comment', 'edit_list', 'edit_organization', 'edit_board', 'update_card_checklist', 'update_profile', 'edit_card', 'edit_list_color', 'delete_list_color'], activity.attributes.type)) { %>
 							<div class="thumbnail media-body no-mar">
 								<% _.each(activity.attributes.difference, function(difference) { %>
 									<%= converter.makeHtml(difference) %>

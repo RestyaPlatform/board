@@ -103,16 +103,24 @@
 							<%if(!_.isUndefined(activity.from_footer)) { %>
 								<span><%= comment %></span>
 							<% } %>
-								<div class="panel no-mar"><div class="panel-body github-markdown no-whitespace">
-								<%= makeLink(converter.makeHtml(activity.attributes.comment), activity.attributes.board_id) %>
-								<% if(activity.attributes.difference != null && activity.attributes.difference != '' && !_.isUndefined(activity.attributes.difference['0']) && activity.attributes.difference['0'] != '' && _.contains(['edit_comment', 'edit_list', 'edit_organization', 'edit_board', 'update_card_checklist', 'update_profile', 'edit_card', 'delete_card_comment', 'edit_list_color'], activity.attributes.type)) { %>
-							<div class="<%if(!_.isUndefined(activity.from_footer)) { %>thumbnail<% } %> list-group-item-text no-whitespace">
-								<% _.each(activity.attributes.difference, function(difference) { %>
-									<%= converter.makeHtml(difference) %>
-								<% }); %>
-							</div>
-						<% } %>
-								</div></div>
+							<% if (!_.isUndefined(type) && !_.isEmpty(type) && type !== null && type === 'board_user_activity') { %>
+								<div class="thumbnail list-group-item-text no-whitespace">
+									<%= makeLink(converter.makeHtml(activity.attributes.comment), activity.attributes.board_id) %>
+								</div>
+							<% } else { %>
+								<div class="panel no-mar">
+									<div class="panel-body github-markdown no-whitespace">
+										<%= makeLink(converter.makeHtml(activity.attributes.comment), activity.attributes.board_id) %>
+										<% if(activity.attributes.difference != null && activity.attributes.difference != '' && !_.isUndefined(activity.attributes.difference['0']) && activity.attributes.difference['0'] != '' && _.contains(['edit_comment', 'edit_list', 'edit_organization', 'edit_board', 'update_card_checklist', 'update_profile', 'edit_card', 'delete_card_comment', 'edit_list_color'], activity.attributes.type)) { %>
+											<div class="<%if(!_.isUndefined(activity.from_footer)) { %>thumbnail<% } %> list-group-item-text no-whitespace">
+												<% _.each(activity.attributes.difference, function(difference) { %>
+													<%= converter.makeHtml(difference) %>
+												<% }); %>
+											</div>
+										<% } %>
+									</div>
+								</div>
+							<% } %>
 						<% } else { %>
 							<%if(_.isUndefined(activity.from_footer)) { %>
 								<div class="panel no-mar"><div class="panel-body github-markdown no-whitespace">
