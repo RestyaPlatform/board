@@ -267,7 +267,7 @@ class ActivityHandler
                         $childcards[] = $childCard;
                     }
                 }
-                $obj['child_cards'] = $childcards;                
+                $obj['child_cards'] = $childcards;
             }
         }
         return $obj;

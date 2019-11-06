@@ -62,14 +62,24 @@ App.OrganizationsListsHeaderView = Backbone.View.extend({
     sortBy: function(e) {
         e.preventDefault();
         var sortField = $(e.currentTarget).data('field');
-        if (_.isUndefined(this.sortDirection)) {
-            this.sortDirection = 'desc';
-        } else {
-            if (this.sortDirection === 'desc') {
+        if ($('.js-sort-by-organizations').hasClass('active')) {
+            $('.js-sort-by-organizations').removeClass('active');
+        }
+        $('.js-sort-down-organizations').remove();
+        $('.js-sort-up-organizations').remove();
+        if (this.sortDirection === 'desc') {
+            if (this.sortField !== 'id') {
+                $(e.target).parent().addClass('active');
+                $(e.target).html('<i class="icon icon-arrow-up js-sort-up-organizations"></i>' + i18next.t($(e.target).text()));
                 this.sortDirection = 'asc';
             } else {
-                this.sortDirection = 'desc';
+                $(e.target).parent().addClass('active');
+                $(e.target).html('<i class="icon icon-arrow-down js-sort-down-organizations"></i>' + i18next.t($(e.target).text()));
             }
+        } else {
+            $(e.target).parent().addClass('active');
+            $(e.target).html('<i class="icon icon-arrow-down js-sort-down-organizations"></i>' + i18next.t($(e.target).text()));
+            this.sortDirection = 'desc';
         }
         this.sortField = sortField;
         this.renderList();
