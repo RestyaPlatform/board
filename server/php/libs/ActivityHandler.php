@@ -251,6 +251,24 @@ class ActivityHandler
                 }
                 $obj['parent_cards'] = $parentcards;
             }
+        } else if ($obj['type'] == 'edit_card_duedate') {
+            if (is_plugin_enabled('r_gantt_view')) {
+                $val_array = array(
+                    $obj['card_id']
+                );
+                $child_cards = pg_query_params($db_lnk, 'SELECT child_card_id FROM card_dependencies WHERE parent_card_id = $1', $val_array);
+                $childcards = array();
+                while ($row = pg_fetch_assoc($child_cards)) {
+                    if (!empty($row)) {
+                        $condition = array(
+                            $row['child_card_id']
+                        );
+                        $childCard = executeQuery('SELECT id, created, board_id, list_id, due_date, custom_fields FROM cards where id = $1', $condition);
+                        $childcards[] = $childCard;
+                    }
+                }
+                $obj['child_cards'] = $childcards;                
+            }
         }
         return $obj;
     }
