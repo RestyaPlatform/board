@@ -1430,19 +1430,30 @@ App.FooterView = Backbone.View.extend({
                                                             }, 10000);
                                                             comment_string += '<small><span class="js-timeago-' + activity.attributes.id + '"></span>';
                                                             parse_date(activity.attributes.created, authuser, 'js-timeago-' + activity.attributes.id);
-                                                            if (!_.isUndefined(authuser.user)) {
-                                                                comment_string += '<div class="js-acticity-action-' + activity.attributes.id + ' pull-left navbar-btn col-md-10 col-xs-12"><ul class="list-inline"><li><a title="Reply" class="js-show-reply-activity-form js-reply-activity-link-' + activity.attributes.id + '" href="#" data-activity-id="' + activity.attributes.id + '"><i class="icon-repeat"></i>' + i18next.t('Reply') + '</a></li>';
-                                                                if (!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({
+                                                            if (!_.isUndefined(authuser.user) && !_.isEmpty(authuser.user)) {
+                                                                comment_string += '<div class="js-acticity-action-' + activity.attributes.id + ' pull-left navbar-btn col-md-10 col-xs-12"><ul class="list-inline">';
+                                                                var user = card.list.collection.board.board_users.findWhere({
+                                                                    user_id: parseInt(authuser.user.id)
+                                                                });
+                                                                if (authuser.user.role_id == 1 || ((!_.isEmpty(card.list.collection.board.acl_links.where({
+                                                                        slug: "comment_card",
+                                                                        board_user_role_id: parseInt(user.attributes.board_user_role_id)
+                                                                    }))) || (!_.isEmpty(role_links.where({
+                                                                        slug: "comment_card"
+                                                                    })) && card.list.collection.board.attributes.board_visibility == 2))) {
+                                                                    comment_string += '<li><a title="Reply" class="js-show-reply-activity-form js-reply-activity-link-' + activity.attributes.id + '" href="#" data-activity-id="' + activity.attributes.id + '"><i class="icon-repeat"></i>' + i18next.t('Reply') + '</a></li>';
+                                                                }
+                                                                if (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({
                                                                         slug: "delete_comment",
-                                                                        board_user_role_id: parseInt(activity.attributes.user_role_id)
-                                                                    })))) {
+                                                                        board_user_role_id: parseInt(user.attributes.board_user_role_id)
+                                                                    }))) {
                                                                     comment_string += '<li class="dropdown pull-right"><a title="Delete" class="dropdown-toggle js-show-confirm-comment-delete text-danger" data-toggle="dropdown" href="#" data-activity-id="' + activity.attributes.id + '" role="button"><i class="icon-remove"></i>' + i18next.t('Delete') + '</a>';
                                                                     comment_string += '<ul class="dropdown-menu arrow arrow-right"><li id="js-acticity-actions-response-' + activity.attributes.id + '" class="js-dropdown-popup dropdown-popup"></li></ul></li>';
                                                                 }
-                                                                if (!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({
+                                                                if (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({
                                                                         slug: "edit_comment",
-                                                                        board_user_role_id: parseInt(activity.attributes.user_role_id)
-                                                                    })))) {
+                                                                        board_user_role_id: parseInt(user.attributes.board_user_role_id)
+                                                                    }))) {
                                                                     comment_string += '<li class="pull-right"><a title="Edit" class="js-show-edit-activity js-edit-activity-link-' + activity.attributes.id + '" href="#" data-activity-id="' + activity.attributes.id + '" data-activity-temp-id="' + activity.attributes.temp_id + '"><i class="icon-edit"></i>' + i18next.t('Edit') + '</a></li>';
                                                                 }
                                                                 comment_string += '</ul>';

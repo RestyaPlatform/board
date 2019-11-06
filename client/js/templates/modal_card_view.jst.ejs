@@ -390,16 +390,22 @@
 			</ul>
 		</div>
 	  </div>
+	  <% var add_comment_permission = false;
+	     if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || ((!_.isEmpty(card.list.collection.board.acl_links.where({slug: "comment_card",board_user_role_id: parseInt(list.board_user_role_id)}))) || (!_.isEmpty(role_links.where({slug: "comment_card"})) && card.list.collection.board.attributes.board_visibility == 2)))){
+			add_comment_permission = true;
+		 } %>
 	  <div class="splitter-wrap ui-resizable"> 
 	  <div class="inner col-xs-12">   
 		<ul class="list-unstyled navbar-btn row"  id="card_activities">
 		  <li class="list-group-item list-group-item-info clearfix">
-			<div class="list-group-item-heading clearfix">
-				  <h3 class="pull-left"><%- i18next.t('Add Comment') %></h3>
-			</div>
+			<% if(add_comment_permission){ %>
+				<div class="list-group-item-heading clearfix">
+					<h3 class="pull-left"><%- i18next.t('Add Comment') %></h3>
+				</div>
+			<% } %>
 			<div class="list-group-item-text">
 			  <ul class="media-list comment-list activity-mod-comments">
-				<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || ((!_.isEmpty(card.list.collection.board.acl_links.where({slug: "comment_card",board_user_role_id: parseInt(list.board_user_role_id)}))) || (!_.isEmpty(role_links.where({slug: "comment_card"})) && card.list.collection.board.attributes.board_visibility == 2)))){ %>
+				<% if(add_comment_permission){ %>
 				<li class="media media-comment comment-block">
 						<div class="row">
 							<ul class="nav nav-tabs no-bor h3">
