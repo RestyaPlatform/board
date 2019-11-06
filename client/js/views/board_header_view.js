@@ -1362,7 +1362,7 @@ App.BoardHeaderView = Backbone.View.extend({
                                     $(target).data('html', 'true');
                                     var card_customfield_value = '';
                                     _.each(response.response, function(customfield, key) {
-                                        if (customfield) {
+                                        if (!_.isUndefined(customfield) && !_.isEmpty(customfield) && customfield !== null && !_.isUndefined(customfield.label) && !_.isEmpty(customfield.label) && customfield.label !== null) {
                                             if (customfield.type === 'date') {
                                                 card_customfield_value += customfield.label + ' : ' + dateFormat(customfield.value, "mediumDate");
                                             } else if (customfield.type === 'time') {
