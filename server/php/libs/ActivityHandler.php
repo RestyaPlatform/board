@@ -251,7 +251,7 @@ class ActivityHandler
                 }
                 $obj['parent_cards'] = $parentcards;
             }
-        } else if ($obj['type'] == 'edit_card_duedate') {
+        } else if ($obj['type'] == 'add_card_duedate' || $obj['type'] == 'edit_card_duedate') {
             if (is_plugin_enabled('r_gantt_view')) {
                 $val_array = array(
                     $obj['card_id']
