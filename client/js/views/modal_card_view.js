@@ -155,7 +155,6 @@ App.ModalCardView = Backbone.View.extend({
         this.model.users.bind('add', this.renderUsersCollection);
         this.model.users.bind('remove', this.renderUsersCollection);
         this.model.attachments.bind('add', this.renderAttachmentsCollection);
-        this.model.attachments.bind('remove', this.renderAttachmentsCollection);
         this.board = self.model.list.collection.board;
         _(this).bindAll('show');
         this.boards = App.boards;

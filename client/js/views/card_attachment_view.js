@@ -29,7 +29,6 @@ App.CardAttachmentView = Backbone.View.extend({
         }
     },
     tagName: 'li',
-    className: 'clearfix navbar-btn',
     /**
      * Events
      * functions to fire on events (Mouse events, Keyboard Events, Frame/Object Events, Form Events, Drag Events, etc...)
@@ -52,6 +51,7 @@ App.CardAttachmentView = Backbone.View.extend({
             attachment: this.model,
             card_id: this.card_id
         }));
+        this.$el.attr('class', 'clearfix navbar-btn js-card-attachment-' + this.model.attributes.board_id + '-' + this.model.attributes.id);
         this.showTooltip();
         return this;
     },

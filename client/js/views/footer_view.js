@@ -1622,6 +1622,7 @@ App.FooterView = Backbone.View.extend({
                                                     id: parseInt(activity.attributes.foreign_id)
                                                 }));
                                                 card.set('attachment_count', previous_attachment - 1);
+                                                $('.js-card-attachment-' + activity.attributes.board_id + '-' + activity.attributes.foreign_id).remove();
                                             } else if (activity.attributes.type === 'delete_card_comment') {
                                                 self.board.activities.remove(self.board.activities.findWhere({
                                                     id: parseInt(activity.attributes.foreign_id)
