@@ -753,6 +753,16 @@ App.ListView = Backbone.View.extend({
             App.boards.get(board_id).lists.add(moved_list);
             moved_list.collection = App.boards.get(board_id).lists;
             App.boards.get(this.model.attributes.board_id).lists.remove(list_id);
+            var moveListCards = App.boards.get(this.model.attributes.board_id).cards.where({
+                'list_id': list_id
+            });
+            _.each(moveListCards, function(card) {
+                var moveListCard = App.boards.get(self.model.attributes.board_id).cards.get(parseInt(card.id));
+                moveListCard.attributes.board_id = board_id;
+                App.boards.get(board_id).cards.add(moveListCard);
+                moveListCard.collection = App.boards.get(board_id).cards;
+                App.boards.get(self.model.attributes.board_id).cards.remove(parseInt(card.id));
+            });
         } else {
             var previous_position = position - 1;
             var current_index = this.$el.index() + 1;

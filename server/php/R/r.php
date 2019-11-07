@@ -6676,7 +6676,6 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
             $customFields = array();
             pg_query_params($db_lnk, 'UPDATE card_attachments SET board_id = $1 WHERE list_id = $2', $qry_val_arr);
             pg_query_params($db_lnk, 'UPDATE cards_labels SET board_id = $1 WHERE list_id = $2', $qry_val_arr);
-            pg_query_params($db_lnk, 'UPDATE cards_labels_listing SET board_id = $1 WHERE list_id = $2', $qry_val_arr);
             pg_query_params($db_lnk, 'UPDATE activities SET board_id = $1 WHERE list_id = $2', $qry_val_arr);
             if ($previous_value['board_id'] !== $r_put['board_id']) {
                 if (is_plugin_enabled('r_custom_fields')) {
@@ -6948,7 +6947,6 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
                 pg_query_params($db_lnk, 'UPDATE card_attachments SET list_id = $1, board_id = $2 WHERE card_id = $3', $qry_val_arr);
                 pg_query_params($db_lnk, 'UPDATE activities SET list_id = $1, board_id = $2 WHERE card_id = $3', $qry_val_arr);
                 pg_query_params($db_lnk, 'UPDATE cards_labels SET list_id = $1, board_id = $2 WHERE card_id = $3', $qry_val_arr);
-                pg_query_params($db_lnk, 'UPDATE cards_labels_listing SET list_id = $1, board_id = $2 WHERE card_id = $3', $qry_val_arr);
             }
             $qry_val_arr = array(
                 $current_list_id
