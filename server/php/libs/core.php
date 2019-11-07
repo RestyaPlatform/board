@@ -4206,3 +4206,22 @@ function sendMailNotification($notification_type)
         }
     }
 }
+
+function updateDependency($parentCard)
+{
+    global $db_lnk;
+    $val_array = array(
+        $parentCard['id']
+    );
+    $child_cards = pg_query_params($db_lnk, 'SELECT child_card_id FROM card_dependencies WHERE parent_card_id = $1', $val_array);
+    while ($row = pg_fetch_assoc($child_cards)) {
+        if (!empty($row)) {
+            $condition = array(
+                $row['child_card_id']
+            );
+            $childCard = executeQuery('SELECT id, created, board_id, list_id, due_date, custom_fields FROM cards where id = $1', $condition);
+            $parentCard["child_cards"][] = updateDependency($childCard);
+        }
+    }
+    return $parentCard;
+}

@@ -264,7 +264,7 @@ class ActivityHandler
                             $row['child_card_id']
                         );
                         $childCard = executeQuery('SELECT id, created, board_id, list_id, due_date, custom_fields FROM cards where id = $1', $condition);
-                        $childcards[] = $childCard;
+                        $childcards[] = updateDependency($childCard);
                     }
                 }
                 $obj['child_cards'] = $childcards;
