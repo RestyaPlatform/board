@@ -268,12 +268,21 @@ App.HeaderView = Backbone.View.extend({
     sortBy: function(e) {
         e.preventDefault();
         var sortField = $(e.currentTarget).data('field');
+        if ($('.js-sort-by-users').hasClass('active')) {
+            $('.js-sort-by-users').removeClass('active');
+        }
+        $('.js-sort-down-users').remove();
+        $('.js-sort-up-users').remove();
+        $(e.target).parent().addClass('active');
         if (_.isUndefined(this.sortDirection)) {
+            $(e.target).html('<i class="icon icon-arrow-down js-sort-down-users"></i>' + i18next.t($(e.target).text()));
             this.sortDirection = 'desc';
         } else {
             if (this.sortDirection === 'desc') {
+                $(e.target).html('<i class="icon icon-arrow-up js-sort-up-users"></i>' + i18next.t($(e.target).text()));
                 this.sortDirection = 'asc';
             } else {
+                $(e.target).html('<i class="icon icon-arrow-down js-sort-down-users"></i>' + i18next.t($(e.target).text()));
                 this.sortDirection = 'desc';
             }
         }
