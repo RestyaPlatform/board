@@ -882,6 +882,10 @@ App.BoardHeaderView = Backbone.View.extend({
             $('a.js-switch-list-view').parent().addClass('active');
             $('.js-list-form').removeClass('hide');
             var current_param = Backbone.history.fragment;
+            var is_filter_cards = current_param.split('?');
+            if (is_filter_cards.length > 1) {
+                self.$el.find('.js-clear-filter-btn').trigger('click');
+            }
             if (current_param.indexOf('/list') === -1) {
                 app.navigate('#/board/' + this.model.id + '/list', {
                     trigger: false,
