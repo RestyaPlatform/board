@@ -1446,6 +1446,7 @@ App.ModalCardView = Backbone.View.extend({
                 class_name = ' label label-warning';
                 title = i18next.t('This card is archived.');
             }
+            var close_modal_card = false;
             this.$el.dockmodal({
                 initialState: initialState,
                 height: 450,
@@ -1597,7 +1598,7 @@ App.ModalCardView = Backbone.View.extend({
                     }
                 },
                 close: function(event, dialog) {
-                    if (is_modalCard_close) {
+                    if (is_modalCard_close && !close_modal_card) {
                         $('#js-card-' + self.model.id).removeClass('active');
                         var current_param = Backbone.history.fragment;
                         if (current_param.indexOf('board/') != -1) {
@@ -1632,6 +1633,7 @@ App.ModalCardView = Backbone.View.extend({
                             event.remove();
                         }
                         self.model.unbind('change:list_id');
+                        close_modal_card = true;
                     }
                 }
             });
