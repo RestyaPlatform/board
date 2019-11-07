@@ -522,7 +522,11 @@ App.BoardHeaderView = Backbone.View.extend({
     showArchivedCardsList: function(e) {
         if (!_.isUndefined(e)) {
             this.start = 0;
+            this.start_filter = 0;
             this.listpage = 1;
+            this.listpage_filter = 1;
+            this.page = 1;
+            this.page_filter = 1;
         }
         this.start = (this.start !== 0) ? this.start : 0;
         this.page = (this.page !== 1) ? this.page : 1;
