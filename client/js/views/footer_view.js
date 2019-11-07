@@ -2401,15 +2401,31 @@ App.FooterView = Backbone.View.extend({
                                         newBoardlist.set('lists_cards', []);
                                         newBoardlist.set('is_archived', 0);
                                         newBoardlist.set('position', parseFloat(activity.attributes.list.position));
-                                        if (!_.isUndefined(App.boards) && !_.isUndefined(App.boards.get(newBoardlist.attributes.board_id))) {
-                                            var list_already_exist = App.boards.get(parseInt(newBoardlist.attributes.board_id)).lists.get(parseInt(activity.attributes.list.id));
-                                            if (_.isUndefined(list_already_exist) || _.isEmpty(list_already_exist) || list_already_exist === null) {
-                                                if (App.boards.get(parseInt(newBoardlist.attributes.board_id)).attributes.lists === null) {
-                                                    App.boards.get(parseInt(newBoardlist.attributes.board_id)).attributes.lists = [];
-                                                }
-                                                if (App.boards.get(parseInt(newBoardlist.attributes.board_id)).attributes.lists !== null) {
-                                                    App.boards.get(parseInt(newBoardlist.attributes.board_id)).lists.add(newBoardlist);
-                                                    App.boards.get(parseInt(newBoardlist.attributes.board_id)).attributes.lists.push(newBoardlist);
+                                        if (!_.isUndefined(App.boards) && !_.isEmpty(App.boards) & App.boards !== null) {
+                                            if (!_.isUndefined(App.boards.get(old_list_board_id)) && !_.isUndefined(App.boards.get(newBoardlist.attributes.board_id))) {
+                                                var moveListCards = App.boards.get(old_list_board_id).cards.where({
+                                                    'list_id': lists_id
+                                                });
+                                                _.each(moveListCards, function(card) {
+                                                    var moveListCard = App.boards.get(old_list_board_id).cards.get(parseInt(card.id));
+                                                    moveListCard.attributes.list_id = newBoardlist.attributes.id;
+                                                    moveListCard.attributes.board_id = newBoardlist.attributes.board_id;
+                                                    App.boards.get(newBoardlist.attributes.board_id).cards.add(moveListCard);
+                                                    moveListCard.collection = App.boards.get(newBoardlist.attributes.board_id).cards;
+                                                    App.boards.get(old_list_board_id).cards.remove(parseInt(card.id));
+                                                });
+                                            }
+
+                                            if (!_.isUndefined(App.boards.get(newBoardlist.attributes.board_id))) {
+                                                var list_already_exist = App.boards.get(parseInt(newBoardlist.attributes.board_id)).lists.get(parseInt(activity.attributes.list.id));
+                                                if (_.isUndefined(list_already_exist) || _.isEmpty(list_already_exist) || list_already_exist === null) {
+                                                    if (App.boards.get(parseInt(newBoardlist.attributes.board_id)).attributes.lists === null) {
+                                                        App.boards.get(parseInt(newBoardlist.attributes.board_id)).attributes.lists = [];
+                                                    }
+                                                    if (App.boards.get(parseInt(newBoardlist.attributes.board_id)).attributes.lists !== null) {
+                                                        App.boards.get(parseInt(newBoardlist.attributes.board_id)).lists.add(newBoardlist);
+                                                        App.boards.get(parseInt(newBoardlist.attributes.board_id)).attributes.lists.push(newBoardlist);
+                                                    }
                                                 }
                                             }
                                         }
