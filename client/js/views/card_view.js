@@ -207,6 +207,18 @@ App.CardView = Backbone.View.extend({
         if (!_.isUndefined(change_list)) {
             self.model.list = change_list;
         }
+        var moveCard = App.boards.get(parseInt(self.model.attributes.board_id)).cards.get(parseInt(self.model.attributes.id));
+        if (!_.isUndefined(moveCard)) {
+            moveCard.set('position', parseFloat(self.model.attributes.position));
+            if (list_id != self.model.attributes.list_id) {
+                moveCard.set('list_id', list_id);
+                App.boards.get(parseInt(self.model.attributes.board_id)).cards.remove(parseInt(self.model.attributes.id));
+                App.boards.get(parseInt(self.model.attributes.board_id)).cards.add(moveCard, {
+                    silent: true
+                });
+                moveCard.collection = App.boards.get(parseInt(self.model.attributes.board_id)).cards;
+            }
+        }
         self.model.set({
             list_id: list_id
         });

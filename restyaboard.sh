@@ -656,6 +656,9 @@
 					if [[ ${PSQL_VERSION} =~ ^11\.[0-9]{1,}$ ]]; then
 						PSQL_VERSION=11
 					fi
+					if [[ ${PSQL_VERSION} =~ ^12\.[0-9]{1,}$ ]]; then
+						PSQL_VERSION=12
+					fi
 					if [[ 1 -eq "$(echo "${PSQL_VERSION} < 9.3" | bc)" ]]; then
 						set +x
 						echo "Restyaboard will not work in your PostgreSQL version (i.e. less than 9.3). So script going to update PostgreSQL version 9.6"
@@ -688,6 +691,9 @@
 				fi
 				if [[ ${PSQL_VERSION} =~ ^11\.[0-9]{1,}$ ]]; then
 					PSQL_VERSION=11
+				fi
+				if [[ ${PSQL_VERSION} =~ ^12\.[0-9]{1,}$ ]]; then
+					PSQL_VERSION=12
 				fi
 				sed -e 's/peer/trust/g' -e 's/ident/trust/g' < /etc/postgresql/${PSQL_VERSION}/main/pg_hba.conf > /etc/postgresql/${PSQL_VERSION}/main/pg_hba.conf.1
 				cd /etc/postgresql/${PSQL_VERSION}/main || exit

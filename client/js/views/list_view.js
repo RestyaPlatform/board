@@ -1108,6 +1108,16 @@ App.ListView = Backbone.View.extend({
                 _.each(archived_cards, function(archived_card) {
                     self.model.collection.board.cards.get(archived_card.attributes.id).set('modified', response.activity.created);
                 });
+                var archivedCards = App.boards.get(self.model.attributes.board_id).cards.where({
+                    list_id: self.model.attributes.id
+                });
+                if (!_.isUndefined(archivedCards)) {
+                    _.each(archivedCards, function(card) {
+                        card.set('is_archived', 1, {
+                            silent: true
+                        });
+                    });
+                }
                 $('#js-card-listing-' + self.model.id).html('<span class="js-list-placeholder-' + self.model.id + '">&nbsp;</span>');
                 // $('#js-card-listing-' + self.model.id).html('&nbsp;');
                 _(function() {
@@ -1901,6 +1911,12 @@ App.ListView = Backbone.View.extend({
                     if (parseInt(self.model.attributes.card_count) === 1) {
                         // Removing the &nbsp; in the card listing after adding card
                         $('#js-card-listing-' + self.model.id).find('.js-list-placeholder-' + self.model.id).remove();
+                    }
+                    var board = App.boards.get(card.attributes.board_id);
+                    if (!_.isUndefined(board)) {
+                        board.cards.add(card, {
+                            silent: true
+                        });
                     }
                     var list = App.boards.get(card.attributes.board_id).lists.get(card.attributes.list_id);
                     if (!_.isUndefined(list)) {
