@@ -1162,7 +1162,7 @@ App.FooterView = Backbone.View.extend({
                                                 card.set('start', activity.attributes.revisions.new_value.due_date);
                                                 card.set('due_date', activity.attributes.revisions.new_value.due_date);
                                                 if (!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && $.inArray('r_gantt_view', APPS.enabled_apps) && !_.isUndefined(activity.attributes.child_cards) && !_.isEmpty(activity.attributes.child_cards) && activity.attributes.child_cards !== null) {
-                                                    $('body').trigger('DependencyRendered', [activity.attributes, card]);
+                                                    $('main').trigger('dueDateRendered', activity.attributes.child_cards);
                                                 }
                                             } else if (activity.attributes.type === 'delete_card_duedate') {
                                                 card.set('end', activity.attributes.revisions.new_value.due_date);
