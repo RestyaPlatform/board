@@ -2354,6 +2354,7 @@ App.FooterView = Backbone.View.extend({
                                         board_new_list.set('board_id', parseInt(activity.attributes.list.board_id));
                                         board_new_list.set('lists_cards', []);
                                         board_new_list.set('is_archived', 0);
+                                        board_new_list.set('is_deleted', 0);
                                         board_new_list.set('position', parseFloat(activity.attributes.list.position));
                                         if (!_.isUndefined(App.boards) && !_.isUndefined(App.boards.get(board_new_list.attributes.board_id))) {
                                             var is_list_exist = App.boards.get(parseInt(board_new_list.attributes.board_id)).lists.get(parseInt(activity.attributes.list.id));
@@ -2395,11 +2396,12 @@ App.FooterView = Backbone.View.extend({
                                         }
                                         var newBoardlist = new App.List();
                                         newBoardlist.set(activity.attributes.list);
-                                        newBoardlist.set('card_count', 0);
+                                        newBoardlist.set('card_count', parseInt(activity.attributes.list.card_count));
                                         newBoardlist.set('id', parseInt(activity.attributes.list.id));
                                         newBoardlist.set('board_id', parseInt(activity.attributes.list.board_id));
                                         newBoardlist.set('lists_cards', []);
                                         newBoardlist.set('is_archived', 0);
+                                        newBoardlist.set('is_deleted', 0);
                                         newBoardlist.set('position', parseFloat(activity.attributes.list.position));
                                         if (!_.isUndefined(App.boards) && !_.isEmpty(App.boards) & App.boards !== null) {
                                             if (!_.isUndefined(App.boards.get(old_list_board_id)) && !_.isUndefined(App.boards.get(newBoardlist.attributes.board_id))) {
@@ -2422,8 +2424,8 @@ App.FooterView = Backbone.View.extend({
                                                     if (App.boards.get(parseInt(newBoardlist.attributes.board_id)).attributes.lists === null) {
                                                         App.boards.get(parseInt(newBoardlist.attributes.board_id)).attributes.lists = [];
                                                     }
+                                                    App.boards.get(parseInt(newBoardlist.attributes.board_id)).lists.add(newBoardlist);
                                                     if (App.boards.get(parseInt(newBoardlist.attributes.board_id)).attributes.lists !== null) {
-                                                        App.boards.get(parseInt(newBoardlist.attributes.board_id)).lists.add(newBoardlist);
                                                         App.boards.get(parseInt(newBoardlist.attributes.board_id)).attributes.lists.push(newBoardlist);
                                                     }
                                                 }
