@@ -2324,12 +2324,18 @@ App.ModalCardView = Backbone.View.extend({
             }
             var card = App.boards.get(current_board_id).cards.get(card_id);
             if (data.list_id !== current_list_id) {
-                var change_lists = App.boards.get(current_board_id).lists.get(data.list_id);
-                card.set('list_name', change_lists.attributes.name);
-                card.list_name = change_lists.attributes.name;
+                if (!_.isUndefined(card)) {
+                    var change_lists = App.boards.get(current_board_id).lists.get(data.list_id);
+                    if (!_.isUndefined(change_lists)) {
+                        card.set('list_name', change_lists.attributes.name);
+                        card.list_name = change_lists.attributes.name;
+                    }
+                }
             }
             if (!_.isUndefined(card)) {
-                card.set('position', data.position);
+                card.set('position', data.position, {
+                    silent: true
+                });
             }
         } else if (parseInt(data.board_id) !== parseInt(current_board_id)) {
             var board = App.boards.get(data.board_id);
@@ -2396,12 +2402,14 @@ App.ModalCardView = Backbone.View.extend({
             }
             var moved_card;
             moved_card = App.boards.get(current_board_id).cards.get(card_id);
-            moved_card.attributes.list_id = data.list_id;
-            moved_card.attributes.board_id = data.board_id;
-            moved_card.attributes.position = data.position;
-            App.boards.get(data.board_id).cards.add(moved_card);
-            moved_card.collection = App.boards.get(data.board_id).cards;
-            App.boards.get(current_board_id).cards.remove(card_id);
+            if (!_.isUndefined(moved_card)) {
+                moved_card.attributes.list_id = data.list_id;
+                moved_card.attributes.board_id = data.board_id;
+                moved_card.attributes.position = data.position;
+                App.boards.get(data.board_id).cards.add(moved_card);
+                moved_card.collection = App.boards.get(data.board_id).cards;
+                App.boards.get(current_board_id).cards.remove(card_id);
+            }
         }
         this.model.url = api_url + 'boards/' + this.model.attributes.board_id + '/lists/' + this.model.attributes.list_id + '/cards/' + this.model.id + '.json';
         $('.js-close-popover').click();
@@ -2480,6 +2488,12 @@ App.ModalCardView = Backbone.View.extend({
         this.model.set('is_archived', 1);
         this.model.url = api_url + 'boards/' + this.model.attributes.board_id + '/lists/' + this.model.attributes.list_id + '/cards/' + this.model.id + '.json';
         this.model.list.collection.board.cards.get(this.model.id).set('is_archived', 1);
+        var archivecard = App.boards.get(this.model.attributes.board_id).cards.get(this.model.id);
+        if (!_.isUndefined(archivecard)) {
+            archivecard.set('is_archived', 1, {
+                silent: true
+            });
+        }
         this.model.save({
             is_archived: 1
         }, {
@@ -4445,6 +4459,11 @@ App.ModalCardView = Backbone.View.extend({
                     } else {
                         global_uuid[data.uuid] = options.temp_id;
                         card.set('id', data.uuid);
+                    }
+                    var copyboard = App.boards.get(data.board_id);
+                    if (!_.isUndefined(copyboard)) {
+                        copyboard.cards.add(card);
+                        card.collection = copyboard.cards;
                     }
                     self.model.list.collection.get(data.list_id).cards.add(card);
                     var copy_list_cards_count = isNaN(self.model.list.collection.get(data.list_id).attributes.card_count) ? 0 : self.model.list.collection.get(data.list_id).attributes.card_count;

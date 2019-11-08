@@ -2014,6 +2014,12 @@ App.BoardHeaderView = Backbone.View.extend({
             id: parseInt(card_id)
         }).set('is_archived', 0);
 
+        var boardsCard = App.boards.get(find_card.attributes.board_id).cards.get(parseInt(card_id));
+        if (!_.isUndefined(boardsCard)) {
+            boardsCard.set('is_archived', 0, {
+                silent: true
+            });
+        }
         var list = App.boards.get(find_card.attributes.board_id).lists.get(find_card.attributes.list_id);
         if (!_.isUndefined(list)) {
             list.set('card_count', list.attributes.card_count + 1, {
