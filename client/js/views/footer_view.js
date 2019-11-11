@@ -2508,10 +2508,6 @@ App.FooterView = Backbone.View.extend({
                                         if (!_.isUndefined(App.boards) && !_.isUndefined(App.boards.get(board_new_card.attributes.board_id))) {
                                             var is_card_exist = App.boards.get(parseInt(board_new_card.attributes.board_id)).cards.get(parseInt(activity.attributes.card.id));
                                             if (_.isUndefined(is_card_exist) || _.isEmpty(is_card_exist) || is_card_exist === null) {
-                                                var board_new_card_list = App.boards.get(parseInt(board_new_card.attributes.board_id)).lists.get(parseInt(board_new_card.attributes.list_id));
-                                                var board_new_card_list_count = isNaN(board_new_card_list.attributes.card_count) ? 0 : board_new_card_list.attributes.card_count;
-                                                board_new_card_list_count = board_new_card_list_count + 1;
-                                                App.boards.get(parseInt(board_new_card.attributes.board_id)).lists.get(parseInt(board_new_card.attributes.list_id)).set('card_count', board_new_card_list_count);
                                                 App.boards.get(parseInt(board_new_card.attributes.board_id)).cards.add(board_new_card);
                                                 if (App.boards.get(parseInt(board_new_card.attributes.board_id)).attributes.cards === null) {
                                                     App.boards.get(parseInt(board_new_card.attributes.board_id)).attributes.cards = [];
