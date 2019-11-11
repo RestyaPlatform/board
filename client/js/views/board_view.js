@@ -638,7 +638,7 @@ App.BoardView = Backbone.View.extend({
             star: this.model.board_star
         }));
         this.renderListsCollection();
-        this.setBoardBackground();
+        this.setBoardBackground('false');
         if (!_.isUndefined(authuser.user)) {
             if (!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(this.model.acl_links.where({
                     slug: 'edit_list',
@@ -885,20 +885,24 @@ App.BoardView = Backbone.View.extend({
      * change board background
      *
      */
-    setBoardBackground: function() {
+    setBoardBackground: function(data) {
         var background_color = this.model.attributes.background_color;
         var background_picture_url = this.model.attributes.background_picture_url;
         var background_pattern_url = this.model.attributes.background_pattern_url;
         if (!_.isEmpty(background_picture_url) && background_picture_url != 'NULL') {
             background_picture_url = background_picture_url.replace('_XXXX.jpg', '_b.jpg');
-            background_picture_url = background_picture_url + '?rand=' + Math.random();
+            if (typeof data === 'object') {
+                background_picture_url = background_picture_url + '?rand=' + Math.random();
+            }
             $('body').css({
                 'background': 'url(' + background_picture_url + ') 25% 25% no-repeat fixed',
                 'background-size': 'cover'
             }).addClass('board-view');
         } else if (!_.isEmpty(background_pattern_url) && background_pattern_url != 'NULL') {
             background_pattern_url = background_pattern_url.replace('_XXXX.jpg', '_s.jpg');
-            background_pattern_url = background_pattern_url + '?rand=' + Math.random();
+            if (typeof data === 'object') {
+                background_pattern_url = background_pattern_url + '?rand=' + Math.random();
+            }
             $('body').css({
                 'background': 'url(' + background_pattern_url + ')',
             }).addClass('board-view board-view-pattern');
@@ -956,12 +960,18 @@ App.BoardView = Backbone.View.extend({
         }).addClass('board-view-pattern board-view');
         this.model.url = api_url + 'boards/' + this.model.id + '.json';
         this.model.set('custom_background_url', image_path);
-        this.model.set('background_pattern_url', '');
-        this.model.set('background_picture_url', '');
-        this.model.set('background_color', '');
+        this.model.set('background_pattern_url', '', {
+            silent: true
+        });
+        this.model.set('background_picture_url', '', {
+            silent: true
+        });
+        this.model.set('background_color', '', {
+            silent: true
+        });
         data = {
-            background_color: 'NULL',
-            background_picture_url: 'NULL',
+            background_color: null,
+            background_picture_url: null,
             background_pattern_url: image_path
         };
         this.model.save(data, {
