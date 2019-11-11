@@ -492,7 +492,7 @@ App.ApplicationView = Backbone.View.extend({
                                 Board.board_user_role_id = board_user_role_id.attributes.board_user_role_id;
                             }
                         }
-
+                        App.current_board = Board;
                         $('#header').html(new App.BoardHeaderView({
                             model: Board,
                         }).el);
@@ -528,7 +528,6 @@ App.ApplicationView = Backbone.View.extend({
                             $('.js-switch-grid-view').trigger('click');
                             view_type = null;
                         }
-                        App.current_board = Board;
                         this.footerView = new App.FooterView({
                             model: authuser,
                             board_id: self.id,
