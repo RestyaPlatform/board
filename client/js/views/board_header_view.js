@@ -1260,6 +1260,10 @@ App.BoardHeaderView = Backbone.View.extend({
             $('a.js-switch-calendar-view').parent().addClass('active');
             $('.js-list-form').removeClass('hide');
             var current_param = Backbone.history.fragment;
+            var is_filter_cards = current_param.split('?');
+            if (is_filter_cards.length > 1) {
+                self.$el.find('.js-clear-filter-btn').trigger('click');
+            }
             if (current_param.indexOf('/calendar') === -1) {
                 app.navigate('#/board/' + this.model.id + '/calendar', {
                     trigger: false,
@@ -2101,10 +2105,16 @@ App.BoardHeaderView = Backbone.View.extend({
      *
      */
     switchGridView: function(e) {
+        var self = this;
         $('body').addClass('modal-open');
         $('li.js-switch-view').removeClass('active');
         $('#listview_table').attr("id", "switch-board-view");
         e.preventDefault();
+        var current_param = Backbone.history.fragment;
+        var is_filter_cards = current_param.split('?');
+        if (is_filter_cards.length > 1) {
+            self.$el.find('.js-clear-filter-btn').trigger('click');
+        }
         app.navigate('#/board/' + this.model.id, {
             trigger: false,
             trigger_function: false,
