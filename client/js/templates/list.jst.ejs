@@ -74,11 +74,13 @@
 		<div class="list-minimize-view-<%- list.id %> hide">
 				<div class="list-header js-list-head <% if(!_.isUndefined(authuser.user)){%>cur-grab<%}%>">
 					<div class="clearfix">
+						<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(list.board.acl_links.where({slug: "edit_list",board_user_role_id: parseInt(list.board_user_role_id)})))){ %>
 							<div class="text-center clearfix">
-									<div><a href="javascript:void(0);" <% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(list.board.acl_links.where({slug: "edit_list",board_user_role_id: parseInt(list.board_user_role_id)})))){ %>class="js-trigger-maximum"<% } %> title="<%- i18next.t('Maximize') %>" data-list_id="<%- list.id %>"><span><i class="icon-resize-full text-primary"></i></span></a>
+									<div><a href="javascript:void(0);" class="js-trigger-maximum" title="<%- i18next.t('Maximize') %>" data-list_id="<%- list.id %>"><span><i class="icon-resize-full text-primary"></i></span></a>
 									</div>
 							</div>
-							<div class="clearfix vertical-text htruncate-list"><strong><%- list.attributes.name %></strong></div>
+						<% } %>
+						<div class="clearfix vertical-text htruncate-list"><strong><%- list.attributes.name %></strong></div>
 					</div>
 				</div>
 		</div>
