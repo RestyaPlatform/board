@@ -1614,7 +1614,7 @@ App.FooterView = Backbone.View.extend({
                                                 }
                                                 if (parseInt(cardList.attributes.card_count) === 1) {
                                                     if ($('#js-card-listing-' + cardList.id).length > 0) {
-                                                        $('#js-card-listing-' + cardList.id).html($('#js-card-listing-' + cardList.id).html().replace(/^\s*&nbsp;/m, ''));
+                                                        $('#js-card-listing-' + cardList.id).find('.js-list-placeholder-' + cardList.id).remove();
                                                     }
                                                 }
                                             } else if (activity.attributes.type === 'change_card_position') {
