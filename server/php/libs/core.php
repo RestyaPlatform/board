@@ -4206,7 +4206,6 @@ function sendMailNotification($notification_type)
         }
     }
 }
-
 function updateDependency($parentCard)
 {
     global $db_lnk;
@@ -4224,7 +4223,7 @@ function updateDependency($parentCard)
         }
     }
     $response = "";
-    foreach($parentCard as $card_id) {
+    foreach ($parentCard as $card_id) {
         $response = $card_id . "," . $response;
     }
     return $response;

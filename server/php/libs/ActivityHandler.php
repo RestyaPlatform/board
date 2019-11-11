@@ -268,9 +268,9 @@ class ActivityHandler
                     }
                 }
                 $response = array();
-                if(isset($childcards[0]) && !empty($childcards[0])) {
-                    $child_cards = explode("," , $childcards[0]);
-                    foreach($child_cards as $row) {
+                if (isset($childcards[0]) && !empty($childcards[0])) {
+                    $child_cards = explode(",", $childcards[0]);
+                    foreach ($child_cards as $row) {
                         if (!empty($row)) {
                             $condition = array(
                                 $row

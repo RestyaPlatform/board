@@ -1418,12 +1418,12 @@ App.BoardHeaderView = Backbone.View.extend({
                                     });
                                     if (!_.isEmpty(card_customfield_value)) {
                                         card_customfield_value = card_customfield_value.substring(0, 400 - 3) + '...';
+                                        $(target).tooltip({
+                                            title: card_customfield_value,
+                                            html: true,
+                                            placement: 'bottom'
+                                        });
                                     }
-                                    $(target).tooltip({
-                                        title: card_customfield_value,
-                                        html: true,
-                                        placement: 'bottom'
-                                    });
                                 }
                             }
                         });
