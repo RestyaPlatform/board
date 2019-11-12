@@ -1408,7 +1408,7 @@ App.FooterView = Backbone.View.extend({
                                                 }
                                                 if ($('#js-card-modal-' + activity.attributes.card_id).length === 1) {
                                                     if ($('#js-card-activities-' + activity.attributes.card_id).length === 1) {
-                                                        if ($('#js-list-activity-' + activity.attributes.id).length === 0) {
+                                                        if ($('#js-card-activities-' + activity.attributes.card_id + ' ' + '.js-list-activity-' + activity.attributes.id).length === 0) {
                                                             var profile_picture_path;
                                                             var comment_details;
                                                             var profile_picture;
@@ -1431,11 +1431,7 @@ App.FooterView = Backbone.View.extend({
                                                             comment_string += '<li class="col-xs-' + (12 - depth) + ' js-activity activity-github-styles js-list-activity-' + activity.attributes.id + ' col-lg-offset-' + depth + '"><div class="media  modal-comments modal-logged-user-activities"><a title="' + activity.attributes.full_name + '(' + activity.attributes.username + ')" data-toggle="tooltip" class="js-tooltip pull-left" href="#/user/' + activity.attributes.user_id + '">';
                                                             comment_string += '' + profile_picture + '</a>';
                                                             comment_string += '<div class="media-body"><div class="col-xs-12 btn-block"><div class="activities-list js-activity-' + activity.attributes.id + '"><div class="panel no-mar"><div class="panel-body github-markdown no-whitespace">' + comment_details + '</div></div>';
-                                                            setInterval(function() {
-                                                                parse_date(activity.attributes.created, authuser, 'js-timeago-' + activity.attributes.id);
-                                                            }, 10000);
                                                             comment_string += '<small><span class="js-timeago-' + activity.attributes.id + '"></span>';
-                                                            parse_date(activity.attributes.created, authuser, 'js-timeago-' + activity.attributes.id);
                                                             if (!_.isUndefined(authuser.user) && !_.isEmpty(authuser.user)) {
                                                                 comment_string += '<div class="js-acticity-action-' + activity.attributes.id + ' pull-left navbar-btn col-md-10 col-xs-12"><ul class="list-inline">';
                                                                 var user = card.list.collection.board.board_users.findWhere({
@@ -1463,9 +1459,7 @@ App.FooterView = Backbone.View.extend({
                                                                     comment_string += '<li class="pull-right"><a title="Edit" class="js-show-edit-activity js-edit-activity-link-' + activity.attributes.id + '" href="#" data-activity-id="' + activity.attributes.id + '" data-activity-temp-id="' + activity.attributes.temp_id + '"><i class="icon-edit"></i>' + i18next.t('Edit') + '</a></li>';
                                                                 }
                                                                 comment_string += '</ul>';
-                                                            }
-                                                            comment_string += '</div><span class="pull-left col-xs-12 js-activity-reply-form-response-' + activity.attributes.id + '"></span></small></div></div></div></div><hr class="clearfix col-xs-12 btn-block"></hr></li>';
-                                                            if ($('#js-card-activities-' + activity.attributes.card_id + ' ' + '.js-list-activity-' + activity.attributes.id).length === 0) {
+                                                                comment_string += '</div><span class="pull-left col-xs-12 js-activity-reply-form-response-' + activity.attributes.id + '"></span></small></div></div></div></div><hr class="clearfix col-xs-12 btn-block"></hr></li>';
                                                                 if (activity.attributes.depth === 0) {
                                                                     $("ul#js-card-activities-" + activity.attributes.card_id).prepend(comment_string);
                                                                 } else {
@@ -1479,6 +1473,10 @@ App.FooterView = Backbone.View.extend({
                                                                         $(comment_string).insertAfter($('.js-list-activity-' + parentCommentId));
                                                                     }
                                                                 }
+                                                                setInterval(function() {
+                                                                    parse_date(activity.attributes.created, authuser, 'js-timeago-' + activity.attributes.id);
+                                                                }, 10000);
+                                                                parse_date(activity.attributes.created, authuser, 'js-timeago-' + activity.attributes.id);
                                                                 emojify.run();
                                                             }
                                                         }
