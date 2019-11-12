@@ -1,7 +1,7 @@
 <div class="col-lg-3 col-md-3 col-sm-4 col-xs-12 list js-list-<%- list.id %> js-list-sort">
 		<div class="list-header js-list-head <% if(!_.isUndefined(authuser.user)){%>cur-grab<%}%> js-list_maximize_content-<%- list.id %>">
 			<div class="clearfix">
-			  <a href="#" class="col-xs-6 js-list-name-<%- list.id %> <% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(list.board.acl_links.where({slug: "edit_list",board_user_role_id: parseInt(list.board_user_role_id)})))){ %>js-show-edit-list-form<% }else{ %> js-no-action<%}%>"><span><span class="clearfix row show">
+			  <a href="#" class="col-xs-7 js-list-name-<%- list.id %> <% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(list.board.acl_links.where({slug: "edit_list",board_user_role_id: parseInt(list.board_user_role_id)})))){ %>js-show-edit-list-form<% }else{ %> js-no-action<%}%>"><span><span class="clearfix row show">
 			  <strong class = "get-name-<%- list.attributes.id %>"><%- list.attributes.name %></strong> <span id="list-card-number-<%- list.attributes.id %>" title="<%- i18next.t('Number Of Cards') %>"></span></span></span></a>
 			  <% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(list.board.acl_links.where({slug: "edit_list",board_user_role_id: parseInt(list.board_user_role_id)})))){ %>
 			  <form role="form" class="form-horizontal js-edit-list hide">
@@ -21,7 +21,7 @@
 			  </form>
 			  <% } %>
 			  <%if(!_.isUndefined(authuser.user)) {%>
-			  <div class="pull-right col-xs-6 clearfix js-list-header-<%- list.id %> js-list-header-section">
+			  <div class="pull-right col-xs-5 clearfix js-list-header-<%- list.id %> js-list-header-section">
 				  <% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(list.board.acl_links.where({slug: "edit_list",board_user_role_id: parseInt(list.board_user_role_id)})))){ %>
 				  <div class="pull-right left-mar"><a href="javascript:void(0);" class="js-trigger-minimize" title="<%- i18next.t('Minimize') %>" data-list_id="<%- list.id %>"><span class="pull-right"><strong><i class="icon-resize-small text-primary" style="margin-right: -4px;"></i> </strong></span></a>
 				  </div>
