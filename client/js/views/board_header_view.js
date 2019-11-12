@@ -866,13 +866,18 @@ App.BoardHeaderView = Backbone.View.extend({
         var get_match_url = currentss.split("/");
         var list_view = false;
         var trigger_list_view = false;
-        if (!_.isUndefined(get_match_url['3']) && get_match_url['3'] === 'list') {
+        if (!_.isUndefined(get_match_url['3']) && get_match_url['3'].indexOf("list") !== -1) {
             list_view = true;
         }
         if (e.originalEvent !== undefined || e.type === 'click') {
             trigger_list_view = true;
         } else if (e.changed !== undefined && list_view) {
             trigger_list_view = true;
+        }
+        var current_param = Backbone.history.fragment;
+        var is_filter_cards = current_param.split('?');
+        if (is_filter_cards.length > 1 && !list_view) {
+            self.$el.find('.js-clear-filter-btn').trigger('click');
         }
         if (trigger_list_view) {
             $('body').removeClass('modal-open');
@@ -885,11 +890,6 @@ App.BoardHeaderView = Backbone.View.extend({
             $('li.js-switch-view').removeClass('active');
             $('a.js-switch-list-view').parent().addClass('active');
             $('.js-list-form').removeClass('hide');
-            var current_param = Backbone.history.fragment;
-            var is_filter_cards = current_param.split('?');
-            if (is_filter_cards.length > 1) {
-                self.$el.find('.js-clear-filter-btn').trigger('click');
-            }
             if (current_param.indexOf('/list') === -1) {
                 app.navigate('#/board/' + this.model.id + '/list', {
                     trigger: false,
