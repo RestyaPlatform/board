@@ -2460,21 +2460,23 @@ App.FooterView = Backbone.View.extend({
                                         var delete_board_id = parseInt(activity.attributes.board_id);
                                         var board_delete_list = App.boards.get(delete_board_id).lists.get(delete_list_id);
                                         var delete_list = new App.List();
-                                        delete_list.set(board_delete_list.attributes);
-                                        delete_list.set('card_count', parseInt(board_delete_list.attributes.card_count));
-                                        delete_list.set('id', delete_list_id);
-                                        delete_list.set('board_id', delete_board_id);
-                                        delete_list.set('lists_cards', []);
-                                        delete_list.set('is_archived', parseInt(board_delete_list.attributes.is_archived));
-                                        App.boards.get(delete_board_id).lists.remove(delete_list);
-                                        if (App.boards.get(delete_board_id).attributes && !_.isUndefined(App.boards.get(delete_board_id).attributes.lists) && App.boards.get(delete_board_id).attributes.lists !== null) {
-                                            if (App.boards.get(delete_board_id).attributes.lists.length > 0) {
-                                                var board_attr_list = App.boards.get(delete_board_id).attributes.lists.filter(function(list) {
-                                                    return parseInt(list.id) === delete_list_id;
-                                                });
-                                                if (board_attr_list.length > 0) {
-                                                    var board_attr_list_index = App.boards.get(delete_board_id).attributes.lists.indexOf(board_attr_list[0]);
-                                                    App.boards.get(delete_board_id).attributes.lists.splice(board_attr_list_index, 1);
+                                        if (!_.isUndefined(board_delete_list) && !_.isEmpty(board_delete_list) && board_delete_list !== null) {
+                                            delete_list.set(board_delete_list.attributes);
+                                            delete_list.set('card_count', parseInt(board_delete_list.attributes.card_count));
+                                            delete_list.set('id', delete_list_id);
+                                            delete_list.set('board_id', delete_board_id);
+                                            delete_list.set('lists_cards', []);
+                                            delete_list.set('is_archived', parseInt(board_delete_list.attributes.is_archived));
+                                            App.boards.get(delete_board_id).lists.remove(delete_list);
+                                            if (App.boards.get(delete_board_id).attributes && !_.isUndefined(App.boards.get(delete_board_id).attributes.lists) && App.boards.get(delete_board_id).attributes.lists !== null) {
+                                                if (App.boards.get(delete_board_id).attributes.lists.length > 0) {
+                                                    var board_attr_list = App.boards.get(delete_board_id).attributes.lists.filter(function(list) {
+                                                        return parseInt(list.id) === delete_list_id;
+                                                    });
+                                                    if (board_attr_list.length > 0) {
+                                                        var board_attr_list_index = App.boards.get(delete_board_id).attributes.lists.indexOf(board_attr_list[0]);
+                                                        App.boards.get(delete_board_id).attributes.lists.splice(board_attr_list_index, 1);
+                                                    }
                                                 }
                                             }
                                         }
@@ -2506,10 +2508,6 @@ App.FooterView = Backbone.View.extend({
                                         if (!_.isUndefined(App.boards) && !_.isUndefined(App.boards.get(board_new_card.attributes.board_id))) {
                                             var is_card_exist = App.boards.get(parseInt(board_new_card.attributes.board_id)).cards.get(parseInt(activity.attributes.card.id));
                                             if (_.isUndefined(is_card_exist) || _.isEmpty(is_card_exist) || is_card_exist === null) {
-                                                var board_new_card_list = App.boards.get(parseInt(board_new_card.attributes.board_id)).lists.get(parseInt(board_new_card.attributes.list_id));
-                                                var board_new_card_list_count = isNaN(board_new_card_list.attributes.card_count) ? 0 : board_new_card_list.attributes.card_count;
-                                                board_new_card_list_count = board_new_card_list_count + 1;
-                                                App.boards.get(parseInt(board_new_card.attributes.board_id)).lists.get(parseInt(board_new_card.attributes.list_id)).set('card_count', board_new_card_list_count);
                                                 App.boards.get(parseInt(board_new_card.attributes.board_id)).cards.add(board_new_card);
                                                 if (App.boards.get(parseInt(board_new_card.attributes.board_id)).attributes.cards === null) {
                                                     App.boards.get(parseInt(board_new_card.attributes.board_id)).attributes.cards = [];
