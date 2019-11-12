@@ -1714,7 +1714,8 @@ App.BoardHeaderView = Backbone.View.extend({
             background_color: null,
             background_picture_url: null,
             background_pattern_url: null,
-            custom_background_url: null
+            custom_background_url: null,
+            remove_background: true
         };
         this.model.save(data, {
             patch: true
