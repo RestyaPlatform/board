@@ -6945,8 +6945,18 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
                     $foreign_ids['card_id']
                 );
                 pg_query_params($db_lnk, 'UPDATE card_attachments SET list_id = $1, board_id = $2 WHERE card_id = $3', $qry_val_arr);
-                pg_query_params($db_lnk, 'UPDATE activities SET list_id = $1, board_id = $2 WHERE card_id = $3', $qry_val_arr);
                 pg_query_params($db_lnk, 'UPDATE cards_labels SET list_id = $1, board_id = $2 WHERE card_id = $3', $qry_val_arr);
+                if(isset($previous_value['board_id']) && isset($r_put['board_id']) && $r_put['board_id'] == $previous_value['board_id']) {
+                    pg_query_params($db_lnk, 'UPDATE activities SET list_id = $1, board_id = $2 WHERE card_id = $3', $qry_val_arr);
+                } else {
+                    $qry_val_arr = array(
+                        $r_put['list_id'],
+                        $new_board_id,
+                        $foreign_ids['card_id'],
+                        "add_comment"
+                    );
+                    pg_query_params($db_lnk, 'UPDATE activities SET list_id = $1, board_id = $2 WHERE card_id = $3 AND type = $4', $qry_val_arr);
+                }
             }
             $qry_val_arr = array(
                 $current_list_id
