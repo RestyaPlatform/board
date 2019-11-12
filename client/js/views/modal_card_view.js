@@ -1236,6 +1236,7 @@ App.ModalCardView = Backbone.View.extend({
                     self.$('.js_card_image_upload').addClass('cssloader');
                     if (!_.isUndefined(ALLOWED_FILE_EXTENSIONS) && !_.isEmpty(ALLOWED_FILE_EXTENSIONS)) {
                         if (!file_extension_regex.exec(file.attributes.data.name)) {
+                            $('#js-card-modal-' + self.model.id).parent('.dockmodal-body').prev('.dockmodal-header').find('.cssloader').remove();
                             self.flash('danger', i18next.t('File extension not supported. It supports only ' + ALLOWED_FILE_EXTENSIONS + '.'));
                             self.$('.js_card_image_upload').removeClass('cssloader');
                         }
@@ -1725,6 +1726,8 @@ App.ModalCardView = Backbone.View.extend({
                 self.$('.js_card_image_upload').addClass('cssloader');
                 if (!_.isUndefined(ALLOWED_FILE_EXTENSIONS) && !_.isEmpty(ALLOWED_FILE_EXTENSIONS)) {
                     if (!file_extension_regex.exec(file.attributes.data.name)) {
+                        $('#js-card-modal-' + self.model.id).parent('.dockmodal-body').prev('.dockmodal-header').find('.cssloader').remove();
+                        $('.js-attachment-loader', $('#js-card-modal-' + self.model.id)).html('');
                         self.flash('danger', i18next.t('File extension not supported. It supports only ' + ALLOWED_FILE_EXTENSIONS + '.'));
                         self.$('.js_card_image_upload').removeClass('cssloader');
                     }
@@ -4176,10 +4179,17 @@ App.ModalCardView = Backbone.View.extend({
                 cards.sortByColumn('name', 'desc');
                 if (!_.isEmpty(cards.models)) {
                     _.each(cards.models, function(card) {
-                        $(new App.ActivityCardSearchView({
-                            model: card
-                        }).el).insertAfter(self.$el.find('.js_activity_card_search_response'));
+                        if (card.id !== self.model.id) {
+                            $(new App.ActivityCardSearchView({
+                                model: card
+                            }).el).insertAfter(self.$el.find('.js_activity_card_search_response'));
+                        }
                     });
+                    if (self.$el.find('.js_activity_card_search_response').parent().find('.js-add-comment-card').length === 0) {
+                        $(new App.ActivityCardSearchView({
+                            model: null
+                        }).el).insertAfter(self.$el.find('.js_activity_card_search_response'));
+                    }
                 } else {
                     if (_.isEmpty(q)) {
                         $(new App.ActivityCardSearchView({
