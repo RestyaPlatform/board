@@ -169,7 +169,7 @@ callbackTranslator = {
                 $('#content').html(view.el);
                 return;
             } else if (model !== null && !_.isUndefined(model.status) && model.status == '401') {
-                if (!_.isUndefined(model.responseText) && !_.isEmpty(model.responseText) && JSON.parse(model.responseText).error.type === 'OAuth') {
+                if ((!_.isUndefined(model.responseText) && !_.isEmpty(model.responseText) && JSON.parse(model.responseText).error.type === 'OAuth') || (!_.isUndefined(model.statusText) && !_.isEmpty(model.statusText) && model.statusText === 'Unauthorized')) {
                     api_token = '';
                     if ($.cookie('auth') !== undefined && $.cookie('auth') !== null) {
                         var Auth = JSON.parse($.cookie('auth'));
