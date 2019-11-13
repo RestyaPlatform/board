@@ -1711,10 +1711,11 @@ App.BoardHeaderView = Backbone.View.extend({
         App.boards.get(this.model.id).set('background_color', '');
 
         data = {
-            background_color: 'NULL',
-            background_picture_url: 'NULL',
-            background_pattern_url: 'NULL',
-            custom_background_url: 'NULL'
+            background_color: null,
+            background_picture_url: null,
+            background_pattern_url: null,
+            custom_background_url: null,
+            remove_background: true
         };
         this.model.save(data, {
             patch: true
@@ -1785,9 +1786,9 @@ App.BoardHeaderView = Backbone.View.extend({
         this.model.set('custom_background_url', '');
         this.model.set('background_color', '');
         data = {
-            background_color: 'NULL',
+            background_color: null,
             background_picture_url: image_path,
-            background_pattern_url: 'NULL'
+            background_pattern_url: null
         };
         this.model.save(data, {
             patch: true
@@ -1810,12 +1811,18 @@ App.BoardHeaderView = Backbone.View.extend({
         }).addClass('board-view-pattern board-view');
         this.model.url = api_url + 'boards/' + this.model.id + '.json';
         this.model.set('background_pattern_url', image_path);
-        this.model.set('custom_background_url', '');
-        this.model.set('background_picture_url', '');
-        this.model.set('background_color', '');
+        this.model.set('custom_background_url', '', {
+            silent: true
+        });
+        this.model.set('background_picture_url', '', {
+            silent: true
+        });
+        this.model.set('background_color', '', {
+            silent: true
+        });
         data = {
-            background_color: 'NULL',
-            background_picture_url: 'NULL',
+            background_color: null,
+            background_picture_url: null,
             background_pattern_url: image_path
         };
         this.model.save(data, {
