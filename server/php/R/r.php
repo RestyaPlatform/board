@@ -1784,7 +1784,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
 
     case '/boards/?/cards/search':
         $user_id = (!empty($authUser['id'])) ? $authUser['id'] : 0;
-        if($authUser['role_id'] != 1) {
+        if ($authUser['role_id'] != 1) {
             $sql = 'SELECT row_to_json(d) FROM (SELECT DISTINCT c.id, c.name, bu.board_id, c.list_id FROM boards_users bu join cards c on c.board_id = bu.board_id WHERE bu.board_id IN (SELECT board_id FROM boards_users WHERE user_id = $1 ) AND LOWER(c.name)  LIKE $2 AND  c.board_id = $3 ORDER BY name ASC) as d';
             array_push($pg_params, $user_id, '%' . strtolower($r_resource_filters['q']) . '%', $r_resource_vars['boards']);
         } else {
@@ -6952,7 +6952,7 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
                 );
                 pg_query_params($db_lnk, 'UPDATE card_attachments SET list_id = $1, board_id = $2 WHERE card_id = $3', $qry_val_arr);
                 pg_query_params($db_lnk, 'UPDATE cards_labels SET list_id = $1, board_id = $2 WHERE card_id = $3', $qry_val_arr);
-                if(isset($previous_value['board_id']) && isset($r_put['board_id']) && $r_put['board_id'] == $previous_value['board_id']) {
+                if (isset($previous_value['board_id']) && isset($r_put['board_id']) && $r_put['board_id'] == $previous_value['board_id']) {
                     pg_query_params($db_lnk, 'UPDATE activities SET list_id = $1, board_id = $2 WHERE card_id = $3', $qry_val_arr);
                 } else {
                     $qry_val_arr = array(
@@ -7133,6 +7133,11 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
                     }
                 }
             }
+            $qry_val_arr = array(
+                $foreign_ids['card_id'],
+                $r_put['board_id']
+            );
+            pg_query_params($db_lnk, 'DELETE FROM cards_users WHERE card_id = $1 AND user_id NOT IN (select user_id FROM boards_users WHERE board_id = $2)', $qry_val_arr);
             $comment = '##USER_NAME## moved the card ##CARD_LINK## to different board.';
         }
         if (isset($previous_value['name']) && isset($r_put['name']) && $r_put['name'] != $previous_value['name']) {
