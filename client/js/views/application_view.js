@@ -126,8 +126,20 @@ App.ApplicationView = Backbone.View.extend({
                                     if ($.cookie('auth') !== undefined && $.cookie('auth') !== null && authuser.user.language !== null && !_.isUndefined(authuser.user.language) && !_.isEmpty(authuser.user.language)) {
                                         current_language = authuser.user.language;
                                     } else if (navigator.language || navigator.userLanguage) {
+                                        var languages = ($.cookie('languages')) ? $.cookie('languages').split(',') : null;
+                                        if (languages !== null) {
+                                            languages = JSON.parse(languages);
+                                        }
                                         current_language = navigator.language || navigator.userLanguage;
+                                        var language_reg = current_language.split('-');
+                                        if (language_reg.length > 1) {
+                                            language_reg['1'] = language_reg['1'].toUpperCase();
+                                        }
+                                        current_language = language_reg.join('_');
                                         current_language = current_language.replace("-", "_");
+                                        if (_.isUndefined(languages[current_language]) || languages[current_language] === null || _.isEmpty(languages[current_language])) {
+                                            current_language = DEFAULT_LANGUAGE;
+                                        }
                                     } else {
                                         current_language = DEFAULT_LANGUAGE;
                                     }
@@ -241,8 +253,20 @@ App.ApplicationView = Backbone.View.extend({
                                 if ($.cookie('auth') !== undefined && $.cookie('auth') !== null && authuser.user.language !== null && !_.isUndefined(authuser.user.language) && !_.isEmpty(authuser.user.language)) {
                                     current_language = authuser.user.language;
                                 } else if (navigator.language || navigator.userLanguage) {
+                                    var languages = ($.cookie('languages')) ? $.cookie('languages').split(',') : null;
+                                    if (languages !== null) {
+                                        languages = JSON.parse(languages);
+                                    }
                                     current_language = navigator.language || navigator.userLanguage;
+                                    var language_reg = current_language.split('-');
+                                    if (language_reg.length > 1) {
+                                        language_reg['1'] = language_reg['1'].toUpperCase();
+                                    }
+                                    current_language = language_reg.join('_');
                                     current_language = current_language.replace("-", "_");
+                                    if (_.isUndefined(languages[current_language]) || languages[current_language] === null || _.isEmpty(languages[current_language])) {
+                                        current_language = DEFAULT_LANGUAGE;
+                                    }
                                 } else {
                                     current_language = DEFAULT_LANGUAGE;
                                 }
