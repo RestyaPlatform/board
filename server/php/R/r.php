@@ -7138,6 +7138,8 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
                 $r_put['board_id']
             );
             pg_query_params($db_lnk, 'DELETE FROM cards_users WHERE card_id = $1 AND user_id NOT IN (select user_id FROM boards_users WHERE board_id = $2)', $qry_val_arr);
+            pg_query_params($db_lnk, 'DELETE FROM card_subscribers WHERE card_id = $1 AND user_id NOT IN (select user_id FROM boards_users WHERE board_id = $2)', $qry_val_arr);
+            pg_query_params($db_lnk, 'DELETE FROM card_voters WHERE card_id = $1 AND user_id NOT IN (select user_id FROM boards_users WHERE board_id = $2)', $qry_val_arr);
             $comment = '##USER_NAME## moved the card ##CARD_LINK## to different board.';
         }
         if (isset($previous_value['name']) && isset($r_put['name']) && $r_put['name'] != $previous_value['name']) {
