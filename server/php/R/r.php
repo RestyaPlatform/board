@@ -1784,8 +1784,13 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
 
     case '/boards/?/cards/search':
         $user_id = (!empty($authUser['id'])) ? $authUser['id'] : 0;
-        $sql = 'SELECT row_to_json(d) FROM (SELECT DISTINCT c.id, c.name, bu.board_id, c.list_id FROM boards_users bu join cards c on c.board_id = bu.board_id WHERE bu.board_id IN (SELECT board_id FROM boards_users WHERE user_id = $1 ) AND LOWER(c.name)  LIKE $2 AND  c.board_id = $3 ORDER BY name ASC) as d';
-        array_push($pg_params, $user_id, '%' . strtolower($r_resource_filters['q']) . '%', $r_resource_vars['boards']);
+        if($authUser['role_id'] != 1) {
+            $sql = 'SELECT row_to_json(d) FROM (SELECT DISTINCT c.id, c.name, bu.board_id, c.list_id FROM boards_users bu join cards c on c.board_id = bu.board_id WHERE bu.board_id IN (SELECT board_id FROM boards_users WHERE user_id = $1 ) AND LOWER(c.name)  LIKE $2 AND  c.board_id = $3 ORDER BY name ASC) as d';
+            array_push($pg_params, $user_id, '%' . strtolower($r_resource_filters['q']) . '%', $r_resource_vars['boards']);
+        } else {
+            $sql = 'SELECT row_to_json(d) FROM (SELECT DISTINCT c.id, c.name, bu.board_id, c.list_id FROM boards_users bu join cards c on c.board_id = bu.board_id WHERE bu.board_id IN (SELECT board_id FROM boards_users) AND LOWER(c.name)  LIKE $1 AND  c.board_id = $2 ORDER BY name ASC) as d';
+            array_push($pg_params, '%' . strtolower($r_resource_filters['q']) . '%', $r_resource_vars['boards']);
+        }
         if (empty($r_resource_filters['q'])) {
             $sql = false;
             $response = array();
@@ -6599,7 +6604,7 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
                 $comment = '##USER_NAME## disabled auto subscribe on card when adding a board member on ##BOARD_NAME## board.';
             }
             $activity_type = 'auto_subscribe_on_card';
-        } else if (isset($r_put['background_picture_url']) || isset($r_put['background_pattern_url']) || isset($r_put['background_color'])) {
+        } else if (isset($r_put['background_picture_url']) || isset($r_put['background_pattern_url']) || isset($r_put['background_color']) || isset($r_put['remove_background'])) {
             if (empty($previous_value['background_picture_url']) && empty($previous_value['background_pattern_url']) && empty($previous_value['background_color'])) {
                 $comment = '##USER_NAME## added background to board "' . $previous_value['name'] . '"';
                 $activity_type = 'add_background';
@@ -6607,6 +6612,7 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
                 $comment = '##USER_NAME## changed backgound to board "' . $previous_value['name'] . '"';
                 $activity_type = 'change_background';
             }
+            unset($r_put['remove_background']);
         } else if (isset($r_put['music_name']) && !empty($r_put['music_content'])) {
             $comment = '##USER_NAME## updated the beats on ##BOARD_NAME## board.';
         } else if (isset($r_put['sort_by']) && !empty($r_put['sort_by'])) {
