@@ -33,6 +33,32 @@
 	</ul>
 </div>
 </div>
+<% 
+	var listviewconfigure = false;
+	if (!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && $.inArray('r_listview_configure', APPS.enabled_apps) !== -1) {
+		if (!_.isUndefined(board) && !_.isEmpty(board) && !_.isUndefined(board.attributes) && !_.isEmpty(board.attributes) && !_.isUndefined(board.attributes.board_custom_fields) && !_.isEmpty(board.attributes.board_custom_fields)) {
+			if (!_.isUndefined(board_custom_fields['r_listview_configure']) && _.isEmpty(board_custom_fields['r_listview_configure'])) {
+				listviewconfigure = true;
+			}
+		}
+	}
+%>
+<div class="row emoji-list js-listview-configure-info <% if (!listviewconfigure) { %> hide <% } %>">
+	<div class="col-xs-12 text-center navbar-btn panel">
+		<ul class="list-inline navbar-btn">
+			<li>
+				<i class="icon-warning-sign text-warning"></i>
+				<small class="text-muted"> 
+					<% if (!_.isEmpty(authuser.user) && !_.isUndefined(authuser.user) && !_.isEmpty(role_links.where({slug: "r_listview_configure"}))) { %>
+						<%= i18next.t('All the list view fields are hidden by list view configuration, you can configure in %s', {postProcess: 'sprintf', sprintf: ['<a href="javascript:void(0);" class="text-primary js-trigger-listview-configure" title="'+ i18next.t('List View Column Chooser') +'">'+ i18next.t('List View Column Chooser') +'.</a>']}) %>
+					<% } else { %>
+						<%= i18next.t('All the list view fields are hidden by list view configuration, you can configure in %s', {postProcess: 'sprintf', sprintf: ['<a href="javascript:void(0);" class="text-primary" title="'+ i18next.t('List View Column Chooser') +'">'+ i18next.t('List View Column Chooser') +'.</a>']}) %>
+					<% } %>
+				</small>
+			</li>
+		</ul>
+	</div>
+</div>
 <div class="well-sm"></div>
 <table class="table">
 <thead>

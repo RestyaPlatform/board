@@ -37,7 +37,8 @@ App.SwitchToListView = Backbone.View.extend({
      * functions to fire on events (Mouse events, Keyboard Events, Frame/Object Events, Form Events, Drag Events, etc...)
      */
     events: {
-        'click .js-sort-by': 'sortBy'
+        'click .js-sort-by': 'sortBy',
+        'click .js-trigger-listview-configure': 'triggerListViewConfigure'
     },
     /**
      * render()
@@ -236,6 +237,22 @@ App.SwitchToListView = Backbone.View.extend({
         }
     },
     /**
+     * triggerListViewConfigure()
+     * toggle the list view configure settings
+     * @param e
+     * @type Object(DOM event)
+     *
+     */
+    triggerListViewConfigure: function(e) {
+        e.preventDefault();
+        $('.js-show-board-actions').trigger('click');
+        $('.js-choose-columns').trigger('click');
+        $('.js-listview-header-trigger').trigger('click');
+        _(function() {
+            $('.js-back-setting-response').parent().addClass('open');
+        }).defer();
+    },
+    /**
      * Listviewposition()
      * toggle thr label filter list
      * @param e
@@ -275,7 +292,7 @@ App.SwitchToListView = Backbone.View.extend({
             field_wrapper_items = field_wrapper.children();
         if (!_.isEmpty(this.model.attributes.board_custom_fields) && !_.isUndefined(this.model.attributes.board_custom_fields)) {
             board_custom_fields = JSON.parse(this.model.attributes.board_custom_fields);
-            if (!_.isUndefined(board_custom_fields.r_listview_configure) && !_.isUndefined(board_custom_fields.r_listview_configure)) {
+            if (!_.isUndefined(board_custom_fields.r_listview_configure) && board_custom_fields.r_listview_configure !== null) {
                 r_listview_configure = board_custom_fields.r_listview_configure.split(',');
                 field_wrapper_items.each(function(label, key) {
                     if (r_listview_configure.indexOf($(key).data('field-name')) === -1) {
@@ -292,6 +309,11 @@ App.SwitchToListView = Backbone.View.extend({
                         }
                     }
                 });
+                if (_.isEmpty(board_custom_fields.r_listview_configure)) {
+                    this.$el.find('.js-listview-configure-info').removeClass('hide');
+                } else if (!this.$el.find('.js-listview-configure-info').hasClass('hide')) {
+                    this.$el.find('.js-listview-configure-info').addClass('hide');
+                }
             }
         }
     }
