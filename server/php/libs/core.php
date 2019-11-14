@@ -4223,8 +4223,10 @@ function updateDependency($parentCard)
         }
     }
     $response = "";
-    foreach ($parentCard as $card_id) {
-        $response = $card_id . "," . $response;
+    if (!empty($parentCard)) {
+        foreach ($parentCard as $card_id) {
+            $response = $card_id . "," . $response;
+        }
     }
     return $response;
 }
