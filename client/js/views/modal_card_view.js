@@ -4079,30 +4079,57 @@ App.ModalCardView = Backbone.View.extend({
         var self = this;
         if (!_.isEmpty(this.model.attributes.due_date) && this.model.attributes.due_date !== '') {
             this.model.url = api_url + 'boards/' + this.model.attributes.board_id + '/lists/' + this.model.attributes.list_id + '/cards/' + this.model.id + '.json';
-            this.model.set('due_date', null);
-            this.model.set('end', null);
             $('.js-close-popover').click();
-            this.model.save({
-                due_date: 'NULL'
-            }, {
-                patch: true,
-                success: function(model, response) {
-                    var activity = new App.Activity();
-                    response.activity = activityCommentReplace(response.activity);
-                    activity.set(response.activity);
-                    activity.board_users = self.model.board_users;
-                    var view = new App.ActivityView({
-                        model: activity,
-                        board: self.model.list.collection.board,
-                        flag: '1'
-                    });
-                    self.model.activities.unshift(activity);
-                    if ($.cookie('filter') !== 'comment') {
-                        var view_activity = $('#js-card-activities-' + self.model.id);
-                        view_activity.prepend(view.render().el);
-                    }
-                }
+            var is_parent_card = false;
+            var cardcheck = false;
+            var card = App.current_board.cards.findWhere({
+                id: self.model.id
             });
+            if (!_.isUndefined(card.attributes.card_dependencies) && !_.isEmpty(card.attributes.card_dependencies) && card.attributes.card_dependencies !== null) {
+                var card_dependecies = card.attributes.card_dependencies;
+                _.each(card_dependecies, function(dependency) {
+                    if (parseInt(dependency.parent_card_id) === self.model.id) {
+                        var child_card_id = parseInt(dependency.child_card_id);
+                        if (!_.isUndefined(self.model.list.collection.board.cards.get(child_card_id)) && self.model.list.collection.board.cards.get(child_card_id) !== null) {
+                            is_parent_card = true;
+                        }
+                    }
+                });
+            }
+            if (is_parent_card) {
+                if (window.confirm(i18next.t('Note: This card has child dependencies and if it\'\s not affect, then remove due date.'))) {
+                    cardcheck = true;
+                } else {
+                    return false;
+                }
+            } else {
+                cardcheck = true;
+            }
+            if (cardcheck) {
+                this.model.set('due_date', null);
+                this.model.set('end', null);
+                this.model.save({
+                    due_date: 'NULL'
+                }, {
+                    patch: true,
+                    success: function(model, response) {
+                        var activity = new App.Activity();
+                        response.activity = activityCommentReplace(response.activity);
+                        activity.set(response.activity);
+                        activity.board_users = self.model.board_users;
+                        var view = new App.ActivityView({
+                            model: activity,
+                            board: self.model.list.collection.board,
+                            flag: '1'
+                        });
+                        self.model.activities.unshift(activity);
+                        if ($.cookie('filter') !== 'comment') {
+                            var view_activity = $('#js-card-activities-' + self.model.id);
+                            view_activity.prepend(view.render().el);
+                        }
+                    }
+                });
+            }
         }
     },
     /**
