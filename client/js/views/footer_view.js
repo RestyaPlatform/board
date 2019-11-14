@@ -480,26 +480,38 @@ App.FooterView = Backbone.View.extend({
      */
     showBoardAddForm: function(e) {
         var self = this;
-        var workflow_template = new App.WorkFlowTemplateCollection();
-        workflow_template.url = api_url + 'workflow_templates.json';
-        workflow_template.fetch({
-            success: function(model, response) {
-                var templates = '';
-                self.$el.find('li.js-back').remove();
-                var target = $(e.target);
-                var parent = target.parents('.js-show-add-boards-list');
-                var insert = $('.js-show-boards-list-response', parent);
-                $('.js-show-boards-list-response').html(new App.BoardAddView({
-                    model: workflow_template
-                }).el).find('#inputtemplatelist').select2({
-                    formatResult: function(repo) {
-                        markup = '<div class="clearfix"><span class="show">' + repo.text + '</span><span class="show small">' + repo.id + '</span></div>';
-                        return markup;
-                    }
-                });
-                $('footer').trigger('footerActionRendered');
-            }
-        });
+        var data = {};
+        var load_workflow_template = false;
+        load_workflow_template = (parseInt(authuser.user.role_id) === 1 || !_.isEmpty(role_links.where({
+            slug: "view_workflow_templates"
+        })));
+        if (load_workflow_template) {
+            var workflow_template = new App.WorkFlowTemplateCollection();
+            workflow_template.url = api_url + 'workflow_templates.json';
+            workflow_template.fetch({
+                success: function(model, response) {
+                    var templates = '';
+                    self.$el.find('li.js-back').remove();
+                    var target = $(e.target);
+                    var parent = target.parents('.js-show-add-boards-list');
+                    var insert = $('.js-show-boards-list-response', parent);
+                    $('.js-show-boards-list-response').html(new App.BoardAddView({
+                        model: workflow_template
+                    }).el).find('#inputtemplatelist').select2({
+                        formatResult: function(repo) {
+                            markup = '<div class="clearfix"><span class="show">' + repo.text + '</span><span class="show small">' + repo.id + '</span></div>';
+                            return markup;
+                        }
+                    });
+                }
+            });
+        } else {
+            self.$el.find('li.js-back').remove();
+            $('.js-show-boards-list-response').html(new App.BoardAddView({
+                model: data
+            }).el);
+        }
+        $('footer').trigger('footerActionRendered');
         return false;
     },
     /**
