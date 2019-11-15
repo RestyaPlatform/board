@@ -4081,6 +4081,7 @@ App.ModalCardView = Backbone.View.extend({
             this.model.url = api_url + 'boards/' + this.model.attributes.board_id + '/lists/' + this.model.attributes.list_id + '/cards/' + this.model.id + '.json';
             $('.js-close-popover').click();
             var is_parent_card = false;
+            var is_child_card = false;
             var cardcheck = false;
             var card = App.current_board.cards.findWhere({
                 id: self.model.id
@@ -4095,9 +4096,25 @@ App.ModalCardView = Backbone.View.extend({
                         }
                     }
                 });
+                if (!is_parent_card) {
+                    _.each(card_dependecies, function(dependency) {
+                        if (parseInt(dependency.child_card_id) === parseInt(self.model.id)) {
+                            var parent_card_id = parseInt(dependency.parent_card_id);
+                            if (!_.isUndefined(App.current_board.cards.get(parent_card_id)) && App.current_board.cards.get(parent_card_id) !== null) {
+                                is_child_card = true;
+                            }
+                        }
+                    });
+                }
             }
             if (is_parent_card) {
                 if (window.confirm(i18next.t('Note: This card has child dependencies and if it\'\s not affect, then remove due date.'))) {
+                    cardcheck = true;
+                } else {
+                    return false;
+                }
+            } else if (is_child_card) {
+                if (window.confirm(i18next.t('Note: This card has parent dependencies and if it\'\s not affect, then remove due date.'))) {
                     cardcheck = true;
                 } else {
                     return false;
