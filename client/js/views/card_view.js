@@ -109,9 +109,6 @@ App.CardView = Backbone.View.extend({
                     this.model.board_user_role_id = board_user_role_id.attributes.board_user_role_id;
                 }
             }
-            this.model.bind('change:is_filtered', function(e) {
-                this.render(null);
-            }, this);
         }
     },
     className: 'panel js-show-modal-card-view js-board-list-card cur',
@@ -479,7 +476,9 @@ App.CardView = Backbone.View.extend({
             }));
             if (filter_count < total_filter && (query_params)) {
                 if (_.isUndefined(ops) && ops !== null) {
-                    this.model.set('is_filtered', true);
+                    this.model.set('is_filtered', true, {
+                        silent: true
+                    });
                     this.$el.css('display', 'none');
                 }
             }
@@ -572,7 +571,9 @@ App.CardView = Backbone.View.extend({
             }
             if (filter_count < total_filter && (query_params)) {
                 if (_.isUndefined(ops) && ops !== null) {
-                    this.model.set('is_filtered', true);
+                    this.model.set('is_filtered', true, {
+                        silent: true
+                    });
                     this.$el.css('display', 'none');
                 }
             }

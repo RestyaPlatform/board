@@ -1564,59 +1564,61 @@ App.ListView = Backbone.View.extend({
                     cards.sortByColumn('position');
                 }
                 cards.each(function(card) {
-                    var card_id = card.id;
-                    var filter_labels = self.model.labels.filter(function(model) {
-                        return parseInt(model.get('card_id')) === parseInt(card_id);
-                    });
-                    var labels = new App.CardLabelCollection();
-                    labels.add(filter_labels, {
-                        silent: true
-                    });
-                    card.labels = labels;
-                    if (parseInt(card.get('is_archived')) === 0) {
-                        card.board_users = self.model.board_users;
-                        card.card_voters.add(card.get('card_voters'), {
+                    if (!card.attributes.is_filtered) {
+                        var card_id = card.id;
+                        var filter_labels = self.model.labels.filter(function(model) {
+                            return parseInt(model.get('card_id')) === parseInt(card_id);
+                        });
+                        var labels = new App.CardLabelCollection();
+                        labels.add(filter_labels, {
                             silent: true
                         });
-                        card.cards = self.model.board.cards;
-                        card.list = self.model;
-                        card.board_activities.add(self.model.activities, {
-                            silent: true
-                        });
-                        filter_attachments = self.model.attachments.where({
-                            card_id: card.id
-                        });
-                        card.attachments.add(filter_attachments, {
-                            silent: true
-                        });
-                        card.board = self.model.board;
-                        if (_.isUndefined(card.attributes.checklist_item_completed_count)) {
-                            var checklist_item_pending_count = card.attributes.checklist_item_count - card.attributes.checklist_item_completed_count;
-                            card.set('checklist_item_pending_count', checklist_item_pending_count, {
-                                silent: false
+                        card.labels = labels;
+                        if (parseInt(card.get('is_archived')) === 0) {
+                            card.board_users = self.model.board_users;
+                            card.card_voters.add(card.get('card_voters'), {
+                                silent: true
                             });
-                        }
-                        var view = new App.CardView({
-                            tagName: 'div',
-                            model: card,
-                            converter: this.converter
-                        });
-                        view_card.append(view.render().el);
-                        _(function() {
-                            localforage.getItem('unreaded_cards', function(err, value) {
-                                if (value) {
-                                    $.each(value, function(index, count) {
-                                        if (count) {
-                                            if ($('#js-card-' + index).find('.js-unread-notification').length === 0) {
-                                                $('#js-card-' + index).find('.js-list-card-data').prepend('<li class="js-unread-notification"><small title = "' + i18next.t('unread notifications') + '"><span class="label label-primary"><span class="icon-bell"></span><span>' + count + '</span></span></small>');
-                                            } else {
-                                                $('#js-card-' + index).find('.js-unread-notification').html('<small title = "' + i18next.t('unread notifications') + '"><span class="label label-primary"><span class="icon-bell"></span><span>' + count + '</span></span></small>');
+                            card.cards = self.model.board.cards;
+                            card.list = self.model;
+                            card.board_activities.add(self.model.activities, {
+                                silent: true
+                            });
+                            filter_attachments = self.model.attachments.where({
+                                card_id: card.id
+                            });
+                            card.attachments.add(filter_attachments, {
+                                silent: true
+                            });
+                            card.board = self.model.board;
+                            if (_.isUndefined(card.attributes.checklist_item_completed_count)) {
+                                var checklist_item_pending_count = card.attributes.checklist_item_count - card.attributes.checklist_item_completed_count;
+                                card.set('checklist_item_pending_count', checklist_item_pending_count, {
+                                    silent: false
+                                });
+                            }
+                            var view = new App.CardView({
+                                tagName: 'div',
+                                model: card,
+                                converter: this.converter
+                            });
+                            view_card.append(view.render().el);
+                            _(function() {
+                                localforage.getItem('unreaded_cards', function(err, value) {
+                                    if (value) {
+                                        $.each(value, function(index, count) {
+                                            if (count) {
+                                                if ($('#js-card-' + index).find('.js-unread-notification').length === 0) {
+                                                    $('#js-card-' + index).find('.js-list-card-data').prepend('<li class="js-unread-notification"><small title = "' + i18next.t('unread notifications') + '"><span class="label label-primary"><span class="icon-bell"></span><span>' + count + '</span></span></small>');
+                                                } else {
+                                                    $('#js-card-' + index).find('.js-unread-notification').html('<small title = "' + i18next.t('unread notifications') + '"><span class="label label-primary"><span class="icon-bell"></span><span>' + count + '</span></span></small>');
+                                                }
                                             }
-                                        }
-                                    });
-                                }
-                            });
-                        }).defer();
+                                        });
+                                    }
+                                });
+                            }).defer();
+                        }
                     }
                 });
             }

@@ -58,6 +58,7 @@ App.BoardView = Backbone.View.extend({
         this.model.board_users.bind('add', this.renderBoarduserCollection);
         this.model.board_users.bind('remove', this.renderBoarduserCollection);
         this.model.board_users.bind('change', this.renderBoarduserCollection);
+        this.model.cards.bind('change:is_filtered', this.renderListsCollection);
         if (!_.isUndefined(App.music)) {
             App.music.inst = new Instrument();
         }
