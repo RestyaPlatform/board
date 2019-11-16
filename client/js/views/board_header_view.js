@@ -2016,9 +2016,6 @@ App.BoardHeaderView = Backbone.View.extend({
         if (!_.isUndefined(currentBoardList)) {
             if (parseInt(currentBoardList.attributes.card_count) === 0) {
                 $('#js-card-listing-' + find_card.attributes.list_id).find('.js-list-placeholder-' + find_card.attributes.list_id).remove();
-                /* $('#js-card-listing-' + find_card.attributes.list_id).html(function(i, h) {
-                    return h.replace(/&nbsp;/g, '');
-                }); */
             }
         }
         this.model.cards.findWhere({
@@ -2044,8 +2041,8 @@ App.BoardHeaderView = Backbone.View.extend({
             });
         }
         if (!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && $.inArray('r_agile_wip', APPS.enabled_apps) !== -1) {
-            if (list !== null && !_.isUndefined(list) && !_.isEmpty(list)) {
-                $('body').trigger('cardAddRendered', [list.id, list]);
+            if (currentBoardList !== null && !_.isUndefined(currentBoardList) && !_.isEmpty(currentBoardList)) {
+                $('body').trigger('cardAddRendered', [currentBoardList.id, currentBoardList]);
             }
         }
         $(e.currentTarget).parents('li').remove();
