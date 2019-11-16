@@ -745,7 +745,7 @@ var AppRouter = Backbone.Router.extend({
 var app = new AppRouter();
 app.on('route', function(route, params) {
     $('div.doughnutTip').remove();
-    if (route !== 'boards_view' && route !== 'card_view' && route !== 'board_card_view_type' && route !== 'boards_view_type' && route !== 'boards_view_type_tab') {
+    if (route !== 'boards_view' && route !== 'card_view' && route !== 'board_card_view_type' && route !== 'boards_view_type' && route !== 'boards_view_type_tab' && route !== 'boards_index') {
         $('body').removeAttr('style class');
     }
 });

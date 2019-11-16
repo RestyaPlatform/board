@@ -618,6 +618,7 @@ App.BoardView = Backbone.View.extend({
         sort_by = (this.model.attributes.sort_by) ? this.model.attributes.sort_by : 'position';
         sort_direction = (this.model.attributes.sort_direction) ? this.model.attributes.sort_direction : 'asc';
         $('body').addClass('modal-open');
+        this.setBoardBackground('false');
         if (!_.isUndefined(App.boards) && !_.isUndefined(App.boards.sortField) && App.boards.sortField !== null && App.boards.sortField !== 'name') {
             App.boards.setSortField('name', 'asc');
             App.boards.sort();
@@ -639,7 +640,6 @@ App.BoardView = Backbone.View.extend({
             star: this.model.board_star
         }));
         this.renderListsCollection();
-        this.setBoardBackground('false');
         if (!_.isUndefined(authuser.user)) {
             if (!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(this.model.acl_links.where({
                     slug: 'edit_list',
