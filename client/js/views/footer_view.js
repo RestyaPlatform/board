@@ -1544,10 +1544,6 @@ App.FooterView = Backbone.View.extend({
                                                     if (!_.isUndefined(cards_list) && cards_list !== null) {
                                                         cards_list.cards.remove(card);
                                                     }
-                                                    var boards_list = App.boards.get(parseInt(activity.attributes.board_id)).lists.get(parseInt(activity.attributes.list_id));
-                                                    if (!_.isUndefined(boards_list) && boards_list !== null) {
-                                                        boards_list.set('card_count', (updated_card_list_cards.length === 0) ? 0 : updated_card_list_cards.length - 1);
-                                                    }
                                                 }
                                                 // Reducing the card count of the old list
                                                 if (!_.isEmpty(card_old_list) && !_.isUndefined(card_old_list) && card_old_list !== null) {
@@ -1570,9 +1566,6 @@ App.FooterView = Backbone.View.extend({
                                                     if (parseInt(card_new_list.attributes.card_count) === 1) {
                                                         // Removing the &nbsp; fom new lsit card listing 
                                                         $('#js-card-listing-' + card_new_list.id).find('.js-list-placeholder-' + card_new_list.id).remove();
-                                                        /* $('#js-card-listing-' + card_new_list.id).html(function(i, h) {
-                                                            return h.replace(/&nbsp;/g, '');
-                                                        }); */
                                                     }
                                                     if (!_.isUndefined(card_old_list) && !_.isUndefined(card_new_list) && wip_enabled) {
                                                         $('body').trigger('cardSortRendered', [card_old_list, card_new_list]);
@@ -1613,7 +1606,6 @@ App.FooterView = Backbone.View.extend({
                                                     if ($('#js-card-listing-' + Cardlist.id).length > 0) {
                                                         $('#js-card-listing-' + Cardlist.id).find('.js-list-placeholder-' + Cardlist.id).remove();
                                                         $('#js-card-listing-' + Cardlist.id).html('<span class="js-list-placeholder-' + Cardlist.id + '">&nbsp;</span>');
-                                                        // $('#js-card-listing-' + Cardlist.id).html('&nbsp;');
                                                     }
                                                 }
                                             } else if (activity.attributes.type === 'unarchived_card') {
@@ -2590,24 +2582,6 @@ App.FooterView = Backbone.View.extend({
                                                     App.boards.get(new_card_board_id).cards.get(parseInt(cardDetails.id)).set('position', new_card_position);
                                                 }
                                             }
-                                        } else {
-                                            var card_board_id = parseInt(activity.attributes.board_id);
-                                            moved_card = App.boards.get(card_board_id).cards.get(parseInt(cardDetails.id));
-                                            moved_card.attributes.list_id = parseInt(cardDetails.list_id);
-                                            moved_card.attributes.board_id = parseInt(card_board_id);
-                                            moved_card.attributes.position = parseFloat(cardDetails.position);
-                                            oldList = App.boards.get(card_board_id).lists.get(old_card_list);
-                                            oldListCardCount = isNaN(oldList.attributes.card_count) ? 0 : oldList.attributes.card_count;
-                                            oldListCardCount = parseInt(oldListCardCount);
-                                            if (oldListCardCount > 0) {
-                                                oldListCardCount = oldListCardCount - 1;
-                                            }
-                                            App.boards.get(card_board_id).lists.get(old_card_list).set('card_count', oldListCardCount);
-                                            newCardList = App.boards.get(card_board_id).lists.get(new_card_list);
-                                            newListCardCount = isNaN(newCardList.attributes.card_count) ? 0 : newCardList.attributes.card_count;
-                                            newListCardCount = parseInt(newListCardCount);
-                                            newListCardCount = newListCardCount + 1;
-                                            App.boards.get(card_board_id).lists.get(new_card_list).set('card_count', newListCardCount);
                                         }
                                     } else if (activity.attributes.type === 'moved_list_card') {
                                         var cardOldListId = parseInt(activity.attributes.list_id);
