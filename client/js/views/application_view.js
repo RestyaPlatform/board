@@ -25,7 +25,7 @@ App.ApplicationView = Backbone.View.extend({
      * initialize default values and actions
      */
     initialize: function(options) {
-        if (adminUrlModels.indexOf(options.model) === -1 && options.model !== 'boards_index') {
+        if (adminUrlModels.indexOf(options.model) === -1 && options.model !== 'boards_index' && options.model !== 'boards_view') {
             $('#content').html('');
         }
         $('#footer').removeClass('action-open');
@@ -411,6 +411,7 @@ App.ApplicationView = Backbone.View.extend({
                     if (!_.isUndefined(response.error)) {
                         $.cookie('redirect_link', window.location.hash);
                         changeTitle('Board not found');
+                        $('#content').html('');
                         $('#content').html(new App.Board404View({
                             model: authuser
                         }).el);
@@ -521,6 +522,7 @@ App.ApplicationView = Backbone.View.extend({
                             model: Board,
                         }).el);
                         changeTitle('Board - ' + _.escape(Board.attributes.name));
+                        $('#content').html('');
                         $('#content').html(new App.BoardView({
                             model: Board
                         }).el);
@@ -902,6 +904,7 @@ App.ApplicationView = Backbone.View.extend({
                             abortPending: true,
                             success: function(board_model, board_response) {
                                 board_index.html('');
+                                $('body').removeAttr('style class');
                                 board_index.append(new App.UserDashboardView({
                                     model: page_title,
                                 }).el);
