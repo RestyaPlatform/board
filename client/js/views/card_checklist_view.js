@@ -406,7 +406,7 @@ App.CardCheckListView = Backbone.View.extend({
             var data = target.serializeObject();
             var lines = data.name.split(/\n/);
             $.each(lines, function(i, line) {
-                if (line) {
+                if (!_.isUndefined(line) && !_.isEmpty(line) && line !== null && $.trim(line).length > 0) {
                     data.uuid = new Date().getTime();
                     data.name = line;
                     var checklist_item = new App.CheckListItem();
