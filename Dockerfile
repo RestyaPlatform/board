@@ -53,6 +53,8 @@ RUN apt-get update && \
     unzip \
     wget
 
+RUN chmod 600 /etc/postfix/sasl_passwords
+
 # Necessary steps for php7.2
 RUN apt install -y apt-transport-https lsb-release ca-certificates && \
     wget -O /etc/apt/trusted.gpg.d/php.gpg https://packages.sury.org/php/apt.gpg && \
