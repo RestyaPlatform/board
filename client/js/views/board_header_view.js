@@ -1324,9 +1324,14 @@ App.BoardHeaderView = Backbone.View.extend({
                             element.find('.fc-event-skin').attr('style', 'background-color: ' + card.attributes.color + ' !important;color: #fff;border-color:transparent !important');
                         } else if ($.trim(CALENDAR_VIEW_CARD_COLOR) === 'Color of first Label') {
                             if (card.labels.length > 0) {
-                                var label_color = new App.CardView({
-                                    model: card
-                                }).getLabelcolor(card.labels.models[0].attributes.name);
+                                var label_color;
+                                if (!_.isUndefined(card.labels.models[0].attributes.color) && !_.isEmpty(card.labels.models[0].attributes.color) && card.labels.models[0].attributes.color !== null) {
+                                    label_color = card.labels.models[0].attributes.color.replace('#', '');
+                                } else {
+                                    label_color = new App.CardView({
+                                        model: card
+                                    }).getLabelcolor(card.labels.models[0].attributes.name);
+                                }
                                 element.css({
                                     "background-color": '#' + label_color,
                                     "color": "#fff",
