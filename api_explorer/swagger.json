@@ -9379,6 +9379,13 @@
                         "required": true,
                         "type": "integer",
                         "format": "int64"
+                    },
+                    {
+                        "name": "attachment",
+                        "in": "formData",
+                        "description": "Upload File.",
+                        "required": false,
+                        "type": "file"
                     }
                 ],
                 "responses": {
