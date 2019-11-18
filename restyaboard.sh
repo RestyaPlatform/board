@@ -1629,7 +1629,7 @@
 			chmod -R go+w "$dir/media"
 			chmod -R go+w "$dir/client/img"
 			chmod -R go+w "$dir/tmp/cache"
-			chmod -R 0755 $dir/server/php/shell/*.sh
+			chmod +x $dir/server/php/shell/*.sh
 			change_permission
 
 			psql_connect
