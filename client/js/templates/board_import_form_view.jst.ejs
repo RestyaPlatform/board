@@ -5,8 +5,11 @@
 <% if(!_.isEmpty(role_links.where({slug: "add_board"}))){ %>
 	<div class="col-xs-12">
 			<div class="clearfix js-board-import-info">
-				<div class="form-group"><span class="help-block"><%- i18next.t('NOTE: Board members will be created with dummy email like trello-username@mailinator.com') %></span></div>
+				<div class="form-group">
+					<span class="help-block no-mar"><%- i18next.t('NOTE: Board members will be created with dummy emails with the import site names as a prefix in the email. E.g:') %></span>
+					<span class="help-block no-mar"><%- i18next.t('trello-username@mailinator.com') %></span>
 				</div>
+			</div>
 		<ul class="nav nav-pills nav-stacked js-board-import-blk">
 			<li class="clearfix js-import-boards-back cur h5 btn-link"><div class="navbar-btn clearfix media htruncate js-show-board-import-asana-form"><span data-toggle="tooltip" data-placement="top" data-original-title="<%- i18next.t('Upload json file exported from Asana.') %>"><%- i18next.t('Asana') %></span><span class="cssloader pull-right hide" id="js-board-import-asana-loader"></span></div>
 			<form class="hide" id="js-board-import-asana" enctype="multipart/form-data">
