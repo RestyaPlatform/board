@@ -384,7 +384,7 @@ if (_.isEmpty(role_links.where({
 																								<li>
 																									<a class="cur <% if(k !== authuser.user.language) { %>js-change-language<%}%>" data-lang="<%- k %>">
 																										<%- v %>
-																											<% if((!_.isEmpty(authuser.user.language) && k === authuser.user.language) || (_.isEmpty(authuser.user.language) && k === DEFAULT_LANGUAGE)){ %>
+																											<% if((!_.isEmpty(authuser.user.language) && k === authuser.user.language) || (_.isEmpty(authuser.user.language) && k === current_language)){ %>
 																												<i class="icon-ok"></i>
 																												<% } %>
 																									</a>
