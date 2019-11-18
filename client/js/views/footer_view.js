@@ -177,11 +177,33 @@ App.FooterView = Backbone.View.extend({
         if (url.length === 2 && url['1'] === 'boards') {
             in_boards_page = true;
         }
+        var current_language;
+        if ($.cookie('auth') !== undefined && $.cookie('auth') !== null && authuser.user.language !== null && !_.isUndefined(authuser.user.language) && !_.isEmpty(authuser.user.language)) {
+            current_language = authuser.user.language;
+        } else if (navigator.language || navigator.userLanguage) {
+            var languages = ($.cookie('languages')) ? $.cookie('languages').split(',') : null;
+            if (languages !== null) {
+                languages = JSON.parse(languages);
+            }
+            current_language = navigator.language || navigator.userLanguage;
+            var language_reg = current_language.split('-');
+            if (language_reg.length > 1) {
+                language_reg['1'] = language_reg['1'].toUpperCase();
+            }
+            current_language = language_reg.join('_');
+            current_language = current_language.replace("-", "_");
+            if (_.isUndefined(languages[current_language]) || languages[current_language] === null || _.isEmpty(languages[current_language])) {
+                current_language = DEFAULT_LANGUAGE;
+            }
+        } else {
+            current_language = DEFAULT_LANGUAGE;
+        }
         self.$el.html(self.template({
             model: self.model,
             board_id: self.board_id,
             board: self.board,
             languages: ($.cookie('languages')) ? $.cookie('languages').split(',') : null,
+            'current_language': current_language,
             apps: overallApps,
             'in_boards_page': in_boards_page,
             converter: self.converter,
