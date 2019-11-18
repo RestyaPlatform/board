@@ -20,6 +20,13 @@ _.each(app_settings, function(app_setting) {
 			  <div class=" col-sm-7  col-xs-12">
 				<% if(!_.isUndefined(app_setting.is_encrypted) && (app_setting.is_encrypted === true)){ %>
 					<input type="text" value="" class="form-control" name="<%- app_setting.name %>" id="<%- app_setting.name %>">
+				<% } else if (!_.isUndefined(app_setting.type) && !_.isEmpty(app_setting.type) && app_setting.type !== null && app_setting.type === 'dropdown'){ 
+					var options = app_setting.options.split(','); %>
+					<select class="form-control cur" name="<%- app_setting.name %>">
+						<% _.each(options, function(option) { %> 
+							<option <% if(app_setting.value === option){ %>selected<% } %> value="<%- option %>"><%- option %></option>
+						<% }); %>
+					</select> 
 				<% } else { %>
 					<input type="text" value="<%- app_setting.value %>" class="form-control" name="<%- app_setting.name %>" id="<%- app_setting.name %>">					
 				<% } %>
