@@ -4125,7 +4125,6 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     $r_post['background_picture_path'],
                     $r_resource_vars['boards']
                 );
-                pg_query_params($db_lnk, 'UPDATE boards SET background_picture_url = $1,background_picture_path = $2 WHERE id = $3', $qry_val_array);
                 $qry_val_arr = array(
                     $r_resource_vars['boards']
                 );
