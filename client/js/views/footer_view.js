@@ -1072,9 +1072,35 @@ App.FooterView = Backbone.View.extend({
                                         var card = self.board.cards.findWhere({
                                             id: parseInt(activity.attributes.card_id)
                                         });
-                                        if (activity.attributes.type === 'add_card' || activity.attributes.type === 'copy_card' || (_.isUndefined(card) && activity.attributes.type === 'move_card')) {
+                                        if (activity.attributes.type === 'add_card' || activity.attributes.type === 'copy_card' || activity.attributes.type === 'convert_card' || (_.isUndefined(card) && activity.attributes.type === 'move_card')) {
+                                            if (activity.attributes.type === 'convert_card') {
+                                                var checklistItem = self.board.checklist_items.findWhere({
+                                                    id: parseInt(activity.attributes.foreign_id)
+                                                });
+                                                var itemCard = self.board.cards.findWhere({
+                                                    id: parseInt(checklistItem.attributes.card_id)
+                                                });
+                                                self.board.checklist_items.remove(checklistItem, {
+                                                    silent: false
+                                                });
+                                                var totalItems = self.board.checklist_items.where({
+                                                    card_id: parseInt(itemCard.id)
+                                                });
+                                                var checklistItems = new App.CheckListItemCollection();
+                                                checklistItems.add(totalItems, {
+                                                    silent: true
+                                                });
+                                                var item_completed_count = checklistItems.filter(function(checklist_item) {
+                                                    return parseInt(checklist_item.get('is_completed')) === 1;
+                                                }).length;
+                                                var item_total_count = checklistItems.models.length;
+                                                var item_pending_count = item_total_count - item_completed_count;
+                                                itemCard.set('checklist_item_completed_count', item_completed_count);
+                                                itemCard.set('checklist_item_pending_count', item_pending_count);
+                                                itemCard.set('checklist_item_count', item_total_count);
+                                            }
                                             var new_card = new App.Card();
-                                            if (activity.attributes.type === 'add_card') {
+                                            if (activity.attributes.type === 'add_card' || activity.attributes.type === 'convert_card') {
                                                 activity.attributes.card.cards_labels = null;
                                                 activity.attributes.card.cards_users = null;
                                                 activity.attributes.card.cards_voters = null;
@@ -1123,7 +1149,7 @@ App.FooterView = Backbone.View.extend({
                                                 new_card.set('comment_count', 0);
                                             }
                                             var card_list = self.board.lists.findWhere({
-                                                id: parseInt(activity.attributes.list_id)
+                                                id: parseInt(activity.attributes.card.list_id)
                                             });
                                             if (activity.attributes.type === 'move_card') {
                                                 new_card.set('list_moved_date', parseInt(activity.attributes.card.list_moved_date));
@@ -1133,7 +1159,7 @@ App.FooterView = Backbone.View.extend({
                                             if (!_.isEmpty(card_list) && !_.isUndefined(card_list) && card_list !== null && !_.isEmpty(card_list.cards) && !_.isUndefined(card_list.cards) && card_list.cards !== null) {
                                                 var tmp_list_cards = card_list.cards;
                                                 new_card.set('created', activity.attributes.card.created);
-                                                new_card.set('position', parseFloat(activity.attributes.card_position));
+                                                new_card.set('position', parseFloat(activity.attributes.card.position));
                                                 tmp_list_cards.add(new_card, {
                                                     silent: true
                                                 });
