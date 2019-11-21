@@ -282,6 +282,11 @@ class ActivityHandler
                     $obj['child_cards'] = $response;
                 }
             }
+        } else if ($obj['type'] == 'convert_card') {
+            $obj_val_arr = array(
+                $obj['card_id']
+            );
+            $obj['card'] = executeQuery('SELECT * FROM cards_listing WHERE id = $1', $obj_val_arr);
         }
         return $obj;
     }
