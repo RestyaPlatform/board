@@ -2412,6 +2412,10 @@ App.FooterView = Backbone.View.extend({
                                         App.boards.get(parseInt(activity.attributes.board_id)).set('is_closed', 1);
                                     } else if (activity.attributes.type === 'reopen_board') {
                                         App.boards.get(parseInt(activity.attributes.board_id)).set('is_closed', 0);
+                                    } else if (activity.attributes.type === 'update_sort_card') {
+                                        if (!_.isUndefined(activity.attributes.revisions) && !_.isEmpty(activity.attributes.revisions) && !_.isUndefined(App.boards.get(parseInt(activity.attributes.board_id))) && App.boards.get(parseInt(activity.attributes.board_id)) !== null) {
+                                            App.boards.get(parseInt(activity.attributes.board_id)).set(activity.attributes.revisions.new_value);
+                                        }
                                     } else if (activity.attributes.type === 'add_list') {
                                         var board_new_list = new App.List();
                                         board_new_list.set(activity.attributes.list);
