@@ -531,6 +531,7 @@ var AppRouter = Backbone.Router.extend({
         });
     },
     boards_view: function(id) {
+        $('.dockmodal, .dockmodal-overlay').remove();
         from_url = 'board_view';
         new App.ApplicationView({
             model: 'boards_view',
@@ -557,6 +558,7 @@ var AppRouter = Backbone.Router.extend({
         });
     },
     boards_view_type: function(id, type) {
+        $('.dockmodal, .dockmodal-overlay').remove();
         view_type = type;
         view_type_ref = type;
         new App.ApplicationView({
