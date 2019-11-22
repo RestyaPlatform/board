@@ -1102,7 +1102,7 @@ App.ModalCardView = Backbone.View.extend({
     showCardTitleEditForm: function(e) {
         var target = $(e.currentTarget);
         target.parent('h4').addClass('hide');
-        $('form#cardTitleEditForm').removeClass('hide');
+        this.$el.find('form#cardTitleEditForm').removeClass('hide');
         return false;
     },
     /**

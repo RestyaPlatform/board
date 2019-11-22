@@ -360,7 +360,7 @@ App.CardView = Backbone.View.extend({
                 board_user_role_id = this.model.board_users.findWhere({
                     user_id: parseInt(authuser.user.id)
                 });
-            } else if (!_.isUndefined(this.model.list.board_users) && this.model.list.board_users.length > 0) {
+            } else if (!_.isUndefined(this.model.list) && !_.isUndefined(this.model.list.board_users) && this.model.list.board_users.length > 0) {
                 board_user_role_id = this.model.list.board_users.findWhere({
                     user_id: parseInt(authuser.user.id)
                 });

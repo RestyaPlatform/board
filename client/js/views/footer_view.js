@@ -2596,22 +2596,26 @@ App.FooterView = Backbone.View.extend({
                                             var new_card_board_id = parseInt(activity.attributes.revisions.new_value.board_id);
                                             if (!_.isUndefined(App.boards) && !_.isEmpty(App.boards) & App.boards !== null && !_.isUndefined(App.boards.get(old_card_board_id))) {
                                                 var old_board_card_details = App.boards.get(old_card_board_id).cards.get(cardDetails.id);
-                                                var oldBoardCard = new App.Card();
-                                                oldBoardCard.set(old_board_card_details.attributes);
-                                                oldBoardCard.set('id', parseInt(cardDetails.id));
-                                                oldBoardCard.set('name', cardDetails.name);
-                                                oldBoardCard.set('board_id', old_card_board_id);
-                                                oldBoardCard.set('list_id', old_card_list);
-                                                oldBoardCard.set('is_archived', parseInt(old_board_card_details.attributes.is_archived));
-                                                oldBoardCard.set('position', cardDetails.position);
-                                                App.boards.get(old_card_board_id).lists.remove(oldBoardCard);
-                                                oldList = App.boards.get(old_card_board_id).lists.get(old_card_list);
-                                                oldListCardCount = isNaN(oldList.attributes.card_count) ? 0 : oldList.attributes.card_count;
-                                                oldListCardCount = parseInt(oldListCardCount);
-                                                if (oldListCardCount > 0) {
-                                                    oldListCardCount = oldListCardCount - 1;
+                                                if (!_.isisUndefined(old_board_card_details) && !_.isEmpty(old_board_card_details) && old_board_card_details !== null) {
+                                                    var oldBoardCard = new App.Card();
+                                                    oldBoardCard.set(old_board_card_details.attributes);
+                                                    oldBoardCard.set('id', parseInt(cardDetails.id));
+                                                    oldBoardCard.set('name', cardDetails.name);
+                                                    oldBoardCard.set('board_id', old_card_board_id);
+                                                    oldBoardCard.set('list_id', old_card_list);
+                                                    oldBoardCard.set('is_archived', parseInt(old_board_card_details.attributes.is_archived));
+                                                    oldBoardCard.set('position', old_board_card_details.attributes.position);
+                                                    App.boards.get(old_card_board_id).lists.remove(oldBoardCard);
                                                 }
-                                                App.boards.get(old_card_board_id).lists.get(old_card_list).set('card_count', oldListCardCount);
+                                                oldList = App.boards.get(old_card_board_id).lists.get(old_card_list);
+                                                if (!_.isUndefined(oldList) && !_.isEmpty(oldList) && oldList !== null) {
+                                                    oldListCardCount = isNaN(oldList.attributes.card_count) ? 0 : oldList.attributes.card_count;
+                                                    oldListCardCount = parseInt(oldListCardCount);
+                                                    if (oldListCardCount > 0) {
+                                                        oldListCardCount = oldListCardCount - 1;
+                                                    }
+                                                    App.boards.get(old_card_board_id).lists.get(old_card_list).set('card_count', oldListCardCount);
+                                                }
                                             }
 
                                             var newBoardCard = new App.Card();
@@ -2627,10 +2631,12 @@ App.FooterView = Backbone.View.extend({
                                                 if (_.isUndefined(card_already_exist) || _.isEmpty(card_already_exist) || card_already_exist === null) {
                                                     App.boards.get(parseInt(newBoardCard.attributes.board_id)).cards.add(newBoardCard);
                                                     newCardList = App.boards.get(new_card_board_id).lists.get(new_card_list);
-                                                    newListCardCount = isNaN(newCardList.attributes.card_count) ? 0 : newCardList.attributes.card_count;
-                                                    newListCardCount = parseInt(newListCardCount);
-                                                    newListCardCount = newListCardCount + 1;
-                                                    App.boards.get(new_card_board_id).lists.get(new_card_list).set('card_count', newListCardCount);
+                                                    if (!_.isUndefined(newCardList) && !_.isEmpty(newCardList) && newCardList !== null) {
+                                                        newListCardCount = isNaN(newCardList.attributes.card_count) ? 0 : newCardList.attributes.card_count;
+                                                        newListCardCount = parseInt(newListCardCount);
+                                                        newListCardCount = newListCardCount + 1;
+                                                        App.boards.get(new_card_board_id).lists.get(new_card_list).set('card_count', newListCardCount);
+                                                    }
                                                     App.boards.get(new_card_board_id).cards.get(parseInt(cardDetails.id)).set('position', new_card_position);
                                                 }
                                             }
