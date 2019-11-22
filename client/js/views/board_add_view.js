@@ -48,10 +48,12 @@ App.BoardAddView = Backbone.View.extend({
     },
     showAllVisibility: function(e) {
         e.preventDefault();
-        $('.js-open-dropdown').addClass('open');
-        $('.js-visibility-container').html('');
-        var visibility = $('#inputBoardAddVisibility').val();
-        $('.js-visibility-chooser').html(new App.ShowAllVisibilityView({
+        var target = $(e.target);
+        var parent = target.parents('form#BoardAddForm');
+        $('.js-open-dropdown', parent).addClass('open');
+        $('.js-visibility-container', parent).html('');
+        var visibility = $('#inputBoardAddVisibility', parent).val();
+        $('.js-visibility-chooser', parent).html(new App.ShowAllVisibilityView({
             model: visibility
         }).el);
 
@@ -66,9 +68,11 @@ App.BoardAddView = Backbone.View.extend({
      *
      */
     selectBoardVisibility: function(e) {
+        var target = $(e.target);
+        var parent = target.parents('form#BoardAddForm');
         var name = $(e.currentTarget).attr('name');
         var value = 0;
-        $('#js-board-add-organization').html('');
+        $('#js-board-add-organization', parent).html('');
         if (name == 'org') {
             value = 1;
             this.showBoardAddeOrganizationForm(e);
@@ -78,10 +82,10 @@ App.BoardAddView = Backbone.View.extend({
         var content = new App.SelectedBoardVisibilityView({
             model: name
         }).el;
-        $('#inputBoardAddVisibility').val(value);
-        $('.js-visibility-container').html(content);
+        $('#inputBoardAddVisibility', parent).val(value);
+        $('.js-visibility-container', parent).html(content);
         content = '';
-        $('.js-board-add-dropdown').removeClass('open');
+        $('.js-board-add-dropdown', parent).removeClass('open');
         return false;
     },
     submitBoardAdd: function(e) {
@@ -118,12 +122,14 @@ App.BoardAddView = Backbone.View.extend({
      */
     showBoardAddeOrganizationForm: function(e) {
         e.preventDefault();
+        var target = $(e.target);
+        var parent = target.parents('form#BoardAddForm');
         organizations = auth_user_organizations;
         if (auth_user_organizations !== null && _.isUndefined(auth_user_organizations.models)) {
             organizations.add(JSON.parse(auth_user_organizations));
         }
         auth_user_organizations = organizations;
-        $('#js-board-add-organization').html(new App.BoardAddOrganizationFormView({
+        $('#js-board-add-organization', parent).html(new App.BoardAddOrganizationFormView({
             model: auth_user_organizations
         }).el);
     }
