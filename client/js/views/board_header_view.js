@@ -2114,24 +2114,33 @@ App.BoardHeaderView = Backbone.View.extend({
      *
      */
     switchGridView: function(e) {
-        var self = this;
-        $('body').addClass('modal-open');
-        $('li.js-switch-view').removeClass('active');
-        $('#listview_table').attr("id", "switch-board-view");
-        e.preventDefault();
-        var current_param = Backbone.history.fragment;
-        var is_filter_cards = current_param.split('?');
-        if (is_filter_cards.length > 1) {
-            self.$el.find('.js-clear-filter-btn').trigger('click');
+        var currenturl = window.location;
+        var currentss = currenturl.hash;
+        var get_match_url = currentss.split("/");
+        var grid_view = false;
+        if (get_match_url.length === 3 && get_match_url['1'] === 'board') {
+            grid_view = true;
         }
-        app.navigate('#/board/' + this.model.id, {
-            trigger: false,
-            trigger_function: false,
-        });
-        $('#content').html(new App.BoardView({
-            model: this.model
-        }).el);
-        this.board_view_height();
+        if (!grid_view) {
+            var self = this;
+            $('body').addClass('modal-open');
+            $('li.js-switch-view').removeClass('active');
+            $('#listview_table').attr("id", "switch-board-view");
+            e.preventDefault();
+            var current_param = Backbone.history.fragment;
+            var is_filter_cards = current_param.split('?');
+            if (is_filter_cards.length > 1) {
+                self.$el.find('.js-clear-filter-btn').trigger('click');
+            }
+            app.navigate('#/board/' + this.model.id, {
+                trigger: false,
+                trigger_function: false,
+            });
+            $('#content').html(new App.BoardView({
+                model: this.model
+            }).el);
+            this.board_view_height();
+        }
     },
     /**
      * boardRename()
