@@ -50,7 +50,11 @@ App.AttachmentView = Backbone.View.extend({
             attachment: this.model,
             board: this.board
         }));
-        this.$el.attr('class', 'clearfix col-md-4 col-sm-6 col-xs-12 navbar-btn js-card-attachment-' + this.board.id + '-' + this.model.id);
+        this.$el.attr('class', 'clearfix col-md-4 col-sm-6 col-xs-12 navbar-btn');
+        if (!_.isUndefined(this.model) && !_.isEmpty(this.model) && this.model !== null) {
+            this.$el.addClass('js-card-attachment-' + this.board.id + '-' + this.model.id);
+        }
+
         this.showTooltip();
         return this;
     },
