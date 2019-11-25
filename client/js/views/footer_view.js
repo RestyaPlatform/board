@@ -2196,8 +2196,23 @@ App.FooterView = Backbone.View.extend({
                                             var filter_labels = self.board.labels.filter(function(model) {
                                                 return parseInt(model.get('label_id')) === parseInt(label_value.id);
                                             });
+                                            var deleteLabelcards = self.board.cards.filter(function(card) {
+                                                return card.get('is_archived') !== 1 && !_.isUndefined(card.labels) && card.labels.length > 0 && !_.isEmpty(card.labels.findWhere({
+                                                    label_id: parseInt(label_value.id)
+                                                }));
+                                            });
+                                            if (!_.isUndefined(deleteLabelcards) && !_.isEmpty(deleteLabelcards) && deleteLabelcards !== null) {
+                                                _.each(deleteLabelcards, function(card) {
+                                                    var label = card.labels.filter(function(model) {
+                                                        return parseInt(model.get('label_id')) === parseInt(label_value.id);
+                                                    });
+                                                    card.labels.remove(label, {
+                                                        silent: false
+                                                    });
+                                                });
+                                            }
                                             self.board.labels.remove(filter_labels, {
-                                                silent: false
+                                                silent: true
                                             });
                                         } else if (activity.attributes.type === 'update_label') {
                                             var update_label_value = JSON.parse(activity.attributes.revisions);
@@ -2238,7 +2253,9 @@ App.FooterView = Backbone.View.extend({
                                                 self.board.set('board_custom_fields', activity.attributes.revisions);
                                             }
                                         } else if (activity.attributes.type === 'close_board') {
-                                            App.boards.get(activity.attributes.board_id).set('is_closed', 1);
+                                            if (!_.isUndefined(App.boards.get(activity.attributes.board_id)) && !_.isEmpty(App.boards.get(activity.attributes.board_id)) && App.boards.get(activity.attributes.board_id) !== null) {
+                                                App.boards.get(activity.attributes.board_id).set('is_closed', 1);
+                                            }
                                             self.board.set('is_closed', 1);
                                         } else if (activity.attributes.type === 'reopen_board') {
                                             App.boards.get(activity.attributes.board_id).set('is_closed', 0);

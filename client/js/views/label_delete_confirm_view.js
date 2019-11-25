@@ -27,11 +27,26 @@ App.LabelDeleteConfirmView = Backbone.View.extend({
             success: function(model, response) {
                 self.flash('success', i18next.t('Label deleted successfully.'));
                 $('.js-show-labels').trigger('click');
+                var deleteLabelcards = self.model.cards.filter(function(card) {
+                    return card.get('is_archived') !== 1 && !_.isUndefined(card.labels) && card.labels.length > 0 && !_.isEmpty(card.labels.findWhere({
+                        label_id: parseInt(self.label_id)
+                    }));
+                });
+                if (!_.isUndefined(deleteLabelcards) && !_.isEmpty(deleteLabelcards) && deleteLabelcards !== null) {
+                    _.each(deleteLabelcards, function(card) {
+                        var label = card.labels.filter(function(model) {
+                            return parseInt(model.get('label_id')) === parseInt(self.label_id);
+                        });
+                        card.labels.remove(label, {
+                            silent: false
+                        });
+                    });
+                }
                 var filter_labels = self.model.labels.filter(function(model) {
                     return parseInt(model.get('label_id')) === parseInt(self.label_id);
                 });
                 self.model.labels.remove(filter_labels, {
-                    silent: false
+                    silent: true
                 });
             }
         });
