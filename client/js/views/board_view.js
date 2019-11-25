@@ -49,7 +49,6 @@ App.BoardView = Backbone.View.extend({
         this.model.bind('change:sort_by', this.renderListsCollection);
         this.model.bind('change:sort_direction', this.renderListsCollection);
         this.model.bind('change:music_content', this.musical);
-        this.model.labels.bind('remove', this.renderListsCollection);
         this.model.lists.bind('add', this.renderListsCollection);
         this.model.lists.bind('change:position', this.renderListsCollection);
         this.model.lists.bind('change:is_archived', this.renderListsCollection, this);
