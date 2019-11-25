@@ -91,7 +91,7 @@
 						_.each(matches, function(match) {
 							_username.push(match.substr(1));
 						});
-						if(_.contains(_username, authuser.user.username)){
+						if(!_.isEmpty(_username) && !_.isUndefined(authuser.user) && _.contains(_username, authuser.user.username)){
 							comment = filterXSS(activity.attributes.full_name) + ' has mentioned you in card ' + cardLink;
 						} 
 					}
