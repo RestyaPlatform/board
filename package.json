@@ -13,7 +13,7 @@
     "eslint-plugin-backbone": "^2.0.2",
     "grunt": "^0.4.4",
     "grunt-closure-tools": "~0.9.7",
-    "grunt-complexity": "~0.2.0",
+    "grunt-complexity": "~1.1.0",
     "grunt-contrib-concat": "~0.1.3",
     "grunt-contrib-cssmin": "~0.6.1",
     "grunt-contrib-htmlmin": "~0.3.0",
