@@ -261,7 +261,7 @@
 					<li class = "check_start_date_set-<%- card.id%> js-gantt-card-app" data-card_id = "<%- card.id%>"></li>
 					<% } %>
 					<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: "edit_card",board_user_role_id: parseInt(list.board_user_role_id)})))){ %>
-					<li class="dropdown"> <a class="btn btn-default dropdown-toggle js-show-card-due-date-form custom-datepicker-position even-action htruncate" role="button" data-toggle="dropdown" title="<%- i18next.t('Due Date') %>" href="#"><i class="icon-calendar"></i><%- i18next.t('Due Date') %></a>
+					<li class="dropdown"> <a class="btn btn-default dropdown-toggle js-show-card-due-date-form custom-datepicker-position js-due-date-intiated-<%=card.attributes.id%>  even-action htruncate" role="button" data-toggle="dropdown" title="<%- i18next.t('Due Date') %>" href="#"><i class="icon-calendar"></i><%- i18next.t('Due Date') %></a>
 					  <ul class="dropdown-menu dropdown-menu-left arrow col-xs-12">
 						<li class="col-xs-12 clearfix text-center"> <div><span class="col-xs-10"><strong><%- i18next.t('Due Date') %></strong></span><a class="js-close-popover pull-right" href="#"><i class="icon-remove "></i></a></div> </li>
 						<li class="col-xs-12 divider"></li>
@@ -284,12 +284,12 @@
 											<div class="col-xs-6">
 												<label><%- i18next.t('Date') %>
 												</label>
-												<input type="text" class="form-control input-sm js-card-duedate-edit-<%=card.attributes.id%>" name="due_date" data-format="yyyy-MM-dd" value="<%= date %>" required>
+												<input type="text" class="form-control input-sm js-card-duedate-init-<%=card.attributes.id%>" name="due_date" data-format="yyyy-MM-dd" value="<%= date %>" required>
 											</div>
 											<div class="col-xs-6">
 												<label><%- i18next.t('Time') %>
 												</label>
-												<input type="text" class="form-control input-sm js-card-duetime-edit-<%=card.attributes.id%>" name="due_time" data-format="hh:mm" value="<%= time %>" required>
+												<input type="text" class="form-control input-sm js-card-duetime-init-<%=card.attributes.id%>" name="due_time" data-format="hh:mm" value="<%= time %>" required>
 											</div>
 										</div>
 										<div class="form-group">
@@ -597,7 +597,7 @@
 		</li>
 		<% } %>
 	  <% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: "edit_card",board_user_role_id: parseInt(list.board_user_role_id)})))){ %>
-		<li class="dropdown"> <a class="dropdown-toggle js-show-card-due-date-form custom-datepicker-position" role="button" data-toggle="dropdown" title="<%- i18next.t('Due Date') %>" href="#"><%- i18next.t('Due Date') %></a>
+		<li class="dropdown"> <a class="dropdown-toggle js-show-card-due-date-form js-due-date-action-<%=card.attributes.id%> custom-datepicker-position" role="button" data-toggle="dropdown" title="<%- i18next.t('Due Date') %>" href="#"><%- i18next.t('Due Date') %></a>
 		  <ul class="dropdown-menu dropdown-menu-left arrow col-xs-12">
 			<li class="col-xs-12 clearfix text-center"> <div><span class="col-xs-10"><strong><%- i18next.t('Due Date') %></strong></span><a class="js-close-popover pull-right" href="#"><i class="icon-remove "></i></a></div> </li>
 			<li class="col-xs-12 divider"></li>
@@ -620,12 +620,12 @@
 								<div class="col-xs-6">
 									<label><%- i18next.t('Date') %>
 									</label>
-									<input type="text" class="form-control input-sm js-card-duedate-edit-<%=card.attributes.id%>" name="due_date" data-format="yyyy-MM-dd" value="<%= date %>" required>
+									<input type="text" class="form-control input-sm js-card-duedate-action-<%=card.attributes.id%>" name="due_date" data-format="yyyy-MM-dd" value="<%= date %>" required>
 								</div>
 								<div class="col-xs-6">
 									<label><%- i18next.t('Time') %>
 									</label>
-									<input type="text" class="form-control input-sm js-card-duetime-edit-<%=card.attributes.id%>" name="due_time" data-format="hh:mm" value="<%= time %>" required>
+									<input type="text" class="form-control input-sm js-card-duetime-action-<%=card.attributes.id%>" name="due_time" data-format="hh:mm" value="<%= time %>" required>
 								</div>
 							</div>
 							<div class="form-group">
