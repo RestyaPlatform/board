@@ -27,7 +27,7 @@
     "grunt-eslint": "^19.0.0",
     "grunt-exec": "~0.4.6",
     "grunt-filerev": "~2.1.2",
-    "grunt-git-deploy": "~0.1.1",
+    "grunt-git-deploy": "~0.3.1",
     "grunt-jsbeautifier": "~0.2.7",
     "grunt-lineending": "~0.1.1",
     "grunt-manifest": "~0.4.0",
