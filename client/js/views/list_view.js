@@ -1475,7 +1475,6 @@ App.ListView = Backbone.View.extend({
                         if ($('#js-card-modal-' + e.attributes.id).length === 1) {
                             card_exist = true;
                         }
-                        $('#js-card-' + e.attributes.id).remove();
                     }
                     filtered_cards = self.model.board.cards.where({
                         is_archived: 0,
@@ -1497,10 +1496,18 @@ App.ListView = Backbone.View.extend({
                                 if (parseInt(card.attributes.id) === parseInt(e.attributes.id)) {
                                     if (!_.isUndefined(self.model.cards.models[i - 1])) {
                                         var prev_card_id = self.model.cards.models[i - 1].id;
-                                        $('#js-card-' + prev_card_id).after(view.render().el);
+                                        var next_card = $('#js-card-' + prev_card_id).after().data('card_id');
+                                        if (next_card !== parseInt(e.attributes.id)) {
+                                            $('#js-card-' + e.attributes.id).remove();
+                                            $('#js-card-' + prev_card_id).after(view.render().el);
+                                        }
                                         bool = false;
                                     } else {
-                                        $('#js-card-listing-' + e.attributes.list_id).prepend(view.render().el);
+                                        var first_card = $('#js-card-listing-' + e.attributes.list_id).find('.js-show-modal-card-view:first').data('card_id');
+                                        if (first_card !== parseInt(e.attributes.id)) {
+                                            $('#js-card-' + e.attributes.id).remove();
+                                            $('#js-card-listing-' + e.attributes.list_id).prepend(view.render().el);
+                                        }
                                         bool = false;
                                     }
                                 }
