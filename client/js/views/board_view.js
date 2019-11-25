@@ -49,7 +49,6 @@ App.BoardView = Backbone.View.extend({
         this.model.bind('change:sort_by', this.renderListsCollection);
         this.model.bind('change:sort_direction', this.renderListsCollection);
         this.model.bind('change:music_content', this.musical);
-        this.model.labels.bind('remove', this.renderListsCollection);
         this.model.lists.bind('add', this.renderListsCollection);
         this.model.lists.bind('change:position', this.renderListsCollection);
         this.model.lists.bind('change:is_archived', this.renderListsCollection, this);
@@ -654,8 +653,9 @@ App.BoardView = Backbone.View.extend({
                     containment: 'window',
                     axis: 'x',
                     items: 'div.js-board-list',
-                    placeholder: 'col-lg-3 col-md-3 col-sm-4 col-xs-12 board-list-placeholder board-list-height ',
+                    placeholder: 'col-lg-3 col-md-3 col-sm-4 col-xs-12 board-list-placeholder board-list-height list',
                     forcePlaceholderSize: true,
+                    distance: 10,
                     cursor: 'grab',
                     scrollSensitivity: 100,
                     scrollSpeed: 50,

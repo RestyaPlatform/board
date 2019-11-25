@@ -77,7 +77,6 @@ App.BoardHeaderView = Backbone.View.extend({
         this.model.board_users.bind('add', this.showFilters, this);
         this.model.board_users.bind('remove', this.showFilters, this);
         this.model.labels.bind('add', this.showFilters, this);
-        this.model.labels.bind('remove', this.switchListView, this);
         this.model.labels.bind('change', this.showLabels, this);
         this.model.labels.bind('remove', this.showLabels, this);
         this.authuser = authuser.user;
@@ -1665,7 +1664,6 @@ App.BoardHeaderView = Backbone.View.extend({
             }
         }).defer();
         this.renderBoardUsers();
-        this.clearAll();
         return false;
     },
     renderBoardUsers: function() {
@@ -2455,16 +2453,28 @@ App.BoardHeaderView = Backbone.View.extend({
                 var arrays = dictFilter.arrays;
                 var filter_query = dictFilter.filter_query;
                 if (_.isEmpty(arrays) && _.isEmpty(filter_query)) {
-                    _.each(this.model.lists.models, function(list) {
-                        if (!_.isUndefined(self.model.cards) && !_.isEmpty(self.model.cards)) {
-                            var cards = self.model.cards.filter(function(card) {
-                                return card.get('is_archived') !== 1 && card.get('list_id') === parseInt(list.id);
-                            });
-                            _.each(cards, function(card, key) {
-                                card.set('is_filtered', false);
-                            });
-                        }
-                    });
+                    if (!_.isUndefined(self.model.cards) && !_.isEmpty(self.model.cards) && self.model.cards !== null) {
+                        this.$el.find('.js-clear-filter-btn').removeClass('show').addClass('hide');
+                        app.navigate('#/' + current_param[0], {
+                            trigger: true,
+                            trigger_function: false,
+                            replace: true
+                        });
+                        var unfilteredCards = self.model.cards.filter(function(card) {
+                            return card.get('is_archived') !== 1 && card.get('is_filtered') === true;
+                        });
+                        _.each(unfilteredCards, function(card, key) {
+                            key = key + 1;
+                            var options = {
+                                silent: true
+                            };
+
+                            if (key === cards.length) {
+                                options.silent = false;
+                            }
+                            card.set('is_filtered', false, options);
+                        });
+                    }
                 }
                 if (!_.isEmpty(arrays) && !_.isEmpty(filter_query)) {
                     var result = arrays.shift().filter(function(v) {
@@ -2506,8 +2516,6 @@ App.BoardHeaderView = Backbone.View.extend({
                     } else if ($('#js-empty-filter-cards').hasClass('hide')) {
                         $('#js-empty-filter-cards').removeClass('hide');
                     }
-                }
-                if (filter_query) {
                     if ($('.js-clear-all').hasClass('text-muted')) {
                         $('.js-clear-all').removeClass('text-muted');
                     }
@@ -2517,13 +2525,6 @@ App.BoardHeaderView = Backbone.View.extend({
                         current_param[0] = 'board/' + split_length[1];
                     }
                     app.navigate('#/' + current_param[0] + filter_query, {
-                        trigger: true,
-                        trigger_function: false,
-                        replace: true
-                    });
-                } else {
-                    this.$el.find('.js-clear-filter-btn').removeClass('show').addClass('hide');
-                    app.navigate('#/' + current_param[0], {
                         trigger: true,
                         trigger_function: false,
                         replace: true
