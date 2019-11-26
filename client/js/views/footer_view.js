@@ -2613,7 +2613,7 @@ App.FooterView = Backbone.View.extend({
                                             var new_card_board_id = parseInt(activity.attributes.revisions.new_value.board_id);
                                             if (!_.isUndefined(App.boards) && !_.isEmpty(App.boards) & App.boards !== null && !_.isUndefined(App.boards.get(old_card_board_id))) {
                                                 var old_board_card_details = App.boards.get(old_card_board_id).cards.get(cardDetails.id);
-                                                if (!_.isisUndefined(old_board_card_details) && !_.isEmpty(old_board_card_details) && old_board_card_details !== null) {
+                                                if (!_.isUndefined(old_board_card_details) && !_.isEmpty(old_board_card_details) && old_board_card_details !== null) {
                                                     var oldBoardCard = new App.Card();
                                                     oldBoardCard.set(old_board_card_details.attributes);
                                                     oldBoardCard.set('id', parseInt(cardDetails.id));
