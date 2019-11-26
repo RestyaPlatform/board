@@ -12,7 +12,7 @@
           <ul role="menu" class="dropdown-menu arrow">
             <li class="text-center text-muted"><strong><%- i18next.t('Sort') %></strong></li>
             <li class="divider"></li>
-            <li class="js-sort-by-organizations"><a title="<%- i18next.t('Name') %>" href="#" class="js-sort-by" data-field="name"><%- i18next.t('Name') %></a></li>
+            <li class="js-sort-by-organizations active"><a title="<%- i18next.t('Name') %>" href="#" class="js-sort-by" data-field="name"><i class="icon icon-arrow-down js-sort-up-organizations"></i><%- i18next.t('Name') %></a></li>
             <% _.each(user.models,function(organization,key) {
               if(key === 1) {
                 _.each(organization.attributes.organization_user_roles,function(organization_user_role) {
