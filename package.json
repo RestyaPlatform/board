@@ -26,7 +26,7 @@
     "grunt-docco": "~0.3.3",
     "grunt-eslint": "^19.0.0",
     "grunt-exec": "~0.4.6",
-    "grunt-filerev": "~2.1.2",
+    "grunt-filerev": "~2.3.1",
     "grunt-git-deploy": "~0.3.1",
     "grunt-jsbeautifier": "~0.2.7",
     "grunt-lineending": "~0.1.1",
