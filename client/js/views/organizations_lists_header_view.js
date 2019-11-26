@@ -29,7 +29,7 @@ App.OrganizationsListsHeaderView = Backbone.View.extend({
      * initialize default values and actions
      */
     initialize: function() {
-        this.sortField = 'id';
+        this.sortField = 'name';
         this.sortDirection = 'desc';
         if (!_.isUndefined(this.model) && this.model !== null) {
             this.model.showImage = this.showImage;
@@ -67,15 +67,10 @@ App.OrganizationsListsHeaderView = Backbone.View.extend({
         }
         $('.js-sort-down-organizations').remove();
         $('.js-sort-up-organizations').remove();
-        if (this.sortDirection === 'desc') {
-            if (this.sortField !== 'id') {
-                $(e.target).parent().addClass('active');
-                $(e.target).html('<i class="icon icon-arrow-up js-sort-up-organizations"></i>' + i18next.t($(e.target).text()));
-                this.sortDirection = 'asc';
-            } else {
-                $(e.target).parent().addClass('active');
-                $(e.target).html('<i class="icon icon-arrow-down js-sort-down-organizations"></i>' + i18next.t($(e.target).text()));
-            }
+        if (this.sortField === sortField) {
+            $(e.target).parent().addClass('active');
+            $(e.target).html('<i class="icon icon-arrow-up js-sort-up-organizations"></i>' + i18next.t($(e.target).text()));
+            this.sortDirection = 'asc';
         } else {
             $(e.target).parent().addClass('active');
             $(e.target).html('<i class="icon icon-arrow-down js-sort-down-organizations"></i>' + i18next.t($(e.target).text()));
