@@ -1660,7 +1660,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 $board_lists = array();
                 while ($row = pg_fetch_row($result)) {
                     $obj = json_decode($row[0], true);
-                    if (!empty($obj['revisions']) && trim($obj['revisions']) != '') {
+                    if (!empty($obj['revisions']) && trim($obj['revisions']) != '' && $obj['type'] !== 'delete_label' && $obj['type'] !== 'change_grid_view_configuration' && $obj['type'] !== 'change_list_view_configuration' && $obj['type'] !== 'update_label' && $obj['type'] !== 'delete_card_dependency') {
                         $revisions = unserialize($obj['revisions']);
                         $obj['revisions'] = $revisions;
                         $diff = array();
