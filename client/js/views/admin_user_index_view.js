@@ -74,6 +74,9 @@ App.AdminUserIndexView = Backbone.View.extend({
             var sort_direction = sort_fields['1'].split('&direction=');
             _this.users.setSortField(sort_direction['0'], sort_direction['1']);
         }
+        if ((typeof _this.current_page === 'string' && _this.current_page.indexOf('&sort=') === -1) || _this.current_page === 1) {
+            _this.users.setSortField('username', 'desc');
+        }
         var colspan = "15";
         if (!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && $.inArray('r_groups', APPS.enabled_apps) !== -1) {
             colspan = "16";
