@@ -79,7 +79,6 @@
 	<%- i18next.t('Toggle navigation') %></span> <span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span> </button></div>
 				<nav class="navbar-collapse collapse mob-no-pad">
 					<div class="navbar-right">
-					<% if(!_.isUndefined(authuser.user)){ %>
 					<div class="btn-group pull-left js-clear-filter-btn hide">
 						<button type="button" class="btn btn-default"><%- i18next.t('Clear Filter') %></button>
 						<button type="button" class="btn btn-primary">
@@ -184,7 +183,6 @@
 						</ul>
 						</li>
 					</ul>
-					<% } %>
 					<ul class="nav nav-pills pull-left hdrpvtvws">
 						<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(board.acl_links.where({slug: "edit_board", board_user_role_id: parseInt(board.board_user_role_id)})))) { %> 
 						<li>

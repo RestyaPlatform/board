@@ -1,6 +1,6 @@
 <% if(!_.isEmpty(activity) && activity != null){ %> 
 	<% var unread = ""; %>
-	<% if(!_.isUndefined(activity.from_footer) && parseInt(activity.attributes.id) > parseInt(authuser.user.unread_activity_id)){ %>
+	<% if(!_.isUndefined(authuser) && !_.isUndefined(authuser.user) && !_.isUndefined(activity.from_footer) && parseInt(activity.attributes.id) > parseInt(authuser.user.unread_activity_id)){ %>
 		 <%if(activity.attributes.token !== authuser.access_token){%> 
 		 <% var unread = "js-unread-activity"; %> 
 		 <span class="label label-primary col-xs-12 sr-only">&nbsp;</span>   
@@ -91,7 +91,7 @@
 						_.each(matches, function(match) {
 							_username.push(match.substr(1));
 						});
-						if(_.contains(_username, authuser.user.username)){
+						if(!_.isEmpty(_username) && !_.isUndefined(authuser.user) && _.contains(_username, authuser.user.username)){
 							comment = filterXSS(activity.attributes.full_name) + ' has mentioned you in card ' + cardLink;
 						} 
 					}
