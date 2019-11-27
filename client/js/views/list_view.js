@@ -1481,7 +1481,10 @@ App.ListView = Backbone.View.extend({
                         list_id: parseInt(self.model.id)
                     });
                     if (filtered_cards.length === 1 || self.model.board.cards.length === 0) {
-                        $('#js-card-listing-' + e.attributes.list_id).append(view.render().el);
+                        var existing_card_id = $('#js-card-listing-' + e.attributes.list_id).find('.js-show-modal-card-view:first').data('card_id');
+                        if (existing_card_id !== parseInt(e.attributes.id)) {
+                            $('#js-card-listing-' + e.attributes.list_id).append(view.render().el);
+                        }
                     } else {
                         self.model.cards.reset(filtered_cards);
                         if (sort_by !== null && sort_direction !== null) {
