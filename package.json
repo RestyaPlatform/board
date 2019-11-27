@@ -31,7 +31,7 @@
     "grunt-jsbeautifier": "~0.2.7",
     "grunt-lineending": "~1.0.0",
     "grunt-manifest": "~0.4.0",
-    "grunt-phpcs": "~0.2.3",
+    "grunt-phpcs": "~0.4.0",
     "grunt-phplint": "~0.0.5",
     "grunt-plato": "~1.0.0",
     "grunt-prettify": "~0.4.0",
