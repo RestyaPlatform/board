@@ -4728,6 +4728,9 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
         if (empty($r_post['board_id'])) {
             $r_post['board_id'] = $r_resource_vars['boards'];
         }
+        $revision = '';
+        $revisions['old_value'] = $r_post['comment'];
+        $r_post['revisions'] = serialize($revisions);
         if (!empty($sql)) {
             $post = getbindValues($table_name, $r_post);
             $result = pg_execute_insert($table_name, $post);

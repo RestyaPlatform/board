@@ -117,6 +117,9 @@ App.ModalActivityView = Backbone.View.extend({
     renderActivitiesCollection: function(is_load_more) {
         var self = this;
         this.activities.each(function(activity) {
+            if (!_.isUndefined(self.type) && self.type !== null && self.type === 'org_user_listing') {
+                activity.from_footer = true;
+            }
             var view = new App.ActivityView({
                 model: activity,
                 type: 'all',
