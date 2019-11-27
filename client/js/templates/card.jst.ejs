@@ -15,10 +15,15 @@
  <%  } %> 
  <div class="clearfix">
 		<% if(CheckFieldExists(card.board, 'attachments' , null , 'boolean', 'r_gridview_configure')){ %>
-			<% if(!_.isEmpty(card.attachments) && card.attachments.length > 0 && !_.isEmpty(card.attachments.at(0).attributes.name) && _.isEmpty(card.attachments.at(0).attributes.link) && card.attachments.at(0).attributes.name.toLowerCase().match(/\.(jpg|jpeg|png|gif)$/)){ %>
+			<% if(!_.isEmpty(card.attachments) && card.attachments.length > 0 && !_.isEmpty(card.attachments.at(0).attributes.name) && _.isEmpty(card.attachments.at(0).attributes.link) && card.attachments.at(0).attributes.name.toLowerCase().match(/\.(jpg|jpeg|png|webp|gif)$/)){ %>
 				<div class="clearfix js-card-attachment-image navbar-btn <% if(!_.isEmpty(card.collection) && !card.list.collection.board.attributes.is_show_image_front_of_card){ %> hide <% } %>">
 				<%
-					var img_src = card.showImage('CardAttachment',  card.attachments.at(0).attributes.id, 'large_thumb' );
+					var img_src;
+					if (card.attachments.at(0).attributes.name.toLowerCase().match(/\.(jpg|jpeg|png|gif)$/)) {
+						img_src = card.showImage('CardAttachment',  card.attachments.at(0).attributes.id, 'large_thumb' );
+					} else if(card.attachments.at(0).attributes.name.toLowerCase().match(/\.(webp)$/)) { 
+						img_src = card.showImage('CardAttachment', card.attachments.at(0).attributes.id, 'original' );
+					}
 				%>
 				<img class="img-responsive center-block" src="<%= img_src %>"/>
 				</div>
