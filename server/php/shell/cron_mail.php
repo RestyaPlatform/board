@@ -31,7 +31,7 @@ if (!empty($argv) && !empty($argv[1])) {
             $email = pg_fetch_assoc($result);
             $subject = 'Restyaboard / From cron (' . $argv[1] . ')';
             $from_email = DEFAULT_FROM_EMAIL_ADDRESS;
-            $message = 'Please check the permission for the shell script file of ' . $argv[1] . ' in your server ' . $_server_domain_url;
+            $message = 'Please check the permission for the shell folder of ' . $argv[1] . ' in your server ' . $_server_domain_url;
             $headers = 'From:' . $from_email . PHP_EOL;
             if (!empty($to_email)) {
                 $headers.= 'Reply-To:' . $to_email . PHP_EOL;
