@@ -32,7 +32,8 @@ class Beautify
                 $path = $dir . DIRECTORY_SEPARATOR . $readdir;
                 // @todo need to handle dynamically
                 if (is_dir($path) && !in_array($readdir, array(
-                    'vendors'
+                    'vendors',
+                    'vendor'
                 ))) {
                     $this->__beautify_recursive($path);
                 }
