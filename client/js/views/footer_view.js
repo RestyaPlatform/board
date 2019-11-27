@@ -2212,7 +2212,7 @@ App.FooterView = Backbone.View.extend({
                                                 });
                                             }
                                             self.board.labels.remove(filter_labels, {
-                                                silent: true
+                                                silent: false
                                             });
                                         } else if (activity.attributes.type === 'update_label') {
                                             var update_label_value = JSON.parse(activity.attributes.revisions);

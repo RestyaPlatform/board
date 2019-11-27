@@ -46,7 +46,7 @@ App.LabelDeleteConfirmView = Backbone.View.extend({
                     return parseInt(model.get('label_id')) === parseInt(self.label_id);
                 });
                 self.model.labels.remove(filter_labels, {
-                    silent: true
+                    silent: false
                 });
             }
         });
