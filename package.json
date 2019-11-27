@@ -29,7 +29,7 @@
     "grunt-filerev": "~2.3.1",
     "grunt-git-deploy": "~0.3.1",
     "grunt-jsbeautifier": "~0.2.7",
-    "grunt-lineending": "~0.1.1",
+    "grunt-lineending": "~1.0.0",
     "grunt-manifest": "~0.4.0",
     "grunt-phpcs": "~0.2.3",
     "grunt-phplint": "~0.0.5",
