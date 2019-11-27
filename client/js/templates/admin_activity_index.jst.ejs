@@ -2,7 +2,7 @@
 <% 
 	var cardLink = '<a href="#/board/' + activity.attributes.board_id + '/card/' + activity.attributes.card_id + '">' + (activity.attributes.card_name) + '</a>';
 	var organizationLink = '<a href="#/organization/' + activity.attributes.organization_id + '">' + (activity.attributes.organization_name) + '</a>';
-	if(activity.attributes.type != 'add_comment' && activity.attributes.type != 'edit_comment') {
+	if(activity.attributes.type != 'add_comment') {
 		activity.attributes.comment = activity.attributes.comment.replace('##ORGANIZATION_LINK##', organizationLink);
 		activity.attributes.comment = activity.attributes.comment.replace('##CARD_LINK##', cardLink);
 		activity.attributes.comment = activity.attributes.comment.replace('##LABEL_NAME##', (activity.attributes.label_name));
@@ -14,7 +14,7 @@
 		activity.attributes.comment = activity.attributes.comment.replace('##CHECKLIST_ITEM_NAME##', (activity.attributes.checklist_item_name));
 		activity.attributes.comment = activity.attributes.comment.replace('##CHECKLIST_ITEM_PARENT_NAME##', (activity.attributes.checklist_item_parent_name));
 		activity.attributes.comment = activity.attributes.comment.replace('##CHECKLIST_NAME##', (activity.attributes.checklist_name));
-	} else {
+	} else if(activity.attributes.type != 'edit_comment'){
 		var comment = filterXSS(activity.attributes.full_name) + ' commented in card ' + cardLink;
 		var matches = activity.attributes.comment.match(/@([^ ]*)/g);
 		var _username = [];
@@ -48,11 +48,13 @@
 				<% } %>
 			</span>
 			<% if(activity.attributes.difference != null && _.contains(['edit_comment', 'edit_list', 'edit_organization', 'edit_board', 'update_card_checklist', 'update_profile', 'edit_card', 'delete_card_comment', 'edit_list_color', 'delete_list_color', 'edit_card_desc'], activity.attributes.type)) { %>
-                <div class="thumbnail media-body no-mar">
-					<% _.each(activity.attributes.difference, function(difference) { %>
-						<%= converter.makeHtml(difference) %>
-					<% }); %>
-				</div>
+				<%if(!_.isEmpty(activity.attributes.difference) && !_.isEmpty(activity.attributes.difference['0'])) { %>
+					<div class="thumbnail media-body no-mar">
+						<% _.each(activity.attributes.difference, function(difference) { %>
+								<%= converter.makeHtml(difference) %>
+						<% }); %>
+					</div>
+				<% } %>
             <% } %>
 		</div>   
         <% } else {%>             
@@ -68,7 +70,9 @@
 						<% } %>
 					</span>
 					<% if(activity.attributes.difference != null && _.contains(['edit_comment', 'edit_list', 'edit_organization', 'edit_board', 'update_card_checklist', 'update_profile', 'edit_card', 'edit_list_color', 'delete_list_color', 'edit_card_color', 'delete_card_color'], activity.attributes.type)) { %>
-						<div class="thumbnail media-body no-mar"><%= converter.makeHtml(activity.attributes.difference[0]) %></div>
+						<% if(!_.isEmpty(activity.attributes.difference) && !_.isEmpty(activity.attributes.difference['0'])) { %>
+							<div class="thumbnail media-body no-mar"><%= converter.makeHtml(activity.attributes.difference[0]) %></div>
+						<% } %>
 					<% } %>
 					
 				</div>
