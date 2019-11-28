@@ -37,7 +37,7 @@
     "grunt-prettify": "~0.4.0",
     "grunt-regex-replace": "~0.2.6",
     "grunt-template-jasmine-istanbul": "0.4.0",
-    "grunt-usemin": "~3.0.0",
+    "grunt-usemin": "~3.1.1",
     "grunt-zip": "~0.18.2"
   },
   "scripts": {
