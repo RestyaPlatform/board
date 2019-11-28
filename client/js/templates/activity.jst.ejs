@@ -102,7 +102,7 @@
 						<% if(activity.attributes.type == 'add_comment') { 
 							var originalComment;
 							if (!_.isUndefined(activity.attributes.revisions) && !_.isEmpty(activity.attributes.revisions) && activity.attributes.revisions !== null) { 
-								originalComment = activity.attributes.revisions.old_value;
+								originalComment = activity.attributes.revisions.old_value.comment;
 							} else { 
 								originalComment = activity.attributes.comment;
 							}
