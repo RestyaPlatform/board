@@ -13,11 +13,6 @@ $(window).resize(function() {
     if ($(".js-board-list") && (/Edge/.test(navigator.userAgent) || !!navigator.userAgent.match(/Trident.*rv\:11\./))) {
         $(".js-board-list").css("height", (boardH + 'px'));
     }
-    if ($(".js-board-list-cards").length > 0) {
-        $(".js-board-list-cards").each(function() {
-            $(this).css("height", '100%');
-        });
-    }
     $(".notification-list").css({
         'height': notificationH - 100,
         'overflow-y': 'scroll'
