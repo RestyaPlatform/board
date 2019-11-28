@@ -4729,7 +4729,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             $r_post['board_id'] = $r_resource_vars['boards'];
         }
         $revision = '';
-        $revisions['old_value'] = $r_post['comment'];
+        $revisions['old_value']['comment'] = $r_post['comment'];
         $r_post['revisions'] = serialize($revisions);
         if (!empty($sql)) {
             $post = getbindValues($table_name, $r_post);
@@ -7746,7 +7746,11 @@ function r_delete($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         if (!empty($revisions['revisions'])) {
             $revision = unserialize($revisions['revisions']);
             $revisions_del['comment'] = $comment;
-            $revisions_del['old_value'] = $revision['new_value']['comment'];
+            if(isset($revision['new_value']['comment'])) {
+                $revisions_del['old_value'] = $revision['new_value']['comment'];
+            } else {
+                $revisions_del['old_value'] = '';
+            }
             $revisions_del['new_value'] = '';
             $revisions_del = serialize($revisions_del);
         } else {

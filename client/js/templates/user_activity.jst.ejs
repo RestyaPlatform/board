@@ -38,7 +38,7 @@
 						<% if(activity.attributes.type == 'add_comment' || activity.attributes.type == 'edit_comment') { %>	
 							<span><%= comment %></span>
 							<% if(activity.attributes.type == 'add_comment' && !_.isUndefined(activity.attributes.revisions) && !_.isEmpty(activity.attributes.revisions) && activity.attributes.revisions !== null) { 
-								activity.attributes.comment = activity.attributes.revisions.old_value;
+								activity.attributes.comment = activity.attributes.revisions.old_value.comment;
 							} %>
 							<% if(activity.attributes.type == 'add_comment') { %><div class="thumbnail media-body no-mar"><% } %>
 								<%= makeLink(converter.makeHtml((activity.attributes.comment)), activity.attributes.board_id) %>
