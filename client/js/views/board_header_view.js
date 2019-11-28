@@ -2468,8 +2468,7 @@ App.BoardHeaderView = Backbone.View.extend({
                             var options = {
                                 silent: true
                             };
-
-                            if (key === cards.length) {
+                            if (key === unfilteredCards.length) {
                                 options.silent = false;
                             }
                             card.set('is_filtered', false, options);
