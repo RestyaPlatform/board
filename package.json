@@ -32,7 +32,7 @@
     "grunt-lineending": "~1.0.0",
     "grunt-manifest": "~0.4.0",
     "grunt-phpcs": "~0.4.0",
-    "grunt-phplint": "~0.0.5",
+    "grunt-phplint": "~0.1.0",
     "grunt-plato": "~1.0.0",
     "grunt-prettify": "~0.4.0",
     "grunt-regex-replace": "~0.2.6",
