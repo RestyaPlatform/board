@@ -1593,6 +1593,8 @@ App.ListView = Backbone.View.extend({
                         labels.add(filter_labels, {
                             silent: true
                         });
+                        labels.setSortField('id', 'asc');
+                        labels.sort();
                         card.labels = labels;
                         if (parseInt(card.get('is_archived')) === 0) {
                             card.board_users = self.model.board_users;

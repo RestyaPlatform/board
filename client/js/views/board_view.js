@@ -139,7 +139,7 @@ App.BoardView = Backbone.View.extend({
                         }).length <= 0) {
                         var new_label = new App.Label();
                         new_label.set(value);
-                        self.model.labels.push(new_label);
+                        self.model.labels.unshift(new_label);
                     }
                 });
             }
@@ -781,7 +781,7 @@ App.BoardView = Backbone.View.extend({
                     };
                     var _match = _.matches(data);
                     if (_.isEmpty(_.filter(self.model.labels, _match))) {
-                        self.model.labels.push(data, {
+                        self.model.labels.unshift(data, {
                             silent: true
                         });
                     }
