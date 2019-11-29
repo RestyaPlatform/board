@@ -952,7 +952,8 @@ App.FooterView = Backbone.View.extend({
                             if ($('.js-list-activity-' + activity.id).length > 0) {
                                 return true;
                             }
-                            var card_id = activity.attributes.card_id;
+                            var card_id = activity.attributes.card_id,
+                                checklist_items, completed_count, total_count;
                             Auth = JSON.parse($.cookie('auth'));
                             if (_.isUndefined(Auth.user.unread_activity_id) || (parseInt(Auth.user.unread_activity_id) < parseInt(activity.attributes.id))) {
                                 if (activity.attributes.token !== authuser.access_token && card_id !== 0) {
@@ -1705,17 +1706,17 @@ App.FooterView = Backbone.View.extend({
                                                 }), {
                                                     silent: false
                                                 });
-                                                var checklist_items = self.board.checklist_items.where({
+                                                checklist_items = self.board.checklist_items.where({
                                                     card_id: parseInt(activity.attributes.card_id)
                                                 });
                                                 items = new App.CheckListItemCollection();
                                                 items.add(checklist_items, {
                                                     silent: true
                                                 });
-                                                var completed_count = items.filter(function(checklist_item) {
+                                                completed_count = items.filter(function(checklist_item) {
                                                     return parseInt(checklist_item.get('is_completed')) === 1;
                                                 }).length;
-                                                var total_count = items.models.length;
+                                                total_count = items.models.length;
                                                 var pending_count = total_count - completed_count;
                                                 card.set('checklist_item_completed_count', completed_count);
                                                 card.set('checklist_item_pending_count', pending_count);
