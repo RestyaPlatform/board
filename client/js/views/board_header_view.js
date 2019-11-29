@@ -934,6 +934,8 @@ App.BoardHeaderView = Backbone.View.extend({
                         card.set('list_name', _.escape(list.attributes.name));
                     }
                     if (!_.isUndefined(card.labels) && !_.isEmpty(card.labels) && card.labels !== null) {
+                        card.labels.setSortField('id', 'asc');
+                        card.labels.sort();
                         card.labels.each(function(label, key) {
                             if (!_.isUndefined(label) && label.attributes.name !== "") {
                                 if (key === 0) {
@@ -1020,7 +1022,7 @@ App.BoardHeaderView = Backbone.View.extend({
                         silent: true
                     });
                     card.labels = labels;
-                    card.labels.setSortField('name', 'asc');
+                    card.labels.setSortField('id', 'asc');
                     card.labels.sort();
                     card.card_voters.add(card.get('card_voters'), {
                         silent: true

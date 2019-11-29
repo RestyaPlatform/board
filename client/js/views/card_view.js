@@ -376,6 +376,8 @@ App.CardView = Backbone.View.extend({
             });
             var labels = new App.CardLabelCollection();
             labels.add(filtered_labels);
+            labels.setSortField('id', 'asc');
+            labels.sort();
             labels.each(function(label) {
                 if (_.escape(label.attributes.name) !== "") {
                     content += '<li class="' + _.escape(label.attributes.name) + '">' + _.escape(label.attributes.name) + '</li>';
@@ -492,6 +494,8 @@ App.CardView = Backbone.View.extend({
             });
             var card_labels = new App.CardLabelCollection();
             card_labels.add(filtered_card_labels);
+            card_labels.setSortField('id', 'asc');
+            card_labels.sort();
             var card_labels_length = card_labels.models.length;
             for (var card_labels_i = 0; card_labels_i < card_labels_length; card_labels_i++) {
                 var label = card_labels.models[card_labels_i];
