@@ -4573,6 +4573,15 @@ App.ModalCardView = Backbone.View.extend({
                     }
                     if (!_.isUndefined(response.cards.cards_checklists) && !_.isEmpty(response.cards.cards_checklists)) {
                         if (response.cards.cards_checklists.length > 0) {
+                            card.set('checklist_item_count', current_card.checklist_item_count,  {
+                                silent: true
+                            });
+                            card.set('checklist_item_pending_count', current_card.checklist_item_count,  {
+                                silent: true
+                            });
+                            card.set('checklist_item_completed_count', 0,  {
+                                silent: true
+                            });
                             _.each(response.cards.cards_checklists, function(card_checklist) {
                                 self.model.list.collection.board.checklists.add(card_checklist);
                                 var checklist = self.model.list.collection.board.checklists.get(parseInt(card_checklist.id));
