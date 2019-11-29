@@ -868,7 +868,7 @@ App.BoardHeaderView = Backbone.View.extend({
         if (!_.isUndefined(get_match_url['3']) && get_match_url['3'].indexOf("list") !== -1) {
             list_view = true;
         }
-        if (e.originalEvent !== undefined || e.type === 'click') {
+        if ((e.originalEvent !== undefined || e.type === 'click') && $('#listview_table').length === 0) {
             trigger_list_view = true;
         } else if (e.changed !== undefined && list_view) {
             trigger_list_view = true;
