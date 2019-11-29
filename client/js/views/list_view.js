@@ -1649,11 +1649,12 @@ App.ListView = Backbone.View.extend({
         var self = this;
         _(function() {
             if (!_.isUndefined(APPS) && APPS !== null) {
-                if (!_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null) {
+                if (!_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && self.model !== null && !_.isUndefined(self.model) && !_.isEmpty(self.model)) {
+                    if ($.inArray('r_agile_wip', APPS.enabled_apps) !== -1) {
+                        $('body').trigger('listRendered', [self.model.id, self.model]);
+                    }
                     if ($.inArray('r_card_counter', APPS.enabled_apps) !== -1) {
-                        if (self.model !== null && !_.isUndefined(self.model) && !_.isEmpty(self.model)) {
-                            $('body').trigger('cardCounterRendered', [self.model.id, self.model]);
-                        }
+                        $('body').trigger('cardCounterRendered', [self.model.id, self.model]);
                     }
                 }
             }
