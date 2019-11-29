@@ -92,7 +92,6 @@ App.CardView = Backbone.View.extend({
             this.model.users.bind('remove', this.render);
             if (!_.isUndefined(this.model.list) && !_.isUndefined(this.model.list.collection)) {
                 this.model.list.collection.board.labels.bind('add', this.render);
-                this.model.list.collection.board.labels.bind('remove', this.render);
             }
             this.model.cards_subscribers.bind('add', this.render);
             if (!_.isUndefined(this.model.board)) {
