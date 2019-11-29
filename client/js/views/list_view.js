@@ -706,7 +706,8 @@ App.ListView = Backbone.View.extend({
         if (_.isEmpty(position)) {
             position = $(e.target).find('#list_position').val();
         }
-        var board_id = parseInt(data.board_id);
+        var board_id = parseInt(data.board_id),
+            next_list_id, previous_list_id;
         this.model.collection.sortByColumn('position', 'asc');
         if (board_id !== this.model.attributes.board_id) {
             this.model.collection.remove({
@@ -773,8 +774,8 @@ App.ListView = Backbone.View.extend({
                     this.$el.insertBefore('.js-board-list:nth-child(' + position + ')');
                 }
                 var target = $('.js-board-list:nth-child(' + position + ')');
-                var previous_list_id = target.prev('.js-board-list').data('list_id');
-                var next_list_id = target.next('.js-board-list').data('list_id');
+                previous_list_id = target.prev('.js-board-list').data('list_id');
+                next_list_id = target.next('.js-board-list').data('list_id');
                 if (typeof previous_list_id == 'undefined' && typeof next_list_id == 'undefined') {
                     previous_list_id = 1;
                     next_list_id = 1;
@@ -1500,7 +1501,7 @@ App.ListView = Backbone.View.extend({
                                     if (!_.isUndefined(self.model.cards.models[i - 1])) {
                                         var prev_card_id = self.model.cards.models[i - 1].id;
                                         var next_card = '';
-                                        if ($('#js-card-' + prev_card_id).after().lenght > 0) {
+                                        if ($('#js-card-' + prev_card_id).after().length > 0) {
                                             next_card = $('#js-card-' + prev_card_id).after().data('card_id');
                                         }
                                         if (next_card !== parseInt(e.attributes.id)) {
