@@ -1751,24 +1751,26 @@ App.FooterView = Backbone.View.extend({
                                                     card_id: parseInt(card.id),
                                                     user_id: parseInt(activity.attributes.user_id)
                                                 });
-                                                var voter_id = parseInt(voted_user.id);
-                                                var card_voter = new App.CardVoter();
-                                                card_voter.set('id', voter_id);
-                                                card.card_voters.remove(card_voter);
-                                                if (!_.isUndefined(card.attributes.cards_voters) && card.attributes.cards_voters !== null) {
-                                                    var card_voter_attr = card.attributes.cards_voters.filter(function(voter) {
-                                                        return ((parseInt(voter.card_id) === parseInt(card.id)) && (parseInt(voter.user_id) === parseInt(activity.attributes.user_id)));
-                                                    });
-                                                    if (card_voter_attr.length > 0) {
-                                                        var card_voter_attr_index = card.attributes.cards_voters.indexOf(card_voter_attr[0]);
-                                                        card.attributes.cards_voters.splice(card_voter_attr_index, 1);
+                                                if(voted_user){
+                                                    var voter_id = parseInt(voted_user.id);
+                                                    var card_voter = new App.CardVoter();
+                                                    card_voter.set('id', voter_id);
+                                                    card.card_voters.remove(card_voter);
+                                                    if (!_.isUndefined(card.attributes.cards_voters) && card.attributes.cards_voters !== null) {
+                                                        var card_voter_attr = card.attributes.cards_voters.filter(function(voter) {
+                                                            return ((parseInt(voter.card_id) === parseInt(card.id)) && (parseInt(voter.user_id) === parseInt(activity.attributes.user_id)));
+                                                        });
+                                                        if (card_voter_attr.length > 0) {
+                                                            var card_voter_attr_index = card.attributes.cards_voters.indexOf(card_voter_attr[0]);
+                                                            card.attributes.cards_voters.splice(card_voter_attr_index, 1);
+                                                        }
                                                     }
+                                                    var card_voter_count = isNaN(card.attributes.card_voter_count) ? 0 : card.attributes.card_voter_count;
+                                                    if (card_voter_count !== 0) {
+                                                        card_voter_count = card_voter_count - 1;
+                                                    }
+                                                    card.set('card_voter_count', card_voter_count);
                                                 }
-                                                var card_voter_count = isNaN(card.attributes.card_voter_count) ? 0 : card.attributes.card_voter_count;
-                                                if (card_voter_count !== 0) {
-                                                    card_voter_count = card_voter_count - 1;
-                                                }
-                                                card.set('card_voter_count', card_voter_count);
                                             } else if (activity.attributes.type === 'delete_card') {
                                                 self.board.cards.remove(card);
                                             }
