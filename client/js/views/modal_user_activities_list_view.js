@@ -78,7 +78,9 @@ App.ModalUserActivitiesListView = Backbone.View.extend({
                         return activity.id;
                     });
                     self.last_activity_id = last_activity.id;
-                    self.model.set('activity_count', response._metadata.total_records);
+                    self.model.set('activity_count', response._metadata.total_records, {
+                        silent: true
+                    });
                     self.renderActivitiesCollection(activities);
                 } else {
                     var view = new App.ActivityView({
@@ -127,7 +129,9 @@ App.ModalUserActivitiesListView = Backbone.View.extend({
                         return activity.id;
                     });
                     self.last_activity_id = last_activity.id;
-                    self.model.set('activity_count', response._metadata.total_records);
+                    self.model.set('activity_count', response._metadata.total_records, {
+                        silent: true
+                    });
                     self.renderActivitiesCollection(activities);
                 }
             }
