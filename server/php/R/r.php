@@ -325,6 +325,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
 
     case '/users/?/activities':
         $condition = '';
+        $flag = 0;
         if (!empty($authUser) && $authUser['role_id'] == 1 && $authUser['id'] == $r_resource_vars['users'] && empty($r_resource_filters['organization_id']) && empty($r_resource_filters['board_id'])) {
             $i = 1;
             if (!empty($r_resource_filters['mode']) && $r_resource_filters['mode'] != 'all') {
@@ -358,6 +359,24 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM activities_listing al ' . $condition . ' ORDER BY id ' . $direction . ' LIMIT ' . PAGING_COUNT . ') as d';
             $c_sql = 'SELECT COUNT(*) FROM activities_listing al' . $condition;
         } else {
+            $responsedata = array();
+            if (isset($r_resource_filters['last_activity_id']) && !empty($r_resource_filters['last_activity_id'])) {
+                $val_array = array(
+                    $r_resource_filters['last_activity_id'],
+                    'delete_board_user'
+                );
+                $responsedata = executeQuery('SELECT * FROM activities_listing WHERE id > $1 AND type = $2', $val_array);
+                if (isset($responsedata['board_id'])) {
+                    $val_array = array(
+                        $responsedata['board_id'],
+                        $authUser['id']
+                    );
+                    $boardUser = executeQuery('SELECT * FROM boards_users WHERE board_id = $1 AND user_id = $2', $val_array);
+                    if (!isset($boardUser['id'])) {
+                        $flag = 1;
+                    }
+                }
+            }
             if (!empty($authUser) && $authUser['id'] != $r_resource_vars['users'] && $authUser['role_id'] != 1) {
                 $val_array = array(
                     $authUser['id']
@@ -454,52 +473,57 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             //  $sql.= $paging_data['sql'];
             $_metadata = $paging_data['_metadata'];
         }
-        if (!empty($sql)) {
-            if ($result = pg_query_params($db_lnk, $sql, $pg_params)) {
-                $data = array();
-                $board_lists = array();
-                while ($row = pg_fetch_row($result)) {
-                    $obj = json_decode($row[0], true);
-                    if (isset($obj['board_activities']) && !empty($obj['board_activities'])) {
-                        $board_activities_count = count($obj['board_activities']);
-                        for ($k = 0; $k < $board_activities_count; $k++) {
-                            if (!empty($obj['board_activities'][$k]['revisions']) && trim($obj['board_activities'][$k]['revisions']) != '') {
-                                $revisions = unserialize($obj['board_activities'][$k]['revisions']);
-                                $diff = array();
-                                if (!empty($revisions['new_value'])) {
-                                    foreach ($revisions['new_value'] as $key => $value) {
-                                        if ($key != 'is_archived' && $key != 'is_deleted' && $key != 'created' && $key != 'modified' && $obj['type'] != 'moved_card_checklist_item' && $obj['type'] != 'add_card_desc' && $obj['type'] != 'add_card_duedate' && $obj['type'] != 'delete_card_duedate' && $obj['type'] != 'change_visibility' && $obj['type'] != 'add_background' && $obj['type'] != 'change_background') {
-                                            $old_val = ($revisions['old_value'][$key] != null && $revisions['old_value'][$key] != 'null') ? $revisions['old_value'][$key] : '';
-                                            $new_val = ($revisions['new_value'][$key] != null && $revisions['new_value'][$key] != 'null') ? $revisions['new_value'][$key] : '';
-                                            $diff[] = nl2br(getRevisiondifference($old_val, $new_val));
+        if ($flag == 0) {
+            if (!empty($sql)) {
+                if ($result = pg_query_params($db_lnk, $sql, $pg_params)) {
+                    $data = array();
+                    $board_lists = array();
+                    while ($row = pg_fetch_row($result)) {
+                        $obj = json_decode($row[0], true);
+                        if (isset($obj['board_activities']) && !empty($obj['board_activities'])) {
+                            $board_activities_count = count($obj['board_activities']);
+                            for ($k = 0; $k < $board_activities_count; $k++) {
+                                if (!empty($obj['board_activities'][$k]['revisions']) && trim($obj['board_activities'][$k]['revisions']) != '') {
+                                    $revisions = unserialize($obj['board_activities'][$k]['revisions']);
+                                    $diff = array();
+                                    if (!empty($revisions['new_value'])) {
+                                        foreach ($revisions['new_value'] as $key => $value) {
+                                            if ($key != 'is_archived' && $key != 'is_deleted' && $key != 'created' && $key != 'modified' && $obj['type'] != 'moved_card_checklist_item' && $obj['type'] != 'add_card_desc' && $obj['type'] != 'add_card_duedate' && $obj['type'] != 'delete_card_duedate' && $obj['type'] != 'change_visibility' && $obj['type'] != 'add_background' && $obj['type'] != 'change_background') {
+                                                $old_val = ($revisions['old_value'][$key] != null && $revisions['old_value'][$key] != 'null') ? $revisions['old_value'][$key] : '';
+                                                $new_val = ($revisions['new_value'][$key] != null && $revisions['new_value'][$key] != 'null') ? $revisions['new_value'][$key] : '';
+                                                $diff[] = nl2br(getRevisiondifference($old_val, $new_val));
+                                            }
+                                            if ($obj['type'] == 'add_card_desc' || $obj['type'] == 'add_card_desc' || $obj['type'] == '	edit_card_duedate' || $obj['type'] == 'change_visibility' || $obj['type'] == 'add_background' || $obj['type'] == 'change_background') {
+                                                $diff[] = $revisions['new_value'][$key];
+                                            }
                                         }
-                                        if ($obj['type'] == 'add_card_desc' || $obj['type'] == 'add_card_desc' || $obj['type'] == '	edit_card_duedate' || $obj['type'] == 'change_visibility' || $obj['type'] == 'add_background' || $obj['type'] == 'change_background') {
-                                            $diff[] = $revisions['new_value'][$key];
+                                        if (isset($diff)) {
+                                            $obj['board_activities'][$k]['difference'] = $diff;
                                         }
+                                    } else if (!empty($revisions['old_value']) && isset($obj['type']) && $obj['type'] == 'delete_card_comment') {
+                                        $obj['board_activities'][$k]['difference'] = nl2br(getRevisiondifference($revisions['old_value'], ''));
                                     }
-                                    if (isset($diff)) {
-                                        $obj['board_activities'][$k]['difference'] = $diff;
-                                    }
-                                } else if (!empty($revisions['old_value']) && isset($obj['type']) && $obj['type'] == 'delete_card_comment') {
-                                    $obj['board_activities'][$k]['difference'] = nl2br(getRevisiondifference($revisions['old_value'], ''));
                                 }
                             }
                         }
+                        $obj = ActivityHandler::getActivitiesObj($obj);
+                        if (!empty($_metadata)) {
+                            $data['data'][] = $obj;
+                        } else {
+                            $data[] = $obj;
+                        }
                     }
-                    $obj = ActivityHandler::getActivitiesObj($obj);
                     if (!empty($_metadata)) {
-                        $data['data'][] = $obj;
-                    } else {
-                        $data[] = $obj;
+                        $data['_metadata'] = $_metadata;
                     }
+                    echo json_encode($data);
+                } else {
+                    $r_debug.= __LINE__ . ': ' . pg_last_error($db_lnk) . '\n';
                 }
-                if (!empty($_metadata)) {
-                    $data['_metadata'] = $_metadata;
-                }
-                echo json_encode($data);
-            } else {
-                $r_debug.= __LINE__ . ': ' . pg_last_error($db_lnk) . '\n';
             }
+        } else {
+            $data['data'][] = $responsedata;
+            echo json_encode($data);
         }
         break;
 
