@@ -1435,6 +1435,13 @@ App.BoardHeaderView = Backbone.View.extend({
                                                 html: true,
                                                 placement: 'bottom'
                                             }).triggerHandler('mouseover');
+                                        }else{
+                                            $(target).tooltip({
+                                                selector: target,
+                                                title: card_customfield_value,
+                                                html: true,
+                                                placement: 'bottom'
+                                            }).triggerHandler('mouseover');
                                         }
                                     }
                                 }
