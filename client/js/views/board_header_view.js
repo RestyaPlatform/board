@@ -60,6 +60,7 @@ App.BoardHeaderView = Backbone.View.extend({
         this.model.cards.bind('change:checklist_item_completed_count', this.updateListView, this);
         this.model.cards.bind('add:labels', this.updateListView, this);
         this.model.cards.bind('change:labels', this.updateListView, this);
+        this.model.cards.bind('change:is_filtered', this.switchListView, this);
         this.model.cards.bind('add:users', this.updateListView, this);
         this.model.cards.bind('change:users', this.updateListView, this);
         this.model.lists.bind('remove', this.updateListView, this);
@@ -1006,7 +1007,7 @@ App.BoardHeaderView = Backbone.View.extend({
             };
             cards.reset(filtered_cards);
             cards.each(function(card) {
-                if (parseInt(card.get('is_archived')) === 0 && !_.isUndefined(card.list) && parseInt(card.list.get('is_archived')) === 0) {
+                if (parseInt(card.get('is_archived')) === 0 && !_.isUndefined(card.list) && parseInt(card.list.get('is_archived')) === 0 && !card.attributes.is_filtered) {
                     var card_id = card.id;
                     var card_list = self.model.lists.findWhere({
                         id: parseInt(card.attributes.list_id)

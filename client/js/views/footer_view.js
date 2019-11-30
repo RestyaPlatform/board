@@ -1751,7 +1751,7 @@ App.FooterView = Backbone.View.extend({
                                                     card_id: parseInt(card.id),
                                                     user_id: parseInt(activity.attributes.user_id)
                                                 });
-                                                if(voted_user){
+                                                if (voted_user) {
                                                     var voter_id = parseInt(voted_user.id);
                                                     var card_voter = new App.CardVoter();
                                                     card_voter.set('id', voter_id);
