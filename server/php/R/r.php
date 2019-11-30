@@ -5269,6 +5269,9 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 $names = preg_replace('/[ ,]+/', ', ', $names);
                 $comment = '##USER_NAME## removed the label(s) ' . ' - ' . $deletenames . ' and added the label(s) ' . ' - ' . $names . ' to the card ##CARD_LINK##';
                 $type = 'update_card_label';
+            } else {
+                echo json_encode("Success");
+                break;
             }
         } else {
             $response['cards_labels'] = array();
