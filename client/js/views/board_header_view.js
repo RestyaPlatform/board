@@ -2476,14 +2476,7 @@ App.BoardHeaderView = Backbone.View.extend({
                             return card.get('is_archived') !== 1 && card.get('is_filtered') === true;
                         });
                         _.each(unfilteredCards, function(card, key) {
-                            key = key + 1;
-                            var options = {
-                                silent: true
-                            };
-                            if (key === unfilteredCards.length) {
-                                options.silent = false;
-                            }
-                            card.set('is_filtered', false, options);
+                            card.set('is_filtered', false);
                         });
                     }
                 }
@@ -2506,14 +2499,7 @@ App.BoardHeaderView = Backbone.View.extend({
                         return card.get('is_archived') !== 1 && unfilteredIds.indexOf(card.get('id')) === -1;
                     });
                     _.each(cards, function(card, key) {
-                        key = key + 1;
-                        var options = {
-                            silent: true
-                        };
-                        if (key === cards.length) {
-                            options.silent = false;
-                        }
-                        card.set('is_filtered', true, options);
+                        card.set('is_filtered', true);
                     });
                     _.each(this.model.lists.models, function(list) {
                         if (!$('#js-card-listing-' + list.id).find('.panel').is(':visible') && (!_.isUndefined(list.attributes.card_count) && list.attributes.card_count !== 0 && list.attributes.card_count !== null && !isNaN(list.attributes.card_count))) {
@@ -2536,7 +2522,7 @@ App.BoardHeaderView = Backbone.View.extend({
                         current_param[0] = 'board/' + split_length[1];
                     }
                     app.navigate('#/' + current_param[0] + filter_query, {
-                        trigger: true,
+                        trigger: false,
                         trigger_function: false,
                         replace: true
                     });
@@ -2713,15 +2699,7 @@ App.BoardHeaderView = Backbone.View.extend({
                 return card.get('is_archived') !== 1 && card.get('is_filtered') === true;
             });
             _.each(cards, function(card, key) {
-                key = key + 1;
-                var options = {
-                    silent: true
-                };
-
-                if (key === cards.length) {
-                    options.silent = false;
-                }
-                card.set('is_filtered', false, options);
+                card.set('is_filtered', false);
             });
         }
         _.each(this.model.lists.models, function(list) {
