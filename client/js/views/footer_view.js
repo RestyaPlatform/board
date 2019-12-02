@@ -2194,6 +2194,10 @@ App.FooterView = Backbone.View.extend({
                                             activity.attributes.board_user.user_id = parseInt(activity.attributes.board_user.user_id);
                                             self.board.board_users.add(activity.attributes.board_user);
                                         } else if (activity.attributes.type === 'delete_board_user') {
+                                            var removedBoard = App.boards.get(parseInt(self.board_id));
+                                            if (!_.isUndefined(authuser.user) && !_.isEmpty(authuser.user) && authuser.user !== null && parseInt(authuser.user.role_id) !== 1 && !_.isUndefined(removedBoard) && !_.isEmpty(removedBoard) && removedBoard !== null) {
+                                                App.boards.remove(parseInt(self.board_id));
+                                            }
                                             self.board.board_users.remove(self.board.board_users.findWhere({
                                                 id: activity.attributes.foreign_id
                                             }));
