@@ -2194,9 +2194,19 @@ App.FooterView = Backbone.View.extend({
                                             activity.attributes.board_user.user_id = parseInt(activity.attributes.board_user.user_id);
                                             self.board.board_users.add(activity.attributes.board_user);
                                         } else if (activity.attributes.type === 'delete_board_user') {
-                                            self.board.board_users.remove(self.board.board_users.findWhere({
+                                            var boarduser = self.board.board_users.findWhere({
                                                 id: activity.attributes.foreign_id
-                                            }));
+                                            });
+                                            if (!_.isUndefined(boarduser) && !_.isEmpty(boarduser) && boarduser !== null) {
+                                                App.boards.remove(parseInt(self.board_id));
+                                                self.board.board_users.remove(boarduser);
+                                                if (parseInt(boarduser.attributes.user_id) === parseInt(authuser.user.id)) {
+                                                    app.navigate('#/boards', {
+                                                        trigger: true,
+                                                        replace: true
+                                                    });
+                                                }
+                                            }
                                         } else if (activity.attributes.type === 'delete_label') {
                                             var label_value = JSON.parse(activity.attributes.revisions);
                                             var filter_labels = self.board.labels.filter(function(model) {
