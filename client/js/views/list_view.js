@@ -1903,7 +1903,7 @@ App.ListView = Backbone.View.extend({
                     position: newPosition
                 });
                 data.position = newPosition;
-                next.before(view.render().el);
+                next.before().append(view.render().el);
             } else {
                 view_card.append(view.render().el);
             }
