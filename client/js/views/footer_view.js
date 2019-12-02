@@ -2192,6 +2192,11 @@ App.FooterView = Backbone.View.extend({
                                             activity.attributes.board_user.default_email_list_id = parseInt(activity.attributes.board_user.default_email_list_id);
                                             activity.attributes.board_user.id = parseInt(activity.attributes.board_user.id);
                                             activity.attributes.board_user.user_id = parseInt(activity.attributes.board_user.user_id);
+                                            if (!_.isUndefined(authuser.user) && !_.isEmpty(authuser.user) && authuser.user !== null) {
+                                                if (parseInt(activity.attributes.board_user.user_id) === parseInt(authuser.user.id)) {
+                                                    location.reload();
+                                                }
+                                            }
                                             self.board.board_users.add(activity.attributes.board_user);
                                         } else if (activity.attributes.type === 'delete_board_user') {
                                             var removedBoard = App.boards.get(parseInt(self.board_id));
