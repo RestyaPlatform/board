@@ -108,6 +108,9 @@ App.CardView = Backbone.View.extend({
                     this.model.board_user_role_id = board_user_role_id.attributes.board_user_role_id;
                 }
             }
+            this.model.bind('change:is_filtered', function(e) {
+                this.render(null);
+            }, this);
         }
     },
     className: 'panel js-show-modal-card-view js-board-list-card cur',
@@ -477,9 +480,7 @@ App.CardView = Backbone.View.extend({
             }));
             if (filter_count < total_filter && (query_params)) {
                 if (_.isUndefined(ops) && ops !== null) {
-                    this.model.set('is_filtered', true, {
-                        silent: true
-                    });
+                    this.model.set('is_filtered', true);
                     this.$el.css('display', 'none');
                 }
             }
@@ -597,6 +598,11 @@ App.CardView = Backbone.View.extend({
                 }
             }
         }
+        if (self.model !== null && !_.isUndefined(self.model) && self.model.get('is_filtered')) {
+            self.$el.hide();
+        } else {
+            self.$el.show();
+        }
         _(function() {
             if (self.model !== null && !_.isUndefined(self.model) && !_.isEmpty(self.model)) {
                 $('body').trigger('cardRendered', self.model.id, self.model);
@@ -615,11 +621,7 @@ App.CardView = Backbone.View.extend({
             if (!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && $.inArray('r_listview_configure', APPS.enabled_apps) !== -1) {
                 self.sortLabelPosition();
             }
-            if (self.model !== null && !_.isUndefined(self.model) && self.model.get('is_filtered')) {
-                self.$el.hide();
-            } else {
-                self.$el.show();
-            }
+
         }).defer();
         return this;
     },
@@ -648,10 +650,8 @@ App.CardView = Backbone.View.extend({
                         });
                         return items[list_index];
                     }));
-
                 }
             }
-            this.$el.show();
         }
     },
     /**

@@ -735,10 +735,12 @@ App.ModalCardView = Backbone.View.extend({
             model: labels,
             card: this.model
         }).el);
-        $('.inputCardLabel', doc).select2({
-            tags: _.uniq(self.model.list.collection.board.labels.pluck('name')),
-            tokenSeparators: [',', ' '],
-            dropdownParent: '#js-card-modal-card-block-' + self.model.id
+        $('.inputCardLabel', doc).each(function(key) {
+            $(this).select2({
+                tags: _.uniq(self.model.list.collection.board.labels.pluck('name')),
+                tokenSeparators: [',', ' '],
+                dropdownParent: $('#js-card-modal-card-block-' + self.model.id + ' .js-show-card-label-form-response')[key]
+            });
         });
         var target = $(e.target);
         $('li.dropdown').removeClass('open');
@@ -2844,7 +2846,7 @@ App.ModalCardView = Backbone.View.extend({
         var view_label = this.$el.find('.js-card-labels-list');
         view_label.html('');
         if (self.$el.find('#js-label-add-container').length === 0 && is_edit_labels) {
-            view_label.append('<li id="js-label-add-container"><div class="dropdown js-label-dropdown no-print"><a class="dropdown-toggle js-show-card-label-form btn btn-default" role="button" data-toggle="dropdown" title="' + i18next.t('Add new Labels') + '" href="#"> <i class="icon-plus"></i></a><ul class="dropdown-menu dropdown-menu-left arrow col-xs-12 js-show-card-label-form-response"></ul></div></li>');
+            view_label.append('<li id="js-label-add-container"><div class="dropdown js-label-dropdown no-print"><a class="dropdown-toggle js-show-card-label-form btn btn-default" role="button" data-toggle="dropdown" title="' + i18next.t('Add new Labels') + '" href="#"> <i class="icon-plus"></i></a><ul class="dropdown-menu dropdown-menu-left arrow col-xs-12 js-show-card-label-form-response js-card-label-parent-select2"></ul></div></li>');
         }
         this.model.labels.each(function(label) {
             var slabel = self.model.labels.findWhere({

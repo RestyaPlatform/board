@@ -25,7 +25,8 @@
 		<i class="avatar avatar-color-194 img-rounded pull-left" title="<%-activity.attributes.full_name %>"></i>
 	<% } %>
 		<div class="media-body">    
-			<% 
+			<%  activity.attributes.organization_name = (activity.attributes.organization_name !== null) ? activity.attributes.organization_name : i18next.t("[deleted]");
+				activity.attributes.card_name = (activity.attributes.card_name !== null) ? activity.attributes.card_name : i18next.t("[deleted]");
 				var cardLink = '<a href="#/board/' + activity.attributes.board_id + '/card/' + activity.attributes.card_id + '">' + (activity.attributes.card_name) + '</a>';
 				var organizationLink = '<a href="#/organization/' + activity.attributes.organization_id + '">' + (activity.attributes.organization_name) + '</a>';
 				if(activity.attributes.type != 'add_comment') {
@@ -33,7 +34,7 @@
 						if(activity.attributes.type !== 'add_card_desc') {
 							if(!_.isEmpty(activity.attributes.difference) && !_.isUndefined(activity.attributes.difference) && !_.isUndefined(activity.attributes.difference['0'])){
 								activity.attributes.comment = activity.attributes.comment.replace('##DESCRIPTION##', (activity.attributes.difference['0']));
-							}else{
+							} else {
 									activity.attributes.comment = activity.attributes.comment.replace('##DESCRIPTION##', (activity.attributes.card_description));
 							}
 						} else {
@@ -51,17 +52,29 @@
 						}
 					}
 					if(activity.attributes.comment.indexOf('##CARD_NAME##') != -1){
-						activity.attributes.comment = activity.attributes.comment.replace('##CARD_NAME##', (activity.attributes.card_name));
+						if (activity.attributes.card_name !== null) {
+							activity.attributes.comment = activity.attributes.comment.replace('##CARD_NAME##', (activity.attributes.card_name));
+						} else {
+							activity.attributes.comment = activity.attributes.comment.replace('##CARD_NAME##', i18next.t("[deleted]"));
+						}
 					}
 					if(activity.attributes.comment.indexOf('##ORGANIZATION_LINK##') != -1){
 						activity.attributes.comment = activity.attributes.comment.replace('##ORGANIZATION_LINK##', organizationLink);
 					}
 					
 					if(activity.attributes.comment.indexOf('##LIST_NAME##') != -1){
-						activity.attributes.comment = activity.attributes.comment.replace('##LIST_NAME##', (activity.attributes.list_name));
+						if (activity.attributes.list_name !== null) {
+							activity.attributes.comment = activity.attributes.comment.replace('##LIST_NAME##', (activity.attributes.list_name));
+						} else {
+							activity.attributes.comment = activity.attributes.comment.replace('##LIST_NAME##', i18next.t("[deleted]"));
+						}
 					}
 					if(activity.attributes.comment.indexOf('##BOARD_NAME##') != -1){
-						activity.attributes.comment = activity.attributes.comment.replace('##BOARD_NAME##', (activity.attributes.board_name));
+						if (activity.attributes.board_name !== null) {
+							activity.attributes.comment = activity.attributes.comment.replace('##BOARD_NAME##', (activity.attributes.board_name));
+						} else {
+							activity.attributes.comment = activity.attributes.comment.replace('##BOARD_NAME##', i18next.t("[deleted]"));
+						}
 					}
 					if(activity.attributes.comment.indexOf('##USER_NAME##') != -1){
 						activity.attributes.comment = activity.attributes.comment.replace('##USER_NAME##', '<span class="h5">'+_.escape(activity.attributes.full_name)+'</span>');					

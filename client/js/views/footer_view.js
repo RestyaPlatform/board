@@ -138,10 +138,16 @@ App.FooterView = Backbone.View.extend({
     gotoBoards: function(e) {
         e.preventDefault();
         var self = this;
-        app.navigate('#/boards', {
-            trigger: true,
-            replace: true
-        });
+        var currenturl = window.location;
+        var currentss = currenturl.hash;
+        var get_match_url = currentss.split("/");
+        if ($('#boards-index').length === 0 || (!_.isUndefined(get_match_url) && !_.isEmpty(get_match_url) && get_match_url.length > 0 && get_match_url['1'] === 'search')) {
+            app.navigate('#/boards', {
+                trigger: true,
+                replace: true
+            });
+            $('#search-page-result-block').html('');
+        }
     },
     /**
      * render()
@@ -2027,9 +2033,17 @@ App.FooterView = Backbone.View.extend({
                                             });
                                         }
                                         if (!_.isUndefined(list)) {
-                                            if (activity.attributes.revisions && activity.attributes.revisions.new_value && activity.attributes.type !== 'archived_card') {
+                                            if (((!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null) && (activity.attributes.type === 'add_list_agile_wip_limit' || activity.attributes.type === 'edit_list_agile_wip_limit' || activity.attributes.type === 'delete_list_agile_wip_limit' || activity.attributes.type === 'add_list_auto_archive_day' || activity.attributes.type === 'edit_list_auto_archive_day' || activity.attributes.type === 'delete_list_auto_archive_day' || activity.attributes.type === 'add_list_task_move_duedate' || activity.attributes.type === 'edit_list_task_move_duedate' || activity.attributes.type === 'delete_list_task_move_duedate')) && !_.isEmpty(activity.attributes.revisions.new_value.custom_fields)) {
+                                                list.set('custom_fields', activity.attributes.revisions.new_value.custom_fields, {
+                                                    silent: true
+                                                });
+                                                if (activity.attributes.type !== 'list_change_min' && activity.attributes.type !== 'list_change_max') {
+                                                    $('body').trigger('listCutomFieldsRendered', [parseInt(activity.attributes.revisions.new_value.list_id), list]);
+                                                }
+                                            } else if (activity.attributes.revisions && activity.attributes.revisions.new_value && activity.attributes.type !== 'archived_card') {
                                                 if (!_.isUndefined(activity.attributes.revisions) && !_.isEmpty(activity.attributes.revisions)) {
                                                     list.set(activity.attributes.revisions.new_value);
+
                                                 }
                                             }
                                             if (activity.attributes.type === 'delete_list') {
@@ -2041,11 +2055,6 @@ App.FooterView = Backbone.View.extend({
                                                 });
                                                 list.collection.board.lists.remove(list);
                                                 self.board.lists.remove(list);
-                                            } else if (((!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null) && (activity.attributes.type === 'add_list_agile_wip_limit' || activity.attributes.type === 'edit_list_agile_wip_limit' || activity.attributes.type === 'delete_list_agile_wip_limit' || activity.attributes.type === 'add_list_auto_archive_day' || activity.attributes.type === 'edit_list_auto_archive_day' || activity.attributes.type === 'delete_list_auto_archive_day' || activity.attributes.type === 'add_list_task_move_duedate' || activity.attributes.type === 'edit_list_task_move_duedate' || activity.attributes.type === 'delete_list_task_move_duedate')) || ((activity.attributes.type === 'list_change_min' || activity.attributes.type === 'list_change_max')) && !_.isEmpty(activity.attributes.revisions.new_value.custom_fields)) {
-                                                list.set('custom_fields', activity.attributes.revisions.new_value.custom_fields);
-                                                if (activity.attributes.type !== 'list_change_min' && activity.attributes.type !== 'list_change_max') {
-                                                    $('body').trigger('listCutomFieldsRendered', [parseInt(activity.attributes.revisions.new_value.list_id), list]);
-                                                }
                                             } else if (activity.attributes.type === 'change_list_position') {
                                                 if (parseInt(activity.attributes.list.board_id) !== parseInt(list.attributes.board_id)) {
                                                     self.board.lists.remove(list);
@@ -2189,8 +2198,17 @@ App.FooterView = Backbone.View.extend({
                                             activity.attributes.board_user.default_email_list_id = parseInt(activity.attributes.board_user.default_email_list_id);
                                             activity.attributes.board_user.id = parseInt(activity.attributes.board_user.id);
                                             activity.attributes.board_user.user_id = parseInt(activity.attributes.board_user.user_id);
+                                            if (!_.isUndefined(authuser.user) && !_.isEmpty(authuser.user) && authuser.user !== null) {
+                                                if (parseInt(activity.attributes.board_user.user_id) === parseInt(authuser.user.id)) {
+                                                    location.reload();
+                                                }
+                                            }
                                             self.board.board_users.add(activity.attributes.board_user);
                                         } else if (activity.attributes.type === 'delete_board_user') {
+                                            var removedBoard = App.boards.get(parseInt(self.board_id));
+                                            if (!_.isUndefined(authuser.user) && !_.isEmpty(authuser.user) && authuser.user !== null && parseInt(authuser.user.role_id) !== 1 && !_.isUndefined(removedBoard) && !_.isEmpty(removedBoard) && removedBoard !== null) {
+                                                App.boards.remove(parseInt(self.board_id));
+                                            }
                                             self.board.board_users.remove(self.board.board_users.findWhere({
                                                 id: activity.attributes.foreign_id
                                             }));

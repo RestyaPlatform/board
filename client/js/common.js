@@ -72,11 +72,19 @@ $dc.ready(function() {
             if ($('#content #boards-view-' + $(this).data('board-viewtype')).length === 0) {
                 if (!_.isUndefined(App.current_board) && !_.isEmpty(App.current_board) && App.current_board !== null && !App.current_board.attributes.is_closed) {
                     $('#content .js-boards-view').remove('');
+                    view_type_tab = "task";
                     $('#content').html('<section id="boards-view-' + $(this).data('board-viewtype') + '" class="clearfix js-boards-view col-xs-12"></section>');
                 }
             }
         }
         return false;
+    }).on('click', 'body', function(e) {
+        if (!$('.js-open-dropdown .js-change-visibility').is(e.target) &&
+            $('.js-open-dropdown .js-change-visibility').has(e.target).length === 0 &&
+            $('.open').has(e.target).length === 0
+        ) {
+            $('.js-open-dropdown').removeClass('open');
+        }
     });
     if ((navigator.userAgent.toLowerCase().indexOf('android') > -1) && (navigator.userAgent.toLowerCase().indexOf('chrome') > -1)) {
         $('body').append('<div class="modal fade" id="add_home_modal" tabindex="-1" role="dialog" aria-hidden="false"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal"><span aria-hidden="true" id="js-cssilize-close">x</span><span class="sr-only">Close</span></button><div class="media list-group-item-heading"><div class="media-body"><h4 class="modal-title" id="exampleModalLabel">Install this webapp to your phone</h4></div></div></div><div class="modal-body import-block"><ul><li>Add Restyaboard to homescreen.</li><li>Tap <i class="icon-ellipsis-vertical"></i>to bring up your browser menu and select \'Add to homescreen\' to pin the Restyaboard web app.</li></ul></div></div></div></div>');
