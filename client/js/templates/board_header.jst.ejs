@@ -311,15 +311,15 @@
 								<li><a href="#" class="js-additional-settings"><%- i18next.t('Additional Settings') %></a></li>
 								<% if(!board.attributes.is_closed) {%>
 								<li class="divider"></li>
-								<li class="dropdown js-open-dropdown inner-dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-sm icon-warning-sign icon-type text-primary"></i><%- i18next.t('Close Board') %></a>
-									<ul class="dropdown-menu arrow pull-right">
+								<li class="dropdown js-open-dropdown dropup"><a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-sm icon-warning-sign icon-type text-primary"></i><%- i18next.t('Close Board') %></a>
+									<ul class="dropdown-menu dropdown-menu-left dropup-arrow">
 									<li class="js-dropdown-popup dropdown-popup">
 										<div class="clearfix text-center col-xs-12">
 										<span class="col-xs-10"><strong><%- i18next.t('Close Board') %></strong></span><a class="js-close-sub-popover pull-right" href="#"><i class="icon-remove"></i></a>						
 										</div>
 										<div class="col-xs-12 divider"></div>
 										<div class="col-xs-12">
-										<form class="normal col-xs-12" name="BoardCloseForm" id="BoardCloseForm">
+										<form class="normal" name="BoardCloseForm" id="BoardCloseForm">
 											<input id="inputBoardClose" name="is_closed" type="hidden" value="true">
 											<p><%- i18next.t('You can reopen the board by clicking the "Boards" menu from the header, selecting "View Closed Boards", finding the board and clicking "Reopen".') %></p>
 											<div class="submit">
