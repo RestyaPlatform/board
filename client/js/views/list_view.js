@@ -1584,63 +1584,61 @@ App.ListView = Backbone.View.extend({
                     cards.sortByColumn('position');
                 }
                 cards.each(function(card) {
-                    if (!card.attributes.is_filtered) {
-                        var card_id = card.id;
-                        var filter_labels = self.model.labels.filter(function(model) {
-                            return parseInt(model.get('card_id')) === parseInt(card_id);
-                        });
-                        var labels = new App.CardLabelCollection();
-                        labels.add(filter_labels, {
+                    var card_id = card.id;
+                    var filter_labels = self.model.labels.filter(function(model) {
+                        return parseInt(model.get('card_id')) === parseInt(card_id);
+                    });
+                    var labels = new App.CardLabelCollection();
+                    labels.add(filter_labels, {
+                        silent: true
+                    });
+                    labels.setSortField('id', 'asc');
+                    labels.sort();
+                    card.labels = labels;
+                    if (parseInt(card.get('is_archived')) === 0) {
+                        card.board_users = self.model.board_users;
+                        card.card_voters.add(card.get('card_voters'), {
                             silent: true
                         });
-                        labels.setSortField('id', 'asc');
-                        labels.sort();
-                        card.labels = labels;
-                        if (parseInt(card.get('is_archived')) === 0) {
-                            card.board_users = self.model.board_users;
-                            card.card_voters.add(card.get('card_voters'), {
-                                silent: true
+                        card.cards = self.model.board.cards;
+                        card.list = self.model;
+                        card.board_activities.add(self.model.activities, {
+                            silent: true
+                        });
+                        filter_attachments = self.model.attachments.where({
+                            card_id: card.id
+                        });
+                        card.attachments.add(filter_attachments, {
+                            silent: true
+                        });
+                        card.board = self.model.board;
+                        if (_.isUndefined(card.attributes.checklist_item_completed_count)) {
+                            var checklist_item_pending_count = card.attributes.checklist_item_count - card.attributes.checklist_item_completed_count;
+                            card.set('checklist_item_pending_count', checklist_item_pending_count, {
+                                silent: false
                             });
-                            card.cards = self.model.board.cards;
-                            card.list = self.model;
-                            card.board_activities.add(self.model.activities, {
-                                silent: true
-                            });
-                            filter_attachments = self.model.attachments.where({
-                                card_id: card.id
-                            });
-                            card.attachments.add(filter_attachments, {
-                                silent: true
-                            });
-                            card.board = self.model.board;
-                            if (_.isUndefined(card.attributes.checklist_item_completed_count)) {
-                                var checklist_item_pending_count = card.attributes.checklist_item_count - card.attributes.checklist_item_completed_count;
-                                card.set('checklist_item_pending_count', checklist_item_pending_count, {
-                                    silent: false
-                                });
-                            }
-                            var view = new App.CardView({
-                                tagName: 'div',
-                                model: card,
-                                converter: this.converter
-                            });
-                            view_card.append(view.render().el);
-                            _(function() {
-                                localforage.getItem('unreaded_cards', function(err, value) {
-                                    if (value) {
-                                        $.each(value, function(index, count) {
-                                            if (count) {
-                                                if ($('#js-card-' + index).find('.js-unread-notification').length === 0) {
-                                                    $('#js-card-' + index).find('.js-list-card-data').prepend('<li class="js-unread-notification"><small title = "' + i18next.t('unread notifications') + '"><span class="label label-primary"><span class="icon-bell"></span><span>' + count + '</span></span></small>');
-                                                } else {
-                                                    $('#js-card-' + index).find('.js-unread-notification').html('<small title = "' + i18next.t('unread notifications') + '"><span class="label label-primary"><span class="icon-bell"></span><span>' + count + '</span></span></small>');
-                                                }
-                                            }
-                                        });
-                                    }
-                                });
-                            }).defer();
                         }
+                        var view = new App.CardView({
+                            tagName: 'div',
+                            model: card,
+                            converter: this.converter
+                        });
+                        view_card.append(view.render().el);
+                        _(function() {
+                            localforage.getItem('unreaded_cards', function(err, value) {
+                                if (value) {
+                                    $.each(value, function(index, count) {
+                                        if (count) {
+                                            if ($('#js-card-' + index).find('.js-unread-notification').length === 0) {
+                                                $('#js-card-' + index).find('.js-list-card-data').prepend('<li class="js-unread-notification"><small title = "' + i18next.t('unread notifications') + '"><span class="label label-primary"><span class="icon-bell"></span><span>' + count + '</span></span></small>');
+                                            } else {
+                                                $('#js-card-' + index).find('.js-unread-notification').html('<small title = "' + i18next.t('unread notifications') + '"><span class="label label-primary"><span class="icon-bell"></span><span>' + count + '</span></span></small>');
+                                            }
+                                        }
+                                    });
+                                }
+                            });
+                        }).defer();
                     }
                 });
             }
@@ -1903,7 +1901,7 @@ App.ListView = Backbone.View.extend({
                     position: newPosition
                 });
                 data.position = newPosition;
-                next.before(view.render().el);
+                next.before().append(view.render().el);
             } else {
                 view_card.append(view.render().el);
             }
@@ -2336,12 +2334,12 @@ App.ListView = Backbone.View.extend({
                 this.model.cards.add(cards.toJSON(), {
                     silent: true
                 });
-                if (this.sort_by === sort_by) {
+                if (!_.isUndefined(this.sort_by) && !_.isEmpty(this.sort_by) && this.sort_by !== null && (this.sort_by === sort_by)) {
                     $(e.target).parent().addClass('active');
                     $(e.target).html('<i class="icon icon-arrow-up js-sort-up-' + self.model.attributes.id + '"></i>' + i18next.t($(e.target).text()));
-                    this.sort_by = sort_by;
                     self.model.cards.sortByColumn(this.sort_by, 'asc');
                     cards.sortByColumn(this.sort_by, 'asc');
+                    this.sort_by = null;
                 } else {
                     $(e.target).parent().addClass('active');
                     $(e.target).html('<i class="icon icon-arrow-down js-sort-down-' + self.model.attributes.id + '"></i>' + i18next.t($(e.target).text()));

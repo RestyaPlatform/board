@@ -138,10 +138,16 @@ App.FooterView = Backbone.View.extend({
     gotoBoards: function(e) {
         e.preventDefault();
         var self = this;
-        app.navigate('#/boards', {
-            trigger: true,
-            replace: true
-        });
+        var currenturl = window.location;
+        var currentss = currenturl.hash;
+        var get_match_url = currentss.split("/");
+        if ($('#boards-index').length === 0 || (!_.isUndefined(get_match_url) && !_.isEmpty(get_match_url) && get_match_url.length > 0 && get_match_url['1'] === 'search')) {
+            app.navigate('#/boards', {
+                trigger: true,
+                replace: true
+            });
+            $('#search-page-result-block').html('');
+        }
     },
     /**
      * render()
@@ -2027,9 +2033,17 @@ App.FooterView = Backbone.View.extend({
                                             });
                                         }
                                         if (!_.isUndefined(list)) {
-                                            if (activity.attributes.revisions && activity.attributes.revisions.new_value && activity.attributes.type !== 'archived_card') {
+                                            if (((!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null) && (activity.attributes.type === 'add_list_agile_wip_limit' || activity.attributes.type === 'edit_list_agile_wip_limit' || activity.attributes.type === 'delete_list_agile_wip_limit' || activity.attributes.type === 'add_list_auto_archive_day' || activity.attributes.type === 'edit_list_auto_archive_day' || activity.attributes.type === 'delete_list_auto_archive_day' || activity.attributes.type === 'add_list_task_move_duedate' || activity.attributes.type === 'edit_list_task_move_duedate' || activity.attributes.type === 'delete_list_task_move_duedate')) && !_.isEmpty(activity.attributes.revisions.new_value.custom_fields)) {
+                                                list.set('custom_fields', activity.attributes.revisions.new_value.custom_fields, {
+                                                    silent: true
+                                                });
+                                                if (activity.attributes.type !== 'list_change_min' && activity.attributes.type !== 'list_change_max') {
+                                                    $('body').trigger('listCutomFieldsRendered', [parseInt(activity.attributes.revisions.new_value.list_id), list]);
+                                                }
+                                            } else if (activity.attributes.revisions && activity.attributes.revisions.new_value && activity.attributes.type !== 'archived_card') {
                                                 if (!_.isUndefined(activity.attributes.revisions) && !_.isEmpty(activity.attributes.revisions)) {
                                                     list.set(activity.attributes.revisions.new_value);
+
                                                 }
                                             }
                                             if (activity.attributes.type === 'delete_list') {
@@ -2041,11 +2055,6 @@ App.FooterView = Backbone.View.extend({
                                                 });
                                                 list.collection.board.lists.remove(list);
                                                 self.board.lists.remove(list);
-                                            } else if (((!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null) && (activity.attributes.type === 'add_list_agile_wip_limit' || activity.attributes.type === 'edit_list_agile_wip_limit' || activity.attributes.type === 'delete_list_agile_wip_limit' || activity.attributes.type === 'add_list_auto_archive_day' || activity.attributes.type === 'edit_list_auto_archive_day' || activity.attributes.type === 'delete_list_auto_archive_day' || activity.attributes.type === 'add_list_task_move_duedate' || activity.attributes.type === 'edit_list_task_move_duedate' || activity.attributes.type === 'delete_list_task_move_duedate')) || ((activity.attributes.type === 'list_change_min' || activity.attributes.type === 'list_change_max')) && !_.isEmpty(activity.attributes.revisions.new_value.custom_fields)) {
-                                                list.set('custom_fields', activity.attributes.revisions.new_value.custom_fields);
-                                                if (activity.attributes.type !== 'list_change_min' && activity.attributes.type !== 'list_change_max') {
-                                                    $('body').trigger('listCutomFieldsRendered', [parseInt(activity.attributes.revisions.new_value.list_id), list]);
-                                                }
                                             } else if (activity.attributes.type === 'change_list_position') {
                                                 if (parseInt(activity.attributes.list.board_id) !== parseInt(list.attributes.board_id)) {
                                                     self.board.lists.remove(list);
@@ -2189,11 +2198,31 @@ App.FooterView = Backbone.View.extend({
                                             activity.attributes.board_user.default_email_list_id = parseInt(activity.attributes.board_user.default_email_list_id);
                                             activity.attributes.board_user.id = parseInt(activity.attributes.board_user.id);
                                             activity.attributes.board_user.user_id = parseInt(activity.attributes.board_user.user_id);
+                                            if (!_.isUndefined(authuser.user) && !_.isEmpty(authuser.user) && authuser.user !== null) {
+                                                if (parseInt(activity.attributes.board_user.user_id) === parseInt(authuser.user.id)) {
+                                                    location.reload();
+                                                }
+                                            }
                                             self.board.board_users.add(activity.attributes.board_user);
                                         } else if (activity.attributes.type === 'delete_board_user') {
-                                            self.board.board_users.remove(self.board.board_users.findWhere({
+                                            var boarduser = self.board.board_users.findWhere({
                                                 id: activity.attributes.foreign_id
-                                            }));
+                                            });
+                                            var removedBoard = App.boards.get(parseInt(self.board_id));
+                                            if (!_.isUndefined(authuser.user) && !_.isEmpty(authuser.user) && authuser.user !== null && parseInt(authuser.user.role_id) !== 1 && !_.isUndefined(removedBoard) && !_.isEmpty(removedBoard) && removedBoard !== null) {
+                                                App.boards.remove(parseInt(self.board_id));
+                                            }
+                                            if (!_.isUndefined(boarduser) && !_.isEmpty(boarduser) && boarduser !== null) {
+                                                self.board.board_users.remove(boarduser);
+                                                if (parseInt(self.board.get('board_visibility')) === 2 && parseInt(boarduser.attributes.user_id) === parseInt(authuser.user.id)) {
+                                                    location.reload();
+                                                } else if (parseInt(boarduser.attributes.user_id) === parseInt(authuser.user.id)) {
+                                                    app.navigate('#/boards', {
+                                                        trigger: true,
+                                                        replace: true
+                                                    });
+                                                }
+                                            }
                                         } else if (activity.attributes.type === 'delete_label') {
                                             var label_value = JSON.parse(activity.attributes.revisions);
                                             var filter_labels = self.board.labels.filter(function(model) {
@@ -2249,6 +2278,10 @@ App.FooterView = Backbone.View.extend({
                                                     silent: false
                                                 };
                                                 card.labels.add(card_label, options);
+                                                card.set('cards_labels', null, {
+                                                    silent: true
+                                                });
+                                                card.set('cards_labels', card.labels);
                                             });
                                         } else if (activity.attributes.type == 'change_grid_view_configuration' || activity.attributes.type == 'change_list_view_configuration') {
                                             var board_custom_fields = JSON.parse(activity.attributes.revisions);
@@ -2529,10 +2562,12 @@ App.FooterView = Backbone.View.extend({
                                     } else if (activity.attributes.type === 'archive_list' || activity.attributes.type === 'unarchive_list') {
                                         if (!_.isUndefined(activity.attributes.revisions) && !_.isEmpty(activity.attributes.revisions)) {
                                             var list_board_id = parseInt(activity.attributes.board_id);
-                                            if (activity.attributes.type === 'archive_list') {
-                                                App.boards.get(list_board_id).lists.get(parseInt(activity.attributes.list_id)).set('is_archived', 1);
-                                            } else {
-                                                App.boards.get(list_board_id).lists.get(parseInt(activity.attributes.list_id)).set('is_archived', 0);
+                                            if (!_.isUndefined(App.boards.get(list_board_id)) && !_.isEmpty(App.boards.get(list_board_id)) && App.boards.get(list_board_id) !== null && !_.isUndefined(App.boards.get(list_board_id).lists.get(parseInt(activity.attributes.list_id))) && !_.isEmpty(App.boards.get(list_board_id).lists.get(parseInt(activity.attributes.list_id))) && App.boards.get(list_board_id).lists.get(parseInt(activity.attributes.list_id)) !== null) {
+                                                if (activity.attributes.type === 'archive_list') {
+                                                    App.boards.get(list_board_id).lists.get(parseInt(activity.attributes.list_id)).set('is_archived', 1);
+                                                } else {
+                                                    App.boards.get(list_board_id).lists.get(parseInt(activity.attributes.list_id)).set('is_archived', 0);
+                                                }
                                             }
                                             if (App.boards.get(list_board_id).attributes && !_.isUndefined(App.boards.get(list_board_id).attributes.lists) && App.boards.get(list_board_id).attributes.lists !== null) {
                                                 if (App.boards.get(list_board_id).attributes.lists.length > 0) {

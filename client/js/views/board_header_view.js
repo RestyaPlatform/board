@@ -1429,11 +1429,14 @@ App.BoardHeaderView = Backbone.View.extend({
                                     });
                                     if (!_.isEmpty(card_customfield_value)) {
                                         card_customfield_value = card_customfield_value.substring(0, 400 - 3) + '...';
-                                        $(target).tooltip({
-                                            title: card_customfield_value,
-                                            html: true,
-                                            placement: 'bottom'
-                                        });
+                                        if (!$(target).data('tooltip')) {
+                                            $(target).tooltip({
+                                                selector: target,
+                                                title: card_customfield_value,
+                                                html: true,
+                                                placement: 'bottom'
+                                            }).triggerHandler('mouseover');
+                                        }
                                     }
                                 }
                             }
@@ -2119,7 +2122,7 @@ App.BoardHeaderView = Backbone.View.extend({
         var currentss = currenturl.hash;
         var get_match_url = currentss.split("/");
         var grid_view = false;
-        if (get_match_url.length === 3 && get_match_url['1'] === 'board') {
+        if (get_match_url.length === 3 && get_match_url['1'] === 'board' && $('#switch-board-view').find('#js-board-lists').length !== 0) {
             grid_view = true;
         }
         if (!grid_view) {
@@ -2467,14 +2470,7 @@ App.BoardHeaderView = Backbone.View.extend({
                             return card.get('is_archived') !== 1 && card.get('is_filtered') === true;
                         });
                         _.each(unfilteredCards, function(card, key) {
-                            key = key + 1;
-                            var options = {
-                                silent: true
-                            };
-                            if (key === unfilteredCards.length) {
-                                options.silent = false;
-                            }
-                            card.set('is_filtered', false, options);
+                            card.set('is_filtered', false);
                         });
                     }
                 }
@@ -2497,14 +2493,7 @@ App.BoardHeaderView = Backbone.View.extend({
                         return card.get('is_archived') !== 1 && unfilteredIds.indexOf(card.get('id')) === -1;
                     });
                     _.each(cards, function(card, key) {
-                        key = key + 1;
-                        var options = {
-                            silent: true
-                        };
-                        if (key === cards.length) {
-                            options.silent = false;
-                        }
-                        card.set('is_filtered', true, options);
+                        card.set('is_filtered', true);
                     });
                     _.each(this.model.lists.models, function(list) {
                         if (!$('#js-card-listing-' + list.id).find('.panel').is(':visible') && (!_.isUndefined(list.attributes.card_count) && list.attributes.card_count !== 0 && list.attributes.card_count !== null && !isNaN(list.attributes.card_count))) {
@@ -2527,7 +2516,7 @@ App.BoardHeaderView = Backbone.View.extend({
                         current_param[0] = 'board/' + split_length[1];
                     }
                     app.navigate('#/' + current_param[0] + filter_query, {
-                        trigger: true,
+                        trigger: false,
                         trigger_function: false,
                         replace: true
                     });
@@ -2704,15 +2693,7 @@ App.BoardHeaderView = Backbone.View.extend({
                 return card.get('is_archived') !== 1 && card.get('is_filtered') === true;
             });
             _.each(cards, function(card, key) {
-                key = key + 1;
-                var options = {
-                    silent: true
-                };
-
-                if (key === cards.length) {
-                    options.silent = false;
-                }
-                card.set('is_filtered', false, options);
+                card.set('is_filtered', false);
             });
         }
         _.each(this.model.lists.models, function(list) {

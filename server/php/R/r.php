@@ -325,6 +325,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
 
     case '/users/?/activities':
         $condition = '';
+        $flag = 0;
         if (!empty($authUser) && $authUser['role_id'] == 1 && $authUser['id'] == $r_resource_vars['users'] && empty($r_resource_filters['organization_id']) && empty($r_resource_filters['board_id'])) {
             $i = 1;
             if (!empty($r_resource_filters['mode']) && $r_resource_filters['mode'] != 'all') {
@@ -358,6 +359,23 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM activities_listing al ' . $condition . ' ORDER BY id ' . $direction . ' LIMIT ' . PAGING_COUNT . ') as d';
             $c_sql = 'SELECT COUNT(*) FROM activities_listing al' . $condition;
         } else {
+            if (isset($r_resource_filters['last_activity_id']) && !empty($r_resource_filters['last_activity_id'])) {
+                $val_array = array(
+                    $r_resource_filters['last_activity_id'],
+                    'delete_board_user'
+                );
+                $responsedata = executeQuery('SELECT * FROM activities_listing WHERE id > $1 AND type = $2', $val_array);
+                if (isset($responsedata['board_id'])) {
+                    $val_array = array(
+                        $responsedata['board_id'],
+                        $authUser['id']
+                    );
+                    $boardUser = executeQuery('SELECT * FROM boards_users WHERE board_id = $1 AND user_id = $2', $val_array);
+                    if (!isset($boardUser['id'])) {
+                        $flag = 1;
+                    }
+                }
+            }
             if (!empty($authUser) && $authUser['id'] != $r_resource_vars['users'] && $authUser['role_id'] != 1) {
                 $val_array = array(
                     $authUser['id']
@@ -445,8 +463,14 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 $c_sql = 'SELECT COUNT(*) FROM activities_listing al WHERE ( board_id = ANY( $1 ) OR organization_id  = ANY ( $2 ) )' . $condition;
                 array_push($pg_params, '{' . implode(',', $board_ids) . '}', '{' . implode(',', $org_ids) . '}');
             }
+            if ($flag == 1) {
+                unset($pg_params);
+                $pg_params[0] = $r_resource_filters['last_activity_id'];
+                $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM activities_listing al WHERE id > $1 ORDER BY id DESC LIMIT ' . PAGING_COUNT . ') as d';
+                $c_sql = "";
+            }
         }
-        if (!empty($r_resource_filters['last_activity_id'])) {
+        if (!empty($r_resource_filters['last_activity_id']) && $flag == 0) {
             array_push($pg_params, $r_resource_filters['last_activity_id']);
         }
         if (!empty($c_sql)) {
@@ -5269,6 +5293,9 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 $names = preg_replace('/[ ,]+/', ', ', $names);
                 $comment = '##USER_NAME## removed the label(s) ' . ' - ' . $deletenames . ' and added the label(s) ' . ' - ' . $names . ' to the card ##CARD_LINK##';
                 $type = 'update_card_label';
+            } else {
+                echo json_encode("Success");
+                break;
             }
         } else {
             $response['cards_labels'] = array();
