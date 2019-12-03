@@ -2278,6 +2278,10 @@ App.FooterView = Backbone.View.extend({
                                                     silent: false
                                                 };
                                                 card.labels.add(card_label, options);
+                                                card.set('cards_labels', null, {
+                                                    silent: true
+                                                });
+                                                card.set('cards_labels', card.labels);
                                             });
                                         } else if (activity.attributes.type == 'change_grid_view_configuration' || activity.attributes.type == 'change_list_view_configuration') {
                                             var board_custom_fields = JSON.parse(activity.attributes.revisions);
