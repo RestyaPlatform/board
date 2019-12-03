@@ -735,9 +735,17 @@ App.ModalCardView = Backbone.View.extend({
             model: labels,
             card: this.model
         }).el);
+        var labelPluckerData = self.model.list.collection.board.labels.invoke('pick', ['name', 'color']);
+        var tagColors = {};
+        if (labelPluckerData.length > 0) {
+            labelPluckerData.forEach(function(value) {
+                tagColors[value.name] = value.color;
+            });
+        }
         $('.inputCardLabel', doc).each(function(key) {
             $(this).select2({
                 tags: _.uniq(self.model.list.collection.board.labels.pluck('name')),
+                tagColors: tagColors,
                 tokenSeparators: [',', ' '],
                 dropdownParent: $('#js-card-modal-card-block-' + self.model.id + ' .js-show-card-label-form-response')[key]
             });
