@@ -1435,13 +1435,6 @@ App.BoardHeaderView = Backbone.View.extend({
                                                 html: true,
                                                 placement: 'bottom'
                                             }).triggerHandler('mouseover');
-                                        } else {
-                                            $(target).tooltip({
-                                                selector: target,
-                                                title: card_customfield_value,
-                                                html: true,
-                                                placement: 'bottom'
-                                            }).triggerHandler('mouseover');
                                         }
                                     }
                                 }
@@ -2128,7 +2121,7 @@ App.BoardHeaderView = Backbone.View.extend({
         var currentss = currenturl.hash;
         var get_match_url = currentss.split("/");
         var grid_view = false;
-        if (get_match_url.length === 3 && get_match_url['1'] === 'board') {
+        if (get_match_url.length === 3 && get_match_url['1'] === 'board' && $('#switch-board-view').find('#js-board-lists').length !== 0) {
             grid_view = true;
         }
         if (!grid_view) {
