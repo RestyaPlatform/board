@@ -2463,6 +2463,11 @@ App.FooterView = Backbone.View.extend({
                                         }
                                     } else if (activity.attributes.type === 'close_board') {
                                         App.boards.get(parseInt(activity.attributes.board_id)).set('is_closed', 1);
+                                    } else if (activity.attributes.type === 'edit_board') {
+                                        var edit_board = App.boards.get(parseInt(activity.attributes.board_id));
+                                        if (!_.isUndefined(edit_board) && !_.isEmpty(edit_board) && edit_board !== null) {
+                                            edit_board.set('name', activity.attributes.revisions.new_value.name);
+                                        }
                                     } else if (activity.attributes.type === 'reopen_board') {
                                         App.boards.get(parseInt(activity.attributes.board_id)).set('is_closed', 0);
                                     } else if (activity.attributes.type === 'update_sort_card') {
