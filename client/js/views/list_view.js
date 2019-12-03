@@ -2334,12 +2334,12 @@ App.ListView = Backbone.View.extend({
                 this.model.cards.add(cards.toJSON(), {
                     silent: true
                 });
-                if (this.sort_by === sort_by) {
+                if (!_.isUndefined(this.sort_by) && !_.isEmpty(this.sort_by) && this.sort_by !== null && (this.sort_by === sort_by)) {
                     $(e.target).parent().addClass('active');
                     $(e.target).html('<i class="icon icon-arrow-up js-sort-up-' + self.model.attributes.id + '"></i>' + i18next.t($(e.target).text()));
-                    this.sort_by = sort_by;
                     self.model.cards.sortByColumn(this.sort_by, 'asc');
                     cards.sortByColumn(this.sort_by, 'asc');
+                    this.sort_by = null;
                 } else {
                     $(e.target).parent().addClass('active');
                     $(e.target).html('<i class="icon icon-arrow-down js-sort-down-' + self.model.attributes.id + '"></i>' + i18next.t($(e.target).text()));
