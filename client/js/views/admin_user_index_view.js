@@ -75,6 +75,7 @@ App.AdminUserIndexView = Backbone.View.extend({
             _this.users.setSortField(sort_direction['0'], sort_direction['1']);
         }
         if ((typeof _this.current_page === 'string' && _this.current_page.indexOf('&sort=') === -1) || _this.current_page === 1) {
+            _this.current_page = 1 + '&sort=username&direction=desc';
             _this.users.setSortField('username', 'desc');
         }
         var colspan = "15";
