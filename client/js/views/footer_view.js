@@ -2214,7 +2214,9 @@ App.FooterView = Backbone.View.extend({
                                             }
                                             if (!_.isUndefined(boarduser) && !_.isEmpty(boarduser) && boarduser !== null) {
                                                 self.board.board_users.remove(boarduser);
-                                                if (parseInt(boarduser.attributes.user_id) === parseInt(authuser.user.id)) {
+                                                if (parseInt(self.board.get('board_visibility')) === 2 && parseInt(boarduser.attributes.user_id) === parseInt(authuser.user.id)) {
+                                                    location.reload();
+                                                } else if (parseInt(boarduser.attributes.user_id) === parseInt(authuser.user.id)) {
                                                     app.navigate('#/boards', {
                                                         trigger: true,
                                                         replace: true
