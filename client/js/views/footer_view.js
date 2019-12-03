@@ -138,10 +138,16 @@ App.FooterView = Backbone.View.extend({
     gotoBoards: function(e) {
         e.preventDefault();
         var self = this;
-        app.navigate('#/boards', {
-            trigger: true,
-            replace: true
-        });
+        var currenturl = window.location;
+        var currentss = currenturl.hash;
+        var get_match_url = currentss.split("/");
+        if ($('#boards-index').length === 0 || (!_.isUndefined(get_match_url) && !_.isEmpty(get_match_url) && get_match_url.length > 0 && get_match_url['1'] === 'search')) {
+            app.navigate('#/boards', {
+                trigger: true,
+                replace: true
+            });
+            $('#search-page-result-block').html('');
+        }
     },
     /**
      * render()
@@ -2192,13 +2198,21 @@ App.FooterView = Backbone.View.extend({
                                             activity.attributes.board_user.default_email_list_id = parseInt(activity.attributes.board_user.default_email_list_id);
                                             activity.attributes.board_user.id = parseInt(activity.attributes.board_user.id);
                                             activity.attributes.board_user.user_id = parseInt(activity.attributes.board_user.user_id);
+                                            if (!_.isUndefined(authuser.user) && !_.isEmpty(authuser.user) && authuser.user !== null) {
+                                                if (parseInt(activity.attributes.board_user.user_id) === parseInt(authuser.user.id)) {
+                                                    location.reload();
+                                                }
+                                            }
                                             self.board.board_users.add(activity.attributes.board_user);
                                         } else if (activity.attributes.type === 'delete_board_user') {
                                             var boarduser = self.board.board_users.findWhere({
                                                 id: activity.attributes.foreign_id
                                             });
-                                            if (!_.isUndefined(boarduser) && !_.isEmpty(boarduser) && boarduser !== null) {
+                                            var removedBoard = App.boards.get(parseInt(self.board_id));
+                                            if (!_.isUndefined(authuser.user) && !_.isEmpty(authuser.user) && authuser.user !== null && parseInt(authuser.user.role_id) !== 1 && !_.isUndefined(removedBoard) && !_.isEmpty(removedBoard) && removedBoard !== null) {
                                                 App.boards.remove(parseInt(self.board_id));
+                                            }
+                                            if (!_.isUndefined(boarduser) && !_.isEmpty(boarduser) && boarduser !== null) {
                                                 self.board.board_users.remove(boarduser);
                                                 if (parseInt(boarduser.attributes.user_id) === parseInt(authuser.user.id)) {
                                                     app.navigate('#/boards', {
