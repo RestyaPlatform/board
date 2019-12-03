@@ -891,6 +891,7 @@ App.ApplicationView = Backbone.View.extend({
                     model: page_title,
                 }).el);
                 var board_index = $('#content');
+                board_index.html('');
                 var self = this;
                 var user_boards = new App.BoardCollection();
                 user_boards.url = api_url + 'users/' + authuser.user.id + '/boards.json';
@@ -904,7 +905,6 @@ App.ApplicationView = Backbone.View.extend({
                             cache: false,
                             abortPending: true,
                             success: function(board_model, board_response) {
-                                board_index.html('');
                                 $('body').removeAttr('style class');
                                 board_index.append(new App.UserDashboardView({
                                     model: page_title,
