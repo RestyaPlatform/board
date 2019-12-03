@@ -1576,7 +1576,9 @@ App.FooterView = Backbone.View.extend({
                                                     var tmp_newlist_cards = card_new_list.cards;
                                                     card.set('created', card.get('created'));
                                                     card.set('list_moved_date', activity.attributes.created);
-                                                    card.set('list_name', activity.attributes.moved_list_name);
+                                                    card.set('list_name', activity.attributes.moved_list_name, {
+                                                        silent: true
+                                                    });
                                                     card.list_name = activity.attributes.moved_list_name;
                                                     card.set('position', parseFloat(activity.attributes.card_position));
                                                     tmp_newlist_cards.add(card, {
@@ -2046,7 +2048,18 @@ App.FooterView = Backbone.View.extend({
 
                                                 }
                                             }
-                                            if (activity.attributes.type === 'delete_list') {
+                                            if (activity.attributes.type === 'edit_list') {
+                                                var edit_list_cards = self.board.cards.where({
+                                                    list_id: parseInt(list.attributes.id),
+                                                    is_archived: 0
+                                                });
+                                                if (!_.isUndefined(edit_list_cards) && !_.isEmpty(edit_list_cards) && edit_list_cards !== null) {
+                                                    _.each(edit_list_cards, function(editcard) {
+                                                        editcard.list_name = activity.attributes.revisions.new_value.name;
+                                                        editcard.set('list_name', activity.attributes.revisions.new_value.name);
+                                                    });
+                                                }
+                                            } else if (activity.attributes.type === 'delete_list') {
                                                 var removed_list_cards = self.board.cards.where({
                                                     list_id: parseInt(list.attributes.id)
                                                 });
@@ -2487,6 +2500,16 @@ App.FooterView = Backbone.View.extend({
                                                 }
                                             }
                                         }
+                                    } else if (activity.attributes.type === 'edit_list') {
+                                        var currrnt_board = App.boards.get(parseInt(activity.attributes.board_id));
+                                        if (!_.isUndefined(currrnt_board) && !_.isEmpty(currrnt_board) && currrnt_board !== null) {
+                                            var boardList = currrnt_board.lists.get(parseInt(activity.attributes.list_id));
+                                            if (!_.isUndefined(boardList) && !_.isEmpty(boardList) && boardList !== null) {
+                                                boardList.set('name', activity.attributes.revisions.new_value.name, {
+                                                    silent: true
+                                                });
+                                            }
+                                        }
                                     } else if (activity.attributes.type === 'move_list') {
                                         var old_list_board_id = parseInt(activity.attributes.revisions.old_value.board_id);
                                         var lists_id = parseInt(activity.attributes.list.id);
@@ -2618,7 +2641,9 @@ App.FooterView = Backbone.View.extend({
                                         board_new_card.set('id', parseInt(activity.attributes.card.id));
                                         board_new_card.set('board_id', parseInt(activity.attributes.card.board_id));
                                         board_new_card.set('list_id', parseInt(activity.attributes.card.list_id));
-                                        board_new_card.set('list_name', parseInt(activity.attributes.card.list_name));
+                                        board_new_card.set('list_name', parseInt(activity.attributes.card.list_name), {
+                                            silent: true
+                                        });
                                         board_new_card.set('is_archived', 0);
                                         board_new_card.set('position', parseFloat(activity.attributes.card.position));
                                         board_new_card.set('comment_count', 0);

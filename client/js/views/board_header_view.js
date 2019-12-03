@@ -55,6 +55,7 @@ App.BoardHeaderView = Backbone.View.extend({
         this.model.cards.bind('change:due_date', this.updateListView, this);
         this.model.cards.bind('change:due_date', this.switchCalendarView, this);
         this.model.cards.bind('change:name', this.updateListView, this);
+        this.model.cards.bind('change:list_name', this.updateListView, this);
         this.model.cards.bind('change:card_voter_count', this.updateListView, this);
         this.model.cards.bind('change:attachment_count', this.updateListView, this);
         this.model.cards.bind('change:checklist_item_completed_count', this.updateListView, this);
@@ -931,7 +932,9 @@ App.BoardHeaderView = Backbone.View.extend({
                     });
                     card.list = list;
                     if (!_.isUndefined(list) && !_.isEmpty(list)) {
-                        card.set('list_name', _.escape(list.attributes.name));
+                        card.set('list_name', _.escape(list.attributes.name), {
+                            silent: true
+                        });
                     }
                     if (!_.isUndefined(card.labels) && !_.isEmpty(card.labels) && card.labels !== null) {
                         card.labels.setSortField('id', 'asc');
@@ -1133,7 +1136,9 @@ App.BoardHeaderView = Backbone.View.extend({
                                 });
                                 card.list = list;
                                 if (!_.isUndefined(list) && !_.isEmpty(list)) {
-                                    card.set('list_name', _.escape(list.attributes.name));
+                                    card.set('list_name', _.escape(list.attributes.name), {
+                                        silent: true
+                                    });
                                 }
                                 if (!_.isUndefined(card.labels) && !_.isEmpty(card.labels) && card.labels !== null) {
                                     card.labels.each(function(label, key) {
