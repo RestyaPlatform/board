@@ -58,7 +58,7 @@ App.CardCollection = Backbone.Collection.extend({
                     }
                 }
             } else if (this.sortKey === 'checklist_item_completed_count' || this.sortKey === 'checklist_item_pending_count') {
-                if (!_.isUndefined(item.checklists) && !_.isEmpty(item.checklists) && item.checklists !== null && item.checklists.length > 0) {
+                if (!_.isUndefined(item.checklists) && !_.isEmpty(item.checklists) && item.checklists !== null) {
                     return this.sortDirection === 'desc' ? -item.get(this.sortKey) : item.get(this.sortKey);
                 }
             } else {
