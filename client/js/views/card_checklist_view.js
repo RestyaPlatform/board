@@ -424,6 +424,15 @@ App.CardCheckListView = Backbone.View.extend({
                     self.model.card.list.collection.board.checklist_items.add(checklist_item, {
                         silent: true
                     });
+                    var checklist = self.model.card.list.collection.board.checklists.findWhere({
+                        id: self.model.id
+                    });
+                    if (!_.isUndefined(checklist) && !_.isEmpty(checklist) && checklist !== null) {
+                        var total_count = isNaN(checklist.attributes.checklist_item_count) ? 0 : parseInt(checklist.attributes.checklist_item_count);
+                        checklist.set('checklist_item_count', total_count + 1, {
+                            silent: true
+                        });
+                    }
                     self.model.card.set('checklist_item_count', self.model.card.get('checklist_item_count') + 1);
                     self.model.card.set('checklist_item_pending_count', self.model.card.get('checklist_item_pending_count') + 1);
                     self.renderItemsCollection(false);
