@@ -2253,19 +2253,17 @@ App.ModalCardView = Backbone.View.extend({
                 var board_sort_by = (current_board.attributes.sort_by) ? current_board.attributes.sort_by : 'position';
                 var bard_sort_direction = (current_board.attributes.sort_direction) ? current_board.attributes.sort_direction : 'asc';
                 if (data.list_id !== current_list_id) {
-                    if (data.board_id === current_board_id) {
-                        this.model.list.collection.board.lists.get(data.list_id).cards.add(this.model, {
-                            silent: true
-                        });
-                        var new_list_cards = this.model.list.collection.board.lists.get(data.list_id).cards;
-                        var sort_filter_cards = self.cardsort(board_sort_by, bard_sort_direction, new_list_cards);
-                        $.each(sort_filter_cards.models, function(key, filter_card) {
-                            if (parseInt(filter_card.attributes.is_archived) === 0 && parseInt(filter_card.id) === parseInt(self.model.id)) {
-                                self.model.set('position', key);
-                                data.position = key;
-                            }
-                        });
-                    }
+                    this.model.list.collection.board.lists.get(data.list_id).cards.add(this.model, {
+                        silent: true
+                    });
+                    var new_list_cards = this.model.list.collection.board.lists.get(data.list_id).cards;
+                    var sort_filter_cards = self.cardsort(board_sort_by, bard_sort_direction, new_list_cards);
+                    $.each(sort_filter_cards.models, function(key, filter_card) {
+                        if (parseInt(filter_card.attributes.is_archived) === 0 && parseInt(filter_card.id) === parseInt(self.model.id)) {
+                            self.model.set('position', key);
+                            data.position = key;
+                        }
+                    });
                 } else {
                     data.position = this.model.attributes.position;
                 }
@@ -2356,6 +2354,12 @@ App.ModalCardView = Backbone.View.extend({
             var moved_card;
             moved_card = App.boards.get(current_board_id).cards.get(card_id);
             if (!_.isUndefined(moved_card)) {
+                var move_list = App.boards.get(parseInt(data.board_id)).lists.get(data.list_id);
+                if (!_.isUndefined(move_list)) {
+                    self.model.list = move_list;
+                    moved_card.set('list_name', move_list.attributes.name);
+                    moved_card.list_name = move_list.attributes.name;
+                }
                 moved_card.attributes.list_id = data.list_id;
                 moved_card.attributes.board_id = data.board_id;
                 moved_card.attributes.position = data.position;
@@ -2379,7 +2383,7 @@ App.ModalCardView = Backbone.View.extend({
                 }
             }
         });
-        if (data.list_id !== current_list_id) {
+        if (data.list_id !== current_list_id && parseInt(data.board_id) === parseInt(current_board_id)) {
             this.model.list.collection.board.lists.get(current_list_id).cards.remove(this.model);
             if (data.board_id === current_board_id) {
                 this.model.list.collection.board.lists.get(data.list_id).cards.add(this.model);
