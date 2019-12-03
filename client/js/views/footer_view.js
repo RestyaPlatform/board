@@ -2558,10 +2558,12 @@ App.FooterView = Backbone.View.extend({
                                     } else if (activity.attributes.type === 'archive_list' || activity.attributes.type === 'unarchive_list') {
                                         if (!_.isUndefined(activity.attributes.revisions) && !_.isEmpty(activity.attributes.revisions)) {
                                             var list_board_id = parseInt(activity.attributes.board_id);
-                                            if (activity.attributes.type === 'archive_list') {
-                                                App.boards.get(list_board_id).lists.get(parseInt(activity.attributes.list_id)).set('is_archived', 1);
-                                            } else {
-                                                App.boards.get(list_board_id).lists.get(parseInt(activity.attributes.list_id)).set('is_archived', 0);
+                                            if (!_.isUndefined(App.boards.get(list_board_id)) && !_.isEmpty(App.boards.get(list_board_id)) && App.boards.get(list_board_id) !== null && !_.isUndefined(App.boards.get(list_board_id).lists.get(parseInt(activity.attributes.list_id))) && !_.isEmpty(App.boards.get(list_board_id).lists.get(parseInt(activity.attributes.list_id))) && App.boards.get(list_board_id).lists.get(parseInt(activity.attributes.list_id)) !== null) {
+                                                if (activity.attributes.type === 'archive_list') {
+                                                    App.boards.get(list_board_id).lists.get(parseInt(activity.attributes.list_id)).set('is_archived', 1);
+                                                } else {
+                                                    App.boards.get(list_board_id).lists.get(parseInt(activity.attributes.list_id)).set('is_archived', 0);
+                                                }
                                             }
                                             if (App.boards.get(list_board_id).attributes && !_.isUndefined(App.boards.get(list_board_id).attributes.lists) && App.boards.get(list_board_id).attributes.lists !== null) {
                                                 if (App.boards.get(list_board_id).attributes.lists.length > 0) {
