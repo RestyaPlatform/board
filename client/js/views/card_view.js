@@ -768,6 +768,14 @@ App.CardView = Backbone.View.extend({
                 sprintf: [_.escape(this.model.attributes.name), _.escape(this.model.list.collection.board.attributes.name)]
             }), true);
         }
+        if (!_.isUndefined(authuser.user) && (_.isUndefined(this.model.board_user_role_id) || _.isEmpty(this.model.board_user_role_id) || this.model.board_user_role_id === null)) {
+            var board_user_role_id = this.model.board_users.findWhere({
+                user_id: parseInt(authuser.user.id)
+            });
+            if (!_.isEmpty(board_user_role_id)) {
+                this.model.board_user_role_id = board_user_role_id.attributes.board_user_role_id;
+            }
+        }
         var current_param = Backbone.history.fragment;
         current_param = current_param.split('?');
         var filter_param = '';

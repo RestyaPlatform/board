@@ -2893,7 +2893,7 @@ App.ModalCardView = Backbone.View.extend({
      */
     renderActivitiesCollection: function() {
         var self = this;
-        if (!_.isUndefined(self.model.list) && !_.isUndefined(self.model.collection)) {
+        if (!_.isUndefined(self.model.list)) {
             if ((!_.isUndefined(self.model.list) && self.model.list.collection.board.attributes.board_visibility === 2) || (!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(self.model.list.collection.board.acl_links.where({
                     slug: "view_card_activities",
                     board_user_role_id: parseInt(this.model.board_user_role_id)
@@ -2912,7 +2912,7 @@ App.ModalCardView = Backbone.View.extend({
                 if (!_.isEmpty(this.model.activities)) {
                     var i = 1;
                     this.model.activities.each(function(activity) {
-                        if (!_.isEmpty(self.model.collection)) {
+                        if (!_.isEmpty(self.model.collection) && !_.isUndefined(self.model.collection) && self.model.collection !== null) {
                             activity.cards.add(self.model.collection.models);
                         }
                         activity.board_users = self.model.board_users;
