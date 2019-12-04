@@ -1297,12 +1297,6 @@ App.BoardHeaderView = Backbone.View.extend({
                     var card = self.model.cards.findWhere({
                         id: event.id
                     });
-                    $(element[0]).tooltip({
-                        title: event.title,
-                        html: true,
-                        container: 'body',
-                        placement: 'bottom'
-                    })
                     if (card.get('is_archived') === 1) {
                         element.addClass('card-archived hide');
                         element.find('.fc-event-skin').addClass('card-archived');
