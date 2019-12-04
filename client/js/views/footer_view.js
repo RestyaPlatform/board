@@ -1084,27 +1084,29 @@ App.FooterView = Backbone.View.extend({
                                                 var checklistItem = self.board.checklist_items.findWhere({
                                                     id: parseInt(activity.attributes.foreign_id)
                                                 });
-                                                var itemCard = self.board.cards.findWhere({
-                                                    id: parseInt(checklistItem.attributes.card_id)
-                                                });
-                                                self.board.checklist_items.remove(checklistItem, {
-                                                    silent: false
-                                                });
-                                                var totalItems = self.board.checklist_items.where({
-                                                    card_id: parseInt(itemCard.id)
-                                                });
-                                                var checklistItems = new App.CheckListItemCollection();
-                                                checklistItems.add(totalItems, {
-                                                    silent: true
-                                                });
-                                                var item_completed_count = checklistItems.filter(function(checklist_item) {
-                                                    return parseInt(checklist_item.get('is_completed')) === 1;
-                                                }).length;
-                                                var item_total_count = checklistItems.models.length;
-                                                var item_pending_count = item_total_count - item_completed_count;
-                                                itemCard.set('checklist_item_completed_count', item_completed_count);
-                                                itemCard.set('checklist_item_pending_count', item_pending_count);
-                                                itemCard.set('checklist_item_count', item_total_count);
+                                                if (!_.isUndefined(checklistItem) && !_.isEmpty(checklistItem) && checklistItem !== null) {
+                                                    var itemCard = self.board.cards.findWhere({
+                                                        id: parseInt(checklistItem.attributes.card_id)
+                                                    });
+                                                    self.board.checklist_items.remove(checklistItem, {
+                                                        silent: false
+                                                    });
+                                                    var totalItems = self.board.checklist_items.where({
+                                                        card_id: parseInt(itemCard.id)
+                                                    });
+                                                    var checklistItems = new App.CheckListItemCollection();
+                                                    checklistItems.add(totalItems, {
+                                                        silent: true
+                                                    });
+                                                    var item_completed_count = checklistItems.filter(function(checklist_item) {
+                                                        return parseInt(checklist_item.get('is_completed')) === 1;
+                                                    }).length;
+                                                    var item_total_count = checklistItems.models.length;
+                                                    var item_pending_count = item_total_count - item_completed_count;
+                                                    itemCard.set('checklist_item_completed_count', item_completed_count);
+                                                    itemCard.set('checklist_item_pending_count', item_pending_count);
+                                                    itemCard.set('checklist_item_count', item_total_count);
+                                                }
                                             }
                                             var new_card = new App.Card();
                                             if (activity.attributes.type === 'add_card' || activity.attributes.type === 'convert_card') {
