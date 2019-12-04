@@ -4559,7 +4559,9 @@ App.ModalCardView = Backbone.View.extend({
                         new_attachment.set('list_id', parseInt(attachment.list_id));
                         new_attachment.set('card_id', parseInt(attachment.card_id));
                         self.model.list.collection.get(data.list_id).cards.get(parseInt(attachment.card_id)).attachments.unshift(new_attachment, options);
-                        self.model.list.collection.board.attachments.unshift(new_attachment, options);
+                        self.model.list.collection.board.attachments.unshift(new_attachment, {
+                            silent: true
+                        });
                         i++;
                     });
                     i = 0;
@@ -4576,7 +4578,9 @@ App.ModalCardView = Backbone.View.extend({
                         new_activity.set('board_id', parseInt(activity.board_id));
                         new_activity.set('list_id', parseInt(activity.list_id));
                         new_activity.set('card_id', parseInt(activity.card_id));
-                        self.model.list.collection.board.activities.add(new_activity, options);
+                        self.model.list.collection.board.activities.add(new_activity, {
+                            silent: true
+                        });
                         self.model.activities.unshift(new_activity, options);
                         i++;
                     });
@@ -4592,7 +4596,9 @@ App.ModalCardView = Backbone.View.extend({
                     if (!_.isUndefined(response.cards.cards_checklists) && !_.isEmpty(response.cards.cards_checklists)) {
                         if (response.cards.cards_checklists.length > 0) {
                             _.each(response.cards.cards_checklists, function(card_checklist) {
-                                self.model.list.collection.board.checklists.add(card_checklist);
+                                self.model.list.collection.board.checklists.add(card_checklist, {
+                                    silent: true
+                                });
                                 var checklist = self.model.list.collection.board.checklists.get(parseInt(card_checklist.id));
                                 var checklist_items = card_checklist.checklists_items;
                                 _.each(checklist_items, function(item) {
@@ -4608,12 +4614,16 @@ App.ModalCardView = Backbone.View.extend({
                                     checklist_item.card = card;
                                     checklist_item.checklist = new App.CheckList();
                                     checklist_item.checklist = checklist;
-                                    self.model.list.collection.board.checklist_items.add(checklist_item);
+                                    self.model.list.collection.board.checklist_items.add(checklist_item, {
+                                        silent: true
+                                    });
                                 });
                             });
                         }
                     }
-                    self.model.list.collection.board.labels.add(response.cards.cards_labels);
+                    self.model.list.collection.board.labels.add(response.cards.cards_labels, {
+                        silent: true
+                    });
                 }
             }
         });
