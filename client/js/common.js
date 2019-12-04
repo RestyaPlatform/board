@@ -73,7 +73,7 @@ $dc.ready(function() {
                 if (!_.isUndefined(App.current_board) && !_.isEmpty(App.current_board) && App.current_board !== null && !App.current_board.attributes.is_closed) {
                     $('#content .js-boards-view').remove('');
                     view_type_tab = "task";
-                    $('#content').html('<section id="boards-view-' + $(this).data('board-viewtype') + '" class="clearfix js-boards-view col-xs-12"></section>');
+                    $('#content').html('<section id="boards-view-' + $(this).data('board-viewtype') + '" class="clearfix js-boards-view col-xs-12"><div class="cssloader"></div></section>');
                 }
             }
         }
