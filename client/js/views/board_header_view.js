@@ -2219,6 +2219,7 @@ App.BoardHeaderView = Backbone.View.extend({
         this.model.save(data, {
             patch: true
         });
+        $('main').trigger('boardHeaderRendered');
         target.parents('div.dropdown').removeClass('open');
         return false;
     },
@@ -2617,6 +2618,7 @@ App.BoardHeaderView = Backbone.View.extend({
         });
         var target = $(e.target);
         target.parents('div.dropdown').find('.js-board-visibility:first').html('<i class="icon-lock"></i><span class="hidden-xs">' + i18next.t('Private') + '</span>');
+        $('main').trigger('boardHeaderRendered');
         target.parents('div.dropdown').removeClass('open');
         return false;
     },
@@ -2644,6 +2646,7 @@ App.BoardHeaderView = Backbone.View.extend({
         });
         var target = $(e.target);
         target.parents('div.dropdown').find('.js-board-visibility:first').html('<i class="icon-circle"></i><span class="hidden-xs">' + i18next.t('Public') + '</span>');
+        $('main').trigger('boardHeaderRendered');
         target.parents('div.dropdown').removeClass('open');
         return false;
     },
