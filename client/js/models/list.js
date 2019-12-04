@@ -8,6 +8,7 @@ if (typeof App === 'undefined') {
  * @extends Backbone.Model
  */
 App.List = Backbone.Model.extend({
+    storeName: 'list',
     initialize: function() {
         this.url = api_url + 'boards/' + this.attributes.board_id + '/lists.json';
 
@@ -23,7 +24,7 @@ App.List = Backbone.Model.extend({
         this.labels = new App.CardLabelCollection();
         this.lists_subscribers = new App.ListSubscriberCollection();
     },
-    storeName: 'list',
+
     moveAfter: function(beforeId) {
         var before = this.collection.get(beforeId);
         var after = this.collection.next(before);
