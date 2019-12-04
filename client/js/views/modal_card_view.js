@@ -1640,7 +1640,7 @@ App.ModalCardView = Backbone.View.extend({
                 return false;
             });
         } else {
-            doc.dockmodal('restore');
+            doc.dockmodal('popout');
         }
         this.$el.find('.js-organization-member-search-response').html('');
         this.$el.find('.js-comment-member-search-response').nextAll().remove();
