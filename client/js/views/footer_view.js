@@ -2752,7 +2752,9 @@ App.FooterView = Backbone.View.extend({
                                                 moveListCardCount = parseInt(moveListCardCount);
                                                 var totalCardCount = OldCardListCardCount + moveListCardCount;
                                                 moveCardList.set('card_count', totalCardCount);
-                                                OldCardList.set('card_count', 0);
+                                                if (!_.isUndefined(OldCardList) && !_.isEmpty(OldCardList) && OldCardList !== null) {
+                                                    OldCardList.set('card_count', 0);
+                                                }
                                                 if (!_.isUndefined(moveCards) && !_.isEmpty(moveCards)) {
                                                     _.each(moveCards, function(card) {
                                                         card.set('list_id', moveCardListId);
