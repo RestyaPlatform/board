@@ -2048,11 +2048,6 @@ App.BoardHeaderView = Backbone.View.extend({
             });
         }
         currentBoardList = App.current_board.lists.get(find_card.attributes.list_id);
-        if (!_.isUndefined(currentBoardList)) {
-            currentBoardList.set('card_count', currentBoardList.attributes.card_count + 1, {
-                silent: true
-            });
-        }
         if (!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && $.inArray('r_agile_wip', APPS.enabled_apps) !== -1) {
             if (currentBoardList !== null && !_.isUndefined(currentBoardList) && !_.isEmpty(currentBoardList)) {
                 $('body').trigger('cardAddRendered', [currentBoardList.id, currentBoardList]);
