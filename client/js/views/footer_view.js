@@ -1597,9 +1597,11 @@ App.FooterView = Backbone.View.extend({
                                                     var updated_card_list_cards = self.board.cards.where({
                                                         list_id: parseInt(activity.attributes.list_id)
                                                     });
-                                                    var cards_list = card.list.collection.board.lists.get(parseInt(activity.attributes.list_id));
-                                                    if (!_.isUndefined(cards_list) && cards_list !== null) {
-                                                        cards_list.cards.remove(card);
+                                                    if (!_.isUndefined(card.list.collection) && !_.isEmpty(card.list.collection) && card.list.collection !== null) {
+                                                        var cards_list = card.list.collection.board.lists.get(parseInt(activity.attributes.list_id));
+                                                        if (!_.isUndefined(cards_list) && cards_list !== null) {
+                                                            cards_list.cards.remove(card);
+                                                        }
                                                     }
                                                 }
                                                 // Reducing the card count of the old list
@@ -1630,7 +1632,9 @@ App.FooterView = Backbone.View.extend({
                                                     card.list = card_new_list;
                                                 }
                                                 card.set('list_id', parseInt(activity.attributes.foreign_id));
-                                                card.list.collection.board.lists.get(activity.attributes.foreign_id).cards.add(card);
+                                                if (!_.isUndefined(card.list.collection) && !_.isEmpty(card.list.collection) && card.list.collection !== null) {
+                                                    card.list.collection.board.lists.get(activity.attributes.foreign_id).cards.add(card);
+                                                }
                                                 var cards_attachments = self.board.attachments.where({
                                                     card_id: parseInt(activity.attributes.card_id)
                                                 });
