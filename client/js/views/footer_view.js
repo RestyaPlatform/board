@@ -2055,8 +2055,11 @@ App.FooterView = Backbone.View.extend({
                                                 });
                                                 if (!_.isUndefined(edit_list_cards) && !_.isEmpty(edit_list_cards) && edit_list_cards !== null) {
                                                     _.each(edit_list_cards, function(editcard) {
+                                                        var options = {
+                                                            silent: false
+                                                        };
                                                         editcard.list_name = activity.attributes.revisions.new_value.name;
-                                                        editcard.set('list_name', activity.attributes.revisions.new_value.name);
+                                                        editcard.set('list_name', activity.attributes.revisions.new_value.name, options);
                                                     });
                                                 }
                                             } else if (activity.attributes.type === 'delete_list') {
