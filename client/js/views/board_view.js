@@ -1083,7 +1083,7 @@ App.BoardView = Backbone.View.extend({
         list.url = api_url + 'boards/' + self.model.id + '/lists.json';
         list.save(data, {
             success: function(model, response, options) {
-                if (!_.isUndefined(data.clone_list_id)) {
+                if (!_.isUndefined(data.clone_list_id) && !_.isUndefined(response.list) && !_.isEmpty(response.list) && response.list !== null) {
                     if (!_.isUndefined(response.list.labels) && response.list.labels.length > 0) {
                         self.model.labels.add(response.list.labels, {
                             silent: true
