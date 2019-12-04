@@ -2529,16 +2529,16 @@ App.FooterView = Backbone.View.extend({
                                         var OldBoard = App.boards.get(old_list_board_id);
                                         if (!_.isUndefined(OldBoard) && OldBoard !== null && !_.isEmpty(OldBoard)) {
                                             var old_board_list_details = App.boards.get(old_list_board_id).lists.get(lists_id);
-                                            if (!_.isUndefined(old_board_list_details) && old_board_list_details !== null && !_.isEmpty(old_board_list_details)) {
+                                            if (!_.isUndefined(old_board_list_details) && old_board_list_details !== null && !_.isEmpty(old_board_list_details) && !_.isUndefined(activity.attributes.list) && activity.attributes.list !== null && !_.isEmpty(activity.attributes.list)) {
                                                 var oldBoardlist = new App.List();
                                                 oldBoardlist.set(old_board_list_details.attributes);
+                                                oldBoardlist.set('is_archived', parseInt(old_board_list_details.attributes.is_archived));
+                                                oldBoardlist.set('board_id', old_list_board_id);
+                                                oldBoardlist.set('position', old_list_position);
                                                 oldBoardlist.set('id', parseInt(activity.attributes.list.id));
                                                 oldBoardlist.set('name', activity.attributes.list.name);
-                                                oldBoardlist.set('board_id', old_list_board_id);
                                                 oldBoardlist.set('card_count', activity.attributes.list.card_count);
-                                                oldBoardlist.set('lists_cards', []);
-                                                oldBoardlist.set('is_archived', parseInt(old_board_list_details.attributes.is_archived));
-                                                oldBoardlist.set('position', old_list_position);
+                                                oldBoardlist.set('lists_cards', []);                                             
                                                 App.boards.get(old_list_board_id).lists.remove(oldBoardlist);
                                             }
                                             if (App.boards.get(old_list_board_id).attributes && !_.isUndefined(App.boards.get(old_list_board_id).attributes.lists) && App.boards.get(old_list_board_id).attributes.lists !== null) {
