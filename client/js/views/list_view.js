@@ -462,6 +462,15 @@ App.ListView = Backbone.View.extend({
                             list.name = data.name;
                         }
                     });
+                    var current_board = App.boards.get(parseInt(self.model.attributes.board_id));
+                    if (!_.isUndefined(current_board) && !_.isEmpty(current_board) && current_board !== null) {
+                        var current_list = current_board.lists.get(self.model.id);
+                        if (!_.isUndefined(current_list) && !_.isEmpty(current_list) && current_list !== null) {
+                            current_list.set('name', data.name, {
+                                silent: true
+                            });
+                        }
+                    }
                     App.current_board.lists.forEach(function(list) {
                         if (list.id === parseInt(list_id)) {
                             list.name = data.name;
@@ -2327,7 +2336,9 @@ App.ListView = Backbone.View.extend({
             $('#js-card-listing-' + self.model.attributes.id).html('<span class="js-list-placeholder-' + self.model.attributes.id + '">&nbsp;</span>');
             if (!_.isEmpty(filtered_cards)) {
                 _.each(filtered_cards, function(card) {
-                    card.set('list_name', _.escape(self.model.attributes.name));
+                    card.set('list_name', _.escape(self.model.attributes.name), {
+                        silent: true
+                    });
                 });
                 var cards = new App.CardCollection();
                 cards.reset(filtered_cards);

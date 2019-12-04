@@ -932,7 +932,9 @@ App.BoardHeaderView = Backbone.View.extend({
                     });
                     card.list = list;
                     if (!_.isUndefined(list) && !_.isEmpty(list)) {
-                        card.set('list_name', _.escape(list.attributes.name));
+                        card.set('list_name', _.escape(list.attributes.name), {
+                            silent: true
+                        });
                     }
                     if (!_.isUndefined(card.labels) && !_.isEmpty(card.labels) && card.labels !== null) {
                         card.labels.setSortField('id', 'asc');
@@ -1134,7 +1136,9 @@ App.BoardHeaderView = Backbone.View.extend({
                                 });
                                 card.list = list;
                                 if (!_.isUndefined(list) && !_.isEmpty(list)) {
-                                    card.set('list_name', _.escape(list.attributes.name));
+                                    card.set('list_name', _.escape(list.attributes.name), {
+                                        silent: true
+                                    });
                                 }
                                 if (!_.isUndefined(card.labels) && !_.isEmpty(card.labels) && card.labels !== null) {
                                     card.labels.each(function(label, key) {

@@ -2200,7 +2200,9 @@ App.ModalCardView = Backbone.View.extend({
         if (parseInt(data.board_id) === parseInt(current_board_id)) {
             if (data.list_id !== current_list_id) {
                 var new_lists = this.model.list.collection.board.lists.get(data.list_id);
-                this.model.set('list_name', new_lists.attributes.name);
+                this.model.set('list_name', new_lists.attributes.name, {
+                    silent: true
+                });
                 this.model.list_name = new_lists.attributes.name;
             }
             if ((!_.isUndefined(current_board.attributes.sort_by) && current_board.attributes.sort_by !== null && current_board.attributes.sort_by === 'position') || (_.isUndefined(current_board.attributes.sort_by) || current_board.attributes.sort_by === null)) {
@@ -2278,7 +2280,9 @@ App.ModalCardView = Backbone.View.extend({
                 if (!_.isUndefined(card)) {
                     var change_lists = App.boards.get(current_board_id).lists.get(data.list_id);
                     if (!_.isUndefined(change_lists)) {
-                        card.set('list_name', change_lists.attributes.name);
+                        card.set('list_name', change_lists.attributes.name, {
+                            silent: true
+                        });
                         card.list_name = change_lists.attributes.name;
                     }
                 }
