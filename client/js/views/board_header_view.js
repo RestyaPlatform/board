@@ -2488,11 +2488,9 @@ App.BoardHeaderView = Backbone.View.extend({
                             }
                         }
                     }
-                    var cards = self.model.cards.filter(function(card) {
-                        return card.get('is_archived') !== 1 && unfilteredIds.indexOf(card.get('id')) === -1;
-                    });
-                    _.each(cards, function(card, key) {
-                        card.set('is_filtered', true);
+                    self.model.cards.each(function(card) {
+                        var filter = card.get('is_archived') !== 1 && unfilteredIds.indexOf(card.get('id')) === -1;
+                        card.set('is_filtered', filter);
                     });
                     _.each(this.model.lists.models, function(list) {
                         if (!$('#js-card-listing-' + list.id).find('.panel').is(':visible') && (!_.isUndefined(list.attributes.card_count) && list.attributes.card_count !== 0 && list.attributes.card_count !== null && !isNaN(list.attributes.card_count))) {
