@@ -1865,6 +1865,12 @@ App.ListView = Backbone.View.extend({
             card.board_users = self.model.board_users;
             card.board = self.model.board;
             card.list = self.model;
+            var cards_count = isNaN(self.model.attributes.card_count) ? 0 : self.model.attributes.card_count;
+            self.model.set('card_count', parseInt(cards_count) + 1);
+            if (parseInt(self.model.attributes.card_count) === 1) {
+                // Removing the &nbsp; in the card listing after adding card
+                $('#js-card-listing-' + self.model.id).find('.js-list-placeholder-' + self.model.id).remove();
+            }
             var view = new App.CardView({
                 tagName: 'div',
                 model: card,
@@ -1938,12 +1944,7 @@ App.ListView = Backbone.View.extend({
                         card.set('cards_users', response.cards_users);
                         card.users.add(response.cards_users);
                     }
-                    var cards_count = isNaN(self.model.attributes.card_count) ? 0 : self.model.attributes.card_count;
-                    self.model.set('card_count', parseInt(cards_count) + 1);
-                    if (parseInt(self.model.attributes.card_count) === 1) {
-                        // Removing the &nbsp; in the card listing after adding card
-                        $('#js-card-listing-' + self.model.id).find('.js-list-placeholder-' + self.model.id).remove();
-                    }
+
                     var board = App.boards.get(card.attributes.board_id);
                     if (!_.isUndefined(board)) {
                         board.cards.add(card, {
