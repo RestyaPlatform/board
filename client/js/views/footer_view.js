@@ -2319,6 +2319,39 @@ App.FooterView = Backbone.View.extend({
                                             App.boards.get(activity.attributes.board_id).set('is_closed', 0);
                                             self.board.set('is_closed', 0);
                                         }
+                                    } else if (!_.isUndefined(activity.attributes.list_id) && activity.attributes.list_id !== 0 && !_.isUndefined(activity.attributes.board_id) && activity.attributes.type === 'move_list') {
+                                        if (activity.attributes.revisions && activity.attributes.revisions.old_value) {
+                                            var board_id = activity.attributes.revisions.old_value.board_id;
+                                            if (parseInt(board_id) === parseInt(self.board_id)) {
+                                                var list = self.board.lists.findWhere({
+                                                    id: parseInt(activity.attributes.list_id)
+                                                });
+                                                var removed_list_cards = self.board.cards.where({
+                                                    list_id: parseInt(list.attributes.id)
+                                                });
+                                                self.board.cards.remove(removed_list_cards, {
+                                                    silent: true
+                                                });
+                                                list.collection.board.lists.remove(list);
+                                                self.board.lists.remove(list);
+                                            }
+                                        }
+                                    } else if (!_.isUndefined(activity.attributes.card_id) && activity.attributes.card_id !== 0 && !_.isUndefined(activity.attributes.board_id) && activity.attributes.type === 'move_card') {
+                                        if (activity.attributes.revisions && activity.attributes.revisions.old_value) {
+                                            var board_id = activity.attributes.revisions.old_value.board_id;
+                                            if (parseInt(board_id) === parseInt(self.board_id) && activity.attributes.card_id) {
+                                                var card = self.board.cards.findWhere({
+                                                    id: parseInt(activity.attributes.card_id)
+                                                });
+
+                                                card.set("is_archived", 1, {
+                                                    silent: true
+                                                });
+                                                self.board.cards.remove(card, {
+                                                    silent: false
+                                                });
+                                            }
+                                        }
                                     }
                                 }
                             }
@@ -2544,7 +2577,7 @@ App.FooterView = Backbone.View.extend({
                                                 oldBoardlist.set('id', parseInt(activity.attributes.list.id));
                                                 oldBoardlist.set('name', activity.attributes.list.name);
                                                 oldBoardlist.set('card_count', activity.attributes.list.card_count);
-                                                oldBoardlist.set('lists_cards', []);                                             
+                                                oldBoardlist.set('lists_cards', []);
                                                 App.boards.get(old_list_board_id).lists.remove(oldBoardlist);
                                             }
                                             if (App.boards.get(old_list_board_id).attributes && !_.isUndefined(App.boards.get(old_list_board_id).attributes.lists) && App.boards.get(old_list_board_id).attributes.lists !== null) {
