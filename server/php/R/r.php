@@ -359,23 +359,6 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM activities_listing al ' . $condition . ' ORDER BY id ' . $direction . ' LIMIT ' . PAGING_COUNT . ') as d';
             $c_sql = 'SELECT COUNT(*) FROM activities_listing al' . $condition;
         } else {
-            if (isset($r_resource_filters['last_activity_id']) && !empty($r_resource_filters['last_activity_id'])) {
-                $val_array = array(
-                    $r_resource_filters['last_activity_id'],
-                    'delete_board_user'
-                );
-                $responsedata = executeQuery('SELECT * FROM activities_listing WHERE id > $1 AND type = $2', $val_array);
-                if (isset($responsedata['board_id'])) {
-                    $val_array = array(
-                        $responsedata['board_id'],
-                        $authUser['id']
-                    );
-                    $boardUser = executeQuery('SELECT * FROM boards_users WHERE board_id = $1 AND user_id = $2', $val_array);
-                    if (!isset($boardUser['id'])) {
-                        $flag = 1;
-                    }
-                }
-            }
             if (!empty($authUser) && $authUser['id'] != $r_resource_vars['users'] && $authUser['role_id'] != 1) {
                 $val_array = array(
                     $authUser['id']
@@ -432,15 +415,15 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 $c_sql = 'SELECT COUNT(*) FROM activities_listing al WHERE ' . $str;
             } else if (!empty($r_resource_filters['type']) && $r_resource_filters['type'] == 'all') {
                 if (!empty($r_resource_filters['last_activity_id'])) {
-                    $condition = ' AND al.id > $3';
+                    $condition = ' AND al.id > $4';
                 }
                 $direction = 'DESC';
                 if (!empty($r_resource_filters['direction']) && isset($r_resource_filters['direction'])) {
                     $direction = $r_resource_filters['direction'];
                 }
-                $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM activities_listing al WHERE (board_id = ANY ( $1 ) OR organization_id  = ANY ( $2 ))' . $condition . ' ORDER BY id ' . $direction . ' LIMIT ' . PAGING_COUNT . ') as d';
-                $c_sql = 'SELECT COUNT(*) FROM activities_listing al WHERE (board_id = ANY ( $1 ) OR organization_id  = ANY ( $2 ))' . $condition;
-                array_push($pg_params, '{' . implode(',', $board_ids) . '}', '{' . implode(',', $org_ids) . '}');
+                $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM activities_listing al WHERE (board_id = ANY ( $1 ) OR organization_id  = ANY ( $2 ) OR revisions = $3)' . $condition . ' ORDER BY id ' . $direction . ' LIMIT ' . PAGING_COUNT . ') as d';
+                $c_sql = 'SELECT COUNT(*) FROM activities_listing al WHERE (board_id = ANY ( $1 ) OR organization_id  = ANY ( $2 ) OR revisions = $3)' . $condition;
+                array_push($pg_params, '{' . implode(',', $board_ids) . '}', '{' . implode(',', $org_ids) . '}', $authUser['id']);
             } else if (!empty($r_resource_filters['board_id']) && $r_resource_filters['board_id'] && $r_resource_filters['type'] == 'board_user_activity') {
                 if (!empty($r_resource_filters['last_activity_id'])) {
                     $condition = ' AND al.id < $3';
@@ -463,14 +446,8 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 $c_sql = 'SELECT COUNT(*) FROM activities_listing al WHERE ( board_id = ANY( $1 ) OR organization_id  = ANY ( $2 ) )' . $condition;
                 array_push($pg_params, '{' . implode(',', $board_ids) . '}', '{' . implode(',', $org_ids) . '}');
             }
-            if ($flag == 1) {
-                unset($pg_params);
-                $pg_params[0] = $r_resource_filters['last_activity_id'];
-                $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM activities_listing al WHERE id > $1 ORDER BY id DESC LIMIT ' . PAGING_COUNT . ') as d';
-                $c_sql = "";
-            }
         }
-        if (!empty($r_resource_filters['last_activity_id']) && $flag == 0) {
+        if (!empty($r_resource_filters['last_activity_id'])) {
             array_push($pg_params, $r_resource_filters['last_activity_id']);
         }
         if (!empty($c_sql)) {
@@ -7625,7 +7602,7 @@ function r_delete($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         $previous_value = pg_fetch_assoc($s_result);
         $foreign_ids['board_id'] = $previous_value['board_id'];
         $comment = '##USER_NAME## removed member "' . $previous_value['username'] . '" from board';
-        $response['activity'] = insertActivity($authUser['id'], $comment, 'delete_board_user', $foreign_ids, '', $r_resource_vars['boards_users']);
+        $response['activity'] = insertActivity($authUser['id'], $comment, 'delete_board_user', $foreign_ids, $previous_value['user_id'], $r_resource_vars['boards_users']);
         $sql = 'DELETE FROM boards_users WHERE id= $1';
         $conditions = array(
             $previous_value['board_id']
