@@ -4049,24 +4049,26 @@ App.ModalCardView = Backbone.View.extend({
                         self.flash('danger', i18next.t('Sorry, attachment not added. Internet connection not available.'));
                     } else {
                         self.closePopup(e);
-                        card_attachment.set(response.card_attachments);
-                        card_attachment.set('id', parseInt(response.card_attachments.id));
-                        card_attachment.set('board_id', parseInt(response.card_attachments.board_id));
-                        card_attachment.set('list_id', parseInt(response.card_attachments.list_id));
-                        card_attachment.set('card_id', parseInt(response.card_attachments.card_id));
-                        self.model.list.collection.board.attachments.unshift(card_attachment, {
-                            silent: true
-                        });
-                        self.model.attachments.unshift(card_attachment, {
-                            silent: true
-                        });
-                        var view = new App.CardAttachmentView({
-                            model: card_attachment,
-                            board: self.model.list.collection.board,
-                            card: self.model
-                        });
-                        var view_attachment = self.$('#js-card-attachments-list');
-                        view_attachment.append(view.render().el);
+                        if (!_.isUndefined(response) && !_.isEmpty(response) && response !== null && !_.isUndefined(response.card_attachments) && !_.isEmpty(response.card_attachments) && response.card_attachments !== null) {
+                            card_attachment.set(response.card_attachments);
+                            card_attachment.set('id', parseInt(response.card_attachments.id));
+                            card_attachment.set('board_id', parseInt(response.card_attachments.board_id));
+                            card_attachment.set('list_id', parseInt(response.card_attachments.list_id));
+                            card_attachment.set('card_id', parseInt(response.card_attachments.card_id));
+                            self.model.list.collection.board.attachments.unshift(card_attachment, {
+                                silent: true
+                            });
+                            self.model.attachments.unshift(card_attachment, {
+                                silent: true
+                            });
+                            var view = new App.CardAttachmentView({
+                                model: card_attachment,
+                                board: self.model.list.collection.board,
+                                card: self.model
+                            });
+                            var view_attachment = self.$('#js-card-attachments-list');
+                            view_attachment.append(view.render().el);
+                        }
                     }
                 }
             });
