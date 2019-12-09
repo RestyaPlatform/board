@@ -3413,7 +3413,7 @@ function update_query($table_name, $id, $r_resource_cmd, $r_put, $comment = '', 
                     $id
                 );
                 $revisions['old_value'] = executeQuery('SELECT ' . $sfields . ' FROM ' . $table_name . ' WHERE id =  $1', $qry_va_arr);
-                if ($activity_type != 'change_list_position' && $activity_type != 'change_card_position' && $activity_type != 'move_card') {
+                if ($activity_type != 'change_list_position' && $activity_type != 'change_card_position' && $activity_type != 'move_card' && $activity_type != 'update_card_checklist' && $activity_type != 'update_card_checklist_item') {
                     if (!empty($r_put['position'])) {
                         unset($r_put['position']);
                     }
