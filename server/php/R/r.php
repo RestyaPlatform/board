@@ -1423,6 +1423,10 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                                 'the card ##CARD_LINK##' => 'this card',
                             );
                             $obj['comment'] = strtr($obj['comment'], $replaceContent);
+                            $replaceContent = array(
+                                'on card ##CARD_LINK##' => 'this card',
+                            );
+                            $obj['comment'] = strtr($obj['comment'], $replaceContent);
                             if ($obj['type'] === 'add_card') {
                                 $obj['comment'] = '##USER_NAME## added this card';
                             }
@@ -7291,7 +7295,7 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
         if (!empty($r_put['is_completed'])) {
             $comment = '##USER_NAME## updated ' . $prev_value['name'] . ' as completed on the card ##CARD_LINK##';
         } else if (isset($r_put['position'])) {
-            $comment = '##USER_NAME## moved checklist item on card ##CARD_LINK##';
+            $comment = '##USER_NAME## moved checklist item on the card ##CARD_LINK##';
             if (isset($r_put['checklist_id']) && $r_put['checklist_id'] != $prev_value['checklist_id']) {
                 $activity_type = 'moved_card_checklist_item';
             }

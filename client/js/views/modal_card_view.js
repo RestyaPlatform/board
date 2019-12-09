@@ -1337,6 +1337,58 @@ App.ModalCardView = Backbone.View.extend({
             this.renderVotersCollection();
             this.renderCardSubscriberCollection();
             this.renderArchievedCollection();
+            $('.editor').each(function() {
+                var $this = $(this);
+                var factor1 = '60',
+                    factor2 = '40';
+                if (doc.parents('.dockmodal').hasClass('popped-out')) {
+                    factor1 = '30';
+                    factor2 = '70';
+                }
+                if (!_.isUndefined(authuser.user) && !_.isEmpty(authuser.user)) {
+                    if (!_.isUndefined(authuser.user.persist_card_divider_position) && authuser.user.persist_card_divider_position !== null) {
+                        factor1 = authuser.user.persist_card_divider_position;
+                        factor2 = 100 - factor1;
+                    }
+                }
+                $this.resizable({
+                    handles: 'e',
+                    resize: function(event, ui) {
+                        var x = ui.element.outerWidth();
+                        var ele = ui.element;
+                        var factor = x * 100 / $(this).parent().width();
+                        var f1 = factor;
+                        var f2 = 100 - factor;
+                        $.cookie('factor1', f1);
+                        $this.css('width', f1 + '%');
+                        $this.next().css('width', f2 + '%');
+                    },
+                    stop: function(event, ui) {
+                        var x = ui.element.outerWidth();
+                        var factor = x * 100 / $(this).parent().width();
+                        if (!_.isUndefined(authuser.user) && !_.isEmpty(authuser.user)) {
+                            var data = {
+                                persist_card_divider_position: factor
+                            };
+                            var user = new App.User();
+                            user.url = api_url + 'users/' + authuser.user.id + '.json';
+                            user.set('id', parseInt(authuser.user.id));
+                            user.save(data, {
+                                success: function(model, response) {
+                                    var Auth = JSON.parse($.cookie('auth'));
+                                    Auth.user.persist_card_divider_position = factor;
+                                    $.cookie('auth', JSON.stringify(Auth));
+                                    authuser = Auth;
+                                }
+                            });
+                        }
+                    },
+                }).css({
+                    width: factor1 + '%'
+                }).next().css({
+                    width: factor2 + '%'
+                });
+            });
             this.model.activities = new App.ActivityCollection();
             var filter = $.cookie('filter');
             if (filter === undefined || filter === 'all') {
@@ -1513,6 +1565,12 @@ App.ModalCardView = Backbone.View.extend({
                         var $this = $(this);
                         var factor1 = '60';
                         var factor2 = '40';
+                        if (!_.isUndefined(authuser.user) && !_.isEmpty(authuser.user)) {
+                            if (!_.isUndefined(authuser.user.persist_card_divider_position) && authuser.user.persist_card_divider_position !== null) {
+                                factor1 = authuser.user.persist_card_divider_position;
+                                factor2 = 100 - factor1;
+                            }
+                        }
                         $this.resizable({
                             handles: 'e',
                             resize: function(event, ui) {
