@@ -2169,6 +2169,9 @@ App.FooterView = Backbone.View.extend({
                                                 });
                                             } else {
                                                 self.board.set(activity.attributes.revisions.new_value);
+                                                if (activity.attributes.type === 'change_visibility') {
+                                                    $('main').trigger('boardHeaderRendered');
+                                                }
                                             }
                                             if (!_.isUndefined(board_fields.is_show_image_front_of_card)) {
                                                 if (board_fields.is_show_image_front_of_card) {
