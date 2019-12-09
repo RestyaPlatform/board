@@ -1460,7 +1460,7 @@ App.ListView = Backbone.View.extend({
                 if (_.isUndefined(e.list)) {
                     e.list = self.model;
                 }
-                if (!_.isUndefined(e.board_users) && !_.isEmpty(e.board_users) && e.board_users !== null) {
+                if (!_.isUndefined(e.board_users) && !_.isEmpty(e.board_users) && e.board_users !== null && e.board_users.length > 0) {
                     if (_.isUndefined(e.board_users.board) || _.isEmpty(e.board_users.board) || e.board_users.board === null) {
                         e.board_users.board = self.model.board;
                     }
@@ -1510,7 +1510,7 @@ App.ListView = Backbone.View.extend({
                                     if (!_.isUndefined(self.model.cards.models[i - 1])) {
                                         var prev_card_id = self.model.cards.models[i - 1].id;
                                         var next_card = '';
-                                        if ($('#js-card-' + prev_card_id).length > 0 && $('#js-card-' + prev_card_id).next().length > 0) {
+                                        if (!_.isUndefined(prev_card_id) && !_.isEmpty(prev_card_id) && !_.isUndefined($('#js-card-' + prev_card_id)) && $('#js-card-' + prev_card_id).length > 0 && $('#js-card-' + prev_card_id).next().length > 0) {
                                             next_card = $('#js-card-' + prev_card_id).next().data('card_id');
                                         }
                                         if (next_card !== parseInt(e.attributes.id)) {
