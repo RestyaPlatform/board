@@ -4188,13 +4188,13 @@ App.ModalCardView = Backbone.View.extend({
                 }
             }
             if (is_parent_card) {
-                if (window.confirm(i18next.t('Note: This card has child dependencies and if it\'\s not affect, then remove due date.'))) {
+                if (window.confirm(i18next.t('Note: This card has child dependencies and if it\'s not affect, then remove due date.'))) {
                     cardcheck = true;
                 } else {
                     return false;
                 }
             } else if (is_child_card) {
-                if (window.confirm(i18next.t('Note: This card has parent dependencies and if it\'\s not affect, then remove due date.'))) {
+                if (window.confirm(i18next.t('Note: This card has parent dependencies and if it\'s not affect, then remove due date.'))) {
                     cardcheck = true;
                 } else {
                     return false;
@@ -4386,15 +4386,23 @@ App.ModalCardView = Backbone.View.extend({
                     }
                 }
             }
+            content_list += '<option>' + i18next.t('Selct List') + '</option>';
             _.each(board_lists, function(list) {
                 if (self.model.attributes.list_id == list.attributes.id) {
                     content_list += '<option value="' + list.id + '" selected="selected">' + _.escape(list.attributes.name) + ' ' + i18next.t('(current)') + '</option>';
                     is_first_list = true;
                 } else {
-                    if (wip_enabled && !_.isUndefined(list.attributes.custom_fields) && list.attributes.custom_fields) {
-                        var wip_limit_count = JSON.parse(list.attributes.custom_fields);
-                        if (parseInt(wip_limit_count.wip_limit) !== parseInt(list.attributes.card_count)) {
-                            content_list += '<option value="' + list.id + '">' + _.escape(list.attributes.name) + '</option>';
+                    if (wip_enabled && !_.isUndefined(list.attributes.custom_fields) && !_.isEmpty(list.attributes.custom_fields) && list.attributes.custom_fields !== null) {
+                        var list_custom_fields = JSON.parse(list.attributes.custom_fields);
+                        var list_card_count = isNaN(list.attributes.card_count) ? 0 : list.attributes.card_count;
+                        if (!_.isUndefined(list_custom_fields.wip_limit) && !_.isEmpty(list_custom_fields.wip_limit)) {
+                            if (parseInt(list_card_count) === parseInt(list_custom_fields.wip_limit) && !_.isUndefined(list_custom_fields.hard_wip_limit) && !_.isEmpty(list_custom_fields.hard_wip_limit)) {
+                                content_list += '<option value="' + list.id + '" disabled>' + _.escape(list.attributes.name) + ' (' + i18next.t('Agile WIP exceeded') + ')</option>';
+                            } else if (parseInt(list_card_count) > parseInt(list_custom_fields.wip_limit)) {
+                                content_list += '<option value="' + list.id + '">' + _.escape(list.attributes.name) + ' ( > ' + i18next.t('WIP limit') + ')</option>';
+                            } else {
+                                content_list += '<option value="' + list.id + '">' + _.escape(list.attributes.name) + '</option>';
+                            }
                         }
                     } else {
                         content_list += '<option value="' + list.id + '">' + _.escape(list.attributes.name) + '</option>';
