@@ -2128,8 +2128,12 @@ App.BoardHeaderView = Backbone.View.extend({
         var org = organizations.findWhere({
             id: parseInt(data.organization_id)
         });
-        this.model.set('organization_name', _.escape(org.attributes.name));
-        this.model.set('organization_logo_url', _.escape(org.attributes.organization_logo_url));
+        if (!_.isUndefined(org) && !_.isEmpty(org) && org !== null) {
+            this.model.set('organization_name', _.escape(org.attributes.name));
+            this.model.set('organization_logo_url', _.escape(org.attributes.organization_logo_url));
+            data.organization_name = _.escape(org.attributes.name);
+            data.organization_logo_url = _.escape(org.attributes.organization_logo_url);
+        }
         this.model.set('board_visibility', 1);
         this.model.set('organization_id', parseInt(data.organization_id));
 
