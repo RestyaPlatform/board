@@ -67,7 +67,7 @@ App.ModalCardView = Backbone.View.extend({
         'change .js-change-list': 'changeList',
         'change .js-change-position': 'changePosition',
         'click .js-show-copy-card-form': 'showCopyCardForm',
-        'submit .js-copy-card': 'copyCard',
+        'submit form.js-copy-card': 'copyCard',
         'click .js-more-dropdown': 'showMoreForm',
         'click .js-select-card-url': 'selectCardURL',
         'click .js-show-add-comment-form': 'showAddCommentForm',
