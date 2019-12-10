@@ -4201,13 +4201,13 @@ App.ModalCardView = Backbone.View.extend({
                 }
             }
             if (is_parent_card) {
-                if (window.confirm(i18next.t('Note: This card has child dependencies and if it\'\s not affect, then remove due date.'))) {
+                if (window.confirm(i18next.t('Note: This card has child dependencies. This card will not be shown in the Calendar and Gantt view.'))) {
                     cardcheck = true;
                 } else {
                     return false;
                 }
             } else if (is_child_card) {
-                if (window.confirm(i18next.t('Note: This card has parent dependencies and if it\'\s not affect, then remove due date.'))) {
+                if (window.confirm(i18next.t('Note: This card has parent dependencies. This card will not be shown in the Calendar and Gantt view. It can also break the dependency graph in the Gantt view.'))) {
                     cardcheck = true;
                 } else {
                     return false;
