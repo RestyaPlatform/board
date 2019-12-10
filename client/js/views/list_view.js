@@ -1721,6 +1721,7 @@ App.ListView = Backbone.View.extend({
      *
      */
     showListModal: function(e) {
+        $('body').find('#modalListView').remove();
         var modalView = new App.ModalListView({
             model: this.model
         });
