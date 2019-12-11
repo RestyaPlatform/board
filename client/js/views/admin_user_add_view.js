@@ -44,6 +44,7 @@ App.AdminUserAddView = Backbone.View.extend({
     adminUserAdd: function(e) {
         var target = $(e.target);
         var data = target.serializeObject();
+        data.is_send_newsletter = parseInt(data.is_send_newsletter);
         data.is_productivity_beats = true;
         var self = this;
         var user = new App.User();

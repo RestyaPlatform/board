@@ -197,9 +197,30 @@ App.HeaderView = Backbone.View.extend({
     },
     renderList: function() {
         var self = this;
-        self.current_page = (!_.isUndefined(self.current_page)) ? self.current_page : 1;
+        var url = location.hash;
+        url = url.replace('#/users?', '');
+        var query_param;
+        if (url.indexOf('filter') !== -1) {
+            query_param = url.split('&filter=');
+            page_no = query_param[0].replace('page=', '');
+            self.current_page = page_no + '&filter=' + query_param[1] + '&sort=' + self.sortField + '&direction=' + self.sortDirection;
+            self.current_param = query_param[1];
+        } else if (url.indexOf('page') !== -1) {
+            query_param = url.split('page=');
+            page_no = query_param[1].split('&sort=');
+            self.current_page = page_no[0] + '&sort=' + self.sortField + '&direction=' + self.sortDirection;
+            self.current_param = 'all';
+        } else {
+            self.current_page = 1 + '&sort=' + self.sortField + '&direction=' + self.sortDirection;
+            self.current_param = 'all';
+        }
         var users = new App.UserCollection();
+        users.setSortField(self.sortField, self.sortDirection);
         users.url = api_url + 'users.json?page=' + self.current_page;
+        app.navigate('#/' + 'users?page=' + self.current_page, {
+            trigger: false,
+            trigger_function: false,
+        });
         users.fetch({
             cache: false,
             abortPending: true,
@@ -209,20 +230,59 @@ App.HeaderView = Backbone.View.extend({
                     filter_count: response.filter_count,
                     roles: response.roles,
                     sortField: self.sortField,
-                    sortDirection: self.sortDirection
+                    sortDirection: self.sortDirection,
+                    'current_param': self.current_param
                 }).el);
+                $('.pagination-boxes').unbind();
+                $('.pagination-boxes').html('');
+                if (!_.isUndefined(response._metadata) && parseInt(response._metadata.noOfPages) > 1) {
+                    $('.pagination-boxes').pagination({
+                        total_pages: parseInt(response._metadata.noOfPages),
+                        current_page: parseInt(self.current_page),
+                        display_max: 4,
+                        callback: function(event, page) {
+                            event.preventDefault();
+                            if (page) {
+                                if (!_.isUndefined(self.current_param) && self.current_param !== null && self.current_param !== 'all') {
+                                    self.current_page = page + '&filter=' + self.current_param + '&sort=' + self.sortField + '&direction=' + self.sortDirection;
+                                    page = self.current_page;
+                                } else if (!_.isUndefined(self.current_param) && self.current_param !== null && self.current_param === 'all' && typeof self.current_page === 'string') {
+                                    var current_page = self.current_page.split('&sort=');
+                                    self.current_page = page + '&sort=' + current_page['1'];
+                                    page = self.current_page;
+                                } else {
+                                    self.current_page = page + '&sort=' + self.sortField + '&direction=' + self.sortDirection;
+                                    page = self.current_page;
+                                }
+                                app.navigate('#/' + 'users?page=' + page, {
+                                    trigger: true,
+                                    trigger_function: true,
+                                });
+                            }
+                        }
+                    });
+                }
             }
         });
     },
     sortBy: function(e) {
         e.preventDefault();
         var sortField = $(e.currentTarget).data('field');
+        if ($('.js-sort-by-users').hasClass('active')) {
+            $('.js-sort-by-users').removeClass('active');
+        }
+        $('.js-sort-down-users').remove();
+        $('.js-sort-up-users').remove();
+        $(e.target).parent().addClass('active');
         if (_.isUndefined(this.sortDirection)) {
+            $(e.target).html('<i class="icon icon-arrow-down js-sort-down-users"></i>' + i18next.t($(e.target).text()));
             this.sortDirection = 'desc';
         } else {
             if (this.sortDirection === 'desc') {
+                $(e.target).html('<i class="icon icon-arrow-up js-sort-up-users"></i>' + i18next.t($(e.target).text()));
                 this.sortDirection = 'asc';
             } else {
+                $(e.target).html('<i class="icon icon-arrow-down js-sort-down-users"></i>' + i18next.t($(e.target).text()));
                 this.sortDirection = 'desc';
             }
         }

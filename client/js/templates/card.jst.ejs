@@ -15,10 +15,15 @@
  <%  } %> 
  <div class="clearfix">
 		<% if(CheckFieldExists(card.board, 'attachments' , null , 'boolean', 'r_gridview_configure')){ %>
-			<% if(!_.isEmpty(card.attachments) && card.attachments.length > 0 && !_.isEmpty(card.attachments.at(0).attributes.name) && _.isEmpty(card.attachments.at(0).attributes.link) && card.attachments.at(0).attributes.name.toLowerCase().match(/\.(jpg|jpeg|png|gif)$/)){ %>
+			<% if(!_.isEmpty(card.attachments) && card.attachments.length > 0 && !_.isEmpty(card.attachments.at(0).attributes.name) && _.isEmpty(card.attachments.at(0).attributes.link) && card.attachments.at(0).attributes.name.toLowerCase().match(/\.(jpg|jpeg|png|webp|gif)$/)){ %>
 				<div class="clearfix js-card-attachment-image navbar-btn <% if(!_.isEmpty(card.collection) && !card.list.collection.board.attributes.is_show_image_front_of_card){ %> hide <% } %>">
 				<%
-					var img_src = card.showImage('CardAttachment',  card.attachments.at(0).attributes.id, 'large_thumb' );
+					var img_src;
+					if (card.attachments.at(0).attributes.name.toLowerCase().match(/\.(jpg|jpeg|png|gif)$/)) {
+						img_src = card.showImage('CardAttachment',  card.attachments.at(0).attributes.id, 'large_thumb' );
+					} else if(card.attachments.at(0).attributes.name.toLowerCase().match(/\.(webp)$/)) { 
+						img_src = card.showImage('CardAttachment', card.attachments.at(0).attributes.id, 'original' );
+					}
 				%>
 				<img class="img-responsive center-block" src="<%= img_src %>"/>
 				</div>
@@ -39,7 +44,7 @@
 			});
 		}
 	%>
-	<% if(CheckFieldExists(card.board, 'Subscribe' , null , 'boolean', 'r_gridview_configure')){ %>
+	<% if(CheckFieldExists(card.board, 'subscribe' , null , 'boolean', 'r_gridview_configure')){ %>
 		<% if(!_.isUndefined(cards_subscribers) && !_.isEmpty(cards_subscribers)){ %>
 			<li><small><span class="icon-eye-open"></span></small></li>
 		<% } %> 
@@ -94,7 +99,7 @@
 		</li>
 	<%}%>
 	<li id="js-card-customfields-list-<%- card.attributes.id %>" class="hide"></li>
-	<% if(!_.isEmpty(card.attributes.due_date) && card.attributes.due_date != 'NULL'){
+	<% if(!_.isUndefined(card.attributes.due_date) && !_.isEmpty(card.attributes.due_date) && card.attributes.due_date != 'NULL'){
 		var date_times = card.attributes.due_date.split('T'),hours_mins;
 		var date_time = date_times[0].split(' ');
 		if (_.isUndefined(date_times[1])) {
@@ -109,6 +114,9 @@
 			} else {
 					noon = 'PM';
 					hours_mins[0] = hours_mins[0] - 12;
+					if (hours_mins[0] < 10) {
+						hours_mins[0] = '0' + hours_mins[0];
+					}
 			}
 			hours_mins = hours_mins[0] + ':' + hours_mins[1] + ' ' + noon;
 	}	%>
@@ -129,9 +137,7 @@
 		}
 	%>
 	<% if(!_.isUndefined(label) && !_.isEmpty(label) && label != null && CheckFieldExists(card.board, 'due_date' , null , 'boolean', 'r_gridview_configure')) { %>
-	<% if(CheckFieldExists(card.board, 'due_date' , null , 'boolean', 'r_gridview_configure')){ %>
 		<li class="card-listing-truncate"><small title=" <%- i18next.t('Due Date') %>"><span class="label <%- label %>"><%= dateFormat(date_time[0], 'mediumDate')  %>&nbsp; <%- hours_mins %></span></small></li>
-		<% } %>
 	<% }
 	} %>
 	<% if(!_.isEmpty(card.attributes.created) && card.attributes.created != 'NULL'){

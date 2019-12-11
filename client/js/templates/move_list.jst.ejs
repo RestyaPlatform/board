@@ -1,11 +1,11 @@
 <%
 var content_board = '<div class="form-group clearfix col-xs-12"><select name="board_id" class="js-move-change-list col-xs-12 form-control input-sm cur">';
-var content_position = '<div class="form-group clearfix col-xs-12"><select name="list_id" id="list_position" class="js-move-change-position col-xs-12 form-control input-sm cur">';
+var content_position = '<div class="form-group clearfix col-xs-12"><select name="position" id="list_position" class="js-move-change-position col-xs-12 form-control input-sm cur">';
 boards.each(function(board) {
 	if (list.attributes.board_id == board.id) {
 		var board_lists = new App.ListCollection();
 		board_lists.reset(board.lists.where({is_archived: 0}));
-		board_lists.sortByColumn('position');
+		board_lists.sortByColumn('position', 'asc');
 		content_board += '<option value="' + board.id + '" selected="selected">' + _.escape(board.attributes.name) + ' '+ i18next.t('(current)')+'</option>';
 		 var i = 1;
 		 board_lists.each(function(lists) {

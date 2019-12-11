@@ -1,4 +1,5 @@
-<%  var currenturl = window.location; %>
+<%  var currenturl = window.location; 
+	if (app_settings.length > 0 ) { %>
 <div class="well-sm">
 	<h3><%- i18next.t(app_settings[0].app_name) %> - <%- i18next.t('Settings') %></h3>
 </div>
@@ -8,7 +9,7 @@
 <div class="well-sm"></div>
 <% if(!_.isUndefined(currenturl.hash) && (currenturl.hash !== '#/apps/r_multiple_ldap_login')){ %>
 <form class="js-app-setting-form" role="form" id="js-app-setting-form">
-<% if (app_settings.length > 0 ) { 
+<% 
 var folder = '';
 _.each(app_settings, function(app_setting) { 
 	folder = app_setting.folder;
@@ -19,10 +20,17 @@ _.each(app_settings, function(app_setting) {
 			  <div class=" col-sm-7  col-xs-12">
 				<% if(!_.isUndefined(app_setting.is_encrypted) && (app_setting.is_encrypted === true)){ %>
 					<input type="text" value="" class="form-control" name="<%- app_setting.name %>" id="<%- app_setting.name %>">
+				<% } else if (!_.isUndefined(app_setting.type) && !_.isEmpty(app_setting.type) && app_setting.type !== null && app_setting.type === 'dropdown'){ 
+					var options = app_setting.options.split(','); %>
+					<select class="form-control cur" name="<%- app_setting.name %>">
+						<% _.each(options, function(option) { %> 
+							<option <% if(app_setting.value === option){ %>selected<% } %> value="<%- option %>"><%- option %></option>
+						<% }); %>
+					</select> 
 				<% } else { %>
 					<input type="text" value="<%- app_setting.value %>" class="form-control" name="<%- app_setting.name %>" id="<%- app_setting.name %>">					
 				<% } %>
-				<div><span class="help-block"><%- app_setting.info %></span></div>
+				<div><span class="help-block"><%= app_setting.info %></span></div>
 			  </div>
 	</div>
 <% } %>
@@ -36,14 +44,14 @@ _.each(app_settings, function(app_setting) {
 		<%  var currenturl = window.location; %>
 		<% if(!_.isUndefined(currenturl.hash) && (currenturl.hash === '#/apps/r_ldap_login')){ %>
 	   
-			<input type="button" value="<%- i18next.t('Test Connection') %>" class="btn btn-info js-test-connection">
-			<button type="button" id="importUsersSubmit" class="js-import-users btn btn-warning"><%- i18next.t('Import users') %></button>
+			<input type="button" value="<%- i18next.t('Test Connection') %>" class="btn btn-default js-test-connection">
+			<button type="button" id="importUsersSubmit" class="js-import-users btn btn-default"><%- i18next.t('Import users') %></button>
 			<span class="clearfix hide" id="js-loader-img"><span class="cssloader"></span></span>
 		<% } %>
 		<%  
 			if(!_.isUndefined(currenturl.hash) && (currenturl.hash === '#/apps/r_sparkpost')){
 	   %>
-	   <input type="button" value="<%- i18next.t('Test Connection') %>" class="btn btn-info js-spark-testmail">
+	   <input type="button" value="<%- i18next.t('Test Connection') %>" class="btn btn-default js-spark-testmail">
 		<% } %>
 	</div>
   </div>
@@ -84,8 +92,8 @@ _.each(app_settings, function(app_setting) {
 				<label for="submit" class="sr-only  col-sm-4  control-label col-xs-12"><%- i18next.t('Submit') %></label>
 				<div class="col-lg-offset-2 col-lg-10">
 					<input type="submit" value="<%- i18next.t('Update') %>" id="submit" class="btn btn-primary">	 
-						<input type="button" value="<%- i18next.t('Test Connection') %>" class="btn btn-primary js-test-connection">
-						<button type="button" id="importUsersSubmit" class="js-import-users btn btn-primary"><%- i18next.t('Import users') %></button>
+						<input type="button" value="<%- i18next.t('Test Connection') %>" class="btn btn-default js-test-connection">
+						<button type="button" id="importUsersSubmit" class="js-import-users btn btn-default"><%- i18next.t('Import users') %></button>
 						<span class="clearfix hide" id="js-loader-img"><span class="cssloader"></span></span>
 				</div>
 				</div>

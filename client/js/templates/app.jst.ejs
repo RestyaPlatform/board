@@ -20,10 +20,10 @@
 						<button class="btn dropdown-toggle js-no-pjax xltriggered" data-toggle="dropdown"><i class="icon-cog"></i><span class="caret"></span></button>
 						<ul class="dropdown-menu arrow arrow-right pull-right">
 							<li><a class="cur js-update-app" data-current-status="<%- app.enabled %>" data-folder="<%- app.folder %>" title="<% if(app.enabled == true){ %><%- i18next.t('Disabled') %><% } else {%><%- i18next.t('Enabled') %><% } %>"><i class="<% if(app.enabled == true){ %>icon-minus-sign<% } else {%>icon-plus-sign<% } %>"></i><% if(app.enabled == true){ %><%- i18next.t('Disabled') %><% } else {%><%- i18next.t('Enabled') %><% } %></a></li>
-							<% if(app.settings){%>
+							<% if(app.settings && app.enabled == true){%>
 								<li><a title="<%- i18next.t('Settings') %>" href="#/apps/<%- app.folder %>"><i class="icon-cog"></i><%- i18next.t('Settings') %></a></li>
 							<% } %>
-							<% if (app.settings_links) {%>
+							<% if (app.settings_links && app.enabled == true) {%>
 								<% _.each(app.settings_links, function(link) { %>
 									<li>
 										<a title="<%- link.name %>" href="<%- link.url%>">

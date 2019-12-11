@@ -4,7 +4,7 @@ $(window).resize(function() {
     var windowH = $(window).height();
     var notificationH = windowH - footerH;
     var boardH;
-    if (!_.isEmpty(footerH)) {
+    if (footerH) {
         boardH = windowH - headerH - footerH - 14;
     } else {
         boardH = windowH - headerH - 50;
@@ -12,11 +12,6 @@ $(window).resize(function() {
     $(".board-list-view").css("height", (boardH + 'px'));
     if ($(".js-board-list") && (/Edge/.test(navigator.userAgent) || !!navigator.userAgent.match(/Trident.*rv\:11\./))) {
         $(".js-board-list").css("height", (boardH + 'px'));
-    }
-    if ($(".js-board-list-cards").length > 0) {
-        $(".js-board-list-cards").each(function() {
-            $(this).css("height", '100%');
-        });
     }
     $(".notification-list").css({
         'height': notificationH - 100,
@@ -77,11 +72,19 @@ $dc.ready(function() {
             if ($('#content #boards-view-' + $(this).data('board-viewtype')).length === 0) {
                 if (!_.isUndefined(App.current_board) && !_.isEmpty(App.current_board) && App.current_board !== null && !App.current_board.attributes.is_closed) {
                     $('#content .js-boards-view').remove('');
-                    $('#content').html('<section id="boards-view-' + $(this).data('board-viewtype') + '" class="clearfix js-boards-view col-xs-12"></section>');
+                    view_type_tab = "task";
+                    $('#content').html('<section id="boards-view-' + $(this).data('board-viewtype') + '" class="clearfix js-boards-view col-xs-12"><div class="cssloader"></div></section>');
                 }
             }
         }
         return false;
+    }).on('click', 'body', function(e) {
+        if (!$('.js-open-dropdown .js-change-visibility').is(e.target) &&
+            $('.js-open-dropdown .js-change-visibility').has(e.target).length === 0 &&
+            $('.open').has(e.target).length === 0
+        ) {
+            $('.js-open-dropdown').removeClass('open');
+        }
     });
     if ((navigator.userAgent.toLowerCase().indexOf('android') > -1) && (navigator.userAgent.toLowerCase().indexOf('chrome') > -1)) {
         $('body').append('<div class="modal fade" id="add_home_modal" tabindex="-1" role="dialog" aria-hidden="false"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal"><span aria-hidden="true" id="js-cssilize-close">x</span><span class="sr-only">Close</span></button><div class="media list-group-item-heading"><div class="media-body"><h4 class="modal-title" id="exampleModalLabel">Install this webapp to your phone</h4></div></div></div><div class="modal-body import-block"><ul><li>Add Restyaboard to homescreen.</li><li>Tap <i class="icon-ellipsis-vertical"></i>to bring up your browser menu and select \'Add to homescreen\' to pin the Restyaboard web app.</li></ul></div></div></div></div>');
@@ -175,12 +178,12 @@ function CheckFieldExists(board, field_name, field_value, return_type, plugin_na
     if (!_.isUndefined(APPS) && APPS !== null) {
         if (!_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null) {
             if ($.inArray(plugin_name, APPS.enabled_apps) !== -1) {
-                if (!_.isUndefined(board.attributes.board_custom_fields) && !_.isEmpty(board.attributes.board_custom_fields)) {
+                if (!_.isUndefined(board) && !_.isEmpty(board) && !_.isUndefined(board.attributes) && !_.isEmpty(board.attributes) && !_.isUndefined(board.attributes.board_custom_fields) && !_.isEmpty(board.attributes.board_custom_fields)) {
                     board_custom_fields = JSON.parse(board.attributes.board_custom_fields);
                     if (!_.isUndefined(board_custom_fields[plugin_name])) {
                         r_gridview_configurations = board_custom_fields[plugin_name].split(',');
                         if (r_gridview_configurations.length > 0) {
-                            if (r_gridview_configurations.indexOf(field_name) !== -1) {
+                            if (r_gridview_configurations.indexOf(field_name) !== -1 || r_gridview_configurations.indexOf('selectall') !== -1) {
                                 checked_value = (return_type === 'Value') ? field_value : true;
                             } else {
                                 checked_value = (return_type === 'Value') ? '' : false;
@@ -206,7 +209,7 @@ var favicon = new Favico({
     animation: 'popFade'
 });
 
-function parse_date(dateTime, logged_user, classname) {
+function parse_date(dateTime, logged_user, classname, isAbbrReturn) {
     var s = dateTime.replace("T", " "),
         current_timezone;
     new_date = moment.tz(s, 'YYYY-MM-DD HH:mm:ss', SITE_TIMEZONE).utc().format('YYYY-MM-DD HH:mm:ss');
@@ -219,10 +222,13 @@ function parse_date(dateTime, logged_user, classname) {
     if (!moment.isMoment(tz)) {
         tz = moment(tz);
     }
-    _(function() {
-        $('.' + classname).html('<abbr title="' + tz.format() + '">' + tz.fromNow() + '</abbr>');
-    }).defer();
-    return true;
+    var timestr = '<abbr title="' + tz.format() + '">' + tz.fromNow() + '</abbr>';
+    if (isAbbrReturn !== undefined) {
+        return timestr;
+    } else {
+        $('.' + classname).html(timestr);
+        return true;
+    }
 }
 
 

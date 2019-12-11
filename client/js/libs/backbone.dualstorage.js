@@ -554,7 +554,9 @@ as that.
     })();
 
     window.Store.exists = function(storeName) {
-        return localStorage.getItem(storeName) !== null;
+        if (!_.isUndefined(localStorage) && localStorage !== null) {
+            return localStorage.getItem(storeName) !== null;
+        }   
     };
 
     callbackTranslator = {

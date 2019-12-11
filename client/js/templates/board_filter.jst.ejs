@@ -45,8 +45,7 @@
 			<div class="navbar-btn clearfix media">
 				<span class="pull-left">
 					<% if(!_.isEmpty(board_user.attributes.profile_picture_path)){ 
-						var profile_picture_path = board_user.showImage('User', board_user.attributes.user_id, 'small_thumb' );
-			
+						var profile_picture_path = board.showImage('User', board_user.attributes.user_id, 'small_thumb' );
 					%>
 						<img class="img-rounded img-responsive" src="<%- profile_picture_path%>" alt="[Images: <%- board_user.attributes.username%>]" title="<%- board_user.attributes.username%>" />
 					<% }else{ %>

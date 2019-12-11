@@ -100,34 +100,46 @@ App.OrganizationBoardView = Backbone.View.extend({
      *
      */
     showBoardAddForm: function(e) {
-        var self = this;
-        var current_param = Backbone.history.fragment.split('?');
-        var current_url = current_param[0].split('/');
-        var organization_id = (current_url[0] == 'organization') ? current_url[1] : null;
-
-        var workflow_template = new App.WorkFlowTemplateCollection();
-        workflow_template.url = api_url + 'workflow_templates.json';
-        workflow_template.fetch({
-            success: function(model, response) {
-                var templates = '';
-                var target = $(e.target);
-                var parent = target.parents('.js-show-add-boards-list-organization');
-                self.$el.find('li.js-back').addClass('hide');
-                var data = {};
-                data = workflow_template;
+        if (!_.isUndefined(authuser.user) && !_.isEmpty(authuser.user) && authuser.user !== null) {
+            var self = this;
+            var target = $(e.target);
+            var parent = target.parents('.js-show-add-boards-list-organization');
+            var data = {};
+            var current_param = Backbone.history.fragment.split('?');
+            var current_url = current_param[0].split('/');
+            var organization_id = (current_url[0] == 'organization') ? current_url[1] : null;
+            var load_workflow_template = false;
+            load_workflow_template = (parseInt(authuser.user.role_id) === 1 || !_.isEmpty(role_links.where({
+                slug: "view_workflow_templates"
+            })));
+            self.$el.find('li.js-back').addClass('hide');
+            if (load_workflow_template) {
+                var workflow_template = new App.WorkFlowTemplateCollection();
+                workflow_template.url = api_url + 'workflow_templates.json';
+                workflow_template.fetch({
+                    success: function(model, response) {
+                        data = workflow_template;
+                        data.page_mode = 2;
+                        data.organization_id = organization_id;
+                        $('.js-show-boards-organization-list-response', parent).html(new App.BoardAddView({
+                            model: data
+                        }).el).find('#inputtemplatelist').select2({
+                            formatResult: function(repo) {
+                                markup = '<div class="clearfix"><span class="show">' + repo.text + '</span><span class="show small">' + repo.id + '</span></div>';
+                                return markup;
+                            }
+                        });
+                    }
+                });
+            } else {
                 data.page_mode = 2;
                 data.organization_id = organization_id;
                 $('.js-show-boards-organization-list-response', parent).html(new App.BoardAddView({
                     model: data
-                }).el).find('#inputtemplatelist').select2({
-                    formatResult: function(repo) {
-                        markup = '<div class="clearfix"><span class="show">' + repo.text + '</span><span class="show small">' + repo.id + '</span></div>';
-                        return markup;
-                    }
-                });
+                }).el);
             }
-        });
-        $('footer').trigger('footerActionRendered');
+            $('footer').trigger('footerActionRendered');
+        }
         return false;
     },
     /**

@@ -136,7 +136,7 @@
 											</strong>
 										</li>
 										<li class="divider"></li>
-										<li>
+										<li class="js-sort-by-users">
 											<a title="<%- i18next.t('Username') %>" href="#" class="js-sort-by" data-field="username">
 												<%- i18next.t("Username") %>
 											</a>
@@ -146,13 +146,13 @@
 												<%- i18next.t("Roles") %>
 											</a>
 											<ul class="dropdown-menu">
-												<li class="inner-dropdown dropdown">
+												<li class="inner-dropdown dropdown js-sort-by-users">
 													<a title="<%- i18next.t('Admin (%s)', { postProcess: 'sprintf', sprintf: [this.admin_board_users]}) %>" href="#" class="js-sort-by"
 													 data-field="role_id">
 														<%- i18next.t("Admin (%s)", { postProcess: 'sprintf', sprintf: [this.admin_board_users]}) %>
 													</a>
 												</li>
-												<li class="inner-dropdown dropdown">
+												<li class="inner-dropdown dropdown js-sort-by-users">
 													<a title="<%- i18next.t('User (%s)', { postProcess: 'sprintf', sprintf: [this.normal_board_users]}) %>" href="#" class="js-sort-by"
 													 data-field="role_id">
 														<%- i18next.t("User (%s)", { postProcess: 'sprintf', sprintf: [this.normal_board_users]}) %>
@@ -165,12 +165,12 @@
 												<%- i18next.t("Login") %>
 											</a>
 											<ul class="dropdown-menu">
-												<li class="inner-dropdown dropdown">
+												<li class="inner-dropdown dropdown js-sort-by-users">
 													<a title="<%- i18next.t('Login Time') %>" href="#" class="js-sort-by" data-field="last_login_date">
 														<%- i18next.t("Time") %>
 													</a>
 												</li>
-												<li class="inner-dropdown dropdown">
+												<li class="inner-dropdown dropdown js-sort-by-users">
 													<a title="<%- i18next.t('Login IP') %>" href="#" class="js-sort-by" data-field="last_login_ip">
 														<%- i18next.t("IP") %>
 													</a>
@@ -182,24 +182,24 @@
 												<%- i18next.t("Registered") %>
 											</a>
 											<ul class="dropdown-menu">
-												<li class="inner-dropdown dropdown">
+												<li class="inner-dropdown dropdown js-sort-by-users">
 													<a title="<%- i18next.t('Time') %>" href="#" class="js-sort-by" data-field="created">
 														<%- i18next.t("Time") %>
 													</a>
 												</li>
-												<li>
+												<li class="js-sort-by-users">
 													<a title="<%- i18next.t('IP') %>" href="#" class="js-sort-by" data-field="registered_ip">
 														<%- i18next.t("IP") %>
 													</a>
 												</li>
 											</ul>
 										</li>
-										<li>
+										<li class="js-sort-by-users">
 											<a title="<%- i18next.t('Organizations Count') %>" href="#" class="js-sort-by" data-field="joined_organization_count">
 												<%- i18next.t("Organizations Count") %>
 											</a>
 										</li>
-										<li>
+										<li class="js-sort-by-users">
 											<a title="<%- i18next.t('Board Count') %>" href="#" class="js-sort-by" data-field="joined_board_count">
 												<%- i18next.t("Board Count") %>
 											</a>

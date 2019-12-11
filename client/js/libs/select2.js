@@ -3039,6 +3039,10 @@ the specific language governing permissions and limitations under the Apache Lic
                     formatted = $(formatted).data('label');
                 }          
                 choice.find("div").replaceWith("<div>"+filterXSS(formatted)+"</div>");
+                // Update choosen color for labels
+                if(this.opts.tagColors && this.opts.tagColors[id]){
+                    color = this.opts.tagColors[id]; 
+                }
                 if (color) {
 				    choice.attr("style","background:"+color+";color:#fff;");
                 } else {
@@ -3440,6 +3444,7 @@ the specific language governing permissions and limitations under the Apache Lic
         },
         separator: ",",
         tokenSeparators: [],
+        tagColors: {},
         tokenizer: defaultTokenizer,
         escapeMarkup: defaultEscapeMarkup,
         blurOnChange: false,
