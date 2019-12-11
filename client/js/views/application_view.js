@@ -729,7 +729,7 @@ App.ApplicationView = Backbone.View.extend({
                 });
             }
         }
-        if (page.model !== 'boards_view' && page.model !== 'users_index' && page.model !== 'user_logins_index' && page.model !== 'admin_boards_index') {
+        if (page.model !== 'boards_view' && page.model !== 'users_index' && page.model !== 'user_logins_index' && page.model !== 'admin_boards_index' && page.model !== 'boards_index') {
             if (page.model == 'app_page') {
                 if (!_.isEmpty(page.options.name) && !_.isUndefined(page.options.name)) {
                     var page_name = page.options.name + '' + page.options.page;
@@ -884,13 +884,9 @@ App.ApplicationView = Backbone.View.extend({
                     changeTitle(i18next.t('Closed Boards'));
                     page_title = i18next.t('Closed Boards');
                 }
-                this.headerView = new App.BoardIndexHeaderView({
-                    model: page_title,
-                });
-                $('#header').html(new App.BoardIndexHeaderView({
-                    model: page_title,
-                }).el);
+
                 var board_index = $('#content');
+                board_index.html('');
                 var self = this;
                 var user_boards = new App.BoardCollection();
                 user_boards.url = api_url + 'users/' + authuser.user.id + '/boards.json';
@@ -904,7 +900,13 @@ App.ApplicationView = Backbone.View.extend({
                             cache: false,
                             abortPending: true,
                             success: function(board_model, board_response) {
-                                board_index.html('');
+                                $('#header').html(page.headerView.el);
+                                this.headerView = new App.BoardIndexHeaderView({
+                                    model: page_title,
+                                });
+                                $('#header').html(new App.BoardIndexHeaderView({
+                                    model: page_title,
+                                }).el);
                                 $('body').removeAttr('style class');
                                 board_index.append(new App.UserDashboardView({
                                     model: page_title,

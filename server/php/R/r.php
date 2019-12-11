@@ -325,6 +325,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
 
     case '/users/?/activities':
         $condition = '';
+        $flag = 0;
         if (!empty($authUser) && $authUser['role_id'] == 1 && $authUser['id'] == $r_resource_vars['users'] && empty($r_resource_filters['organization_id']) && empty($r_resource_filters['board_id'])) {
             $i = 1;
             if (!empty($r_resource_filters['mode']) && $r_resource_filters['mode'] != 'all') {
@@ -358,6 +359,23 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM activities_listing al ' . $condition . ' ORDER BY id ' . $direction . ' LIMIT ' . PAGING_COUNT . ') as d';
             $c_sql = 'SELECT COUNT(*) FROM activities_listing al' . $condition;
         } else {
+            if (isset($r_resource_filters['last_activity_id']) && !empty($r_resource_filters['last_activity_id'])) {
+                $val_array = array(
+                    $r_resource_filters['last_activity_id'],
+                    'delete_board_user'
+                );
+                $responsedata = executeQuery('SELECT * FROM activities_listing WHERE id > $1 AND type = $2', $val_array);
+                if (isset($responsedata['board_id'])) {
+                    $val_array = array(
+                        $responsedata['board_id'],
+                        $authUser['id']
+                    );
+                    $boardUser = executeQuery('SELECT * FROM boards_users WHERE board_id = $1 AND user_id = $2', $val_array);
+                    if (!isset($boardUser['id'])) {
+                        $flag = 1;
+                    }
+                }
+            }
             if (!empty($authUser) && $authUser['id'] != $r_resource_vars['users'] && $authUser['role_id'] != 1) {
                 $val_array = array(
                     $authUser['id']
@@ -445,8 +463,14 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 $c_sql = 'SELECT COUNT(*) FROM activities_listing al WHERE ( board_id = ANY( $1 ) OR organization_id  = ANY ( $2 ) )' . $condition;
                 array_push($pg_params, '{' . implode(',', $board_ids) . '}', '{' . implode(',', $org_ids) . '}');
             }
+            if ($flag == 1) {
+                unset($pg_params);
+                $pg_params[0] = $r_resource_filters['last_activity_id'];
+                $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM activities_listing al WHERE id > $1 ORDER BY id DESC LIMIT ' . PAGING_COUNT . ') as d';
+                $c_sql = "";
+            }
         }
-        if (!empty($r_resource_filters['last_activity_id'])) {
+        if (!empty($r_resource_filters['last_activity_id']) && $flag == 0) {
             array_push($pg_params, $r_resource_filters['last_activity_id']);
         }
         if (!empty($c_sql)) {
@@ -1397,6 +1421,10 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                         if (!empty($r_resource_filters['view']) && $r_resource_filters['view'] === 'modal_card' && isset($r_resource_filters['view'])) {
                             $replaceContent = array(
                                 'the card ##CARD_LINK##' => 'this card',
+                            );
+                            $obj['comment'] = strtr($obj['comment'], $replaceContent);
+                            $replaceContent = array(
+                                'on card ##CARD_LINK##' => 'this card',
                             );
                             $obj['comment'] = strtr($obj['comment'], $replaceContent);
                             if ($obj['type'] === 'add_card') {
@@ -5250,7 +5278,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             $qry_val_arr = array(
                 $r_post['card_id']
             );
-            $s_result = pg_query_params($db_lnk, 'SELECT * FROM cards_labels_listing WHERE card_id = $1 ORDER BY name ASC', $qry_val_arr);
+            $s_result = pg_query_params($db_lnk, 'SELECT * FROM cards_labels_listing WHERE card_id = $1 ORDER BY id ASC', $qry_val_arr);
             $cards_labels = pg_fetch_all($s_result);
             $response['cards_labels'] = $cards_labels;
             if (count($newlabel) && !count(array_diff($previous_cards_labels, $oldlabel))) {
@@ -5269,6 +5297,9 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 $names = preg_replace('/[ ,]+/', ', ', $names);
                 $comment = '##USER_NAME## removed the label(s) ' . ' - ' . $deletenames . ' and added the label(s) ' . ' - ' . $names . ' to the card ##CARD_LINK##';
                 $type = 'update_card_label';
+            } else {
+                echo json_encode("Success");
+                break;
             }
         } else {
             $response['cards_labels'] = array();
@@ -6764,7 +6795,7 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
                 $activity_type = 'move_list';
             }
         }
-        if (isset($r_put['position']) && (!isset($r_put['board_id']) && $previous_value['position'] != $r_put['position']) || (isset($r_put['board_id']) && $previous_value['board_id'] == $r_put['board_id'])) {
+        if (isset($r_put['position']) && ((!isset($r_put['board_id']) && $previous_value['position'] != $r_put['position']) || (isset($r_put['board_id']) && $previous_value['board_id'] == $r_put['board_id']))) {
             $comment = '##USER_NAME## changed list ' . $previous_value['name'] . ' position.';
             $activity_type = 'change_list_position';
         } else if (isset($previous_value) && isset($r_put['is_archived'])) {
@@ -7237,7 +7268,7 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
         unset($r_put['list_id']);
         unset($r_put['board_id']);
         if (isset($r_put['position']) && !empty($r_put['position'])) {
-            $comment.= ' position';
+            $comment = '##USER_NAME## moved checklist ##CHECKLIST_NAME## on the card ##CARD_LINK##';
         }
         $activity_type = 'update_card_checklist';
         $response = update_query($table_name, $id, $r_resource_cmd, $r_put, $comment, $activity_type, $foreign_ids);
@@ -7264,7 +7295,7 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
         if (!empty($r_put['is_completed'])) {
             $comment = '##USER_NAME## updated ' . $prev_value['name'] . ' as completed on the card ##CARD_LINK##';
         } else if (isset($r_put['position'])) {
-            $comment = '##USER_NAME## moved checklist item on card ##CARD_LINK##';
+            $comment = '##USER_NAME## moved checklist item ##CHECKLIST_ITEM_NAME## on card ##CARD_LINK##';
             if (isset($r_put['checklist_id']) && $r_put['checklist_id'] != $prev_value['checklist_id']) {
                 $activity_type = 'moved_card_checklist_item';
             }
@@ -7746,7 +7777,7 @@ function r_delete($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         if (!empty($revisions['revisions'])) {
             $revision = unserialize($revisions['revisions']);
             $revisions_del['comment'] = $comment;
-            if(isset($revision['new_value']['comment'])) {
+            if (isset($revision['new_value']['comment'])) {
                 $revisions_del['old_value'] = $revision['new_value']['comment'];
             } else {
                 $revisions_del['old_value'] = '';

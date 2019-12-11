@@ -482,6 +482,7 @@ App.BoardHeaderView = Backbone.View.extend({
             var el = this.$el;
             if (el.find('.js-rename-board').length > 0) {
                 el.find('.js-rename-board').html('');
+                el.find('.js-rename-board').attr('title', self.model.attributes.name);
                 el.find('.js-rename-board').html('<strong>' + self.model.attributes.name + '</strong>');
             }
         }
@@ -868,7 +869,7 @@ App.BoardHeaderView = Backbone.View.extend({
         if (!_.isUndefined(get_match_url['3']) && get_match_url['3'].indexOf("list") !== -1) {
             list_view = true;
         }
-        if (e.originalEvent !== undefined || e.type === 'click') {
+        if ((e.originalEvent !== undefined || e.type === 'click') && $('#listview_table').length === 0) {
             trigger_list_view = true;
         } else if (e.changed !== undefined && list_view) {
             trigger_list_view = true;
@@ -931,9 +932,13 @@ App.BoardHeaderView = Backbone.View.extend({
                     });
                     card.list = list;
                     if (!_.isUndefined(list) && !_.isEmpty(list)) {
-                        card.set('list_name', _.escape(list.attributes.name));
+                        card.set('list_name', _.escape(list.attributes.name), {
+                            silent: true
+                        });
                     }
                     if (!_.isUndefined(card.labels) && !_.isEmpty(card.labels) && card.labels !== null) {
+                        card.labels.setSortField('id', 'asc');
+                        card.labels.sort();
                         card.labels.each(function(label, key) {
                             if (!_.isUndefined(label) && label.attributes.name !== "") {
                                 if (key === 0) {
@@ -1020,7 +1025,7 @@ App.BoardHeaderView = Backbone.View.extend({
                         silent: true
                     });
                     card.labels = labels;
-                    card.labels.setSortField('name', 'asc');
+                    card.labels.setSortField('id', 'asc');
                     card.labels.sort();
                     card.card_voters.add(card.get('card_voters'), {
                         silent: true
@@ -1131,7 +1136,9 @@ App.BoardHeaderView = Backbone.View.extend({
                                 });
                                 card.list = list;
                                 if (!_.isUndefined(list) && !_.isEmpty(list)) {
-                                    card.set('list_name', _.escape(list.attributes.name));
+                                    card.set('list_name', _.escape(list.attributes.name), {
+                                        silent: true
+                                    });
                                 }
                                 if (!_.isUndefined(card.labels) && !_.isEmpty(card.labels) && card.labels !== null) {
                                     card.labels.each(function(label, key) {
@@ -1362,80 +1369,6 @@ App.BoardHeaderView = Backbone.View.extend({
                         element.append(content);
                     }
 
-                },
-                eventMouseover: function(calEvent, jsEvent, view) {
-                    var target = $(jsEvent.currentTarget);
-                    if (!_.isUndefined(authuser.user) && !_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && $.inArray('r_custom_fields', APPS.enabled_apps) !== -1) {
-                        $.ajax({
-                            url: api_url + 'cards/' + calEvent.id + '/cards_custom_fields.json?token=' + authuser.access_token,
-                            cache: false,
-                            type: 'GET',
-                            success: function(response) {
-                                if (!_.isEmpty(response.response) && !_.isUndefined(response.response) && response.response.length !== 0) {
-                                    $(target).data('toggle', 'tooltip');
-                                    $(target).data('container', 'body');
-                                    $(target).data('placement', 'top');
-                                    $(target).data('html', 'true');
-                                    var card_customfield_value = '';
-                                    _.each(response.response, function(customfield, key) {
-                                        if (!_.isUndefined(customfield) && !_.isEmpty(customfield) && customfield !== null && !_.isUndefined(customfield.label) && !_.isEmpty(customfield.label) && customfield.label !== null) {
-                                            if (customfield.type === 'date') {
-                                                card_customfield_value += customfield.label + ' : ' + dateFormat(customfield.value, "mediumDate");
-                                            } else if (customfield.type === 'time') {
-                                                var field_time = customfield.value.split(':');
-                                                var time_noon = '';
-                                                if (field_time[0] <= 12) {
-                                                    time_noon = 'AM';
-                                                } else {
-                                                    time_noon = 'PM';
-                                                    field_time[0] = field_time[0] - 12;
-                                                }
-                                                card_customfield_value += customfield.label + ' : ' + field_time[0] + ':' + field_time[1] + ' ' + time_noon;
-                                            } else if (customfield.type === 'datetime') {
-                                                if (customfield.value.indexOf('T') > -1) {
-                                                    var custom_field_val;
-                                                    custom_field_val = customfield.value.replace('T', ' ');
-                                                    var date = custom_field_val.split(' ');
-                                                    custom_field_val = date['0'];
-                                                    custom_field_val = dateFormat(custom_field_val, "mediumDate");
-                                                    if (!_.isEmpty(date[1])) {
-                                                        hours_mins = date[1].split(':');
-                                                        var noon = '';
-                                                        if (hours_mins[0] <= 12) {
-                                                            noon = 'AM';
-                                                        } else {
-                                                            noon = 'PM';
-                                                            hours_mins[0] = hours_mins[0] - 12;
-                                                        }
-                                                        hours_mins = hours_mins[0] + ':' + hours_mins[1] + ' ' + noon;
-                                                    }
-                                                    card_customfield_value += customfield.label + ' : ' + custom_field_val + ' at ' + hours_mins;
-                                                }
-                                            } else if (customfield.type === 'text' || customfield.type === 'textarea') {
-                                                if (!_.isEmpty(customfield.value)) {
-                                                    customfield.value = customfield.value.substring(0, 124 - 3) + '...';
-                                                }
-                                                card_customfield_value += customfield.label + ' : ' + customfield.value;
-                                            } else {
-                                                card_customfield_value += customfield.label + ' : ' + customfield.value;
-                                            }
-                                            if (key + 1 !== response.response.length) {
-                                                card_customfield_value += '<br/> ';
-                                            }
-                                        }
-                                    });
-                                    if (!_.isEmpty(card_customfield_value)) {
-                                        card_customfield_value = card_customfield_value.substring(0, 400 - 3) + '...';
-                                        $(target).tooltip({
-                                            title: card_customfield_value,
-                                            html: true,
-                                            placement: 'bottom'
-                                        });
-                                    }
-                                }
-                            }
-                        });
-                    }
                 },
                 eventClick: function(info) {
                     if (info.id) {
@@ -2038,11 +1971,6 @@ App.BoardHeaderView = Backbone.View.extend({
             });
         }
         currentBoardList = App.current_board.lists.get(find_card.attributes.list_id);
-        if (!_.isUndefined(currentBoardList)) {
-            currentBoardList.set('card_count', currentBoardList.attributes.card_count + 1, {
-                silent: true
-            });
-        }
         if (!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && $.inArray('r_agile_wip', APPS.enabled_apps) !== -1) {
             if (currentBoardList !== null && !_.isUndefined(currentBoardList) && !_.isEmpty(currentBoardList)) {
                 $('body').trigger('cardAddRendered', [currentBoardList.id, currentBoardList]);
@@ -2116,7 +2044,7 @@ App.BoardHeaderView = Backbone.View.extend({
         var currentss = currenturl.hash;
         var get_match_url = currentss.split("/");
         var grid_view = false;
-        if (get_match_url.length === 3 && get_match_url['1'] === 'board') {
+        if (get_match_url.length === 3 && get_match_url['1'] === 'board' && $('#switch-board-view').find('#js-board-lists').length !== 0) {
             grid_view = true;
         }
         if (!grid_view) {
@@ -2200,8 +2128,12 @@ App.BoardHeaderView = Backbone.View.extend({
         var org = organizations.findWhere({
             id: parseInt(data.organization_id)
         });
-        this.model.set('organization_name', _.escape(org.attributes.name));
-        this.model.set('organization_logo_url', _.escape(org.attributes.organization_logo_url));
+        if (!_.isUndefined(org) && !_.isEmpty(org) && org !== null) {
+            this.model.set('organization_name', _.escape(org.attributes.name));
+            this.model.set('organization_logo_url', _.escape(org.attributes.organization_logo_url));
+            data.organization_name = _.escape(org.attributes.name);
+            data.organization_logo_url = _.escape(org.attributes.organization_logo_url);
+        }
         this.model.set('board_visibility', 1);
         this.model.set('organization_id', parseInt(data.organization_id));
 
@@ -2214,6 +2146,7 @@ App.BoardHeaderView = Backbone.View.extend({
         this.model.save(data, {
             patch: true
         });
+        $('main').trigger('boardHeaderRendered');
         target.parents('div.dropdown').removeClass('open');
         return false;
     },
@@ -2464,14 +2397,7 @@ App.BoardHeaderView = Backbone.View.extend({
                             return card.get('is_archived') !== 1 && card.get('is_filtered') === true;
                         });
                         _.each(unfilteredCards, function(card, key) {
-                            key = key + 1;
-                            var options = {
-                                silent: true
-                            };
-                            if (key === unfilteredCards.length) {
-                                options.silent = false;
-                            }
-                            card.set('is_filtered', false, options);
+                            card.set('is_filtered', false);
                         });
                     }
                 }
@@ -2490,18 +2416,9 @@ App.BoardHeaderView = Backbone.View.extend({
                             }
                         }
                     }
-                    var cards = self.model.cards.filter(function(card) {
-                        return card.get('is_archived') !== 1 && unfilteredIds.indexOf(card.get('id')) === -1;
-                    });
-                    _.each(cards, function(card, key) {
-                        key = key + 1;
-                        var options = {
-                            silent: true
-                        };
-                        if (key === cards.length) {
-                            options.silent = false;
-                        }
-                        card.set('is_filtered', true, options);
+                    self.model.cards.each(function(card) {
+                        var filter = card.get('is_archived') !== 1 && unfilteredIds.indexOf(card.get('id')) === -1;
+                        card.set('is_filtered', filter);
                     });
                     _.each(this.model.lists.models, function(list) {
                         if (!$('#js-card-listing-' + list.id).find('.panel').is(':visible') && (!_.isUndefined(list.attributes.card_count) && list.attributes.card_count !== 0 && list.attributes.card_count !== null && !isNaN(list.attributes.card_count))) {
@@ -2524,7 +2441,7 @@ App.BoardHeaderView = Backbone.View.extend({
                         current_param[0] = 'board/' + split_length[1];
                     }
                     app.navigate('#/' + current_param[0] + filter_query, {
-                        trigger: true,
+                        trigger: false,
                         trigger_function: false,
                         replace: true
                     });
@@ -2626,6 +2543,7 @@ App.BoardHeaderView = Backbone.View.extend({
         });
         var target = $(e.target);
         target.parents('div.dropdown').find('.js-board-visibility:first').html('<i class="icon-lock"></i><span class="hidden-xs">' + i18next.t('Private') + '</span>');
+        $('main').trigger('boardHeaderRendered');
         target.parents('div.dropdown').removeClass('open');
         return false;
     },
@@ -2653,6 +2571,7 @@ App.BoardHeaderView = Backbone.View.extend({
         });
         var target = $(e.target);
         target.parents('div.dropdown').find('.js-board-visibility:first').html('<i class="icon-circle"></i><span class="hidden-xs">' + i18next.t('Public') + '</span>');
+        $('main').trigger('boardHeaderRendered');
         target.parents('div.dropdown').removeClass('open');
         return false;
     },
@@ -2701,15 +2620,7 @@ App.BoardHeaderView = Backbone.View.extend({
                 return card.get('is_archived') !== 1 && card.get('is_filtered') === true;
             });
             _.each(cards, function(card, key) {
-                key = key + 1;
-                var options = {
-                    silent: true
-                };
-
-                if (key === cards.length) {
-                    options.silent = false;
-                }
-                card.set('is_filtered', false, options);
+                card.set('is_filtered', false);
             });
         }
         _.each(this.model.lists.models, function(list) {

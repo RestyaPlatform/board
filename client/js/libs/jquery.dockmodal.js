@@ -291,6 +291,7 @@
 
                 var $dockModal = $this.closest("." + dClass);
                 var headerHeight = $dockModal.find(".dockmodal-header").outerHeight();
+                $dockModal.removeClass("popped-out");
                 $dockModal.addClass("minimized").css({
                     "width": $this.options.minimizedWidth + "px",
                     "height": headerHeight + "px",
@@ -308,8 +309,9 @@
                         $this.options.minimize($this);
                     }
                 }, $this.options.animationSpeed);
-
-                $("." + dClass + "-overlay").hide();
+                if ($('.dockmodal').length === 0 || !$('.dockmodal').hasClass('popped-out')) {
+                    $("." + dClass + "-overlay").hide();
+                }
                 $dockModal.find(".action-minimize").attr("title", "Restore");
 
                 methods.refreshLayout();

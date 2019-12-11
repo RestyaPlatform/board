@@ -51,7 +51,6 @@ App.BoardAddView = Backbone.View.extend({
         var target = $(e.target);
         var parent = target.parents('form#BoardAddForm');
         $('.js-open-dropdown', parent).addClass('open');
-        $('.js-visibility-container', parent).html('');
         var visibility = $('#inputBoardAddVisibility', parent).val();
         $('.js-visibility-chooser', parent).html(new App.ShowAllVisibilityView({
             model: visibility
