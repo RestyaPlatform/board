@@ -65,7 +65,7 @@
 <%	}  %>
 	<h4> <%- i18next.t('Copy to...') %></h4>
 	<% var content_board = '<div class="form-group clearfix"><select name="board_id" class="js-change-list col-xs-12 form-control panel-body cur">';
-	var content_list = '<div class="form-group clearfix"><select name="list_id" class="js-change-position col-xs-12 form-control panel-body cur">';
+	var content_list = '<div class="form-group clearfix"><select name="list_id" class="js-change-position col-xs-12 form-control panel-body cur" required>';
 	var content_position = '';
 	var current_position = card.collection.indexOf(card) + 1;
 	boards.each(function(board) {
