@@ -4399,7 +4399,7 @@ App.ModalCardView = Backbone.View.extend({
                     }
                 }
             }
-            content_list += '<option>' + i18next.t('Selct List') + '</option>';
+            content_list += '<option value="">' + i18next.t('Selct List') + '</option>';
             _.each(board_lists, function(list) {
                 if (self.model.attributes.list_id == list.attributes.id) {
                     content_list += '<option value="' + list.id + '" selected="selected">' + _.escape(list.attributes.name) + ' ' + i18next.t('(current)') + '</option>';
