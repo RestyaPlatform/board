@@ -40,6 +40,15 @@ App.LabelDeleteConfirmView = Backbone.View.extend({
                         card.labels.remove(label, {
                             silent: false
                         });
+                        if (!_.isUndefined(card.attributes.cards_labels) && !_.isEmpty(card.attributes.cards_labels) && card.attributes.cards_labels !== null && card.attributes.cards_labels.length > 0) {
+                            var card_attr_labels = card.attributes.cards_labels.filter(function(label) {
+                                return parseInt(label.label_id) === parseInt(self.label_id);
+                            });
+                            if (card_attr_labels.length > 0) {
+                                var card_attr_labels_index = card.attributes.cards_labels.indexOf(card_attr_labels[0]);
+                                card.attributes.cards_labels.splice(card_attr_labels_index, 1);
+                            }
+                        }
                     });
                 }
                 var filter_labels = self.model.labels.filter(function(model) {

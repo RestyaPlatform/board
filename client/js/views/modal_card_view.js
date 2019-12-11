@@ -2246,10 +2246,21 @@ App.ModalCardView = Backbone.View.extend({
         });
         if (!_.isUndefined(change_list)) {
             this.model.list = change_list;
+        } else if (parseInt(data.board_id) !== parseInt(current_board_id)) {
+            var moveBoard = this.boards.get(parseInt(data.board_id));
+            if (!_.isUndefined(moveBoard) && !_.isEmpty(moveBoard) && moveBoard !== null) {
+                change_list = moveBoard.lists.get(parseInt(data.list_id));
+                if (!_.isUndefined(change_list) && !_.isEmpty(change_list) && change_list !== null) {
+                    change_list.board = moveBoard;
+                    this.model.list = change_list;
+                }
+            }
         }
         var current_board = self.boards.findWhere({
             id: parseInt(current_board_id)
         });
+        var options = {};
+        options.silent = true;
         var change_list_cards, change_list_cards_collection, i = 1,
             change_prev_card, change_next_card;
         var currentdate = new Date();
@@ -2373,28 +2384,28 @@ App.ModalCardView = Backbone.View.extend({
                     data.position = 1;
                     this.model.set({
                         position: data.position
-                    });
+                    }, options);
                 } else {
                     if (_.isUndefined(change_prev_card) && !_.isUndefined(change_next_card)) {
                         data.position = (change_next_card.attributes.position) / 2;
                         this.model.set({
                             position: data.position
-                        });
+                        }, options);
                     } else if (_.isUndefined(change_next_card) && !_.isUndefined(change_prev_card)) {
                         data.position = (change_prev_card.attributes.position) + 1;
                         this.model.set({
                             position: data.position
-                        });
+                        }, options);
                     } else if (!_.isUndefined(change_prev_card) && !_.isUndefined(change_next_card)) {
                         data.position = (change_prev_card.attributes.position + change_next_card.attributes.position) / 2;
                         this.model.set({
                             position: data.position
-                        });
+                        }, options);
                     } else {
                         data.position = 1;
                         this.model.set({
                             position: data.position
-                        });
+                        }, options);
                     }
                 }
             } else if (!_.isUndefined(board.attributes.sort_by) && board.attributes.sort_by !== null && board.attributes.sort_by !== 'position') {
@@ -2408,7 +2419,7 @@ App.ModalCardView = Backbone.View.extend({
                 }
                 $.each(change_list_cards_collection.models, function(key, filter_card) {
                     if (parseInt(filter_card.attributes.is_archived) === 0 && parseInt(filter_card.id) === parseInt(self.model.id)) {
-                        self.model.set('position', key);
+                        self.model.set('position', key, options);
                         data.position = key;
                     }
                 });
@@ -2992,6 +3003,8 @@ App.ModalCardView = Backbone.View.extend({
                     }
                 }
                 emojify.run();
+            } else {
+                $('#js-card-modal-' + self.model.id).find('#js-loader-img').addClass('hide');
             }
         }
     },
@@ -4188,13 +4201,13 @@ App.ModalCardView = Backbone.View.extend({
                 }
             }
             if (is_parent_card) {
-                if (window.confirm(i18next.t('Note: This card has child dependencies and if it\'s not affect, then remove due date.'))) {
+                if (window.confirm(i18next.t('Note: This card has child dependencies. This card will not be shown in the Calendar and Gantt view.'))) {
                     cardcheck = true;
                 } else {
                     return false;
                 }
             } else if (is_child_card) {
-                if (window.confirm(i18next.t('Note: This card has parent dependencies and if it\'s not affect, then remove due date.'))) {
+                if (window.confirm(i18next.t('Note: This card has parent dependencies. This card will not be shown in the Calendar and Gantt view. It can also break the dependency graph in the Gantt view.'))) {
                     cardcheck = true;
                 } else {
                     return false;
