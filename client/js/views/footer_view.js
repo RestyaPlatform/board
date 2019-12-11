@@ -2169,6 +2169,9 @@ App.FooterView = Backbone.View.extend({
                                                 });
                                             } else {
                                                 self.board.set(activity.attributes.revisions.new_value);
+                                                if (activity.attributes.type === 'change_visibility') {
+                                                    $('main').trigger('boardHeaderRendered');
+                                                }
                                             }
                                             if (!_.isUndefined(board_fields.is_show_image_front_of_card)) {
                                                 if (board_fields.is_show_image_front_of_card) {
@@ -2263,6 +2266,15 @@ App.FooterView = Backbone.View.extend({
                                                     card.labels.remove(label, {
                                                         silent: false
                                                     });
+                                                    if (!_.isUndefined(card.attributes.cards_labels) && !_.isEmpty(card.attributes.cards_labels) && card.attributes.cards_labels !== null && card.attributes.cards_labels.length > 0) {
+                                                        var card_attr_labels = card.attributes.cards_labels.filter(function(label) {
+                                                            return parseInt(label.label_id) === parseInt(label_value.id);
+                                                        });
+                                                        if (card_attr_labels.length > 0) {
+                                                            var card_attr_labels_index = card.attributes.cards_labels.indexOf(card_attr_labels[0]);
+                                                            card.attributes.cards_labels.splice(card_attr_labels_index, 1);
+                                                        }
+                                                    }
                                                 });
                                             }
                                             self.board.labels.remove(filter_labels, {
