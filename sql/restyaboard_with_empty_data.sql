@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 10.10 (Ubuntu 10.10-0ubuntu0.18.04.1)
--- Dumped by pg_dump version 10.10 (Ubuntu 10.10-0ubuntu0.18.04.1)
+-- Dumped from database version 12.1 (Ubuntu 12.1-1.pgdg16.04+1)
+-- Dumped by pg_dump version 12.1 (Ubuntu 12.1-1.pgdg16.04+1)
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -15,20 +15,6 @@ SET check_function_bodies = false;
 SET xmloption = content;
 SET client_min_messages = warning;
 SET row_security = off;
-
---
--- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: -
---
-
-CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
-
-
---
--- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: -
---
-
-COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
-
 
 --
 -- Name: label_card_count_update(); Type: FUNCTION; Schema: public; Owner: -
@@ -1006,7 +992,7 @@ CREATE SEQUENCE public.acl_board_links_seq
 
 SET default_tablespace = '';
 
-SET default_with_oids = false;
+SET default_table_access_method = heap;
 
 --
 -- Name: acl_board_links; Type: TABLE; Schema: public; Owner: -
@@ -2350,7 +2336,7 @@ CREATE VIEW public.cards_listing AS
                     cards_labels.color
                    FROM public.cards_labels_listing cards_labels
                   WHERE (cards_labels.card_id = cards.id)
-                  ORDER BY cards_labels.name) cl) AS cards_labels,
+                  ORDER BY cards_labels.id) cl) AS cards_labels,
     cards.comment_count,
     u.username,
     b.name AS board_name,
@@ -3481,7 +3467,29 @@ CREATE VIEW public.simple_board_listing AS
     org.logo_url AS organization_logo_url,
     board.music_content,
     board.music_name,
-    board.sort_by
+    board.sort_by,
+    board.sort_direction,
+    ( SELECT array_to_json(array_agg(row_to_json(cl.*))) AS array_to_json
+           FROM ( SELECT cards_listing.id,
+                    cards_listing.created,
+                    cards_listing.modified,
+                    cards_listing.board_id,
+                    cards_listing.list_id,
+                    cards_listing.name,
+                    cards_listing.due_date,
+                    cards_listing."position",
+                    cards_listing.list_moved_date,
+                    ((cards_listing.is_archived)::boolean)::integer AS is_archived,
+                    cards_listing.card_voter_count,
+                    cards_listing.attachment_count,
+                    cards_listing.comment_count,
+                    cards_listing.checklist_item_count,
+                    cards_listing.checklist_item_completed_count,
+                    ((cards_listing.checklist_item_count)::integer - (cards_listing.checklist_item_completed_count)::integer) AS checklist_item_pending_count,
+                    cards_listing.custom_fields
+                   FROM public.cards_listing cards_listing
+                  WHERE (cards_listing.board_id = board.id)
+                  ORDER BY cards_listing."position") cl) AS cards
    FROM (public.boards board
      LEFT JOIN public.organizations org ON ((org.id = board.organization_id)))
   ORDER BY board.name;
@@ -4102,6 +4110,9 @@ COPY public.acl_links (id, created, modified, name, url, method, slug, group_id,
 35	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	View other users activities		GET	view_user_activities	2	1	0	0	0	t
 152	2018-05-16 15:36:21.072177	2018-05-16 15:36:21.072177	Users invite	/users/invite	POST	users_invite	1	0	0	1	1	f
 153	2018-05-16 15:36:21.088804	2018-05-16 15:36:21.088804	Get timezones listing	/timezones	GET	get_timezones	1	0	0	1	1	f
+154	2019-12-13 14:46:51.716167	2019-12-13 14:46:51.716167	Allow to unsubscribe board in public board	/boards/?/board_subscribers/?	PUT	unsubscribe_board	2	1	0	0	0	f
+155	2019-12-13 14:46:51.716167	2019-12-13 14:46:51.716167	Allow to unsubscribe list in public board	/boards/?/lists/?/list_subscribers/?	PUT	unsubscribe_list	2	1	0	0	0	f
+156	2019-12-13 14:46:51.716167	2019-12-13 14:46:51.716167	Allow to unsubscribe card in public board	/boards/?/lists/?/cards/?/card_subscribers/?	POST	unsubscribe_card	2	1	0	0	0	f
 \.
 
 
@@ -4239,6 +4250,12 @@ COPY public.acl_links_roles (id, created, modified, acl_link_id, role_id) FROM s
 1270	2018-05-16 15:36:21.08041	2018-05-16 15:36:21.08041	152	2
 1271	2018-05-16 15:36:21.097113	2018-05-16 15:36:21.097113	153	1
 1272	2018-05-16 15:36:21.097113	2018-05-16 15:36:21.097113	153	2
+1273	2019-12-13 14:46:51.724343	2019-12-13 14:46:51.724343	154	1
+1274	2019-12-13 14:46:51.724343	2019-12-13 14:46:51.724343	154	2
+1275	2019-12-13 14:46:51.724343	2019-12-13 14:46:51.724343	155	1
+1276	2019-12-13 14:46:51.724343	2019-12-13 14:46:51.724343	155	2
+1277	2019-12-13 14:46:51.724343	2019-12-13 14:46:51.724343	156	1
+1278	2019-12-13 14:46:51.724343	2019-12-13 14:46:51.724343	156	2
 \.
 
 
@@ -4543,7 +4560,7 @@ COPY public.countries (id, iso_alpha2, iso_alpha3, iso_numeric, fips_code, name,
 135	MV	MDV	462	MV	Maldives	Male	300	395650	AS	.mv	MVR	Rufiyaa             	960       	#####               	^(d{5})$            	dv,en	1282028	                    	          	2013-02-07 10:11:00	\N	\N	2013-02-07 10:11:00
 136	ML	MLI	466	ML	Mali	Bamako	1240000	13796354	AF	.ml	XOF	Franc               	223       	                    	                    	fr-ML,bm	2453866	SN,NE,DZ,CI,GN,MR,BF	          	2013-02-07 10:11:00	\N	\N	2013-02-07 10:11:00
 137	MT	MLT	470	MT	Malta	Valletta	316	403000	EU	.mt	EUR	Euro                	356       	@@@ ###|@@@ ##      	^([A-Z]{3}d{2}d?)$  	mt,en-MT	2562770	                    	          	2013-02-07 10:11:00	\N	\N	2013-02-07 10:11:00
-138	MH	MHL	584	RM	Marshall Islands	Majuro	181.300000000000011	65859	OC	.mh	USD	Dollar              	692       	                    	                    	mh,en-MH	2080185	                    	          	2013-02-07 10:11:00	\N	\N	2013-02-07 10:11:00
+138	MH	MHL	584	RM	Marshall Islands	Majuro	181.3	65859	OC	.mh	USD	Dollar              	692       	                    	                    	mh,en-MH	2080185	                    	          	2013-02-07 10:11:00	\N	\N	2013-02-07 10:11:00
 139	MQ	MTQ	474	MB	Martinique	Fort-de-France	1100	432900	NA	.mq	EUR	Euro                	596       	#####               	^(d{5})$            	fr-MQ	3570311	                    	          	2013-02-07 10:11:00	\N	\N	2013-02-07 10:11:00
 140	MR	MRT	478	MR	Mauritania	Nouakchott	1030700	3205060	AF	.mr	MRO	Ouguiya             	222       	                    	                    	ar-MR,fuc,snk,fr,mey,wo	2378080	SN,DZ,EH,ML         	          	2013-02-07 10:11:00	\N	\N	2013-02-07 10:11:00
 141	MU	MUS	480	MP	Mauritius	Port Louis	2040	1294104	AF	.mu	MUR	Rupee               	230       	                    	                    	en-MU,bho,fr	934292	                    	          	2013-02-07 10:11:00	\N	\N	2013-02-07 10:11:00
@@ -4551,7 +4568,7 @@ COPY public.countries (id, iso_alpha2, iso_alpha3, iso_numeric, fips_code, name,
 143	MX	MEX	484	MX	Mexico	Mexico City	1972550	112468855	NA	.mx	MXN	Peso                	52        	#####               	^(d{5})$            	es-MX	3996063	GT,US,BZ            	          	2013-02-07 10:11:00	\N	\N	2013-02-07 10:11:00
 144	FM	FSM	583	FM	Micronesia	Palikir	702	107708	OC	.fm	USD	Dollar              	691       	#####               	^(d{5})$            	en-FM,chk,pon,yap,kos,uli,woe,nkr,kpg	2081918	                    	          	2013-02-07 10:11:00	\N	\N	2013-02-07 10:11:00
 145	MD	MDA	498	MD	Moldova	Chisinau	33843	4324000	EU	.md	MDL	Leu                 	373       	MD-####             	^(?:MD)*(d{4})$     	ro,ru,gag,tr	617790	RO,UA               	          	2013-02-07 10:11:00	\N	\N	2013-02-07 10:11:00
-146	MC	MCO	492	MN	Monaco	Monaco	1.94999999999999996	32965	EU	.mc	EUR	Euro                	377       	#####               	^(d{5})$            	fr-MC,en,it	2993457	FR                  	          	2013-02-07 10:11:00	\N	\N	2013-02-07 10:11:00
+146	MC	MCO	492	MN	Monaco	Monaco	1.95	32965	EU	.mc	EUR	Euro                	377       	#####               	^(d{5})$            	fr-MC,en,it	2993457	FR                  	          	2013-02-07 10:11:00	\N	\N	2013-02-07 10:11:00
 147	MN	MNG	496	MG	Mongolia	Ulan Bator	1565000	3086918	AS	.mn	MNT	Tugrik              	976       	######              	^(d{6})$            	mn,ru	2029969	CN,RU               	          	2013-02-07 10:11:00	\N	\N	2013-02-07 10:11:00
 148	ME	MNE	499	MJ	Montenegro	Podgorica	14026	666730	EU	.me	EUR	Euro                	382       	#####               	^(d{5})$            	sr,hu,bs,sq,hr,rom	3194884	AL,HR,BA,RS,XK      	          	2013-02-07 10:11:00	\N	\N	2013-02-07 10:11:00
 149	MS	MSR	500	MH	Montserrat	Plymouth	102	9341	NA	.ms	XCD	Dollar              	+1-664    	                    	                    	en-MS	3578097	                    	          	2013-02-07 10:11:00	\N	\N	2013-02-07 10:11:00
@@ -4569,7 +4586,7 @@ COPY public.countries (id, iso_alpha2, iso_alpha3, iso_numeric, fips_code, name,
 161	NE	NER	562	NG	Niger	Niamey	1267000	15878271	AF	.ne	XOF	Franc               	227       	####                	^(d{4})$            	fr-NE,ha,kr,dje	2440476	TD,BJ,DZ,LY,BF,NG,ML	          	2013-02-07 10:11:00	\N	\N	2013-02-07 10:11:00
 162	NG	NGA	566	NI	Nigeria	Abuja	923768	154000000	AF	.ng	NGN	Naira               	234       	######              	^(d{6})$            	en-NG,ha,yo,ig,ff	2328926	TD,NE,BJ,CM         	          	2013-02-07 10:11:00	\N	\N	2013-02-07 10:11:00
 163	NU	NIU	570	NE	Niue	Alofi	260	2166	OC	.nu	NZD	Dollar              	683       	                    	                    	niu,en-NU	4036232	                    	          	2013-02-07 10:11:00	\N	\N	2013-02-07 10:11:00
-164	NF	NFK	574	NF	Norfolk Island	Kingston	34.6000000000000014	1828	OC	.nf	AUD	Dollar              	672       	                    	                    	en-NF	2155115	                    	          	2013-02-07 10:11:00	\N	\N	2013-02-07 10:11:00
+164	NF	NFK	574	NF	Norfolk Island	Kingston	34.6	1828	OC	.nf	AUD	Dollar              	672       	                    	                    	en-NF	2155115	                    	          	2013-02-07 10:11:00	\N	\N	2013-02-07 10:11:00
 165	KP	PRK	408	KN	North Korea	Pyongyang	120540	22912177	AS	.kp	KPW	Won                 	850       	###-###             	^(d{6})$            	ko-KP	1873107	CN,KR,RU            	          	2013-02-07 10:11:00	\N	\N	2013-02-07 10:11:00
 166	MP	MNP	580	CQ	Northern Mariana Islands	Saipan	477	53883	OC	.mp	USD	Dollar              	+1-670    	                    	                    	fil,tl,zh,ch-MP,en-MP	4041468	                    	          	2013-02-07 10:11:00	\N	\N	2013-02-07 10:11:00
 167	NO	NOR	578	NO	Norway	Oslo	324220	4985870	EU	.no	NOK	Krone               	47        	####                	^(d{4})$            	no,nb,nn,se,fi	3144096	FI,RU,SE            	          	2013-02-07 10:11:00	\N	\N	2013-02-07 10:11:00
@@ -4600,7 +4617,7 @@ COPY public.countries (id, iso_alpha2, iso_alpha3, iso_numeric, fips_code, name,
 192	PM	SPM	666	SB	Saint Pierre and Miquelon	Saint-Pierre	242	7012	NA	.pm	EUR	Euro                	508       	#####               	^(97500)$           	fr-PM	3424932	                    	          	2013-02-07 10:11:00	\N	\N	2013-02-07 10:11:00
 193	VC	VCT	670	VC	Saint Vincent and the Grenadines	Kingstown	389	104217	NA	.vc	XCD	Dollar              	+1-784    	                    	                    	en-VC,fr	3577815	                    	          	2013-02-07 10:11:00	\N	\N	2013-02-07 10:11:00
 194	WS	WSM	882	WS	Samoa	Apia	2944	192001	OC	.ws	WST	Tala                	685       	                    	                    	sm,en-WS	4034894	                    	          	2013-02-07 10:11:00	\N	\N	2013-02-07 10:11:00
-195	SM	SMR	674	SM	San Marino	San Marino	61.2000000000000028	31477	EU	.sm	EUR	Euro                	378       	4789#               	^(4789d)$           	it-SM	3168068	IT                  	          	2013-02-07 10:11:00	\N	\N	2013-02-07 10:11:00
+195	SM	SMR	674	SM	San Marino	San Marino	61.2	31477	EU	.sm	EUR	Euro                	378       	4789#               	^(4789d)$           	it-SM	3168068	IT                  	          	2013-02-07 10:11:00	\N	\N	2013-02-07 10:11:00
 196	ST	STP	678	TP	Sao Tome and Principe	Sao Tome	1001	175808	AF	.st	STD	Dobra               	239       	                    	                    	pt-ST	2410758	                    	          	2013-02-07 10:11:00	\N	\N	2013-02-07 10:11:00
 197	SA	SAU	682	SA	Saudi Arabia	Riyadh	1960582	25731776	AS	.sa	SAR	Rial                	966       	#####               	^(d{5})$            	ar-SA	102358	QA,OM,IQ,YE,JO,AE,KW	          	2013-02-07 10:11:00	\N	\N	2013-02-07 10:11:00
 198	SN	SEN	686	SG	Senegal	Dakar	196190	12323252	AF	.sn	XOF	Franc               	221       	#####               	^(d{5})$            	fr-SN,wo,fuc,mnk	2245662	GN,MR,GW,GM,ML      	          	2013-02-07 10:11:00	\N	\N	2013-02-07 10:11:00
@@ -4608,7 +4625,7 @@ COPY public.countries (id, iso_alpha2, iso_alpha3, iso_numeric, fips_code, name,
 200	CS	SCG	891	YI	Serbia and Montenegro	Belgrade	102350	10829175	EU	.cs	RSD	Dinar               	381       	#####               	^(d{5})$            	cu,hu,sq,sr	0	AL,HU,MK,RO,HR,BA,BG	          	2013-02-07 10:11:00	\N	\N	2013-02-07 10:11:00
 201	SC	SYC	690	SE	Seychelles	Victoria	455	88340	AF	.sc	SCR	Rupee               	248       	                    	                    	en-SC,fr-SC	241170	                    	          	2013-02-07 10:11:00	\N	\N	2013-02-07 10:11:00
 202	SL	SLE	694	SL	Sierra Leone	Freetown	71740	5245695	AF	.sl	SLL	Leone               	232       	                    	                    	en-SL,men,tem	2403846	LR,GN               	          	2013-02-07 10:11:00	\N	\N	2013-02-07 10:11:00
-203	SG	SGP	702	SN	Singapore	Singapur	692.700000000000045	4701069	AS	.sg	SGD	Dollar              	65        	######              	^(d{6})$            	cmn,en-SG,ms-SG,ta-SG,zh-SG	1880251	                    	          	2013-02-07 10:11:00	\N	\N	2013-02-07 10:11:00
+203	SG	SGP	702	SN	Singapore	Singapur	692.7	4701069	AS	.sg	SGD	Dollar              	65        	######              	^(d{6})$            	cmn,en-SG,ms-SG,ta-SG,zh-SG	1880251	                    	          	2013-02-07 10:11:00	\N	\N	2013-02-07 10:11:00
 204	SX	SXM	534	NN	Sint Maarten	Philipsburg	0	37429	NA	.sx	ANG	Guilder             	599       	                    	                    	nl,en	7609695	MF                  	          	2013-02-07 10:11:00	\N	\N	2013-02-07 10:11:00
 205	SK	SVK	703	LO	Slovakia	Bratislava	48845	5455000	EU	.sk	EUR	Euro                	421       	###  ##             	^(d{5})$            	sk,hu	3057568	PL,HU,CZ,UA,AT      	          	2013-02-07 10:11:00	\N	\N	2013-02-07 10:11:00
 206	SI	SVN	705	SI	Slovenia	Ljubljana	20273	2007000	EU	.si	EUR	Euro                	386       	SI- ####            	^(?:SI)*(d{4})$     	sl,sh	3190538	HU,IT,HR,AT         	          	2013-02-07 10:11:00	\N	\N	2013-02-07 10:11:00
@@ -4647,7 +4664,7 @@ COPY public.countries (id, iso_alpha2, iso_alpha3, iso_numeric, fips_code, name,
 242	UY	URY	858	UY	Uruguay	Montevideo	176220	3477000	SA	.uy	UYU	Peso                	598       	#####               	^(d{5})$            	es-UY	3439705	BR,AR               	          	2013-02-07 10:11:00	\N	\N	2013-02-07 10:11:00
 243	UZ	UZB	860	UZ	Uzbekistan	Tashkent	447400	27865738	AS	.uz	UZS	Som                 	998       	######              	^(d{6})$            	uz,ru,tg	1512440	TM,AF,KG,TJ,KZ      	          	2013-02-07 10:11:00	\N	\N	2013-02-07 10:11:00
 244	VU	VUT	548	NH	Vanuatu	Port Vila	12200	221552	OC	.vu	VUV	Vatu                	678       	                    	                    	bi,en-VU,fr-VU	2134431	                    	          	2013-02-07 10:11:00	\N	\N	2013-02-07 10:11:00
-245	VA	VAT	336	VT	Vatican	Vatican City	0.440000000000000002	921	EU	.va	EUR	Euro                	379       	                    	                    	la,it,fr	3164670	IT                  	          	2013-02-07 10:11:00	\N	\N	2013-02-07 10:11:00
+245	VA	VAT	336	VT	Vatican	Vatican City	0.44	921	EU	.va	EUR	Euro                	379       	                    	                    	la,it,fr	3164670	IT                  	          	2013-02-07 10:11:00	\N	\N	2013-02-07 10:11:00
 246	VE	VEN	862	VE	Venezuela	Caracas	912050	27223228	SA	.ve	VEF	Bolivar             	58        	####                	^(d{4})$            	es-VE	3625428	GY,BR,CO            	          	2013-02-07 10:11:00	\N	\N	2013-02-07 10:11:00
 247	VN	VNM	704	VM	Vietnam	Hanoi	329560	89571130	AS	.vn	VND	Dong                	84        	######              	^(d{6})$            	vi,en,fr,zh,km	1562822	CN,LA,KH            	          	2013-02-07 10:11:00	\N	\N	2013-02-07 10:11:00
 248	WF	WLF	876	WF	Wallis and Futuna	Mata Utu	274	16025	OC	.wf	XPF	Franc               	681       	#####               	^(986d{2})$         	wls,fud,fr-WF	4034749	                    	          	2013-02-07 10:11:00	\N	\N	2013-02-07 10:11:00
@@ -4676,7 +4693,7 @@ COPY public.email_templates (id, created, modified, from_email, reply_to_email, 
 6	2015-10-09 06:15:49.891	2015-10-09 06:15:49.891	##SITE_NAME## Restyaboard <##FROM_EMAIL##>	##REPLY_TO_EMAIL##	email_notification	We will send this mail, when user activities in this site.	Restyaboard / ##NOTIFICATION_COUNT## new notifications since ##SINCE##	<html>\n<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /></head>\n<body style="margin:0">\n<header style="display:block;width:100%;padding-left:0;padding-right:0; border-bottom:solid 1px #dedede; float:left;background-color: #f7f7f7;">\n<div style="border: 1px solid #EEEEEE;">\n<h1 style="text-align:center;margin:10px 15px 5px;"> <a href="##SITE_URL##" title="Restyaboard"><img src="##SITE_URL##/img/logo.png" alt="[Restyaboard]" title="Restyaboard"></a> </h1>\n</div>\n</header>\n<main style="width:100%;padding-top:10px; padding-bottom:10px; margin:0 auto; float:left;">\n<div style="background-color:#f3f5f7;padding:10px;border: 1px solid #EEEEEE;">\n<div style="width: 500px;background-color: #f3f5f7;margin:0 auto;">\n<div style="font-family: Arial, Helvetica, sans-serif; font-size: 13px;line-height:20px;margin-top:30px;"><h2 style="font-size:16px; font-family:Arial, Helvetica, sans-serif; margin: 7px 0px 0px 43px;padding:35px 0px 0px 0px;">Here's what you missed...</h2>\n<div style="white-space: normal; width: 100%;margin: 10px 0px 0px; font-family:Arial, Helvetica, sans-serif;">##CONTENT##</div>\n</div>\n</div>\n</div>\n<div style="text-align:center;margin:5px 15px;padding:10px 0px;">\n<a href="##SITE_URL##/#/user/##USER_ID##/settings">Change email preferences</a>\n</div>\n</main>\n<footer style="width:100%;padding-left:0;margin:0px auto;border-top: solid 1px #dedede; padding-bottom:10px; background:#fff;clear: both;padding-top: 10px;border-bottom: solid 1px #dedede;background-color: #f7f7f7;">\n<h6 style="text-align:center;margin:5px 15px;"> \n<a href="http://restya.com/board/?utm_source=Restyaboard - ##SITE_NAME##&utm_medium=email&utm_campaign=notification_email" title="Open source. Trello like kanban board." rel="generator" style="font-size: 11px;text-align: center;text-decoration: none;color: #000;font-family: arial; padding-left:10px;">Powered by Restyaboard</a>\n</h6>\n</footer>\n</body>\n</html>	SITE_URL, SITE_NAME, CONTENT, NAME, NOTIFICATION_COUNT, SINCE	Email Notification
 9	2018-05-16 15:36:21.063906	2018-05-16 15:36:21.063906	##SITE_NAME## Restyaboard <##FROM_EMAIL##>	##REPLY_TO_EMAIL##	new_project_user_invite	We will send this mail, when user invited for board.	Restyaboard / ##CURRENT_USER## invited you to join the board ##BOARD_NAME##	<html>\n<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /></head>\n<body style="margin:0">\n<header style="display:block;width:100%;padding-left:0;padding-right:0; border-bottom:solid 1px #dedede; float:left;background-color: #f7f7f7;">\n<div style="border: 1px solid #EEEEEE;">\n<h1 style="text-align:center;margin:10px 15px 5px;"> <a href="##SITE_URL##" title="##SITE_NAME##"><img src="##SITE_URL##/img/logo.png" alt="[Restyaboard]" title="##SITE_NAME##"></a> </h1>\n</div>\n</header>\n<main style="width:100%\nCREA;padding-top:10px; padding-bottom:10px; margin:0 auto; float:left;">\n<div style="background-color:#f3f5f7;padding:10px;border: 1px solid #EEEEEE;">\n<div style="width: 500px;background-color: #f3f5f7;margin:0 auto;">\n<pre style="font-family: Arial, Helvetica, sans-serif; font-size: 13px;line-height:20px;"><h2 style="font-size:16px; font-family:Arial, Helvetica, sans-serif; margin: 20px 0px 0px;padding:10px 0px 0px 0px;">Hi ##NAME##,</h2>\n<p style="white-space: normal; width: 100%;margin: 0px 0px 0px; font-family:Arial, Helvetica, sans-serif;">##CURRENT_USER## invites you to join the board ##BOARD_NAME##. You can see this board ##BOARD_URL## after your registration. To register click this ##REGISTRATION_URL## <br></p><br><p style="white-space: normal; width: 100%;margin: 0px 0px 0px;font-family:Arial, Helvetica, sans-serif;">Thanks,<br>\nRestyaboard<br>\n##SITE_URL##</p>\n</pre>\n</div>\n</div>\n</main>\n<footer style="width:100%;padding-left:0;margin:0px auto;border-top: solid 1px #dedede; padding-bottom:10px; background:#fff;clear: both;padding-top: 10px;border-bottom: solid 1px #dedede;background-color: #f7f7f7;">\n<h6 style="text-align:center;margin:5px 15px;"> \n<a href="http://restya.com/board/?utm_source=Restyaboard - ##SITE_NAME##&utm_medium=email&utm_campaign=new_board_user_invite_email" title="Open source. Trello like kanban board." rel="generator" style="font-size: 11px;text-align: center;text-decoration: none;color: #000;font-family: arial; padding-left:10px;">Powered by Restyaboard</a></h6>\n</footer>\n</body>\n</html>	SITE_URL, SITE_NAME, NAME, BOARD_NAME, CURRENT_USER, BOARD_URL	New User Invite for Board
 10	2019-04-19 19:34:07.967898	2019-04-19 19:34:07.967898	##SITE_NAME## Restyaboard <##FROM_EMAIL##>	##REPLY_TO_EMAIL##	due_date_notification	We will send this\nmail, One day before when the card due date end.	##SUBJECT##	<html>\n<head><meta http-equiv="Content-Type" content="text/html;\ncharset=utf-8" /></head>\n<body style="margin:0">\n<header style="display:block;width:100%;padding-left:0;padding-right:0;\nborder-bottom:solid 1px #dedede; float:left;background-color:\n#f7f7f7;">\n<div style="border: 1px solid #EEEEEE;">\n<h1 style="text-align:center;margin:10px 15px 5px;"> <a\nhref="##SITE_URL##" title="##SITE_NAME##"><img\nsrc="##SITE_URL##/img/logo.png" alt="[Restyaboard]"\ntitle="##SITE_NAME##"></a> </h1>\n</div>\n</header>\n<main style="width:100%;padding-top:10px; padding-bottom:10px;\nmargin:0 auto; float:left;">\n<div style="background-color:#f3f5f7;padding:10px;border: 1px solid #EEEEEE;">\n<div style="width: 500px;background-color: #f3f5f7;margin:0 auto;">\n<pre style="font-family: Arial, Helvetica, sans-serif; font-size:\n13px;line-height:20px;">\n<h2 style="font-size:18px; font-family:Arial, Helvetica, sans-serif;\npadding: 59px 0px 0px 0px;">Due soon…</h2>\n<p style="white-space: normal; width: 100%;margin: 10px 0px 0px;\nfont-family:Arial, Helvetica, sans-serif;">##CONTENT##</p>\n</pre>\n</div>\n</div>\n</main>\n<footer style="width:100%;padding-left:0;margin:0px auto;border-top:\nsolid 1px #dedede; padding-bottom:10px; background:#fff;clear:\nboth;padding-top: 10px;border-bottom: solid 1px\n#dedede;background-color: #f7f7f7;">\n<h6 style="text-align:center;margin:5px 15px;">\n<a href="http://restya.com/board/?utm_source=Restyaboard -\n##SITE_NAME##&utm_medium=email&utm_campaign=due_date_notification_email"\ntitle="Open source. Trello like kanban board." rel="generator"\nstyle="font-size: 11px;text-align: center;text-decoration: none;color:\n#000;font-family: arial; padding-left:10px;">Powered by\nRestyaboard</a>\n</h6>\n</footer>\n</body>\n</html>	SITE_URL, SITE_NAME, SUBJECT, CONTENT	Due Date Notification
-11	2019-08-23 11:45:35.270068	2019-08-23 11:45:35.270068	##SITE_NAME## Restyaboard <##FROM_EMAIL##>	##REPLY_TO_EMAIL##	board_import_user_notification	We will send this mail to user, when user import the boards 	Restyaboard / Import Board	<html>\n<head></head>\n<body style="margin:0">\n<header style="display:block;width:100%;padding-left:0;padding-right:0; border-bottom:solid 1px #dedede; float:left;background-color: #f7f7f7;">\n<div style="border: 1px solid #EEEEEE;">\n<h1 style="text-align:center;margin:10px 15px 5px;"> <a href="##SITE_URL##" title="##SITE_NAME##"><img src="##SITE_URL##/img/logo.png" alt="[Restyaboard]" title="##SITE_NAME##"></a> </h1>\n</div>\n</header>\n<main style="width:100%;padding-top:10px; padding-bottom:10px; margin:0 auto; float:left;">\n<div style="background-color:#f3f5f7;padding:10px;border: 1px solid #EEEEEE;">\n<div style="width: 500px;background-color: #f3f5f7;margin:0 auto;">\n<pre style="font-family: Arial, Helvetica, sans-serif; font-size: 13px;line-height:20px;"><h2 style="font-size:16px; font-family:Arial, Helvetica, sans-serif; margin: 20px 0px 0px;padding:10px 0px 0px 0px;">Hi ##NAME##,</h2><p style="white-space: normal; width: 100%;margin: 10px 0px 0px; font-family:Arial, Helvetica, sans-serif;"><br></p><p style="white-space: normal; width: 100%;margin: 0px 0px 0px; font-family:Arial, Helvetica, sans-serif;"> ##BOARD_IMPORT_OPTION## "##BOARD_NAME##" imported successfully. Please check here ##BOARD_URL##<br></p><br><p style="white-space: normal; width: 100%;margin: 0px 0px 0px;font-family:Arial, Helvetica, sans-serif;">Thanks,<br>\nRestyaboard<br>\n##SITE_URL##</p>\n</pre>\n</div>\n</div>\n</main>\n<footer style="width:100%;padding-left:0;margin:0px auto;border-top: solid 1px #dedede; padding-bottom:10px; background:#fff;clear: both;padding-top: 10px;border-bottom: solid 1px #dedede;background-color: #f7f7f7;">\n<h6 style="text-align:center;margin:5px 15px;"> \n<a href="http://restya.com/board/?utm_source=Restyaboard - ##SITE_NAME##&utm_medium=email&utm_campaign=welcome_email" title="Open source. Trello like kanban board." rel="generator" style="font-size: 11px;text-align: center;text-decoration: none;color: #000;font-family: arial; padding-left:10px;">Powered by Restyaboard</a></h6>\n</footer>\n</body>\n</html>	SITE_NAME, SITE_URL, BOARD_IMPORT_OPTION, NAME, BOARD_URL, BOARD_NAME	Board Import User Notification
+11	2019-12-13 14:46:51.699561	2019-12-13 14:46:51.699561	##SITE_NAME## Restyaboard <##FROM_EMAIL##>	##REPLY_TO_EMAIL##	board_import_user_notification	We will send this mail to user, when user import the boards 	Restyaboard / Board imported	<html>\n<head></head>\n<body style="margin:0">\n<header style="display:block;width:100%;padding-left:0;padding-right:0; border-bottom:solid 1px #dedede; float:left;background-color: #f7f7f7;">\n<div style="border: 1px solid #EEEEEE;">\n<h1 style="text-align:center;margin:10px 15px 5px;"> <a href="##SITE_URL##" title="##SITE_NAME##"><img src="##SITE_URL##/img/logo.png" alt="[Restyaboard]" title="##SITE_NAME##"></a> </h1>\n</div>\n</header>\n<main style="width:100%;padding-top:10px; padding-bottom:10px; margin:0 auto; float:left;">\n<div style="background-color:#f3f5f7;padding:10px;border: 1px solid #EEEEEE;">\n<div style="width: 500px;background-color: #f3f5f7;margin:0 auto;">\n<pre style="font-family: Arial, Helvetica, sans-serif; font-size: 13px;line-height:20px;"><h2 style="font-size:16px; font-family:Arial, Helvetica, sans-serif; margin: 20px 0px 0px;padding:10px 0px 0px 0px;">Hi ##NAME##,</h2><p style="white-space: normal; width: 100%;margin: 10px 0px 0px; font-family:Arial, Helvetica, sans-serif;"><br></p><p style="white-space: normal; width: 100%;margin: 0px 0px 0px; font-family:Arial, Helvetica, sans-serif;">"##BOARD_NAME##" board has been successfully imported from ##BOARD_IMPORT_OPTION## ##BOARD_URL##<br></p><br><p style="white-space: normal; width: 100%;margin: 0px 0px 0px;font-family:Arial, Helvetica, sans-serif;">Thanks,<br>\nRestyaboard<br>\n##SITE_URL##</p>\n</pre>\n</div>\n</div>\n</main>\n<footer style="width:100%;padding-left:0;margin:0px auto;border-top: solid 1px #dedede; padding-bottom:10px; background:#fff;clear: both;padding-top: 10px;border-bottom: solid 1px #dedede;background-color: #f7f7f7;">\n<h6 style="text-align:center;margin:5px 15px;"> \n<a href="http://restya.com/board/?utm_source=Restyaboard - ##SITE_NAME##&utm_medium=email&utm_campaign=welcome_email" title="Open source. Trello like kanban board." rel="generator" style="font-size: 11px;text-align: center;text-decoration: none;color: #000;font-family: arial; padding-left:10px;">Powered by Restyaboard</a></h6>\n</footer>\n</body>\n</html>	SITE_NAME, SITE_URL, BOARD_IMPORT_OPTION, NAME, BOARD_URL, BOARD_NAME	Board Import User Notification
 \.
 
 
@@ -5296,7 +5313,7 @@ COPY public.settings (id, setting_category_id, setting_category_parent_id, name,
 18	6	0	DROPBOX_APPKEY		Get the Dropbox App Key by visiting <a href="https://www.dropbox.com/developers/apps/" target="_blank">https://www.dropbox.com/developers/apps/</a>	text	\N	Dropbox App Key	1
 20	6	0	FLICKR_API_KEY		Get the Flickr API Key  by visiting <a href="https://www.flickr.com/services/apps/" target="_blank">https://www.flickr.com/services/apps/</a>	text	\N	Flickr API Key	2
 19	15	0	LABEL_ICON	icon-circle	<a href="https://fontawesome.com/v3.2.1/icons/" target="_blank">Font\nAwesome</a> class name. Recommended: icon-circle, icon-bullhorn,\nicon-tag, icon-bookmark, icon-pushpin, icon-star	text	\N	Label Icon	1
-72	17	0	CALENDAR_VIEW_CARD_COLOR	Default Color	\N	select	Card Color,Label Color,Default Color	Calendar View Card Color 	4
+72	17	0	CALENDAR_VIEW_CARD_COLOR	Default Color	\N	select	Past Present Future colors based on Due Date, Card Color, Color of first Label	Calendar View Card Color 	4
 63	14	0	DEFAULT_EMAIL_NOTIFICATION	Instantly		select	Never,Periodically,Instantly,Daily,Weekly	Default Email Notification	3
 \.
 
@@ -5612,14 +5629,14 @@ SELECT pg_catalog.setval('public.acl_board_links_seq', 67, true);
 -- Name: acl_links_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.acl_links_id_seq', 139, true);
+SELECT pg_catalog.setval('public.acl_links_id_seq', 156, true);
 
 
 --
 -- Name: acl_links_roles_roles_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.acl_links_roles_roles_id_seq', 1272, true);
+SELECT pg_catalog.setval('public.acl_links_roles_roles_id_seq', 1278, true);
 
 
 --
@@ -6914,126 +6931,126 @@ CREATE INDEX webhooks_url ON public.webhooks USING btree (url);
 -- Name: cards_labels label_card_count_update; Type: TRIGGER; Schema: public; Owner: -
 --
 
-CREATE TRIGGER label_card_count_update AFTER INSERT OR DELETE OR UPDATE ON public.cards_labels FOR EACH ROW EXECUTE PROCEDURE public.label_card_count_update();
+CREATE TRIGGER label_card_count_update AFTER INSERT OR DELETE OR UPDATE ON public.cards_labels FOR EACH ROW EXECUTE FUNCTION public.label_card_count_update();
 
 
 --
 -- Name: boards update_board_count; Type: TRIGGER; Schema: public; Owner: -
 --
 
-CREATE TRIGGER update_board_count AFTER INSERT OR DELETE OR UPDATE ON public.boards FOR EACH ROW EXECUTE PROCEDURE public.update_board_count();
+CREATE TRIGGER update_board_count AFTER INSERT OR DELETE OR UPDATE ON public.boards FOR EACH ROW EXECUTE FUNCTION public.update_board_count();
 
 
 --
 -- Name: board_stars update_board_star_count; Type: TRIGGER; Schema: public; Owner: -
 --
 
-CREATE TRIGGER update_board_star_count AFTER INSERT OR DELETE OR UPDATE ON public.board_stars FOR EACH ROW EXECUTE PROCEDURE public.update_board_star_count();
+CREATE TRIGGER update_board_star_count AFTER INSERT OR DELETE OR UPDATE ON public.board_stars FOR EACH ROW EXECUTE FUNCTION public.update_board_star_count();
 
 
 --
 -- Name: board_subscribers update_board_subscriber_count; Type: TRIGGER; Schema: public; Owner: -
 --
 
-CREATE TRIGGER update_board_subscriber_count AFTER INSERT OR DELETE OR UPDATE ON public.board_subscribers FOR EACH ROW EXECUTE PROCEDURE public.update_board_subscriber_count();
+CREATE TRIGGER update_board_subscriber_count AFTER INSERT OR DELETE OR UPDATE ON public.board_subscribers FOR EACH ROW EXECUTE FUNCTION public.update_board_subscriber_count();
 
 
 --
 -- Name: boards_users update_board_user_count; Type: TRIGGER; Schema: public; Owner: -
 --
 
-CREATE TRIGGER update_board_user_count AFTER INSERT OR DELETE OR UPDATE ON public.boards_users FOR EACH ROW EXECUTE PROCEDURE public.update_board_user_count();
+CREATE TRIGGER update_board_user_count AFTER INSERT OR DELETE OR UPDATE ON public.boards_users FOR EACH ROW EXECUTE FUNCTION public.update_board_user_count();
 
 
 --
 -- Name: card_attachments update_card_attachment_count; Type: TRIGGER; Schema: public; Owner: -
 --
 
-CREATE TRIGGER update_card_attachment_count AFTER INSERT OR DELETE OR UPDATE ON public.card_attachments FOR EACH ROW EXECUTE PROCEDURE public.update_card_attachment_count();
+CREATE TRIGGER update_card_attachment_count AFTER INSERT OR DELETE OR UPDATE ON public.card_attachments FOR EACH ROW EXECUTE FUNCTION public.update_card_attachment_count();
 
 
 --
 -- Name: checklists update_card_checklist_count; Type: TRIGGER; Schema: public; Owner: -
 --
 
-CREATE TRIGGER update_card_checklist_count AFTER INSERT OR DELETE OR UPDATE ON public.checklists FOR EACH ROW EXECUTE PROCEDURE public.update_card_checklist_count();
+CREATE TRIGGER update_card_checklist_count AFTER INSERT OR DELETE OR UPDATE ON public.checklists FOR EACH ROW EXECUTE FUNCTION public.update_card_checklist_count();
 
 
 --
 -- Name: checklist_items update_card_checklist_item_count; Type: TRIGGER; Schema: public; Owner: -
 --
 
-CREATE TRIGGER update_card_checklist_item_count AFTER INSERT OR DELETE OR UPDATE ON public.checklist_items FOR EACH ROW EXECUTE PROCEDURE public.update_card_checklist_item_count();
+CREATE TRIGGER update_card_checklist_item_count AFTER INSERT OR DELETE OR UPDATE ON public.checklist_items FOR EACH ROW EXECUTE FUNCTION public.update_card_checklist_item_count();
 
 
 --
 -- Name: cards update_card_count; Type: TRIGGER; Schema: public; Owner: -
 --
 
-CREATE TRIGGER update_card_count AFTER INSERT OR DELETE OR UPDATE ON public.cards FOR EACH ROW EXECUTE PROCEDURE public.update_card_count();
+CREATE TRIGGER update_card_count AFTER INSERT OR DELETE OR UPDATE ON public.cards FOR EACH ROW EXECUTE FUNCTION public.update_card_count();
 
 
 --
 -- Name: card_subscribers update_card_subscriber_count; Type: TRIGGER; Schema: public; Owner: -
 --
 
-CREATE TRIGGER update_card_subscriber_count AFTER INSERT OR DELETE OR UPDATE ON public.card_subscribers FOR EACH ROW EXECUTE PROCEDURE public.update_card_subscriber_count();
+CREATE TRIGGER update_card_subscriber_count AFTER INSERT OR DELETE OR UPDATE ON public.card_subscribers FOR EACH ROW EXECUTE FUNCTION public.update_card_subscriber_count();
 
 
 --
 -- Name: cards_users update_card_user_count; Type: TRIGGER; Schema: public; Owner: -
 --
 
-CREATE TRIGGER update_card_user_count AFTER INSERT OR DELETE OR UPDATE ON public.cards_users FOR EACH ROW EXECUTE PROCEDURE public.update_card_user_count();
+CREATE TRIGGER update_card_user_count AFTER INSERT OR DELETE OR UPDATE ON public.cards_users FOR EACH ROW EXECUTE FUNCTION public.update_card_user_count();
 
 
 --
 -- Name: card_voters update_card_voters_count; Type: TRIGGER; Schema: public; Owner: -
 --
 
-CREATE TRIGGER update_card_voters_count AFTER INSERT OR DELETE OR UPDATE ON public.card_voters FOR EACH ROW EXECUTE PROCEDURE public.update_card_voters_count();
+CREATE TRIGGER update_card_voters_count AFTER INSERT OR DELETE OR UPDATE ON public.card_voters FOR EACH ROW EXECUTE FUNCTION public.update_card_voters_count();
 
 
 --
 -- Name: lists update_list_count; Type: TRIGGER; Schema: public; Owner: -
 --
 
-CREATE TRIGGER update_list_count AFTER INSERT OR DELETE OR UPDATE ON public.lists FOR EACH ROW EXECUTE PROCEDURE public.update_list_count();
+CREATE TRIGGER update_list_count AFTER INSERT OR DELETE OR UPDATE ON public.lists FOR EACH ROW EXECUTE FUNCTION public.update_list_count();
 
 
 --
 -- Name: list_subscribers update_list_subscriber_count; Type: TRIGGER; Schema: public; Owner: -
 --
 
-CREATE TRIGGER update_list_subscriber_count AFTER INSERT OR DELETE OR UPDATE ON public.list_subscribers FOR EACH ROW EXECUTE PROCEDURE public.update_list_subscriber_count();
+CREATE TRIGGER update_list_subscriber_count AFTER INSERT OR DELETE OR UPDATE ON public.list_subscribers FOR EACH ROW EXECUTE FUNCTION public.update_list_subscriber_count();
 
 
 --
 -- Name: organizations update_organization_count; Type: TRIGGER; Schema: public; Owner: -
 --
 
-CREATE TRIGGER update_organization_count AFTER INSERT OR DELETE OR UPDATE ON public.organizations FOR EACH ROW EXECUTE PROCEDURE public.update_organization_count();
+CREATE TRIGGER update_organization_count AFTER INSERT OR DELETE OR UPDATE ON public.organizations FOR EACH ROW EXECUTE FUNCTION public.update_organization_count();
 
 
 --
 -- Name: organizations_users update_organization_user_count; Type: TRIGGER; Schema: public; Owner: -
 --
 
-CREATE TRIGGER update_organization_user_count AFTER INSERT OR DELETE OR UPDATE ON public.organizations_users FOR EACH ROW EXECUTE PROCEDURE public.update_organization_user_count();
+CREATE TRIGGER update_organization_user_count AFTER INSERT OR DELETE OR UPDATE ON public.organizations_users FOR EACH ROW EXECUTE FUNCTION public.update_organization_user_count();
 
 
 --
 -- Name: users update_user_delete; Type: TRIGGER; Schema: public; Owner: -
 --
 
-CREATE TRIGGER update_user_delete AFTER DELETE ON public.users FOR EACH ROW EXECUTE PROCEDURE public.update_user_delete();
+CREATE TRIGGER update_user_delete AFTER DELETE ON public.users FOR EACH ROW EXECUTE FUNCTION public.update_user_delete();
 
 
 --
 -- Name: user_logins update_users_user_login_count; Type: TRIGGER; Schema: public; Owner: -
 --
 
-CREATE TRIGGER update_users_user_login_count AFTER INSERT OR DELETE OR UPDATE ON public.user_logins FOR EACH ROW EXECUTE PROCEDURE public.update_users_user_login_count();
+CREATE TRIGGER update_users_user_login_count AFTER INSERT OR DELETE OR UPDATE ON public.user_logins FOR EACH ROW EXECUTE FUNCTION public.update_users_user_login_count();
 
 
 --
