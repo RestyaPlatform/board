@@ -1373,6 +1373,21 @@
 			fi
 		}
 
+		upgrade-0.6.7-0.6.8(){
+			if [ -d "$dir/client/apps" ]; then
+				chmod -R go+w "$dir/client/apps"
+			else 
+				mkdir "$dir/client/apps"
+				chmod -R go+w "$dir/client/apps"
+			fi
+			curl -v -L -G -o /tmp/r_codenames-v0.1.3.zip  https://github.com/RestyaPlatform/board-apps/releases/download/v1/r_codenames-v0.1.3.zip
+			unzip /tmp/r_codenames-v0.1.3.zip -d "$dir/client/apps"
+
+            find "$dir/client/apps" -type d -exec chmod 755 {} \;
+            find "$dir/client/apps" -type f -exec chmod 644 {} \;
+            chmod 0777 $dir/client/apps/**/*.json
+		}
+
 		update_version()
 		{
 			set +x
@@ -1482,6 +1497,10 @@
 					echo "Before updating make sure to remove duplicate username's and emails used by more than one user, otherwise unique indexing for users will be thrown an error But all other queries will be executed without any issue."
 					read -r -s -p $'Press [Enter] key to continue...'
 					upgrade+=("upgrade-0.6.6-0.6.7")
+				fi
+				if [[ $version < "v0.6.8" ]];
+				then
+					upgrade+=("upgrade-0.6.7-0.6.8")
 				fi			
 				# use for loop to read all values and indexes
 				for i in "${upgrade[@]}"

@@ -51,6 +51,7 @@ To upgrade, overwrite application files and apply respective DB script:
 *  v0.6.3 to v0.6.4 - [`/sql/upgrade-0.6.3-0.6.4.sql`](https://github.com/RestyaPlatform/board/blob/master/sql/upgrade-0.6.3-0.6.4.sql)
 *  v0.6.5 to v0.6.6 - [`/sql/upgrade-0.6.5-0.6.6.sql`](https://github.com/RestyaPlatform/board/blob/master/sql/upgrade-0.6.5-0.6.6.sql)
 *  v0.6.6 to v0.6.7 - [`/sql/upgrade-0.6.6-0.6.7.sql`](https://github.com/RestyaPlatform/board/blob/master/sql/upgrade-0.6.6-0.6.7.sql)
+*  v0.6.7 to v0.6.8 - [`/sql/upgrade-0.6.7-0.6.8.sql`](https://github.com/RestyaPlatform/board/blob/master/sql/upgrade-0.6.7-0.6.8.sql)
 
 ### Configuring Restyaboard
 
@@ -76,10 +77,6 @@ To give you some idea about of our plans:
 #### Under release
 
 * Sandstorm support for Installation
-* Import from Asana
-* Import Taskwarrior Tasks
-* Import Pipefy Tasks
-* SparkPost Plugin for easy email sending
 * In notification emails, Gmail Action Button "View on Restyaboard"
 * GitHub issues & enhancements etc.,
 

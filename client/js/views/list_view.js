@@ -1507,13 +1507,13 @@ App.ListView = Backbone.View.extend({
                         self.model.cards.each(function(card) {
                             if (bool) {
                                 if (parseInt(card.attributes.id) === parseInt(e.attributes.id)) {
-                                    if (!_.isUndefined(self.model.cards.models[i - 1])) {
+                                    if (!_.isUndefined(self.model.cards.models[i - 1]) && !_.isEmpty(self.model.cards.models[i - 1]) && self.model.cards.models[i - 1] !== null) {
                                         var prev_card_id = self.model.cards.models[i - 1].id;
                                         var next_card = '';
-                                        if (!_.isUndefined(prev_card_id) && !_.isEmpty(prev_card_id) && !_.isUndefined($('#js-card-' + prev_card_id)) && $('#js-card-' + prev_card_id).length > 0 && $('#js-card-' + prev_card_id).next().length > 0) {
+                                        if (prev_card_id !== null && !_.isUndefined($('#js-card-' + prev_card_id)) && $('#js-card-' + prev_card_id).length > 0 && $('#js-card-' + prev_card_id).next().length > 0) {
                                             next_card = $('#js-card-' + prev_card_id).next().data('card_id');
                                         }
-                                        if (next_card !== parseInt(e.attributes.id)) {
+                                        if (parseInt(next_card) !== parseInt(e.attributes.id)) {
                                             $('#js-card-' + e.attributes.id).remove();
                                             $('#js-card-' + prev_card_id).after(view.render().el);
                                         }
@@ -1521,7 +1521,7 @@ App.ListView = Backbone.View.extend({
                                     } else {
                                         var first_card = '';
                                         if ($('#js-card-listing-' + e.attributes.list_id).find('.js-show-modal-card-view:first').length > 0) {
-                                            first_card = $('#js-card-listing-' + e.attributes.list_id).find('.js-show-modal-card-view:first').data('card_id');
+                                            first_card = parseInt($('#js-card-listing-' + e.attributes.list_id).find('.js-show-modal-card-view:first').data('card_id'));
                                         }
                                         if (first_card !== parseInt(e.attributes.id)) {
                                             $('#js-card-' + e.attributes.id).remove();
