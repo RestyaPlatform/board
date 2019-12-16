@@ -7,7 +7,7 @@
 	</div>
 </td>
 <td>
-	<div class="user-table-width">
+	<div class="admin-user-table-width">
 		<div class="row">
 			<div class="col-xs-12">
 				<div class="clearfix">
@@ -21,9 +21,9 @@
 							<%- user.attributes.initials%></i>
 						<%  } %>
 					</a>
-					<a class="col-xs-10 htruncate left-mar-sm js-board-name-truncate js-user-view" data-user_id="<%- user.attributes.id%>"
+					<a class="col-xs-10 htruncate left-mar-sm js-board-name-truncate js-user-view" title="<%- user.attributes.full_name%> (<%- user.attributes.username%>)" data-user_id="<%- user.attributes.id%>"
 					 href="#/user/<%- user.attributes.id%>"">
-						<%- user.attributes.full_name%></a><a>
+						<%- user.attributes.full_name%> (<%- user.attributes.username%>)</a><a>
 						<% if(!user.attributes.is_email_confirmed){ %>
 						<span class="label label-warning navbar-right">
 							<%- i18next.t('Unconfirmed') %></span>
@@ -78,8 +78,10 @@
 </td>
 <td class="text-center">
 	<% if(user.get('last_login_date') !== null){ %>
-	<% var last_login_date = parse_date(user.get('last_login_date'), authuser, 'js-timeago-user-'+user.attributes.id); %>
-	<span class="js-timeago-user-<%- user.attributes.id %>"></span>
+	<% setInterval(function() { %>
+		<% parse_date(user.get('last_login_date'), authuser, 'js-timeago-user-'+user.attributes.id); %>
+	<% }, 10000); %>
+	<span class="js-timeago-user-<%- user.attributes.id %>"><%= parse_date(user.get('last_login_date'), authuser, 'js-timeago-user-'+user.attributes.id, true) %></span>
 	<%}else{%>-
 	<%}%>
 
@@ -98,8 +100,10 @@
 	<% } %>
 </td>
 <td class="text-center">
-	<% var created = parse_date(user.get('created'), authuser, 'js-timeago-user2-'+user.attributes.id); %>
-	<span class="js-timeago-user2-<%- user.attributes.id %>"></span>
+	<% setInterval(function() { %>
+		<% parse_date(user.get('created'), authuser, 'js-timeago-user2-'+user.attributes.id); %>
+	<% }, 10000); %>
+	<span class="js-timeago-user2-<%- user.attributes.id %>"><%= parse_date(user.get('created'), authuser, 'js-timeago-user2-'+user.attributes.id, true) %></span>
 </td>
 <td class="text-center">
 	<span class="show">
@@ -213,13 +217,13 @@
 								<label class="sr-only control-label" for="inputPassword-<%- user.attributes.id %>">
 									<%- i18next.t('Enter a new Password') %></label>
 								<input type="password" class="form-control" placeholder="<%- i18next.t('Enter a new Password') %>" id="inputPassword-<%- user.attributes.id %>"
-								 name="password" required title="<%- i18next.t('Enter a new Password') %>">
+								 name="password" required title="<%- i18next.t('Enter a new Password') %>" autocomplete="off">
 							</div>
 							<div class="form-group input cpassword required">
 								<label class="sr-only control-label" for="inputConfirmPassword-<%- user.attributes.id %>">
 									<%- i18next.t('Confirm Password') %></label>
 								<input type="password" class="form-control" placeholder="<%- i18next.t('Confirm Password') %>" id="inputConfirmPassword-<%- user.attributes.id %>"
-								 name="confirm_password" required title="<%- i18next.t('Confirm Password') %>">
+								 name="confirm_password" required title="<%- i18next.t('Confirm Password') %>" autocomplete="off">
 							</div>
 							<div class="form-group">
 								<label class="sr-only control-label" for="submitChangePasswordAdmin-<%- user.attributes.id %>">

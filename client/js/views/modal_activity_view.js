@@ -82,9 +82,14 @@ App.ModalActivityView = Backbone.View.extend({
         var self = this;
         self.render();
         this.activities.fetch({
-            success: function() {
+            success: function(model, response) {
+                self.modal_activity_count = response._metadata.total_records;
+                var last_activity = _.min(self.activities.models, function(activity) {
+                    return activity.id;
+                });
+                self.last_activity_id = last_activity.id;
                 self.renderActivitiesCollection(false);
-                if (self.activities.models.length > 0) {
+                if (self.activity_count != PAGING_COUNT && self.activities.models.length >= PAGING_COUNT) {
                     self.$el.find('.js-load-more').removeClass('hide');
                 } else {
                     self.$el.find('.js-load-more').addClass('hide');
@@ -111,11 +116,10 @@ App.ModalActivityView = Backbone.View.extend({
      */
     renderActivitiesCollection: function(is_load_more) {
         var self = this;
-        var last_activity = _.min(this.activities.models, function(activity) {
-            return activity.id;
-        });
-        this.last_activity_id = last_activity.id;
         this.activities.each(function(activity) {
+            if (!_.isUndefined(self.type) && self.type !== null && self.type === 'org_user_listing') {
+                activity.from_footer = true;
+            }
             var view = new App.ActivityView({
                 model: activity,
                 type: 'all',
@@ -160,8 +164,13 @@ App.ModalActivityView = Backbone.View.extend({
 
         this.activities.fetch({
             success: function() {
+                self.modal_activity_count = response._metadata.total_records;
+                var last_activity = _.min(self.activities.models, function(activity) {
+                    return activity.id;
+                });
+                self.last_activity_id = last_activity.id;
                 self.renderActivitiesCollection(true);
-                if (self.activities.models.length > 0) {
+                if (self.activity_count != PAGING_COUNT && self.activities.models.length >= PAGING_COUNT) {
                     self.$el.find('.js-load-more').removeClass('hide');
                 } else {
                     self.$el.find('.js-load-more').addClass('hide');

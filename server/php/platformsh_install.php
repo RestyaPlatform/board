@@ -31,5 +31,5 @@ if (!empty($relationships['database'])) {
 exec('echo "' . R_DB_HOST . ':' . R_DB_PORT . ':' . R_DB_NAME . ':' . R_DB_USER . ':' . R_DB_PASSWORD . '" > /tmp/pgpass/.pgpass');
 exec('chmod 0600 /tmp/pgpass/.pgpass');
 putenv('PGPASSFILE=/tmp/pgpass/.pgpass');
-exec('psql --host=' . R_DB_HOST . ' --port=' . R_DB_PORT . ' --dbname=' . R_DB_NAME . ' --username=' . R_DB_USER . ' --no-password --file=' . $current_dir . '/../../sql/restyaboard_with_empty_data.sql');
+exec('psql --host=' . R_DB_HOST . ' --port=' . R_DB_PORT . ' --dbname=' . R_DB_NAME . ' --username=' . R_DB_USER . ' --file=' . $current_dir . '/../../sql/restyaboard_with_empty_data.sql');
 exec('rm -rf /tmp/pgpass');

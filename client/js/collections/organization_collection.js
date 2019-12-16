@@ -25,7 +25,7 @@ App.OrganizationCollection = Backbone.Collection.extend({
     comparator: function(item) {
         var self = this;
         var str = '' + item.get(this.sortField);
-        if (this.sortField !== 'id') {
+        if (this.sortField === 'name' || this.sortField === 'username') {
             str = str.toLowerCase();
             str = str.split("");
             str = _.map(str, function(letter) {
@@ -36,6 +36,17 @@ App.OrganizationCollection = Backbone.Collection.extend({
                 }
             });
             return str;
+        } else if (this.sortField === 'created') {
+            if (item.get('created') !== null && !_.isUndefined(item.get('created')) && !_.isEmpty(item.get('created'))) {
+                var datetime = item.get('created').split(' ');
+                if (!_.isUndefined(datetime[1])) {
+                    _date = datetime[0] + 'T' + datetime[1];
+                } else {
+                    _date = datetime[0];
+                }
+                sort_date = new Date(_date);
+                return this.sortDirection === 'desc' ? -sort_date.getTime() : sort_date.getTime();
+            }
         } else {
             if (self.sortDirection.toLowerCase() === 'desc') {
                 return -item.get(this.sortField);

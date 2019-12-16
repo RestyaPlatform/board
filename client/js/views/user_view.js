@@ -35,7 +35,8 @@ App.UserView = Backbone.View.extend({
         'change #js-user-profile-attachment': 'addUserProfile',
         'click .js-enable-user-desktop-notification': 'enabledesktopNotification',
         'click .js-enable-twoFactor-authentication': 'enableAuthentication',
-        'click .js-disable-twoFactor-authentication': 'disableAuthentication'
+        'click .js-disable-twoFactor-authentication': 'disableAuthentication',
+        'click #js-profile_tab_trigger': 'TriggerSettingtab',
 
     },
     /**
@@ -62,6 +63,12 @@ App.UserView = Backbone.View.extend({
         if (!_.isUndefined(this.model) && this.model !== null) {
             this.model.showImage = this.showImage;
         }
+        this.profile_tab_title = {
+            'profile': i18next.t('Profile'),
+            'cards': i18next.t('Cards'),
+            'settings': i18next.t('Settings'),
+            'oauth_applications': i18next.t('Authorized OAuth Applications')
+        };
         this.render();
     },
     /**
@@ -74,17 +81,34 @@ App.UserView = Backbone.View.extend({
     enabledesktopNotification: function(e) {
         e.preventDefault();
         var self = this;
-        Notification.requestPermission(function(permission) {
-            // Whatever the user answers, we make sure we store the information
-            if (!('permission' in Notification)) {
-                Notification.permission = permission;
-            }
-            // If the user is okay, let's create a notification
-            if (permission === 'granted') {
-                var notification = new Notification('Desktop notification enabled.');
-                location.reload();
-            }
+        if (!_.isUndefined(Notification)) {
+            Notification.requestPermission(function(permission) {
+                // Whatever the user answers, we make sure we store the information
+                if (!('permission' in Notification)) {
+                    Notification.permission = permission;
+                }
+                // If the user is okay, let's create a notification
+                if (permission === 'granted') {
+                    var notification = new Notification('Desktop notification enabled.');
+                    location.reload();
+                }
+            });
+        }
+    },
+    /** 
+     * TriggerSettingtab()
+     * trigger email templates
+     * @return false
+     */
+    TriggerSettingtab: function(e) {
+        e.preventDefault();
+        var self = this;
+        app.navigate('#/' + 'user/' + self.model.id + '/' + $(e.currentTarget).data('profile_tab_id'), {
+            trigger: false,
+            trigger_function: false,
         });
+        this.type = $(e.currentTarget).data('profile_tab_id');
+        this.render();
     },
     /**
      * enableAuthentication()
@@ -166,7 +190,7 @@ App.UserView = Backbone.View.extend({
             this.renderType();
         } else {
             var self = this;
-            changeTitle('User - ' + _.escape(this.model.attributes.username));
+            changeTitle('User - ' + _.escape(this.model.attributes.username) + ' - ' + this.profile_tab_title[this.type]);
             var activities = new App.ActivityCollection();
             activities.url = api_url + 'users/' + self.model.id + '/activities.json?&type=profile';
             activities.fetch({
@@ -215,7 +239,12 @@ App.UserView = Backbone.View.extend({
      *
      */
     renderType: function() {
+        if (!_.isUndefined(App.boards) && !_.isUndefined(App.boards) && !_.isUndefined(App.boards.sortField) && App.boards.sortField !== null && App.boards.sortField !== 'name') {
+            App.boards.setSortField('name', 'asc');
+            App.boards.sort();
+        }
         var is_send_newsletter_val = this.model.attributes.is_send_newsletter;
+        changeTitle('User - ' + _.escape(this.model.attributes.username) + ' - ' + this.profile_tab_title[this.type]);
         this.$el.html(this.template({
             user: this.model,
             type: this.type,

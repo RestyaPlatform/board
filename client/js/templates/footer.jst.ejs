@@ -173,15 +173,6 @@ if (_.isEmpty(role_links.where({
 										</a>
 									</li>
 									<% } %>
-									<% if(typeof(model.user) !== "undefined" && !_.isEmpty(model.user) && !_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && APPS.enabled_apps.indexOf('r_wiki') !== -1 && !_.isEmpty(authuser.user) && !_.isUndefined(authuser.user) && (!_.isEmpty(role_links.where({slug: "get_pages"})))){ %>
-										<li class="hidden-xs org-btn">
-											<a title="<%- i18next.t('Wiki') %>" href="javascript:void(0);" class="btn btn-default js-view-wiki-menu">
-												<span>
-													<%- i18next.t("Wiki") %>
-												</span>
-											</a>
-										</li>
-									<% } %>
 										<% if(apps !== ""){ %>
 											<li class="dropdown hidden-xs board-btn js-show-add-apps-list add-apps-list">
 												<a title="<%- i18next.t('Apps') %>" href="#" data-toggle="dropdown" class="btn btn-default js-show-apps-list">
@@ -221,6 +212,16 @@ if (_.isEmpty(role_links.where({
 												</ul>
 											</li>
 											<% } %>
+											<% if(typeof(model.user) !== "undefined" && !_.isEmpty(model.user) && !_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && APPS.enabled_apps.indexOf('r_wiki') !== -1 && !_.isEmpty(authuser.user) && !_.isUndefined(authuser.user) && (!_.isEmpty(role_links.where({slug: "get_pages"})))){ %>
+												<li class="hidden-xs org-btn">
+													<a title="<%- i18next.t('Wiki') %>" href="#/apps/r_wiki/pages?id=0" class="btn btn-default js-view-wiki-menu">
+														<span>
+															<%- i18next.t("Wiki") %>
+														</span>
+													</a>
+												</li>
+											<% } %>
+										<li class="hidden-xs org-btn" id="js-footer-admin-gantt"></li>
 												<% } %>
 			</ul>
 			<div class="js-appModalContent">
@@ -367,6 +368,11 @@ if (_.isEmpty(role_links.where({
 																				</li>
 																				<% var site_url = window.location.origin; %>
 																					<li>
+																						<a title="<%- i18next.t('Restya Core ...') %>" target="_blank" href="https://restya.com/core-jira-slack-alternative?utm_source=Restyaboard - <%- SITE_NAME %>&utm_medium=web&utm_campaign=core">
+																							<%- i18next.t('Restya Core ...') %>
+																						</a>
+																					</li>
+																					<li>
 																						<a title="<%- i18next.t('Donate Restyaboard') %>" target="_blank" href="http://restya.com/donate/?utm_source=Restyaboard - <%- SITE_NAME %>&utm_medium=web&utm_campaign=footer">
 																							<%- i18next.t('Donate Restyaboard') %>
 																						</a>
@@ -383,7 +389,7 @@ if (_.isEmpty(role_links.where({
 																								<li>
 																									<a class="cur <% if(k !== authuser.user.language) { %>js-change-language<%}%>" data-lang="<%- k %>">
 																										<%- v %>
-																											<% if((!_.isEmpty(authuser.user.language) && k === authuser.user.language) || (_.isEmpty(authuser.user.language) && k === DEFAULT_LANGUAGE)){ %>
+																											<% if((!_.isEmpty(authuser.user.language) && k === authuser.user.language) || (_.isEmpty(authuser.user.language) && k === current_language)){ %>
 																												<i class="icon-ok"></i>
 																												<% } %>
 																									</a>

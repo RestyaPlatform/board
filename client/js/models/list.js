@@ -8,6 +8,7 @@ if (typeof App === 'undefined') {
  * @extends Backbone.Model
  */
 App.List = Backbone.Model.extend({
+    storeName: 'list',
     initialize: function() {
         this.url = api_url + 'boards/' + this.attributes.board_id + '/lists.json';
 
@@ -23,17 +24,17 @@ App.List = Backbone.Model.extend({
         this.labels = new App.CardLabelCollection();
         this.lists_subscribers = new App.ListSubscriberCollection();
     },
-    storeName: 'list',
+
     moveAfter: function(beforeId) {
         var before = this.collection.get(beforeId);
         var after = this.collection.next(before);
         if (typeof after == 'undefined') {
-            afterPosition = before.position() + 2;
+            afterPosition = parseFloat(before.attributes.position) + 2;
         } else {
-            afterPosition = after.position();
+            afterPosition = parseFloat(after.attributes.position);
         }
-        var difference = (afterPosition - before.position()) / 2;
-        var newPosition = difference + before.position();
+        var difference = (afterPosition - parseFloat(before.attributes.position)) / 2;
+        var newPosition = difference + parseFloat(before.attributes.position);
         this.set({
             position: newPosition
         }, {
@@ -47,9 +48,9 @@ App.List = Backbone.Model.extend({
         if (typeof before == 'undefined') {
             beforePosition = 0.0;
         } else {
-            beforePosition = before.position();
+            beforePosition = parseFloat(before.attributes.position);
         }
-        var difference = (after.position() - beforePosition) / 2;
+        var difference = (parseFloat(after.attributes.position) - beforePosition) / 2;
         var newPosition = difference + beforePosition;
         this.set({
             position: newPosition

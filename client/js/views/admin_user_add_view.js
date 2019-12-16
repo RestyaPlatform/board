@@ -44,6 +44,8 @@ App.AdminUserAddView = Backbone.View.extend({
     adminUserAdd: function(e) {
         var target = $(e.target);
         var data = target.serializeObject();
+        data.is_send_newsletter = parseInt(data.is_send_newsletter);
+        data.is_productivity_beats = true;
         var self = this;
         var user = new App.User();
         user.url = api_url + 'users.json';
@@ -129,7 +131,7 @@ App.AdminUserAddView = Backbone.View.extend({
                     var split = repo.text.split(',');
                     return split[0];
                 },
-            }).select2('val', is_send_newsletter_val);
+            }).select2('val', '');
         }).defer();
         return this;
     }

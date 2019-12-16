@@ -33,6 +33,7 @@ App.UserIndexContainerView = Backbone.View.extend({
         this.sortField = options.sortField;
         this.filter_count = options.filter_count;
         this.roles = options.roles;
+        this.current_param = options.current_param;
         this.overall_groups = [];
         this.sortDirection = options.sortDirection;
         if (!_.isUndefined(this.model) && this.model !== null) {
@@ -60,7 +61,8 @@ App.UserIndexContainerView = Backbone.View.extend({
             this.$el.html('<div class="r_group_app_tabs" id="js-group_app_tabs"><div class="col-xs-12 well-lg navbar-btn"><div class="navbar-btn"><ul id = "myTab" class = "nav nav-tabs"><li class = "active"><a href = "#users" data-toggle = "tab" id="js-groupuser-tab">' + i18next.t('Users') + '</a></li><li><a href = "#groups" data-toggle = "tab" id="js-group-tab">' + i18next.t('Groups') + '</a></li></ul></div></div><div id = "myGroupTabContent" class = "tab-content"><div class = "tab-pane fade in active" id = "users"></div><div class = "tab-pane fade" id = "groups"></div></div></div>');
             this.$el.find('#users').html(this.template({
                 filter_count: this.filter_count,
-                roles: this.roles
+                roles: this.roles,
+                'current_param': this.current_param
             }));
             $.ajax({
                 url: api_url + 'groups.json?limit=10000&token=' + this.getToken(),
@@ -76,7 +78,8 @@ App.UserIndexContainerView = Backbone.View.extend({
         } else {
             this.$el.html(this.template({
                 filter_count: this.filter_count,
-                roles: this.roles
+                roles: this.roles,
+                'current_param': this.current_param
             }));
         }
 
@@ -123,6 +126,7 @@ App.UserIndexContainerView = Backbone.View.extend({
         if (!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && $.inArray('r_groups', APPS.enabled_apps) !== -1) {
             colspan = "16";
         }
+        changeTitle(i18next.t('Users') + ' - ' + $(e.currentTarget).attr('title'));
         $('.js-user-list').html('<tr class="js-loader"><td colspan="' + colspan + '"><span class="cssloader"></span></td></tr>');
         users.url = api_url + 'users.json?page=' + _this.current_page + '&filter=' + _this.filterField;
         app.navigate('#/' + 'users?page=' + _this.current_page + '&filter=' + _this.filterField, {
@@ -153,14 +157,24 @@ App.UserIndexContainerView = Backbone.View.extend({
                 $('.pagination-boxes').html('');
                 if (!_.isUndefined(response._metadata) && parseInt(response._metadata.noOfPages) > 1) {
                     $('.pagination-boxes').pagination({
-                        total_pages: response._metadata.noOfPages,
-                        current_page: _this.current_page,
+                        total_pages: parseInt(response._metadata.noOfPages),
+                        current_page: parseInt(_this.current_page),
                         display_max: 4,
                         callback: function(event, page) {
                             event.preventDefault();
                             if (page) {
-                                _this.current_page = page;
-                                _this.filterUser();
+                                if (!_.isUndefined(_this.filterField) && _this.filterField !== null && _this.filterField !== 'all') {
+                                    app.navigate('#/' + 'users?page=' + page + '&filter=' + _this.filterField, {
+                                        trigger: true,
+                                        trigger_function: true,
+                                    });
+                                } else {
+                                    _this.current_page = page;
+                                    app.navigate('#/' + 'users?page=' + page, {
+                                        trigger: true,
+                                        trigger_function: true,
+                                    });
+                                }
                             }
                         }
                     });

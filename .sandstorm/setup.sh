@@ -110,11 +110,7 @@ sed -i "s/^.*'R_DB_HOST'.*$/define('R_DB_HOST', '${POSTGRES_DBHOST}');/g" "${RES
 sed -i "s/^.*'R_DB_PORT'.*$/define('R_DB_PORT', '${POSTGRES_DBPORT}');/g" "${RESTYABOARD_DIR}/server/php/config.inc.php"
 
 # Restyaboard cron setup
-echo "*/5 * * * * ${RESTYABOARD_DIR}/server/php/shell/instant_email_notification.sh > /dev/null 2> /dev/null" >> /var/spool/cron/crontabs/root
-echo "0 * * * * ${RESTYABOARD_DIR}/server/php/shell/periodic_email_notification.sh > /dev/null 2> /dev/null" >> /var/spool/cron/crontabs/root
-echo "*/30 * * * * ${RESTYABOARD_DIR}/server/php/shell/imap.sh > /dev/null 2> /dev/null" >> /var/spool/cron/crontabs/root
-echo "*/5 * * * * ${RESTYABOARD_DIR}/server/php/shell/webhook.sh > /dev/null 2> /dev/null" >> /var/spool/cron/crontabs/root
-echo "*/5 * * * * ${RESTYABOARD_DIR}/server/php/shell/card_due_notification.sh > /dev/null 2> /dev/null" >> /var/spool/cron/crontabs/root
+echo "*/5 * * * * ${RESTYABOARD_DIR}/server/php/shell/main.sh > /dev/null 2> /dev/null" >> /var/spool/cron/crontabs/root
 
 # Restarting services
 service cron restart

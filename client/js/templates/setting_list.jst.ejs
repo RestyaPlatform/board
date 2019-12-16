@@ -13,7 +13,7 @@
 						timezones = settingCategory.get('timezones');
 					}
 		%>
-				<li <% if (!_.isUndefined(id) && id == settingCategory.get('id')) { %>class="active" <%} else if (_.isUndefined(id) && settingCategory.get('id') == 3) { %>class="active" <%}%> ><a href="#/settings/<%-settingCategory.get('id')%>"><%- i18next.t(settingCategory.get('name')) %></a></li>
+				<li <% if (!_.isUndefined(id) && id == settingCategory.get('id')) { %>class="active" <%} else if (_.isUndefined(id) && settingCategory.get('id') == 3) { %>class="active" <%}%> ><a href="#/settings/<%-settingCategory.get('id')%>" data-setting_category_id="<%-settingCategory.get('id')%>" id="js-setting_trigger"><%- i18next.t(settingCategory.get('name')) %></a></li>
 		<% 
 					i++;
 				});
@@ -39,7 +39,7 @@
 					<% } else { %>
 					<form class="form-horizontal clearfix <% if(settingCategory.get('id') == 2){ %>col-lg-8<% } else { %>col-lg-6<% } %> col-md-8 col-sm-12 col-xs-12 js-setting-list-form" role="form" id="js-setting-list-form">
 					<% } %>
-					<input type="hidden" id="input_setting_category_id" value ="<%- settingCategory.get('id') %>" />
+					<input type="hidden" id="input_setting_category_name" value ="<%- settingCategory.get('name') %>" />
 					<% if(settingCategory.get('id') == 14) { %>
 						<fieldset>
 							<legend>

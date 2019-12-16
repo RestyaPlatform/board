@@ -13,7 +13,7 @@ if (typeof App === 'undefined') {
  * @constructor
  * @extends Backbone.View
  */
-App.ArchiveCardDeleteConfirmView = Backbone.View.extend({
+App.ArchivedCardsDeleteConfirmView = Backbone.View.extend({
     /**
      * Constructor
      * initialize default values and actions
@@ -24,7 +24,7 @@ App.ArchiveCardDeleteConfirmView = Backbone.View.extend({
         }
         this.render();
     },
-    template: JST['templates/archive_card_delete_confirm'],
+    template: JST['templates/archived_cards_delete_confirm'],
     tagName: 'div',
 
     events: {
@@ -40,6 +40,12 @@ App.ArchiveCardDeleteConfirmView = Backbone.View.extend({
                     if (!_.isUndefined(card) && !_.isUndefined(card.attributes) && card.attributes.is_archived === 1) {
                         card.collection.remove(card);
                     }
+                });
+                var archived_cards = self.model.cards.where({
+                    is_archived: 1
+                });
+                self.model.cards.remove(archived_cards, {
+                    silent: true
                 });
                 self.flash('success', i18next.t('Cards deleted successfully.'));
                 $('.js-archived-items').trigger('click');

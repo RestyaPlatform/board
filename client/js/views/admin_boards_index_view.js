@@ -19,12 +19,39 @@ App.AdminBoardsIndexView = Backbone.View.extend({
      * initialize default values and actions
      */
     initialize: function(options) {
-        this.sortField = options.sortField;
+        if (typeof options.current_page !== 'number') {
+            var query_param;
+            var filter_fields;
+            if (options.current_page.indexOf('filter') !== -1) {
+                query_param = options.current_page.split('&filter=');
+                query_param = query_param[1].split('&sort=');
+                if (query_param.length > 1) {
+                    filter_fields = query_param[1].split('&direction=');
+                    this.sortField = filter_fields[0];
+                    this.sortDirection = filter_fields[1];
+                }
+            } else {
+                query_param = options.current_page.split('&sort=');
+                if (query_param.length > 1) {
+                    filter_fields = query_param[1].split('&direction=');
+                    this.sortField = filter_fields[0];
+                    this.sortDirection = filter_fields[1];
+                }
+            }
+        }
         this.filter_count = options.filter_count;
-        this.sortDirection = options.sortDirection;
+        this.current_param = options.current_param;
         if (!_.isUndefined(this.model) && this.model !== null) {
             this.model.showImage = this.showImage;
         }
+        this.admin_boards_title = {
+            'open': i18next.t('Boards -  Open'),
+            'closed': i18next.t('Boards - Closed'),
+            'public': i18next.t('Boards - Public'),
+            'private': i18next.t('Boards - Private'),
+            'organization': i18next.t('Boards - Organization'),
+            'all': i18next.t('Boards')
+        };
         this.render();
     },
     template: JST['templates/admin_board_index'],
@@ -74,8 +101,10 @@ App.AdminBoardsIndexView = Backbone.View.extend({
     render: function() {
         this.$el.html(this.template({
             'board': this.model,
-            filter_count: this.filter_count
+            filter_count: this.filter_count,
+            'current_param': this.current_param
         }));
+        changeTitle(this.admin_boards_title[this.current_param]);
         if (!_.isUndefined(this.sortField)) {
             this.renderBoardCollection();
         }
@@ -117,6 +146,7 @@ App.AdminBoardsIndexView = Backbone.View.extend({
         if (!_.isUndefined(e)) {
             _this.current_page = 1;
         }
+        changeTitle(this.admin_boards_title[_this.filterField]);
         $('.js-my-boards').html('<tr class="js-loader"><td colspan="12"><span class="cssloader"></span></td></tr>');
         boards.url = api_url + 'boards.json?page=' + _this.current_page + '&filter=' + _this.filterField;
         app.navigate('#/' + 'boards/list?page=' + _this.current_page + '&filter=' + _this.filterField, {
@@ -144,14 +174,24 @@ App.AdminBoardsIndexView = Backbone.View.extend({
                 $('.pagination-boxes').html('');
                 if (!_.isUndefined(response._metadata) && parseInt(response._metadata.noOfPages) > 1) {
                     $('.pagination-boxes').pagination({
-                        total_pages: response._metadata.noOfPages,
-                        current_page: _this.current_page,
+                        total_pages: parseInt(response._metadata.noOfPages),
+                        current_page: parseInt(_this.current_page),
                         display_max: 4,
                         callback: function(event, page) {
                             event.preventDefault();
                             if (page) {
-                                _this.current_page = page;
-                                _this.filterBoard();
+                                if (!_.isUndefined(_this.filterField) && _this.filterField !== null && _this.filterField !== 'all') {
+                                    app.navigate('#/' + 'boards/list?page=' + page + '&filter=' + _this.filterField, {
+                                        trigger: true,
+                                        trigger_function: true,
+                                    });
+                                } else {
+                                    _this.current_page = page;
+                                    app.navigate('#/' + 'boards/list?page=' + page, {
+                                        trigger: true,
+                                        trigger_function: true,
+                                    });
+                                }
                             }
                         }
                     });
@@ -171,8 +211,12 @@ App.AdminBoardsIndexView = Backbone.View.extend({
         _this.searchField = $('#board_search').val();
         var boards = new App.BoardCollection();
         $('.js-my-boards').html('<tr class="js-loader"><td colspan="12"><span class="cssloader"></span></td></tr>');
+        var page = _this.current_page;
+        if (!_.isUndefined(_this.sortField) && !_.isUndefined(_this.sortDirection)) {
+            page = _this.current_page + '&sort=' + _this.sortField + '&direction=' + _this.sortDirection;
+        }
         if (!_.isUndefined(_this.searchField) && !_.isUndefined(_this.searchField)) {
-            boards.url = api_url + 'boards.json?page=' + _this.current_page + '&search=' + _this.searchField;
+            boards.url = api_url + 'boards.json?page=' + page + '&search=' + _this.searchField;
         }
         boards.fetch({
             cache: false,

@@ -1,6 +1,6 @@
 <% if(!_.isEmpty(activity) && activity != null){ %> 
 	<% var unread = ""; %>
-	<% if(!_.isUndefined(activity.from_footer) && parseInt(activity.attributes.id) > parseInt(authuser.user.unread_activity_id)){ %>
+	<% if(!_.isUndefined(authuser) && !_.isUndefined(authuser.user) && !_.isUndefined(activity.from_footer) && parseInt(activity.attributes.id) > parseInt(authuser.user.unread_activity_id)){ %>
 		 <%if(activity.attributes.token !== authuser.access_token){%> 
 		 <% var unread = "js-unread-activity"; %> 
 		 <span class="label label-primary col-xs-12 sr-only">&nbsp;</span>   
@@ -25,78 +25,148 @@
 		<i class="avatar avatar-color-194 img-rounded pull-left" title="<%-activity.attributes.full_name %>"></i>
 	<% } %>
 		<div class="media-body">    
-			<% 
+			<%  activity.attributes.organization_name = (activity.attributes.organization_name !== null) ? activity.attributes.organization_name : i18next.t("[deleted]");
+				activity.attributes.card_name = (activity.attributes.card_name !== null) ? activity.attributes.card_name : i18next.t("[deleted]");
 				var cardLink = '<a href="#/board/' + activity.attributes.board_id + '/card/' + activity.attributes.card_id + '">' + (activity.attributes.card_name) + '</a>';
 				var organizationLink = '<a href="#/organization/' + activity.attributes.organization_id + '">' + (activity.attributes.organization_name) + '</a>';
-				if(activity.attributes.type != 'add_comment' || activity.attributes.type != 'edit_comment') {
-					if(activity.attributes.type !== 'add_card_desc') {
-						if(!_.isEmpty(activity.attributes.difference) && !_.isUndefined(activity.attributes.difference) && !_.isUndefined(activity.attributes.difference['0'])){
-							activity.attributes.comment = activity.attributes.comment.replace('##DESCRIPTION##', (activity.attributes.difference['0']));
-						}else{
-								activity.attributes.comment = activity.attributes.comment.replace('##DESCRIPTION##', (activity.attributes.card_description));
+				if(activity.attributes.type != 'add_comment') {
+					if (activity.attributes.comment.indexOf('##DESCRIPTION##') != -1){
+						if(activity.attributes.type !== 'add_card_desc') {
+							if(!_.isEmpty(activity.attributes.difference) && !_.isUndefined(activity.attributes.difference) && !_.isUndefined(activity.attributes.difference['0'])){
+								activity.attributes.comment = activity.attributes.comment.replace('##DESCRIPTION##', (activity.attributes.difference['0']));
+							} else {
+									activity.attributes.comment = activity.attributes.comment.replace('##DESCRIPTION##', (activity.attributes.card_description));
+							}
+						} else {
+							activity.attributes.comment = activity.attributes.comment.replace(' - ##DESCRIPTION##', "");
 						}
-					} else {
-						activity.attributes.comment = activity.attributes.comment.replace(' - ##DESCRIPTION##', "");
 					}
-					activity.attributes.comment = activity.attributes.comment.replace('##ORGANIZATION_LINK##', organizationLink);
-					activity.attributes.comment = activity.attributes.comment.replace('##CARD_LINK##', cardLink);
-					activity.attributes.comment = activity.attributes.comment.replace('##LABEL_NAME##', (activity.attributes.label_name));
-					activity.attributes.comment = activity.attributes.comment.replace('##CARD_NAME##', (activity.attributes.card_name));
-					activity.attributes.comment = activity.attributes.comment.replace('##LIST_NAME##', (activity.attributes.list_name));
-					activity.attributes.comment = activity.attributes.comment.replace('##BOARD_NAME##', (activity.attributes.board_name));
-					activity.attributes.comment = activity.attributes.comment.replace('##USER_NAME##', '<span class="h5">'+_.escape(activity.attributes.full_name)+'</span>');
-					activity.attributes.comment = activity.attributes.comment.replace('##CHECKLIST_ITEM_NAME##', (activity.attributes.checklist_item_name));
-					activity.attributes.comment = activity.attributes.comment.replace('##CHECKLIST_ITEM_PARENT_NAME##', (activity.attributes.checklist_item_parent_name));
-					activity.attributes.comment = activity.attributes.comment.replace('##CHECKLIST_NAME##', (activity.attributes.checklist_name));
-				} else {
+					if(activity.attributes.comment.indexOf('##CARD_LINK##') != -1){
+						activity.attributes.comment = activity.attributes.comment.replace('##CARD_LINK##', cardLink);
+					}
+					if(activity.attributes.comment.indexOf('##LABEL_NAME##') != -1){
+						if (activity.attributes.label_name !== null) {
+							activity.attributes.comment = activity.attributes.comment.replace('##LABEL_NAME##', (activity.attributes.label_name));
+						} else {
+							activity.attributes.comment = activity.attributes.comment.replace('##LABEL_NAME##', i18next.t("[deleted]"));
+						}
+					}
+					if(activity.attributes.comment.indexOf('##CARD_NAME##') != -1){
+						if (activity.attributes.card_name !== null) {
+							activity.attributes.comment = activity.attributes.comment.replace('##CARD_NAME##', (activity.attributes.card_name));
+						} else {
+							activity.attributes.comment = activity.attributes.comment.replace('##CARD_NAME##', i18next.t("[deleted]"));
+						}
+					}
+					if(activity.attributes.comment.indexOf('##ORGANIZATION_LINK##') != -1){
+						activity.attributes.comment = activity.attributes.comment.replace('##ORGANIZATION_LINK##', organizationLink);
+					}
+					
+					if(activity.attributes.comment.indexOf('##LIST_NAME##') != -1){
+						if (activity.attributes.list_name !== null) {
+							activity.attributes.comment = activity.attributes.comment.replace('##LIST_NAME##', (activity.attributes.list_name));
+						} else {
+							activity.attributes.comment = activity.attributes.comment.replace('##LIST_NAME##', i18next.t("[deleted]"));
+						}
+					}
+					if(activity.attributes.comment.indexOf('##BOARD_NAME##') != -1){
+						if (activity.attributes.board_name !== null) {
+							activity.attributes.comment = activity.attributes.comment.replace('##BOARD_NAME##', (activity.attributes.board_name));
+						} else {
+							activity.attributes.comment = activity.attributes.comment.replace('##BOARD_NAME##', i18next.t("[deleted]"));
+						}
+					}
+					if(activity.attributes.comment.indexOf('##USER_NAME##') != -1){
+						activity.attributes.comment = activity.attributes.comment.replace('##USER_NAME##', '<span class="h5">'+_.escape(activity.attributes.full_name)+'</span>');					
+					}
+					if(activity.attributes.comment.indexOf('##CHECKLIST_ITEM_NAME##') != -1){
+						if (activity.attributes.checklist_item_name !== null) {
+							activity.attributes.comment = activity.attributes.comment.replace('##CHECKLIST_ITEM_NAME##', (activity.attributes.checklist_item_name));
+						} else {
+							activity.attributes.comment = activity.attributes.comment.replace('##CHECKLIST_ITEM_NAME##', i18next.t("[deleted]"));
+						}
+					}
+					if(activity.attributes.comment.indexOf('##CHECKLIST_ITEM_PARENT_NAME##') != -1){
+						if (activity.attributes.checklist_item_parent_name !== null) {
+							activity.attributes.comment = activity.attributes.comment.replace('##CHECKLIST_ITEM_PARENT_NAME##', (activity.attributes.checklist_item_parent_name));
+						} else {
+							activity.attributes.comment = activity.attributes.comment.replace('##CHECKLIST_ITEM_PARENT_NAME##', i18next.t("[deleted]"));
+						}
+					}
+					if(activity.attributes.comment.indexOf('##CHECKLIST_NAME##') != -1){
+						activity.attributes.comment = activity.attributes.comment.replace('##CHECKLIST_NAME##', (activity.attributes.checklist_name));
+					}
+				} else if(activity.attributes.type != 'edit_comment'){
 					if(!_.isUndefined(activity.from_footer)) {
-						var comment = '<span class="h5">' + filterXSS(activity.attributes.full_name) + '</span> commented in card ' + cardLink;
+						var comment = '<span>' + filterXSS(activity.attributes.full_name) + '</span> commented in card ' + cardLink;
 						var matches = activity.attributes.comment.match(/@([^ ]*)/g);
 						var _username = [];
 						_.each(matches, function(match) {
 							_username.push(match.substr(1));
 						});
-						if(_.contains(_username, authuser.user.username)){
+						if(!_.isEmpty(_username) && !_.isUndefined(authuser.user) && _.contains(_username, authuser.user.username)){
 							comment = filterXSS(activity.attributes.full_name) + ' has mentioned you in card ' + cardLink;
 						} 
+					}
 				}
-			}
 			%>             
 			<div class="col-xs-12 btn-block">  
 						<div class="activities-list js-activity-<%- activity.attributes.id %>">
-						<% if((activity.attributes.type == 'add_comment' || activity.attributes.type == 'edit_comment' || activity.attributes.type == 'delete_card_comment')) { %>
-							<%if(!_.isUndefined(activity.from_footer)) { %>
+						<% if(activity.attributes.type == 'add_comment') { 
+							var originalComment;
+							if (!_.isUndefined(activity.attributes.revisions) && !_.isEmpty(activity.attributes.revisions) && activity.attributes.revisions !== null) { 
+								originalComment = activity.attributes.revisions.old_value.comment;
+							} else { 
+								originalComment = activity.attributes.comment;
+							}
+							if(!_.isUndefined(activity.from_footer)) { %>
 								<span><%= comment %></span>
 							<% } %>
-								<div class="panel no-mar"><div class="panel-body github-markdown no-whitespace">
-								<%= makeLink(converter.makeHtml(activity.attributes.comment), activity.attributes.board_id) %>
-								<% if(activity.attributes.difference != null && activity.attributes.difference != '' && !_.isUndefined(activity.attributes.difference['0']) && activity.attributes.difference['0'] != '' && _.contains(['edit_comment', 'edit_list', 'edit_organization', 'edit_board', 'update_card_checklist', 'update_profile', 'edit_card', 'delete_card_comment', 'edit_list_color'], activity.attributes.type)) { %>
-							<div class="<%if(!_.isUndefined(activity.from_footer)) { %>thumbnail<% } %> list-group-item-text no-whitespace">
-								<% _.each(activity.attributes.difference, function(difference) { %>
-									<%= converter.makeHtml(difference) %>
-								<% }); %>
-							</div>
-						<% } %>
-								</div></div>
+							<% if (!_.isUndefined(type) && !_.isEmpty(type) && type !== null && type === 'board_user_activity') { %>
+								<div class="thumbnail list-group-item-text no-whitespace">
+									<%= makeLink(converter.makeHtml(originalComment), activity.attributes.board_id) %>
+								</div>
+							<% } else { %>
+								<div class="panel no-mar">
+									<div class="panel-body github-markdown no-whitespace">
+										<%= makeLink(converter.makeHtml(originalComment), activity.attributes.board_id) %>
+										<% if(activity.attributes.difference != null && activity.attributes.difference != '' && !_.isUndefined(activity.attributes.difference['0']) && activity.attributes.difference['0'] != '' && _.contains(['edit_comment', 'edit_list', 'edit_organization', 'edit_board', 'update_card_checklist', 'update_profile', 'edit_card', 'delete_card_comment', 'edit_list_color'], activity.attributes.type)) { %>
+											<div class="<%if(!_.isUndefined(activity.from_footer)) { %>thumbnail<% } %> list-group-item-text no-whitespace">
+												<% _.each(activity.attributes.difference, function(difference) { %>
+													<%= converter.makeHtml(difference) %>
+												<% }); %>
+											</div>
+										<% } %>
+									</div>
+								</div>
+							<% } %>
 						<% } else { %>
 							<%if(_.isUndefined(activity.from_footer)) { %>
 								<div class="panel no-mar"><div class="panel-body github-markdown no-whitespace">
 							<% } %>
+							<% if((activity.attributes.type !== 'add_card_color' && activity.attributes.type !== 'delete_card_color' && activity.attributes.type !== 'edit_card_color')) { %>
 								<%= makeLink(converter.makeHtml(activity.attributes.comment), activity.attributes.board_id) %>
+							<% } else { %>
+								<%= converter.makeHtml(activity.attributes.comment) %>
+							<% } %>
 								<% if(activity.attributes.type == 'add_card_desc'){ %>
 									<div class="thumbnail list-group-item-text">
-											<% if(activity.attributes.description){ %>
-												<%= makeLink(converter.makeHtml(activity.attributes.description), activity.attributes.board_id) %>
-											<% } else {%>	
-												<%= makeLink(converter.makeHtml(activity.attributes.card_description), activity.attributes.board_id) %>
-											<% } %>				
+										<% if(activity.attributes.revisions != null && activity.attributes.revisions != "" && !_.isUndefined(activity.attributes.revisions.old_value) && !_.isUndefined(activity.attributes.revisions.new_value) && !_.isUndefined(activity.attributes.revisions.new_value.description) &&  activity.attributes.revisions.old_value.description == null) { %>
+											<%= makeLink(converter.makeHtml(activity.attributes.revisions.new_value.description), activity.attributes.board_id) %>
+										<% } else if(activity.attributes.description){ %>
+											<%= makeLink(converter.makeHtml(activity.attributes.description), activity.attributes.board_id) %>
+										<% } else if(activity.attributes.card_description){ %>	
+											<%= makeLink(converter.makeHtml(activity.attributes.card_description), activity.attributes.board_id) %>
+										<% } %>				
 									</div>
 								<% } %>
 								<% if(activity.attributes.difference != null && _.contains(['edit_comment', 'edit_list', 'edit_organization', 'edit_board', 'update_card_checklist', 'update_profile', 'edit_card', 'edit_list_color', 'edit_card_color', 'delete_card_color', 'edit_card_desc'], activity.attributes.type)) { %>
-							<div class="<%if(!_.isUndefined(activity.from_footer)) { %>thumbnail<% } %> list-group-item-text no-whitespace">
-								<% _.each(activity.attributes.difference, function(difference) { %>
+							<div class="<%if(!_.isUndefined(activity.from_footer) && !_.isEmpty(activity.attributes.difference) && !_.isEmpty(activity.attributes.difference['0'])) { %>thumbnail<% } %> list-group-item-text no-whitespace">
+								<% if(!_.isEmpty(activity.attributes.difference) && !_.isEmpty(activity.attributes.difference['0'])) {
+									_.each(activity.attributes.difference, function(difference) { %>
 									<%= converter.makeHtml(difference) %>
-								<% }); %>
+								<% 	});
+								} %>
 							</div>
 						<% } %>
 							<%if(_.isUndefined(activity.from_footer)) { %>
@@ -115,12 +185,13 @@
 				<% setInterval(function() {%>
 					<% parse_date(activity.attributes.created, authuser,'js-timeago-'+activity.attributes.id); %>
 				<% }, 10000); %>
-				<span class="<% if(!_.isUndefined(type) && !_.isEmpty(type) && type === 'all' && activity.attributes.type !== 'add_organization' && activity.attributes.type !== 'edit_organization') { %>show<% } %> js-timeago-<%- activity.attributes.id %>"></span>
-				<% parse_date(activity.attributes.created, authuser,'js-timeago-'+activity.attributes.id); %>
+				<span class="<% if(!_.isUndefined(type) && !_.isEmpty(type) && type === 'all' && activity.attributes.type !== 'add_organization' && activity.attributes.type !== 'edit_organization') { %>show<% } %> js-timeago-<%- activity.attributes.id %>"><%= parse_date(activity.attributes.created, authuser,'js-timeago-'+activity.attributes.id, true) %></span>
 					<% if(!_.isUndefined(authuser.user) && activity.attributes.type == "add_comment" && type != "all" && (_.isUndefined(activity.from_footer))) { %>
 						<div class="js-acticity-action-<%- activity.attributes.id %> pull-left navbar-btn col-md-10 col-xs-12">
 							<ul class="list-inline">
+							<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || ((!_.isEmpty(board.acl_links.where({slug: "comment_card",board_user_role_id: parseInt(activity.board_user_role_id)}))) || (!_.isEmpty(role_links.where({slug: "comment_card"})) && board.attributes.board_visibility == 2)))){ %>
 								<li><a title="Reply" class="js-show-reply-activity-form js-reply-activity-link-<%- activity.attributes.id %>" href="javascript:void(0);" data-activity-id="<%- activity.attributes.id %>"><i class="icon-repeat"></i><%- i18next.t("Reply") %></a></li>
+							<% } %>
 							<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(board.acl_links.where({slug: "delete_comment", board_user_role_id: parseInt(activity.board_user_role_id)})))){ %>
 									<li class="dropdown pull-right">
 										<a title="Delete" class="dropdown-toggle js-show-confirm-comment-delete text-danger" data-toggle="dropdown" href="#" data-activity-id="<%- activity.attributes.id %>" role="button"><i class="icon-remove"></i><%- i18next.t("Delete") %></a>

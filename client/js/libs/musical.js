@@ -161,7 +161,9 @@ var Instrument = (function() {
     // Disconnect the audio graph for this instrument.
     if (this._out) {
       this._out.disconnect();
-      initvolume = this._out.gain.value;
+      if(this._out){
+        initvolume = this._out.gain.value;
+      }
     }
 
     // Reinitialize the audio graph: all audio for the instrument

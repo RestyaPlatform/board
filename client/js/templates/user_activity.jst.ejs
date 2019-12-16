@@ -1,20 +1,63 @@
 <% if(!_.isEmpty(activity) && activity != null){  %> 
-	<%
+	<%			activity.attributes.card_name = (activity.attributes.card_name !== null) ? activity.attributes.card_name : i18next.t("[deleted]");
+				activity.attributes.organization_name = (activity.attributes.organization_name !== null) ? activity.attributes.organization_name : i18next.t("[deleted]");
 				var cardLink = '<a href="#/board/' + activity.attributes.board_id + '/card/' + activity.attributes.card_id + '">' + _.escape(activity.attributes.card_name) + '</a>';
 				var organizationLink = '<a href="#/organization/' + activity.attributes.organization_id + '">' + _.escape(activity.attributes.organization_name) + '</a>';
-			if(activity.attributes.type != 'add_comment' && activity.attributes.type != 'edit_comment') {
-				activity.attributes.comment = activity.attributes.comment.replace('##ORGANIZATION_LINK##', organizationLink);
-				activity.attributes.comment = activity.attributes.comment.replace('##CARD_LINK##', cardLink);
-				activity.attributes.comment = activity.attributes.comment.replace('##LABEL_NAME##', _.escape(activity.attributes.label_name));
-				activity.attributes.comment = activity.attributes.comment.replace('##CARD_NAME##', _.escape(activity.attributes.card_name));
+			if(activity.attributes.type != 'add_comment') {
+				if(activity.attributes.comment.indexOf('##ORGANIZATION_LINK##') != -1){
+					activity.attributes.comment = activity.attributes.comment.replace('##ORGANIZATION_LINK##', organizationLink);
+				}
+				if(activity.attributes.comment.indexOf('##CARD_LINK##') != -1){
+					activity.attributes.comment = activity.attributes.comment.replace('##CARD_LINK##', cardLink);
+				}
+				if(activity.attributes.comment.indexOf('##LABEL_NAME##') != -1){
+					if (activity.attributes.label_name !== null) {
+						activity.attributes.comment = activity.attributes.comment.replace('##LABEL_NAME##', _.escape(activity.attributes.label_name));
+					} else {
+						activity.attributes.comment = activity.attributes.comment.replace('##LABEL_NAME##', i18next.t("[deleted]"));
+					}
+				}
+				if(activity.attributes.comment.indexOf('##CARD_NAME##') != -1){
+					if (activity.attributes.card_name !== null) {
+						activity.attributes.comment = activity.attributes.comment.replace('##CARD_NAME##', _.escape(activity.attributes.card_name));
+					} else {
+						activity.attributes.comment = activity.attributes.comment.replace('##CARD_NAME##', i18next.t("[deleted]"));
+					}
+				}
 				activity.attributes.comment = activity.attributes.comment.replace('##DESCRIPTION##', _.escape(activity.attributes.card_description));
-				activity.attributes.comment = activity.attributes.comment.replace('##LIST_NAME##', _.escape(activity.attributes.list_name));
-				activity.attributes.comment = activity.attributes.comment.replace('##BOARD_NAME##', _.escape(activity.attributes.board_name));
+				if(activity.attributes.comment.indexOf('##LIST_NAME##') != -1){
+					if (activity.attributes.list_name !== null) {
+						activity.attributes.comment = activity.attributes.comment.replace('##LIST_NAME##', _.escape(activity.attributes.list_name));
+					} else {
+						activity.attributes.comment = activity.attributes.comment.replace('##LIST_NAME##', i18next.t("[deleted]"));
+					}
+				}
+				if(activity.attributes.comment.indexOf('##BOARD_NAME##') != -1){
+					if (activity.attributes.board_name !== null) {
+						activity.attributes.comment = activity.attributes.comment.replace('##BOARD_NAME##', _.escape(activity.attributes.board_name));
+					} else {
+						activity.attributes.comment = activity.attributes.comment.replace('##BOARD_NAME##', i18next.t("[deleted]"));
+					}
+				}
 				activity.attributes.comment = activity.attributes.comment.replace('##USER_NAME##', '<span class="h5">'+_.escape(activity.attributes.full_name)+'</span>');
-				activity.attributes.comment = activity.attributes.comment.replace('##CHECKLIST_ITEM_NAME##', _.escape(activity.attributes.checklist_item_name));
-				activity.attributes.comment = activity.attributes.comment.replace('##CHECKLIST_ITEM_PARENT_NAME##', _.escape(activity.attributes.checklist_item_parent_name));
-				activity.attributes.comment = activity.attributes.comment.replace('##CHECKLIST_NAME##', _.escape(activity.attributes.checklist_name));
-			} else {
+				if(activity.attributes.comment.indexOf('##CHECKLIST_ITEM_NAME##') != -1){
+					if (activity.attributes.checklist_item_name !== null) {
+						activity.attributes.comment = activity.attributes.comment.replace('##CHECKLIST_ITEM_NAME##', (activity.attributes.checklist_item_name));
+					} else {
+						activity.attributes.comment = activity.attributes.comment.replace('##CHECKLIST_ITEM_NAME##', i18next.t("[deleted]"));
+					}
+				}
+				if(activity.attributes.comment.indexOf('##CHECKLIST_ITEM_PARENT_NAME##') != -1){
+					if (activity.attributes.checklist_item_parent_name !== null) {
+						activity.attributes.comment = activity.attributes.comment.replace('##CHECKLIST_ITEM_PARENT_NAME##', (activity.attributes.checklist_item_parent_name));
+					} else {
+						activity.attributes.comment = activity.attributes.comment.replace('##CHECKLIST_ITEM_PARENT_NAME##', i18next.t("[deleted]"));
+					}
+				}
+				if(activity.attributes.comment.indexOf('##CHECKLIST_NAME##') != -1){
+					activity.attributes.comment = activity.attributes.comment.replace('##CHECKLIST_NAME##', (activity.attributes.checklist_name));
+				}
+			} else if(activity.attributes.type != 'edit_comment'){
 				var comment = filterXSS(activity.attributes.full_name) + ' commented in card ' + cardLink;
 				var patt = /@\w+/g;
 				if(patt.test(activity.attributes.comment)) {
@@ -37,11 +80,16 @@
 					<div class="media-heading">
 						<% if(activity.attributes.type == 'add_comment' || activity.attributes.type == 'edit_comment') { %>	
 							<span><%= comment %></span>
-							<%= makeLink(converter.makeHtml((activity.attributes.comment)), activity.attributes.board_id) %>
+							<% if(activity.attributes.type == 'add_comment' && !_.isUndefined(activity.attributes.revisions) && !_.isEmpty(activity.attributes.revisions) && activity.attributes.revisions !== null) { 
+								activity.attributes.comment = activity.attributes.revisions.old_value.comment;
+							} %>
+							<% if(activity.attributes.type == 'add_comment') { %><div class="thumbnail media-body no-mar"><% } %>
+								<%= makeLink(converter.makeHtml((activity.attributes.comment)), activity.attributes.board_id) %>
+							<% if(activity.attributes.type == 'add_comment') { %></div><% } %>
 						<% } else{%>
 							<%= makeLink(converter.makeHtml(activity.attributes.comment), activity.attributes.board_id) %> 
 						<% } %>
-						<% if(activity.attributes.difference != null && _.contains(['edit_comment', 'edit_list', 'edit_organization', 'edit_board', 'update_card_checklist', 'update_profile', 'edit_card', 'delete_card_comment', 'edit_list_color', 'delete_list_color'], activity.attributes.type)) { %>
+						<% if(activity.attributes.difference != null && _.contains(['edit_comment', 'edit_list', 'edit_organization', 'edit_board', 'update_card_checklist', 'update_profile', 'edit_card', 'edit_list_color', 'delete_list_color'], activity.attributes.type)) { %>
 							<div class="thumbnail media-body no-mar">
 								<% _.each(activity.attributes.difference, function(difference) { %>
 									<%= converter.makeHtml(difference) %>
@@ -53,8 +101,7 @@
 						<% setInterval(function() {%>
 							<% parse_date(activity.attributes.created, authuser,'js-timeago-'+activity.attributes.id); %>
 						<% }, 10000); %>
-						<span class="js-timeago-<%- activity.attributes.id %>"></span>
-						<% parse_date(activity.attributes.created, authuser,'js-timeago-'+activity.attributes.id); %>
+						<span class="js-timeago-<%- activity.attributes.id %>"><%= parse_date(activity.attributes.created, authuser,'js-timeago-'+activity.attributes.id, true) %></span>
 						<% if(!_.isEmpty(activity.attributes.board_name)){ %><a class="pull-left" href="#/board/<%= activity.attributes.board_id %>">&nbsp;on&nbsp;<%- activity.attributes.board_name %></a><% } %></small>
 						<div class="clearfix">
 								<small class="pull-left">

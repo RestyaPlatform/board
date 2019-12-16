@@ -4,7 +4,7 @@ $(window).resize(function() {
     var windowH = $(window).height();
     var notificationH = windowH - footerH;
     var boardH;
-    if (!_.isEmpty(footerH)) {
+    if (footerH) {
         boardH = windowH - headerH - footerH - 14;
     } else {
         boardH = windowH - headerH - 50;
@@ -72,11 +72,19 @@ $dc.ready(function() {
             if ($('#content #boards-view-' + $(this).data('board-viewtype')).length === 0) {
                 if (!_.isUndefined(App.current_board) && !_.isEmpty(App.current_board) && App.current_board !== null && !App.current_board.attributes.is_closed) {
                     $('#content .js-boards-view').remove('');
-                    $('#content').html('<section id="boards-view-' + $(this).data('board-viewtype') + '" class="clearfix js-boards-view"></section>');
+                    view_type_tab = "task";
+                    $('#content').html('<section id="boards-view-' + $(this).data('board-viewtype') + '" class="clearfix js-boards-view col-xs-12"><div class="cssloader"></div></section>');
                 }
             }
         }
         return false;
+    }).on('click', 'body', function(e) {
+        if (!$('.js-open-dropdown .js-change-visibility').is(e.target) &&
+            $('.js-open-dropdown .js-change-visibility').has(e.target).length === 0 &&
+            $('.open').has(e.target).length === 0
+        ) {
+            $('.js-open-dropdown').removeClass('open');
+        }
     });
     if ((navigator.userAgent.toLowerCase().indexOf('android') > -1) && (navigator.userAgent.toLowerCase().indexOf('chrome') > -1)) {
         $('body').append('<div class="modal fade" id="add_home_modal" tabindex="-1" role="dialog" aria-hidden="false"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal"><span aria-hidden="true" id="js-cssilize-close">x</span><span class="sr-only">Close</span></button><div class="media list-group-item-heading"><div class="media-body"><h4 class="modal-title" id="exampleModalLabel">Install this webapp to your phone</h4></div></div></div><div class="modal-body import-block"><ul><li>Add Restyaboard to homescreen.</li><li>Tap <i class="icon-ellipsis-vertical"></i>to bring up your browser menu and select \'Add to homescreen\' to pin the Restyaboard web app.</li></ul></div></div></div></div>');
@@ -130,11 +138,13 @@ $dc.ready(function() {
 })
 (jQuery);
 
-function changeTitle(title) {
+function changeTitle(title, Iscardview) {
+    var title_format = (Iscardview === true) ? "%s | %s's Restyaboard" : "%s's Restyaboard | %s";
+    var title_content = (Iscardview === true) ? [title, SITE_NAME] : [SITE_NAME, title];
     if (title !== undefined) {
-        document.title = i18next.t("%s's Restyaboard | %s", {
+        document.title = i18next.t(title_format, {
             postProcess: 'sprintf',
-            sprintf: [SITE_NAME, title]
+            sprintf: title_content
         });
     }
 }
@@ -163,6 +173,32 @@ function makeLink(text, board_id) {
     return text;
 }
 
+function CheckFieldExists(board, field_name, field_value, return_type, plugin_name) {
+    var checked_value = (return_type === 'Value') ? field_value : true;
+    if (!_.isUndefined(APPS) && APPS !== null) {
+        if (!_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null) {
+            if ($.inArray(plugin_name, APPS.enabled_apps) !== -1) {
+                if (!_.isUndefined(board) && !_.isEmpty(board) && !_.isUndefined(board.attributes) && !_.isEmpty(board.attributes) && !_.isUndefined(board.attributes.board_custom_fields) && !_.isEmpty(board.attributes.board_custom_fields)) {
+                    board_custom_fields = JSON.parse(board.attributes.board_custom_fields);
+                    if (!_.isUndefined(board_custom_fields[plugin_name])) {
+                        r_gridview_configurations = board_custom_fields[plugin_name].split(',');
+                        if (r_gridview_configurations.length > 0) {
+                            if (r_gridview_configurations.indexOf(field_name) !== -1 || r_gridview_configurations.indexOf('selectall') !== -1) {
+                                checked_value = (return_type === 'Value') ? field_value : true;
+                            } else {
+                                checked_value = (return_type === 'Value') ? '' : false;
+                            }
+                        } else {
+                            checked_value = (return_type === 'Value') ? '' : false;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    return checked_value;
+}
+
 function activityCommentReplace(activity) {
     if (!_.isUndefined(activity.comment) && !_.isEmpty(activity.comment)) {
         activity.comment = activity.comment.replace("the card ##CARD_LINK##", "this card");
@@ -173,19 +209,30 @@ var favicon = new Favico({
     animation: 'popFade'
 });
 
-function parse_date(dateTime, logged_user, classname) {
-    var obj = {};
-    var s = dateTime.replace("T", " ");
-    s = moment.tz(s, SITE_TIMEZONE);
-    var tz = s;
+function parse_date(dateTime, logged_user, classname, isAbbrReturn) {
+    var s = dateTime.replace("T", " "),
+        current_timezone;
+    new_date = moment.tz(s, 'YYYY-MM-DD HH:mm:ss', SITE_TIMEZONE).utc().format('YYYY-MM-DD HH:mm:ss');
     if (logged_user && logged_user.user) {
-        tz = moment.tz(s, logged_user.user.timezone);
+        current_timezone = moment.tz(logged_user.user.timezone).format('Z').replace(':', '');
+    } else {
+        current_timezone = moment.tz(SITE_TIMEZONE).format('Z').replace(':', '');
     }
-    _(function() {
-        $('.' + classname).html('<abbr title="' + tz.format() + '">' + tz.fromNow() + '</abbr>');
-    }).defer();
-    return true;
+    tz = moment(new_date + ' Z').utcOffset(current_timezone).format('YYYY-MM-DD HH:mm:ss');
+    if (!moment.isMoment(tz)) {
+        tz = moment(tz);
+    }
+    var timestr = '<abbr title="' + tz.format() + '">' + tz.fromNow() + '</abbr>';
+    if (isAbbrReturn !== undefined) {
+        return timestr;
+    } else {
+        $('.' + classname).html(timestr);
+        return true;
+    }
 }
+
+
+
 
 function stripScripts(s) {
     var div = document.createElement('div');

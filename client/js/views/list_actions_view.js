@@ -47,6 +47,14 @@ App.ListActionsView = Backbone.View.extend({
      */
     showColorPicker: function(e) {
         e.preventDefault();
+        this.$el.find('#list-custom-colorpicker-' + this.model.id).colorpicker({
+            format: 'hex',
+            container: '#list-custom-colorpicker-' + this.model.id,
+        }).on('changeColor', function(e) {
+            return false;
+        }).on('click', function(e) {
+            return false;
+        });
         $(e.target).parents('div.dropdown').addClass('open');
         $('.js-show-list-color-settings-dropdown').addClass('open');
         return false;

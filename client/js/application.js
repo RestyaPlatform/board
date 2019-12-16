@@ -24,9 +24,12 @@ var DEFAULT_LANGUAGE = '';
 var IMAP_EMAIL = '';
 var ANIMATION_SPEED = 1;
 var DEFAULT_CARD_VIEW = '';
+var CALENDAR_VIEW_CARD_COLOR = '';
 var PAGING_COUNT = '';
 var ALLOWED_FILE_EXTENSIONS = '';
 var R_LDAP_LOGIN_HANDLE = '';
+var R_MLDAP_LOGIN_HANDLE = '';
+var R_MLDAP_SERVERS = '';
 var last_activity = '';
 var previous_date = '';
 var SecuritySalt = 'e9a556134534545ab47c6c81c14f06c0b8sdfsdf';
@@ -42,10 +45,12 @@ var from_url = '';
 var custom_fields = {};
 var sort_by = '';
 var sort_direction = '';
+var view_type_tab = '';
 var AppsFunction = [];
 var appsurlFunc = {};
+var overallApps = [];
 
-Backbone.View.prototype.flash = function(type, message, delay, position) {
+Backbone.View.prototype.flash = function(type, message, delay, position, align) {
     if (!delay) {
         delay = 4000;
     }
@@ -54,6 +59,11 @@ Backbone.View.prototype.flash = function(type, message, delay, position) {
     } else {
         position = 'top';
     }
+    if (align) {
+        align = align;
+    } else {
+        align = 'right';
+    }
 
     $.bootstrapGrowl(message, {
         type: type,
@@ -61,7 +71,7 @@ Backbone.View.prototype.flash = function(type, message, delay, position) {
             from: position,
             amount: 20
         },
-        align: 'right',
+        align: align,
         width: 250,
         delay: delay,
         allow_dismiss: true,
@@ -159,7 +169,7 @@ callbackTranslator = {
                 $('#content').html(view.el);
                 return;
             } else if (model !== null && !_.isUndefined(model.status) && model.status == '401') {
-                if (!_.isUndefined(model.responseText) && !_.isEmpty(model.responseText) && JSON.parse(model.responseText).error.type === 'OAuth') {
+                if ((!_.isUndefined(model.responseText) && !_.isEmpty(model.responseText) && JSON.parse(model.responseText).error.type === 'OAuth') || (!_.isUndefined(model.statusText) && !_.isEmpty(model.statusText) && model.statusText === 'Unauthorized')) {
                     api_token = '';
                     if ($.cookie('auth') !== undefined && $.cookie('auth') !== null) {
                         var Auth = JSON.parse($.cookie('auth'));
@@ -303,7 +313,9 @@ function addResponseCallback(callback) {
 
 function fireResponseCallbacksIfCompleted(xhr) {
     if (xhr.readyState === 4) {
-        fireResponseCallbacks(responseCallbacks, xhr);
+        if (xhr.responseURL.indexOf(window.location.origin) !== -1) {
+            fireResponseCallbacks(responseCallbacks, xhr);
+        }
     }
 }
 
@@ -341,8 +353,11 @@ var AppRouter = Backbone.Router.extend({
         'users/forgotpassword': 'forgotpassword',
         'users/activation/:id/:hash': 'user_activation',
         'users/:id/changepassword': 'changepassword',
+        'users?query_param': 'users_index',
         'users': 'users_index',
+        'user_logins?page=:page': 'user_logins_index',
         'user_logins': 'user_logins_index',
+        'boards/list?query_param': 'admin_boards_index',
         'boards/list': 'admin_boards_index',
         'user/:id': 'user_view',
         'user/:id/two-step-verification': 'user_verification',
@@ -354,11 +369,14 @@ var AppRouter = Backbone.Router.extend({
         'board/:id/card/:card_id': 'card_view',
         'board/:id/:type': 'boards_view_type',
         'board/:id/:type/card/:card_id': 'board_card_view_type',
+        'board/:id/:type/:tab': 'boards_view_type_tab',
+        'board/:id/:type?query_param': 'boards_view_type',
         'organizations': 'organizations_index',
         'organization/:id': 'organizations_view',
         'organization/:id/:type': 'organizations_view_type',
         'organizations_user/:id': 'organizations_user_view',
         'roles': 'role_settings',
+        'roles?tab=:tab': 'role_settings',
         'roles/add': 'add_role',
         'board_user_roles/add': 'add_board_user_role',
         'organization_user_roles/add': 'add_organization_user_role',
@@ -465,6 +483,7 @@ var AppRouter = Backbone.Router.extend({
                 custom_fields = {};
                 $.removeCookie('chat_initialize');
                 $.removeCookie('filter');
+                $.removeCookie('activities_filter');
                 localforage.clear();
                 api_token = '';
                 authuser = new App.User();
@@ -512,6 +531,7 @@ var AppRouter = Backbone.Router.extend({
         });
     },
     boards_view: function(id) {
+        $('.dockmodal, .dockmodal-overlay').remove();
         from_url = 'board_view';
         new App.ApplicationView({
             model: 'boards_view',
@@ -538,7 +558,17 @@ var AppRouter = Backbone.Router.extend({
         });
     },
     boards_view_type: function(id, type) {
+        $('.dockmodal, .dockmodal-overlay').remove();
         view_type = type;
+        view_type_ref = type;
+        new App.ApplicationView({
+            model: 'boards_view',
+            'id': id
+        });
+    },
+    boards_view_type_tab: function(id, type, tab) {
+        view_type = type;
+        view_type_tab = tab;
         view_type_ref = type;
         new App.ApplicationView({
             model: 'boards_view',
@@ -565,19 +595,22 @@ var AppRouter = Backbone.Router.extend({
             'id': id
         });
     },
-    users_index: function() {
+    users_index: function(page) {
         new App.ApplicationView({
-            model: 'users_index'
+            model: 'users_index',
+            page: page
         });
     },
-    user_logins_index: function() {
+    user_logins_index: function(page) {
         new App.ApplicationView({
-            model: 'user_logins_index'
+            model: 'user_logins_index',
+            page: page
         });
     },
-    admin_boards_index: function() {
+    admin_boards_index: function(page) {
         new App.ApplicationView({
-            model: 'admin_boards_index'
+            model: 'admin_boards_index',
+            page: page
         });
     },
     user_view: function(id) {
@@ -622,9 +655,10 @@ var AppRouter = Backbone.Router.extend({
             });
         }
     },
-    role_settings: function() {
+    role_settings: function(tab) {
         new App.ApplicationView({
             model: 'role_settings',
+            tab: tab
         });
     },
     add_role: function() {
@@ -712,6 +746,19 @@ var AppRouter = Backbone.Router.extend({
 });
 var app = new AppRouter();
 app.on('route', function(route, params) {
+    $('div.doughnutTip').remove();
+    if (route !== 'boards_view' && route !== 'card_view' && route !== 'board_card_view_type' && route !== 'boards_view_type' && route !== 'boards_view_type_tab' && route !== 'boards_index') {
+        $('body').removeAttr('style class');
+    }
+});
+$(window).on('hashchange', function() {
+    if (location.hash === '#/boards' && $('#boards-index').length === 0) {
+        app.navigate('#/boards', {
+            trigger: true,
+            replace: true
+        });
+        $('.js-footer-board-link').trigger('click');
+    }
     if (!_.isUndefined(appsurlFunc)) {
         _.each(appsurlFunc, function(funct_names, url) {
             if (location.hash.match('/' + url)) {
@@ -720,12 +767,19 @@ app.on('route', function(route, params) {
                         AppsFunction[functionName]();
                     }
                 });
+            } else {
+                // Board view Page Navigation triggering
+                if (location.hash.match('/board/([0-9])*/list')) {
+                    if ($('#listview_table').length === 0) {
+                        $('.js-switch-list-view').trigger('click');
+                    }
+                } else if (location.hash.match('/board/([0-9])*/calendar')) {
+                    if ($('.calendar-view').length === 0) {
+                        $('.js-switch-calendar-view').trigger('click');
+                    }
+                }
             }
         });
-    }
-    $('div.doughnutTip').remove();
-    if (route !== 'boards_view' && route !== 'card_view' && route !== 'board_card_view_type' && route !== 'boards_view_type') {
-        $('body').removeAttr('style class');
     }
 });
 Backbone.history.start({

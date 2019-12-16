@@ -4,16 +4,16 @@
 		<div class="clearfix">
 			<ul class="nav nav-tabs no-bor h3">
 				<% if((authuser.user.id === page.id || authuser.user.role_id == 1) || (!_.isEmpty(role_links.where({slug: "view_user_activities"})))){ %>
-					<li <% if (_.isUndefined(type) || type == 'profile') { %>class="active" <%}%>><a href="#/user/<%-user.attributes.id%>/profile"  ><%- i18next.t("Profile") %></a></li>
+					<li <% if (_.isUndefined(type) || type == 'profile') { %>class="active" <%}%>><a href="#/user/<%-user.attributes.id%>/profile"   id="js-profile_tab_trigger" data-profile_tab_id="profile"><%- i18next.t("Profile") %></a></li>
 				<% } %>
 				<% if(!_.isEmpty(role_links.where({slug: "view_user_cards"}))){ %>
-					<li  <% if (!_.isUndefined(type) && type == 'cards') { %>class="active" <%}%>><a href="#/user/<%-user.attributes.id%>/cards" ><%- i18next.t("Cards") %></a></li>
+					<li  <% if (!_.isUndefined(type) && type == 'cards') { %>class="active" <%}%>><a href="#/user/<%-user.attributes.id%>/cards" id="js-profile_tab_trigger" data-profile_tab_id="cards"><%- i18next.t("Cards") %></a></li>
 				<% } %>
 				<% if(authuser.user.id === page.id || authuser.user.role_id == 1) { if(!_.isEmpty(role_links.where({slug: "edit_user_details"}))){ %>
-					<li <% if (!_.isUndefined(type) && type == 'settings') { %>class="active" <%}%>><a href="#/user/<%-user.attributes.id%>/settings" ><%- i18next.t("Settings") %></a></li>
+					<li <% if (!_.isUndefined(type) && type == 'settings') { %>class="active" <%}%>><a href="#/user/<%-user.attributes.id%>/settings"  id="js-profile_tab_trigger" data-profile_tab_id="settings"><%- i18next.t("Settings") %></a></li>
 				<% } %>
 				<% if(!_.isEmpty(role_links.where({slug: "view_connected_applications"}))){ %>
-					<li <% if (!_.isUndefined(type) && type == 'oauth_applications') { %>class="active" <%}%>><a href="#/user/<%-user.attributes.id%>/oauth_applications" ><%- i18next.t("Authorized OAuth Applications") %></a></li>
+					<li <% if (!_.isUndefined(type) && type == 'oauth_applications') { %>class="active" <%}%>><a href="#/user/<%-user.attributes.id%>/oauth_applications" id="js-profile_tab_trigger" data-profile_tab_id="oauth_applications"><%- i18next.t("Authorized OAuth Applications") %></a></li>
 				<% } } %>  
 			</ul>
 		</div>
@@ -76,7 +76,7 @@
 								<div class="form-group required">
 									<label for="inputusername" class="col-sm-2 control-label"><%- i18next.t("Username") %></label>
 									<div class="col-sm-8">
-										<input type="text" id="inputusername" class="form-control" name="username" value="<%- user.attributes.username %>" pattern="^[a-zA-Z0-9]{2,90}$" title="<%- i18next.t('Username. Minimum 3 characters and Maximum 90 characters and spaces not allowed') %>" required>
+										<input type="text" id="inputusername" class="form-control" name="username" value="<%- user.attributes.username %>" pattern="^[a-zA-Z0-9_]{2,90}$" title="<%- i18next.t('Username. Minimum 3 characters and Maximum 90 characters and spaces not allowed') %>" required>
 									</div>
 								</div>
 							<% } %>
@@ -165,8 +165,10 @@
 										<div class="col-sm-8">
 											<select  id="is_send_newsletter" class="js-chosen-select" name="is_send_newsletter">
 												<option value="0"><%- i18next.t("Never, Don't send email notifications") %></option>
-												<option value="1"><%- i18next.t("Periodically, Send email notification every 1 hour") %></option>
 												<option value="2"><%- i18next.t("Instantly, Send email notification every 5 minutes") %></option>
+												<option value="1"><%- i18next.t("Periodically, Send email notification every 1 hour") %></option>
+												<option value="3"><%- i18next.t("Daily, Send email notification every 24 hour") %></option>
+												<option value="4"><%- i18next.t("Weekly, Send email notification every weekend") %></option>
 											</select>
 										</div>
 									</div>

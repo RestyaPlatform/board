@@ -219,13 +219,15 @@ App.ModalFlickrPhotoView = Backbone.View.extend({
             }).addClass('board-view-pattern board-view');
             this.model.set('background_name', title);
             this.model.set('background_picture_url', image_path);
-            this.model.set('background_pattern_url', '');
+            this.model.set('background_pattern_url', '', {
+                silent: true
+            });
             image_path = '//farm' + farm + '.static.flickr.com/' + server + '/' + id + '_' + secret + '_XXXX.jpg';
             data = {
                 background_name: title,
-                background_color: 'NULL',
+                background_color: null,
                 background_picture_url: image_path,
-                background_pattern_url: 'NULL'
+                background_pattern_url: null
             };
             App.boards.get(this.model.id).set('background_name', title, {
                 silent: true
@@ -245,7 +247,9 @@ App.ModalFlickrPhotoView = Backbone.View.extend({
                 'background': 'url(' + image_path + ')',
             }).addClass('board-view-pattern board-view');
             this.model.set('background_name', title);
-            this.model.set('background_picture_url', '');
+            this.model.set('background_picture_url', '', {
+                silent: true
+            });
             this.model.set('background_pattern_url', image_path);
             App.boards.get(this.model.id).set('background_name', title, {
                 silent: true
@@ -262,14 +266,18 @@ App.ModalFlickrPhotoView = Backbone.View.extend({
             image_path = '//farm' + farm + '.static.flickr.com/' + server + '/' + id + '_' + secret + '_XXXX.jpg';
             data = {
                 background_name: title,
-                background_color: 'NULL',
-                background_picture_url: 'NULL',
+                background_color: null,
+                background_picture_url: null,
                 background_pattern_url: image_path
             };
         }
         this.model.url = api_url + 'boards/' + this.model.id + '.json';
-        this.model.set('custom_background_url', '');
-        this.model.set('background_color', '');
+        this.model.set('custom_background_url', '', {
+            silent: true
+        });
+        this.model.set('background_color', '', {
+            silent: true
+        });
         this.model.save(data, {
             patch: true
         });

@@ -46,12 +46,13 @@ App.intro_video_view = Backbone.View.extend({
                     }
                     $('.editor').each(function() {
                         var $this = $(this);
-                        var factor1 = $.cookie('factor1');
-                        if ((factor1 === null) || (typeof factor1 === 'undefined')) {
-                            factor1 = '30';
+                        var factor1 = '30',
                             factor2 = '70';
-                        } else {
-                            factor2 = 100 - factor1;
+                        if (!_.isUndefined(authuser.user) && !_.isEmpty(authuser.user)) {
+                            if (!_.isUndefined(authuser.user.persist_card_divider_position) && authuser.user.persist_card_divider_position !== null) {
+                                factor1 = authuser.user.persist_card_divider_position;
+                                factor2 = 100 - factor1;
+                            }
                         }
                         $this.resizable({
                             handles: 'e',
@@ -64,7 +65,27 @@ App.intro_video_view = Backbone.View.extend({
                                 $.cookie('factor1', f1);
                                 $this.css('width', f1 + '%');
                                 $this.next().css('width', f2 + '%');
-                            }
+                            },
+                            stop: function(event, ui) {
+                                var x = ui.element.outerWidth();
+                                var factor = x * 100 / $(this).parent().width();
+                                if (!_.isUndefined(authuser.user) && !_.isEmpty(authuser.user)) {
+                                    var data = {
+                                        persist_card_divider_position: factor
+                                    };
+                                    var user = new App.User();
+                                    user.url = api_url + 'users/' + authuser.user.id + '.json';
+                                    user.set('id', parseInt(authuser.user.id));
+                                    user.save(data, {
+                                        success: function(model, response) {
+                                            var Auth = JSON.parse($.cookie('auth'));
+                                            Auth.user.persist_card_divider_position = factor;
+                                            $.cookie('auth', JSON.stringify(Auth));
+                                            authuser = Auth;
+                                        }
+                                    });
+                                }
+                            },
                         }).css({
                             width: factor1 + '%'
                         }).next().css({

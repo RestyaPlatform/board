@@ -113,8 +113,10 @@ if (!_.isUndefined(authuser.user)) {
 					<dl class="clearfix text-center list-group-item-heading">
 						<dt>
 							<div class="btn-group navbar-btn list-activity"> <a href="#" class="btn btn-default js-no-action htruncate">
-							<% parse_date(organization.attributes.modified, authuser, 'js-timeago-'+organization.attributes.username); %>
-							<span class="js-timeago-<%- organization.attributes.username %>"></span>
+							<% setInterval(function() { %>
+								<% parse_date(organization.attributes.modified, authuser, 'js-timeago-activity-'+organization.attributes.id); %>
+							<% }, 10000); %>
+							<span class="js-timeago-activity-<%- organization.attributes.id %>"><%= parse_date(organization.attributes.modified, authuser, 'js-timeago-activity-'+organization.attributes.id, true) %></span>
 							</a> </div>
 						</dt>
 						<dd><h6 class="text-center h4 navbar-btn"><%- i18next.t('Recent activity') %></h6></dd>
@@ -123,8 +125,10 @@ if (!_.isUndefined(authuser.user)) {
 					<dl class="clearfix text-center list-group-item-heading">
 						<dt>
 							<div class="btn-group navbar-btn list-activity"> <a href="#" class="btn btn-default js-no-action htruncate">
-							<% parse_date(organization.attributes.created, authuser, 'js-timeago-'+organization.attributes.id); %>
-							<span class="js-timeago-<%- organization.attributes.id %>"></span>
+							<% setInterval(function() { %>
+								<% parse_date(organization.attributes.created, authuser, 'js-timeago-'+organization.attributes.id); %>
+							<% }, 10000); %>
+							<span class="js-timeago-<%- organization.attributes.id %>"><%= parse_date(organization.attributes.created, authuser, 'js-timeago-'+organization.attributes.id, true) %></span>
 
 							</a> </div>
 						</dt>

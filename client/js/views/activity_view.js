@@ -98,6 +98,8 @@ App.ActivityView = Backbone.View.extend({
                     var col_offset = parseInt(this.model.attributes.depth);
                     this.$el.addClass('col-xs-' + column);
                     this.$el.addClass('col-lg-offset-' + col_offset);
+                } else if (this.$el.attr('class').indexOf('col-xs-12') === -1) {
+                    this.$el.addClass('col-xs-12');
                 }
             } else {
                 this.$el.addClass('col-xs-12');
@@ -120,51 +122,58 @@ App.ActivityView = Backbone.View.extend({
             patch: true,
             success: function(model, response) {
                 if (!_.isUndefined(response.undo.card)) {
-                    var card = self.board.cards.findWhere({
-                        id: parseInt(response.undo.card.id)
-                    });
-                    card.set(response.undo.card);
-                    _.each(response.undo.card, function(val, key) {
-                        if (key === 'id' || key === 'list_id' || key === 'board_id') {
-                            card.set(key, parseInt(val));
-                        }
-                        var activity = new App.Activity();
-                        activity.set(response.activity);
-                        card.activities.unshift(activity);
-                    });
-
-                    var view_activity = this.$('#js-card-activities-' + response.undo.card.id);
-                    view_activity.html('');
-                    if (!_.isEmpty(card.activities)) {
-                        card.activities.each(function(activity) {
-                            $('#js-loader-img').removeClass('hide');
-                            if (!_.isEmpty(self.model.collection)) {
-                                activity.cards.add(self.model.collection.models);
-                            }
-                            if (!_.isUndefined(response.undo.edit_comment)) {
-                                if (activity.attributes.id == response.undo.edit_comment) {
-                                    activity.attributes.comment = response.undo.card.comment;
-                                }
-                            }
-                            var view = new App.ActivityView({
-                                model: activity,
-                                board: self.board
-                            });
-                            view_activity.append(view.render().el);
-                            emojify.run();
-                            $('#js-loader-img').addClass('hide');
+                    if (!_.isUndefined(self.board) && !_.isEmpty(self.board) && self.board !== null && !_.isUndefined(self.board.cards) && !_.isEmpty(self.board.cards) && self.board.cards !== null) {
+                        var card = self.board.cards.findWhere({
+                            id: parseInt(response.undo.card.id)
                         });
+                        if (!_.isUndefined(card) && !_.isEmpty(card) && card !== null) {
+                            card.set(response.undo.card);
+                            _.each(response.undo.card, function(val, key) {
+                                if (key === 'id' || key === 'list_id' || key === 'board_id') {
+                                    card.set(key, parseInt(val));
+                                }
+                                var activity = new App.Activity();
+                                activity.set(response.activity);
+                                card.activities.unshift(activity);
+                            });
+                            var view_activity = this.$('#js-card-activities-' + response.undo.card.id);
+                            view_activity.html('');
+                            if (!_.isEmpty(card.activities)) {
+                                card.activities.each(function(activity) {
+                                    $('#js-loader-img').removeClass('hide');
+                                    if (!_.isEmpty(self.model.collection)) {
+                                        activity.cards.add(self.model.collection.models);
+                                    }
+                                    if (!_.isUndefined(response.undo.edit_comment)) {
+                                        if (activity.attributes.id == response.undo.edit_comment) {
+                                            activity.attributes.comment = response.undo.card.comment;
+                                        }
+                                    }
+                                    var view = new App.ActivityView({
+                                        model: activity,
+                                        board: self.board
+                                    });
+                                    view_activity.append(view.render().el);
+                                    emojify.run();
+                                    $('#js-loader-img').addClass('hide');
+                                });
+                            }
+                        }
                     }
                 } else if (!_.isUndefined(response.undo.list)) {
-                    var list = self.board.lists.findWhere({
-                        id: parseInt(response.undo.list.id)
-                    });
-                    list.set(response.undo.list);
-                    _.each(response.undo.list, function(val, key) {
-                        if (key === 'id' || key === 'board_id') {
-                            list.set(key, parseInt(val));
+                    if (!_.isUndefined(self.board) && !_.isEmpty(self.board) && self.board !== null && !_.isUndefined(self.board.lists) && !_.isEmpty(self.board.lists) && self.board.lists !== null) {
+                        var list = self.board.lists.findWhere({
+                            id: parseInt(response.undo.list.id)
+                        });
+                        if (!_.isUndefined(list) && !_.isEmpty(list) && list !== null) {
+                            list.set(response.undo.list);
+                            _.each(response.undo.list, function(val, key) {
+                                if (key === 'id' || key === 'board_id') {
+                                    list.set(key, parseInt(val));
+                                }
+                            });
                         }
-                    });
+                    }
                 } else if (!_.isUndefined(response.undo.board)) {
                     board.set(response.undo.board);
                     _.each(response.undo.board, function(val, key) {
@@ -192,73 +201,91 @@ App.ActivityView = Backbone.View.extend({
             patch: true,
             success: function(model, response) {
                 self.flash('danger', i18next.t('Undo Succeed'));
-                if (!_.isUndefined(response.undo.card)) {
-                    var card = self.board.cards.findWhere({
-                        id: parseInt(response.undo.card.id)
-                    });
-                    card.set(response.undo.card);
-                    _.each(response.undo.card, function(val, key) {
-                        if (key === 'id' || key === 'list_id' || key === 'board_id') {
-                            card.set(key, parseInt(val));
-                        }
-                        var activity = new App.Activity();
-                        activity.set(response.activity);
-                        if (!_.isUndefined(card.activities)) {
-                            card.activities.unshift(activity);
-                        }
-                    });
-                    var view_activity = this.$('#js-card-activities-' + response.undo.card.id);
-                    view_activity.html('');
-                    if (!_.isEmpty(card.activities)) {
-                        card.activities.each(function(activity) {
-                            $('#js-loader-img').removeClass('hide');
-                            if (!_.isEmpty(self.model.collection)) {
-                                activity.cards.add(self.model.collection.models);
-                            }
-                            if (!_.isUndefined(response.undo.edit_comment)) {
-                                if (activity.attributes.id == response.undo.edit_comment) {
-                                    activity.attributes.comment = response.undo.card.comment;
+                if (!_.isUndefined(self.board) && !_.isEmpty(self.board) && self.board !== null) {
+                    if (!_.isUndefined(response.undo.card)) {
+                        if (!_.isUndefined(self.board.cards) && !_.isEmpty(self.board.cards) && self.board.cards !== null) {
+                            var card = self.board.cards.findWhere({
+                                id: parseInt(response.undo.card.id)
+                            });
+                            if (!_.isUndefined(card) && !_.isEmpty(card) && card !== null) {
+                                card.set(response.undo.card);
+                                _.each(response.undo.card, function(val, key) {
+                                    if (key === 'id' || key === 'list_id' || key === 'board_id') {
+                                        card.set(key, parseInt(val));
+                                    }
+                                    var activity = new App.Activity();
+                                    activity.set(response.activity);
+                                    if (!_.isUndefined(card.activities)) {
+                                        card.activities.unshift(activity);
+                                    }
+                                });
+                                var view_activity = this.$('#js-card-activities-' + response.undo.card.id);
+                                view_activity.html('');
+                                if (!_.isEmpty(card.activities)) {
+                                    card.activities.each(function(activity) {
+                                        $('#js-loader-img').removeClass('hide');
+                                        if (!_.isEmpty(self.model.collection)) {
+                                            activity.cards.add(self.model.collection.models);
+                                        }
+                                        if (!_.isUndefined(response.undo.edit_comment)) {
+                                            if (activity.attributes.id == response.undo.edit_comment) {
+                                                activity.attributes.comment = response.undo.card.comment;
+                                            }
+                                        }
+                                        var view = new App.ActivityView({
+                                            model: activity,
+                                            board: self.board
+                                        });
+                                        view_activity.append(view.render().el);
+                                        emojify.run();
+                                        $('#js-loader-img').addClass('hide');
+                                    });
                                 }
                             }
-                            var view = new App.ActivityView({
-                                model: activity,
-                                board: self.board
+                        }
+                    } else if (!_.isUndefined(response.undo.list)) {
+                        if (!_.isUndefined(self.board.lists) && !_.isEmpty(self.board.lists) && self.board.lists !== null) {
+                            var list = self.board.lists.findWhere({
+                                id: parseInt(response.undo.list.id)
                             });
-                            view_activity.append(view.render().el);
-                            emojify.run();
-                            $('#js-loader-img').addClass('hide');
+                            if (!_.isUndefined(response.undo.list.is_archived)) {
+                                response.undo.list.is_archived = (response.undo.list.is_archived == 'f') ? 0 : 1;
+                            }
+                            if (!_.isUndefined(list) && !_.isEmpty(list) && list !== null) {
+                                list.set(response.undo.list);
+                                _.each(response.undo.list, function(val, key) {
+                                    if (key === 'id' || key === 'board_id') {
+                                        list.set(key, parseInt(val));
+                                    }
+                                });
+                            }
+                        }
+                    } else if (!_.isUndefined(response.undo.board)) {
+                        self.board.set(response.undo.board);
+                        _.each(response.undo.board, function(val, key) {
+                            if (key === 'id' || key === 'user_id') {
+                                self.board.set(key, parseInt(val));
+                            }
                         });
-                    }
-                } else if (!_.isUndefined(response.undo.list)) {
-                    var list = self.board.lists.findWhere({
-                        id: parseInt(response.undo.list.id)
-                    });
-                    if (!_.isUndefined(response.undo.list.is_archived)) {
-                        response.undo.list.is_archived = (response.undo.list.is_archived == 'f') ? 0 : 1;
-                    }
-                    list.set(response.undo.list);
-                    _.each(response.undo.list, function(val, key) {
-                        if (key === 'id' || key === 'board_id') {
-                            list.set(key, parseInt(val));
+                    } else if (!_.isUndefined(response.undo.checklist)) {
+                        if (!_.isUndefined(self.board.checklists) && !_.isEmpty(self.board.checklists) && self.board.checklists !== null) {
+                            var checklist = self.board.checklists.findWhere({
+                                id: parseInt(response.undo.checklist.id)
+                            });
+                            if (!_.isUndefined(checklist) && !_.isEmpty(checklist) && checklist !== null) {
+                                checklist.set(response.undo.checklist);
+                            }
                         }
-                    });
-                } else if (!_.isUndefined(response.undo.board)) {
-                    self.board.set(response.undo.board);
-                    _.each(response.undo.board, function(val, key) {
-                        if (key === 'id' || key === 'user_id') {
-                            self.board.set(key, parseInt(val));
+                    } else if (!_.isUndefined(response.undo.checklist_item)) {
+                        if (!_.isUndefined(self.board.checklist_items) && !_.isEmpty(self.board.checklist_items) && self.board.checklist_items !== null) {
+                            var checklist_item = self.board.checklist_items.findWhere({
+                                id: parseInt(response.undo.checklist_item.id)
+                            });
+                            if (!_.isUndefined(checklist_item) && !_.isEmpty(checklist_item) && checklist_item !== null) {
+                                checklist_item.set(response.undo.checklist_item);
+                            }
                         }
-                    });
-                } else if (!_.isUndefined(response.undo.checklist)) {
-                    var checklist = self.board.checklists.findWhere({
-                        id: parseInt(response.undo.checklist.id)
-                    });
-                    checklist.set(response.undo.checklist);
-                } else if (!_.isUndefined(response.undo.checklist_item)) {
-                    var checklist_item = self.board.checklist_items.findWhere({
-                        id: parseInt(response.undo.checklist_item.id)
-                    });
-                    checklist_item.set(response.undo.checklist_item);
+                    }
                 }
                 return false;
             }

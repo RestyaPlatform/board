@@ -82,6 +82,7 @@ App.ModalBoardView = Backbone.View.extend({
      * @return false
      */
     renderAttachmentsCollection: function() {
+        $('body').find('#modalListView').remove();
         var view_attachment = this.$('#js-list-attachments-list');
         view_attachment.html('');
         var attachments = this.model.attachments;

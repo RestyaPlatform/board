@@ -26,6 +26,7 @@ App.SettingView = Backbone.View.extend({
      */
     events: {
         'submit form#js-setting-list-form': 'updateSetting',
+        'click #js-setting_trigger': 'TriggerSettingtab',
     },
 
     /**
@@ -38,7 +39,7 @@ App.SettingView = Backbone.View.extend({
         if (!_.isUndefined(data.DEFAULT_CARD_VIEW)) {
             DEFAULT_CARD_VIEW = data.DEFAULT_CARD_VIEW;
         }
-        if ($(e.target).find('#input_setting_category_id').val() === '14') {
+        if ($(e.target).find('#input_setting_category_name').val() === 'Notifications') {
             data.IS_LIST_NOTIFICATIONS_ENABLED = 'false';
             if (!_.isUndefined($("input[name='IS_LIST_NOTIFICATIONS_ENABLED']:checked").val())) {
                 data.IS_LIST_NOTIFICATIONS_ENABLED = 'true';
@@ -64,10 +65,14 @@ App.SettingView = Backbone.View.extend({
                 data.IS_CARD_ATTACHMENTS_NOTIFICATIONS_ENABLED = 'true';
             }
         }
-        if ($(e.target).find('#input_setting_category_id').val() === '17') {
+        if ($(e.target).find('#input_setting_category_name').val() === 'User') {
             data.IS_TWO_FACTOR_AUTHENTICATION_ENABLED = 'false';
             if (!_.isUndefined($("input[name='IS_TWO_FACTOR_AUTHENTICATION_ENABLED']:checked").val())) {
                 data.IS_TWO_FACTOR_AUTHENTICATION_ENABLED = 'true';
+                IS_TWO_FACTOR_AUTHENTICATION_ENABLED = 'true';
+            }
+            if (data.IS_TWO_FACTOR_AUTHENTICATION_ENABLED === 'false') {
+                IS_TWO_FACTOR_AUTHENTICATION_ENABLED = 'false';
             }
         }
         var self = this;
@@ -76,6 +81,11 @@ App.SettingView = Backbone.View.extend({
         settingModel.save(data, {
             success: function(model, response) {
                 if (!_.isEmpty(response.success)) {
+                    _.each(data, function(val, field) {
+                        if (field in window) {
+                            window[field] = val;
+                        }
+                    });
                     self.flash('success', i18next.t('Settings updated successfully.'));
                 } else {
                     self.flash('danger', i18next.t('Settings not updated properly.'));
@@ -83,6 +93,20 @@ App.SettingView = Backbone.View.extend({
             }
         });
         return false;
+    },
+    /** 
+     * TriggerSettingtab()
+     * trigger setting tab view
+     * @return false
+     */
+    TriggerSettingtab: function(e) {
+        e.preventDefault();
+        app.navigate('#/' + 'settings/' + $(e.currentTarget).data('setting_category_id'), {
+            trigger: false,
+            trigger_function: false,
+        });
+        this.id = $(e.currentTarget).data('setting_category_id');
+        this.getListing();
     },
     /** 
      * getListing()
@@ -116,6 +140,18 @@ App.SettingView = Backbone.View.extend({
             list: collections,
             id: this.id
         }));
+        //Changing the Title dynamically
+        var self = this;
+        if (!_.isEmpty(collections) && !_.isUndefined(self.id)) {
+            var setting_category = collections.filter(function(model) {
+                if (parseInt(model.get('id')) === parseInt(self.id)) {
+                    return model;
+                }
+            });
+            if (setting_category.length > 0) {
+                changeTitle(i18next.t('Settings') + ' - ' + setting_category[0].get('name'));
+            }
+        }
         $('.js-admin-setting-menu').addClass('active');
         $('.js-admin-activity-menu, .js-admin-user-menu, .js-admin-email-menu, .js-admin-role-menu, .js-admin-board-menu').removeClass('active');
         return this;

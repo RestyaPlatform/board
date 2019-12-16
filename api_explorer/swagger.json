@@ -13,9 +13,6 @@
         "version": "1.0.0"
     },
     "basePath": "/v1",
-    "schemes": [
-        "http"
-    ],
     "consumes": [
         "application/json"
     ],
@@ -9382,6 +9379,26 @@
                         "required": true,
                         "type": "integer",
                         "format": "int64"
+                    },
+                    {
+                        "name": "imageLink",
+                        "in": "body",
+                        "description": "Paste Link.",
+                        "required": false,
+                        "schema": {
+                            "properties": {
+                                "image_link": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "name": "attachment",
+                        "in": "formData",
+                        "description": "Upload File.",
+                        "required": false,
+                        "type": "file"
                     }
                 ],
                 "responses": {

@@ -19,6 +19,7 @@ App.AdminUserLoginView = Backbone.View.extend({
      * initialize default values and actions
      */
     initialize: function(options) {
+        this.current_page = (!_.isUndefined(options.page) && options.page !== null) ? options.page : 1;
         this.render();
     },
     /**
@@ -37,10 +38,6 @@ App.AdminUserLoginView = Backbone.View.extend({
         _this.users = new App.UserCollection();
         $('.js-user-list').html('<tr class="js-loader"><td colspan="15"><span class="cssloader"></span></td></tr>');
         _this.users.url = api_url + 'user_logins.json?page=' + _this.current_page;
-        app.navigate('#/' + 'user_logins?page=' + _this.current_page, {
-            trigger: false,
-            trigger_function: false,
-        });
         _this.users.fetch({
             cache: false,
             abortPending: true,
@@ -61,18 +58,24 @@ App.AdminUserLoginView = Backbone.View.extend({
                     }).el);
                 });
                 $('.pagination-boxes').unbind();
-                $('.pagination-boxes').pagination({
-                    total_pages: response._metadata.noOfPages,
-                    current_page: _this.current_page,
-                    display_max: 4,
-                    callback: function(event, page) {
-                        event.preventDefault();
-                        if (page) {
-                            _this.current_page = page;
-                            _this.updateCollection();
+                $('.pagination-boxes').html('');
+                if (!_.isUndefined(response._metadata) && parseInt(response._metadata.noOfPages) > 1) {
+                    $('.pagination-boxes').pagination({
+                        total_pages: parseInt(response._metadata.noOfPages),
+                        current_page: parseInt(_this.current_page),
+                        display_max: 4,
+                        callback: function(event, page) {
+                            event.preventDefault();
+                            if (page) {
+                                _this.current_page = page;
+                                app.navigate('#/' + 'user_logins?page=' + page, {
+                                    trigger: true,
+                                    trigger_function: true,
+                                });
+                            }
                         }
-                    }
-                });
+                    });
+                }
             }
         });
     }

@@ -99,11 +99,19 @@ function filter_getFilterObject(current_param, cardModels) {
     if (!_.isEmpty(filter_mode)) {
         if (filter_mode === 'and') {
             if (!_.isEmpty(show_label_arr)) {
-                result_label_arr = show_label_arr.shift().filter(function(v) {
-                    return show_label_arr.every(function(a) {
-                        return a.indexOf(v) !== -1;
-                    });
+                var no_label_card = false;
+                _.each(show_label_arr, function(labelcard) {
+                    if (_.isUndefined(labelcard) || _.isEmpty(labelcard)) {
+                        no_label_card = true;
+                    }
                 });
+                if (!no_label_card) {
+                    result_label_arr = show_label_arr.shift().filter(function(v) {
+                        return show_label_arr.every(function(a) {
+                            return a.indexOf(v) !== -1;
+                        });
+                    });
+                }
             }
         }
     } else if (!_.isEmpty(show_label_arr)) {
@@ -127,17 +135,8 @@ function filter_getFilterObject(current_param, cardModels) {
             }
         });
     }
-    if (!_.isEmpty(filter_mode)) {
-        if (filter_mode === 'and') {
-            if (!_.isEmpty(show_color_arr)) {
-                result_color_arr = show_color_arr.shift().filter(function(v) {
-                    return show_color_arr.every(function(a) {
-                        return a.indexOf(v) !== -1;
-                    });
-                });
-            }
-        }
-    } else if (!_.isEmpty(show_color_arr)) {
+
+    if (!_.isEmpty(show_color_arr)) {
         result_color_arr = _.union.apply(_, show_color_arr);
     }
 
@@ -167,11 +166,19 @@ function filter_getFilterObject(current_param, cardModels) {
     if (!_.isEmpty(filter_mode)) {
         if (filter_mode === 'and') {
             if (!_.isEmpty(show_user_arr)) {
-                result_user_arr = show_user_arr.shift().filter(function(v) {
-                    return show_user_arr.every(function(a) {
-                        return a.indexOf(v) !== -1;
-                    });
+                var no_user_card = false;
+                _.each(show_user_arr, function(user) {
+                    if (_.isUndefined(user) || _.isEmpty(user)) {
+                        no_user_card = true;
+                    }
                 });
+                if (!no_user_card) {
+                    result_user_arr = show_user_arr.shift().filter(function(v) {
+                        return show_user_arr.every(function(a) {
+                            return a.indexOf(v) !== -1;
+                        });
+                    });
+                }
             }
         }
     } else if (!_.isEmpty(show_user_arr)) {

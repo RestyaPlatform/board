@@ -58,7 +58,7 @@ App.AdminBoardView = Backbone.View.extend({
         'click .js-show-board-organization': 'showBoardOrganization',
         'submit .js-save-board-visibility': 'saveBoardVisibility',
         'click .js-close-span-popover': 'closeSpanPopover',
-        'click .js-back-to-board-visibility': 'showBoardVisibility',
+        'click .js-back-to-board-visibility': 'backShowBoardVisibility',
     },
     /**
      * render()
@@ -74,7 +74,7 @@ App.AdminBoardView = Backbone.View.extend({
             starred_boards: this.starred_boards
         }));
         if (this.model !== null) {
-            this.model.lists.sortByColumn('position');
+            this.model.lists.sortByColumn('position', 'asc');
             var data = [];
             var color_codes = ['#DB7093', '#F47564', '#EDA287', '#FAC1AD', '#FFE4E1', '#D3ABF0', '#DC9CDC', '#69BFBA', '#66CDAA', '#8FBC8F', '#CBFDCA', '#EEE8AA', '#BC8F8F', '#CD853F', '#D2B48C', '#F5DEB3', '#64BCF2', '#87CEFA', '#B0C4DE', '#D6E2F7'];
             var i = 0;
@@ -200,6 +200,23 @@ App.AdminBoardView = Backbone.View.extend({
         this.$('.js-back-to-board-visibility').addClass('hide');
         var visibility = this.model.attributes.board_visibility;
         var insert = $('.js-visibility-list', target.next('.dropdown-menu'));
+        insert.nextAll().remove();
+        $(new App.ShowBoardVisibilityView({
+            model: visibility
+        }).el).insertAfter(insert);
+    },
+    /**
+     * backShowBoardVisibility()
+     * render the board visibilities
+     * @param e
+     * @type Object(DOM event)
+     *
+     */
+    backShowBoardVisibility: function(e) {
+        var target = $(e.currentTarget);
+        this.$('.js-back-to-board-visibility').addClass('hide');
+        var visibility = this.model.attributes.board_visibility;
+        var insert = $(target).parents('.dropdown-menu:first').find('.js-visibility-list');
         insert.nextAll().remove();
         $(new App.ShowBoardVisibilityView({
             model: visibility

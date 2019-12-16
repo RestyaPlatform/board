@@ -60,6 +60,14 @@ App.ArchivedCardView = Backbone.View.extend({
             card.list = self.model.board.lists.findWhere({
                 id: card.attributes.list_id
             });
+            var filter_labels = self.model.board.labels.filter(function(model) {
+                return parseInt(model.get('card_id')) === parseInt(self.model.id);
+            });
+            var labels = new App.CardLabelCollection();
+            labels.add(filter_labels, {
+                silent: true
+            });
+            card.labels = labels;
             new App.CardView({
                 model: card
             }).showCardModal();
@@ -88,7 +96,7 @@ App.ArchivedCardView = Backbone.View.extend({
      *
      */
     deleteArchivedCardConfirm: function(e) {
-        $('.js-setting-response').html(new App.ArchiveCardsDeleteConfirmView({
+        $('.js-setting-response').html(new App.ArchivedCardDeleteConfirmView({
             model: this.model,
         }).el);
         return false;

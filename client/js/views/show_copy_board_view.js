@@ -31,7 +31,8 @@ App.ShowCopyBoardView = Backbone.View.extend({
      * functions to fire on events (Mouse events, Keyboard Events, Frame/Object Events, Form Events, Drag Events, etc...)
      */
     events: {
-        'submit #BoardCopyForm': 'copyNewBoard'
+        'submit #BoardCopyForm': 'copyNewBoard',
+        'click .js-keep_card_trigger': 'KeepCardTrigger',
     },
     /**
      * render()
@@ -47,6 +48,25 @@ App.ShowCopyBoardView = Backbone.View.extend({
         $('.js-filter-parent').addClass('open');
         this.showTooltip();
         return this;
+    },
+    /**
+     * KeepCardTrigger()
+     * enable/disable all the card option
+     * @param e
+     * @type Object(DOM event)
+     * @return false
+     *
+     */
+    KeepCardTrigger: function(e) {
+        var keepCards = this.$el.find('input[name="keepCards"]:checked').length > 0;
+        $('.js-keep_card_enable').each(function() {
+            $(this).prop("checked", keepCards);
+            if (keepCards) {
+                $(this).removeAttr("disabled");
+            } else {
+                $(this).attr("disabled", true);
+            }
+        });
     },
     /**
      * copyBoard()

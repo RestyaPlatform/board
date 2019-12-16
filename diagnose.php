@@ -189,21 +189,14 @@ foreach($_writable_folders as $folder) {
     }
 }
 $_writable_files = array(
-    APP_PATH . '/server/php/shell/card_due_notification.sh',
-    APP_PATH . '/server/php/shell/imap.sh',
-    APP_PATH . '/server/php/shell/instant_email_notification.sh',
-    APP_PATH . '/server/php/shell/periodic_email_notification.sh',
-    APP_PATH . '/server/php/shell/webhook.sh',
-    APP_PATH . '/server/php/plugins/Chat/shell/chat_activities.sh',
-    APP_PATH . '/server/php/plugins/Chat/shell/periodic_chat_email_notification.sh',
-    APP_PATH . '/server/php/plugins/ElasticSearch/shell/indexing_to_elasticsearch.sh',
+    APP_PATH . '/server/php/shell/main.sh'
 );
 foreach($_writable_files as $file) {
     if (file_exists($file)) {
-        if (is_writable($file)) {
-            $writable.= '<tr><td> ' . $file . '</td><td class="green">Writable</td></tr>';
+        if (is_executable($file)) {
+            $writable.= '<tr><td> ' . $file . '</td><td class="green">Executable</td></tr>';
         } else {
-            $writable.= '<tr><td>' . $file . '</td><td class="red">Not Writable</td></tr>';
+            $writable.= '<tr><td>' . $file . '</td><td class="red">Not Executable</td></tr>';
         }
     }
 }
