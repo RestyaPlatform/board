@@ -213,7 +213,7 @@ function parse_date(dateTime, logged_user, classname, isAbbrReturn) {
     var s = dateTime.replace("T", " "),
         current_timezone;
     new_date = moment.tz(s, 'YYYY-MM-DD HH:mm:ss', SITE_TIMEZONE).utc().format('YYYY-MM-DD HH:mm:ss');
-    if (logged_user && logged_user.user) {
+    if (logged_user && logged_user.user && !_.isUndefined(logged_user.user.timezone) && !_.isEmpty(logged_user.user.timezone) && logged_user.user.timezone !== null) {
         current_timezone = moment.tz(logged_user.user.timezone).format('Z').replace(':', '');
     } else {
         current_timezone = moment.tz(SITE_TIMEZONE).format('Z').replace(':', '');
