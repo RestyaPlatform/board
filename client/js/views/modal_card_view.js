@@ -4132,16 +4132,13 @@ App.ModalCardView = Backbone.View.extend({
                             self.model.list.collection.board.attachments.unshift(card_attachment, {
                                 silent: true
                             });
+                            if (!_.isUndefined(self.model.attributes.attachment_count) && self.model.attributes.attachment_count !== null) {
+                                var previous_attachment_count = self.model.attachments.length;
+                                self.model.set('attachment_count', previous_attachment_count + response.card_attachments.length);
+                            }
                             self.model.attachments.unshift(card_attachment, {
-                                silent: true
+                                silent: false
                             });
-                            var view = new App.CardAttachmentView({
-                                model: card_attachment,
-                                board: self.model.list.collection.board,
-                                card: self.model
-                            });
-                            var view_attachment = self.$('#js-card-attachments-list');
-                            view_attachment.append(view.render().el);
                         }
                     }
                 }
