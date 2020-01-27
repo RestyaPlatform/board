@@ -89,6 +89,7 @@ COPY --from=builder /app/restyaboard-docker.zip /tmp/restyaboard.zip
 
 RUN unzip /tmp/restyaboard.zip -d ${ROOT_DIR} && \
     rm /tmp/restyaboard.zip && \
+    mkdir -p ${ROOT_DIR}/tmp/cache ${ROOT_DIR}/media && \
     chown -R www-data:www-data ${ROOT_DIR}
 RUN mv  ${ROOT_DIR}/api_explorer/ ${ROOT_DIR}/client/api_explorer/
 
