@@ -1897,7 +1897,7 @@ App.ListView = Backbone.View.extend({
                     position: newPosition
                 });
                 data.position = newPosition;
-                prev.after(view.render().el);
+                prev.after().append(view.render().el);
             } else if (next.length !== 0) {
                 after = list_cards.get(parseInt(next.data('card_id')));
                 before = list_cards.at(list_cards.indexOf(after) - 1);
