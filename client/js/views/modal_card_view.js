@@ -2990,7 +2990,8 @@ App.ModalCardView = Backbone.View.extend({
                         var view = new App.ActivityView({
                             model: activity,
                             board: self.model.list.collection.board,
-                            flag: '1'
+                            flag: '1',
+                            type: 'modal_card'
                         });
                         view_activity.append(view.render().el);
                         i++;
