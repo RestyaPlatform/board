@@ -2529,7 +2529,9 @@ App.FooterView = Backbone.View.extend({
                                             existing_board.set('board_visibility', activity.attributes.revisions.new_value.board_visibility);
                                         }
                                     } else if (activity.attributes.type === 'close_board') {
-                                        App.boards.get(parseInt(activity.attributes.board_id)).set('is_closed', 1);
+                                        if (!_.isUndefined(App.boards.get(parseInt(activity.attributes.board_id))) && !_.isEmpty(App.boards.get(parseInt(activity.attributes.board_id))) && App.boards.get(parseInt(activity.attributes.board_id)) !== null) {
+                                            App.boards.get(parseInt(activity.attributes.board_id)).set('is_closed', 1);
+                                        }
                                     } else if (activity.attributes.type === 'edit_board') {
                                         var edit_board = App.boards.get(parseInt(activity.attributes.board_id));
                                         if (!_.isUndefined(edit_board) && !_.isEmpty(edit_board) && edit_board !== null) {
