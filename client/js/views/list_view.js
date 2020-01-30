@@ -1756,7 +1756,7 @@ App.ListView = Backbone.View.extend({
     hideListEditForm: function(e) {
         e.preventDefault();
         var toggle = $(e.currentTarget);
-        toggle.parents('.js-board-list').find('#inputListName').val($('.get-name-' + this.model.attributes.id).html());
+        toggle.parents('.js-board-list').find('#inputListName-' + this.model.attributes.id).val($('.get-name-' + this.model.attributes.id).html());
         toggle.parents('form').addClass('hide').prev('.js-show-edit-list-form').removeClass('hide');
         this.$('#js-show-list-actions-' + this.model.attributes.id + ', #js-show-sort-form-' + this.model.attributes.id).removeClass('hide');
         $('.js-list-header-' + this.model.attributes.id).removeClass('hide');
