@@ -87,6 +87,7 @@ App.ModalCardView = Backbone.View.extend({
         'click .js-add-comment-member': 'AddCommentMember',
         'focus .js-comment': 'showActions',
         'keyup .js-comment': 'showMemberSearch',
+        'blur .js-comment': 'getCursorPosition',
         'keydown .js-comment': 'showMemberSearchKeyDown',
         'keyup .js-search-users': 'showSearchUsers',
         'click .js-load-dropbox': 'loadDropbox',
@@ -178,6 +179,16 @@ App.ModalCardView = Backbone.View.extend({
         }
         $(target).parents('#card_activities').find('textarea#inputAddComment').removeClass('hide').addClass('show');
         $(target).parents('#card_activities').find('.js-card-comment-preview-panel').removeClass('show').addClass('hide');
+    },
+    /**
+     * getCursorPosition()
+     * get the cursor position
+     * @param e
+     * @type Object(DOM event)
+     */
+    getCursorPosition: function(e) {
+        this.autoMentionSelectionStart = e.target.selectionStart;
+        return false;
     },
     /**
      * previewComment()
@@ -508,11 +519,31 @@ App.ModalCardView = Backbone.View.extend({
     addEmoji: function(e) {
         e.preventDefault();
         var target = $(e.currentTarget);
-        if ($(target).parents('.js-add-comment').length > 0) {
-            $(target).parents('.js-add-comment').find('.js-comment').val($(target).parents('.js-add-comment').find('.js-comment').val() + ' :' + target.text() + ': ');
-        } else {
-            $(target).parents('.js-edit-comment').find('.js-comment').val($(target).parents('.js-edit-comment').find('.js-comment').val() + ' :' + target.text() + ': ');
-        }
+        var autoMentionSelectionStart = this.autoMentionSelectionStart;
+        var emoji = '';
+        this.$el.find(".current-comment-box").each(function(i) {
+            emoji = ':' + target.text() + ':';
+            if (_.isUndefined(autoMentionSelectionStart) || parseInt(autoMentionSelectionStart) === 0) {
+                this.value = this.value + ' ' + emoji;
+                this.focus();
+            } else {
+                if (document.selection) {
+                    //For browsers like Internet Explorer
+                    sel = document.selection.createRange();
+                    sel.text = emoji;
+                    this.focus();
+                } else if (this.selectionStart) {
+                    //For browsers like Firefox and Webkit based
+                    var start = this.selectionStart;
+                    var end = this.selectionEnd;
+                    this.value = this.value.substring(0, start) + emoji + this.value.substring(start, this.value.length);
+                    this.focus();
+                    this.selectionStart = start + emoji.length;
+                    this.selectionEnd = start + emoji.length;
+                }
+            }
+        });
+        this.autoMentionSelectionStart = 0;
     },
     /**
      * addChecklistItemEmoji()
@@ -4804,8 +4835,12 @@ App.ModalCardView = Backbone.View.extend({
                         var end = this.selectionEnd;
                         var scrollTop = this.scrollTop;
                         var search = this.value.substring(0, start);
-                        search = search.lastIndexOf('@');
-                        this.value = this.value.substring(0, search) + member + this.value.substring(end, this.value.length);
+                        if (search.indexOf('@') !== -1) {
+                            search = search.lastIndexOf('@');
+                            this.value = this.value.substring(0, search) + member + this.value.substring(end, this.value.length);
+                        } else {
+                            this.value = this.value.substring(0, start) + member + this.value.substring(start, this.value.length);
+                        }
                         this.focus();
                         this.selectionStart = start + member.length;
                         this.selectionEnd = start + member.length;
