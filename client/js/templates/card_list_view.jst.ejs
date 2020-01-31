@@ -159,7 +159,7 @@
 							if (_.isEmpty(customfield.color) || _.isUndefined(customfield.color)) {
 								labelClass = 'label-default';
 							}
-							if (!_.isEmpty(customfield.cards_custom_fields)) {
+							if (!_.isEmpty(customfield.cards_custom_fields) && customfield.cards_custom_fields !== null) {
 								var custom_field_json = jQuery.parseJSON(customfield.cards_custom_fields);
 								var filtered_cards_custom_fields = custom_field_json.filter(function(x) {
 									return x.card_id === card.id;
@@ -224,7 +224,9 @@
 								} else { %>
 									<small>-</small>
 								<% } %>
-							<% }  
+							<% } else { %>
+								<small>-</small>
+							<% } 
 						} %>
 					</td>
 				<% } %>
