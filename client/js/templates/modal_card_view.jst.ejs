@@ -63,7 +63,7 @@
 							  <form method="post" class="text-center" name="addMember">
 								<div class="form-group">
 								  <label class="sr-only"><%- i18next.t('Search Member') %></label>
-								  <input type="text" autocomplete="off" id="inputOrganizationUserSearch" placeholder="<%- i18next.t('Search Members') %>" name="email" required class="js-search-users form-control input-sm" title="<%- i18next.t('Search Members') %>">
+								  <input type="text" autocomplete="off" id="inputOrganizationUserSearch-card" placeholder="<%- i18next.t('Search Members') %>" name="email" required class="js-search-users form-control input-sm" title="<%- i18next.t('Search Members') %>">
 								</div>
 							  </form>
 							</li>
@@ -174,7 +174,7 @@
 							  <input type="url" id="AttachList" class="form-control input-sm" name="image_link" placeHolder="<%- i18next.t('Paste any link here') %>" title="<%- i18next.t('Whitespace is not allowed') %>" required pattern=".*\S+.*">
 							</div>
 							<div class="form-group row">
-							  <input type="submit" value="<%- i18next.t('Submit') %>" id="submit2" class="btn btn-primary btn-sm">
+							  <input type="submit" value="<%- i18next.t('Submit') %>" id="cardAttachmentLinkSave" class="btn btn-primary btn-sm">
 							</div>
 							<span class="help-block row small"><%- i18next.t('Tip: You can drag and drop files and links onto cards to upload them.') %></span>
 						  </form>
@@ -294,9 +294,9 @@
 										</div>
 										<div class="form-group">
 											<div class="col-xs-6">
-												<label for="save" class="sr-only"><%- i18next.t('Save') %>
+												<label for="cardDueDateSave" class="sr-only"><%- i18next.t('Save') %>
 												</label>
-												<input type="submit" value="<%- i18next.t('Save') %>" id="save" class="btn btn-primary" id="submitCardDueDateEditForm">
+												<input type="submit" value="<%- i18next.t('Save') %>" id="cardDueDateSave" class="btn btn-primary" id="submitCardDueDateEditForm">
 											</div>
 											<div class="col-xs-6" id="js-card-due-date-remove-<%=card.attributes.id%>"></div>
 										</div>
@@ -336,7 +336,7 @@
 							<div class="js-show-move-card-form-response"> </div>
 							<div class="form-group clearfix">
 							  <label class="sr-only"><%- i18next.t('Move') %></label>
-							  <input type="submit" id="submitListMove" class="btn btn-primary col-xs-12" value="<%- i18next.t('Move') %>" />
+							  <input type="submit" id="submitListMove1" class="btn btn-primary col-xs-12" value="<%- i18next.t('Move') %>" />
 							</div>
 						  </form>
 						</li>
@@ -630,9 +630,9 @@
 							</div>
 							<div class="form-group">
 								<div class="col-xs-6">
-									<label for="save" class="sr-only"><%- i18next.t('Save') %>
+									<label for="cardDueDateEditSave" class="sr-only"><%- i18next.t('Save') %>
 									</label>
-									<input type="submit" value="<%- i18next.t('Save') %>" id="save" class="btn btn-primary" id="submitCardDueDateEditForm">
+									<input type="submit" value="<%- i18next.t('Save') %>" id="cardDueDateEditSave" class="btn btn-primary" id="submitCardDueDateEditForm">
 								</div>
 								<div class="col-xs-6" id="js-card-due-date-remove-<%=card.attributes.id%>"></div>
 							</div>
@@ -652,7 +652,7 @@
 					  <form method="post" class="text-center" name="addMember">
 						<div class="form-group">
 						  <label class="sr-only"><%- i18next.t('Search Member') %></label>
-						  <input type="text" autocomplete="off" id="inputOrganizationUserSearch" placeholder="<%- i18next.t('Search Members') %>" name="email" required class="js-search-users form-control input-sm" title="<%- i18next.t('Search Members') %>">
+						  <input type="text" autocomplete="off" id="inputOrganizationUserSearch-action" placeholder="<%- i18next.t('Search Members') %>" name="email" required class="js-search-users form-control input-sm" title="<%- i18next.t('Search Members') %>">
 						</div>
 					  </form>
 					</li>
@@ -693,7 +693,7 @@
 					<div class="form-group">
 					  <div class="col-xs-6 nav">
 						<label for="save" class="sr-only"><%- i18next.t('Save') %></label>
-						<input type="submit" value="<%- i18next.t('Save') %>" id="save" class="btn btn-primary" id="submitCardInfoEditForm">
+						<input type="submit" value="<%- i18next.t('Save') %>" id="cardTitleEditSave" class="btn btn-primary" id="submitCardInfoEditForm">
 					  </div>
 					</div>
 				  </form>
@@ -739,7 +739,7 @@
 				<div class="js-show-move-card-form-response"> </div>
 				<div class="form-group clearfix">
 					<label class="sr-only"><%- i18next.t('Move') %></label>
-					<input type="submit" id="submitListMove" class="btn btn-primary col-xs-12" value="<%- i18next.t('Move') %>" />
+					<input type="submit" id="submitListMove2" class="btn btn-primary col-xs-12" value="<%- i18next.t('Move') %>" />
 				</div>
 				</form>
 			</li>

@@ -900,6 +900,7 @@ App.ApplicationView = Backbone.View.extend({
                             cache: false,
                             abortPending: true,
                             success: function(board_model, board_response) {
+                                App.boards = boards;
                                 $('#header').html(page.headerView.el);
                                 this.headerView = new App.BoardIndexHeaderView({
                                     model: page_title,
@@ -1389,10 +1390,12 @@ App.ApplicationView = Backbone.View.extend({
             }
         } else {
             if (Backbone.history.fragment.indexOf('board/') != -1 || Backbone.history.fragment.indexOf('organization/') != -1 || Backbone.history.fragment.indexOf('boards') != -1) {
-                this.footerView = new App.FooterView({
-                    model: authuser,
-                }).render();
-                $('#footer').html(this.footerView.el);
+                if (Backbone.history.fragment.indexOf('organization/') != -1 || Backbone.history.fragment.indexOf('boards') != -1) {
+                    this.footerView = new App.FooterView({
+                        model: authuser,
+                    }).render();
+                    $('#footer').html(this.footerView.el);
+                }
             } else {
                 $('#footer').html('');
             }

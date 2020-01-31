@@ -53,7 +53,7 @@ RUN apt-get update && \
     unzip \
     wget
 
-RUN chmod 600 /etc/postfix/sasl_passwords
+#RUN chmod 600 /etc/postfix/sasl_passwords
 
 # Necessary steps for php7.2
 RUN apt install -y apt-transport-https lsb-release ca-certificates && \
@@ -89,6 +89,7 @@ COPY --from=builder /app/restyaboard-docker.zip /tmp/restyaboard.zip
 
 RUN unzip /tmp/restyaboard.zip -d ${ROOT_DIR} && \
     rm /tmp/restyaboard.zip && \
+    mkdir -p ${ROOT_DIR}/tmp/cache ${ROOT_DIR}/media && \
     chown -R www-data:www-data ${ROOT_DIR}
 RUN mv  ${ROOT_DIR}/api_explorer/ ${ROOT_DIR}/client/api_explorer/
 

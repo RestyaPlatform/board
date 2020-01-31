@@ -1507,13 +1507,13 @@ App.ListView = Backbone.View.extend({
                         self.model.cards.each(function(card) {
                             if (bool) {
                                 if (parseInt(card.attributes.id) === parseInt(e.attributes.id)) {
-                                    if (!_.isUndefined(self.model.cards.models[i - 1])) {
+                                    if (!_.isUndefined(self.model.cards.models[i - 1]) && !_.isEmpty(self.model.cards.models[i - 1]) && self.model.cards.models[i - 1] !== null) {
                                         var prev_card_id = self.model.cards.models[i - 1].id;
                                         var next_card = '';
-                                        if (!_.isUndefined(prev_card_id) && !_.isEmpty(prev_card_id) && !_.isUndefined($('#js-card-' + prev_card_id)) && $('#js-card-' + prev_card_id).length > 0 && $('#js-card-' + prev_card_id).next().length > 0) {
+                                        if (prev_card_id !== null && !_.isUndefined($('#js-card-' + prev_card_id)) && $('#js-card-' + prev_card_id).length > 0 && $('#js-card-' + prev_card_id).next().length > 0) {
                                             next_card = $('#js-card-' + prev_card_id).next().data('card_id');
                                         }
-                                        if (next_card !== parseInt(e.attributes.id)) {
+                                        if (parseInt(next_card) !== parseInt(e.attributes.id)) {
                                             $('#js-card-' + e.attributes.id).remove();
                                             $('#js-card-' + prev_card_id).after(view.render().el);
                                         }
@@ -1521,7 +1521,7 @@ App.ListView = Backbone.View.extend({
                                     } else {
                                         var first_card = '';
                                         if ($('#js-card-listing-' + e.attributes.list_id).find('.js-show-modal-card-view:first').length > 0) {
-                                            first_card = $('#js-card-listing-' + e.attributes.list_id).find('.js-show-modal-card-view:first').data('card_id');
+                                            first_card = parseInt($('#js-card-listing-' + e.attributes.list_id).find('.js-show-modal-card-view:first').data('card_id'));
                                         }
                                         if (first_card !== parseInt(e.attributes.id)) {
                                             $('#js-card-' + e.attributes.id).remove();
@@ -1756,7 +1756,7 @@ App.ListView = Backbone.View.extend({
     hideListEditForm: function(e) {
         e.preventDefault();
         var toggle = $(e.currentTarget);
-        toggle.parents('.js-board-list').find('#inputListName').val($('.get-name-' + this.model.attributes.id).html());
+        toggle.parents('.js-board-list').find('#inputListName-' + this.model.attributes.id).val($('.get-name-' + this.model.attributes.id).html());
         toggle.parents('form').addClass('hide').prev('.js-show-edit-list-form').removeClass('hide');
         this.$('#js-show-list-actions-' + this.model.attributes.id + ', #js-show-sort-form-' + this.model.attributes.id).removeClass('hide');
         $('.js-list-header-' + this.model.attributes.id).removeClass('hide');
@@ -1897,7 +1897,7 @@ App.ListView = Backbone.View.extend({
                     position: newPosition
                 });
                 data.position = newPosition;
-                prev.after(view.render().el);
+                prev.after().append(view.render().el);
             } else if (next.length !== 0) {
                 after = list_cards.get(parseInt(next.data('card_id')));
                 before = list_cards.at(list_cards.indexOf(after) - 1);
