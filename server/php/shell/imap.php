@@ -52,7 +52,7 @@ if (round((strtotime('now') - $_imap_time_trace) / 60) >= 30) {
                                 if (preg_match('/^X-/i', $line)) {
                                     // separate name and value
                                     preg_match('/^([^:]*): (.*)/i', $line, $arg);
-                                    if(!empty($arg)){
+                                    if (!empty($arg)) {
                                         $fetch_head[$arg[1]] = $arg[2];
                                     }
                                 }
