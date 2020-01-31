@@ -900,6 +900,7 @@ App.ApplicationView = Backbone.View.extend({
                             cache: false,
                             abortPending: true,
                             success: function(board_model, board_response) {
+                                App.boards = boards;
                                 $('#header').html(page.headerView.el);
                                 this.headerView = new App.BoardIndexHeaderView({
                                     model: page_title,

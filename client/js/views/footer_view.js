@@ -2549,6 +2549,10 @@ App.FooterView = Backbone.View.extend({
                                         if (!_.isUndefined(activity.attributes.revisions) && !_.isEmpty(activity.attributes.revisions) && !_.isUndefined(App.boards.get(parseInt(activity.attributes.board_id))) && App.boards.get(parseInt(activity.attributes.board_id)) !== null) {
                                             App.boards.get(parseInt(activity.attributes.board_id)).set(activity.attributes.revisions.new_value);
                                         }
+                                    } else if (activity.attributes.type === 'delete_board_user') {
+                                        if ($('#js-my-board-' + activity.attributes.board_id).length > 0) {
+                                            $('#js-my-board-' + activity.attributes.board_id).remove();
+                                        }
                                     } else if (activity.attributes.type === 'add_list') {
                                         var board_new_list = new App.List();
                                         board_new_list.set(activity.attributes.list);
