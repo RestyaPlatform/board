@@ -340,7 +340,7 @@ var Instrument = (function() {
         } else if (releasetime <= attacktime) {
           // Release before attack is done?  Interrupt ramp up.
           g.gain.linearRampToValueAtTime(
-            amp * (releasetime - starttime) / (attacktime - starttime));
+            amp * (releasetime - starttime) / (attacktime - starttime), releasetime);
         } else {
           // Release during decay?  Interrupt decay down.
           g.gain.setValueAtTime(amp * (timbre.sustain + (1 - timbre.sustain) *
