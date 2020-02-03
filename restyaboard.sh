@@ -1242,8 +1242,8 @@
 			wget https://mirrors-cdn.liferay.com/geolite.maxmind.com/download/geoip/database/GeoIPv6.dat.gz
 			gunzip GeoIPv6.dat.gz
 			mv GeoIPv6.dat /usr/share/GeoIP/GeoIPv6.dat
-			wget http://geolite.maxmind.com/download/geoip/database/GeoLiteCity.dat.gz
-			gunzip GeoLiteCity.dat.gz
+			wget https://mirrors-cdn.liferay.com/geolite.maxmind.com/download/geoip/database/GeoLiteCity.dat.xz
+			unxz GeoLiteCity.dat.xz
 			mv GeoLiteCity.dat /usr/share/GeoIP/GeoIPCity.dat
 			wget https://mirrors-cdn.liferay.com/geolite.maxmind.com/download/geoip/database/GeoLiteCityv6.dat.gz
 			gunzip GeoLiteCityv6.dat.gz
