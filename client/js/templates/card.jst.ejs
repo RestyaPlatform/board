@@ -112,7 +112,7 @@
 				if (_.isEmpty(custom_field.color) || _.isUndefined(custom_field.color)) {
 					labelClass = 'label-default';
 				}
-				if (!_.isEmpty(custom_field.cards_custom_fields)) {
+				if (!_.isEmpty(custom_field.cards_custom_fields) && custom_field.cards_custom_fields !== null) {
 					var custom_field_json = jQuery.parseJSON(custom_field.cards_custom_fields);
 					var filtered_cards_custom_fields = custom_field_json.filter(function(x) {
 						return x.card_id === card.id;
@@ -188,6 +188,8 @@
 					} else {
 						card_customfield_list += '<li class=" js-custom-field-' + card.id + '-' + custom_field.id + ' card-listing-truncate hide"></li>';
 					}
+				} else {
+					card_customfield_list += '<li class=" js-custom-field-' + card.id + '-' + custom_field.id + ' card-listing-truncate hide"></li>';
 				}
 			}); %>
 			<%= card_customfield_list %>
