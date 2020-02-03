@@ -1236,22 +1236,22 @@
 		
 		get_geoip_data () 
 		{
-			wget http://geolite.maxmind.com/download/geoip/database/GeoLiteCountry/GeoIP.dat.gz
+			wget https://mirrors-cdn.liferay.com/geolite.maxmind.com/download/geoip/database/GeoIP.dat.gz
 			gunzip GeoIP.dat.gz
 			mv GeoIP.dat /usr/share/GeoIP/GeoIP.dat
-			wget http://geolite.maxmind.com/download/geoip/database/GeoIPv6.dat.gz
+			wget https://mirrors-cdn.liferay.com/geolite.maxmind.com/download/geoip/database/GeoIPv6.dat.gz
 			gunzip GeoIPv6.dat.gz
 			mv GeoIPv6.dat /usr/share/GeoIP/GeoIPv6.dat
-			wget http://geolite.maxmind.com/download/geoip/database/GeoLiteCity.dat.gz
-			gunzip GeoLiteCity.dat.gz
+			wget https://mirrors-cdn.liferay.com/geolite.maxmind.com/download/geoip/database/GeoLiteCity.dat.xz
+			unxz GeoLiteCity.dat.xz
 			mv GeoLiteCity.dat /usr/share/GeoIP/GeoIPCity.dat
-			wget http://geolite.maxmind.com/download/geoip/database/GeoLiteCityv6-beta/GeoLiteCityv6.dat.gz
+			wget https://mirrors-cdn.liferay.com/geolite.maxmind.com/download/geoip/database/GeoLiteCityv6.dat.gz
 			gunzip GeoLiteCityv6.dat.gz
 			mv GeoLiteCityv6.dat /usr/share/GeoIP/GeoLiteCityv6.dat
-			wget http://download.maxmind.com/download/geoip/database/asnum/GeoIPASNum.dat.gz
+			wget https://mirrors-cdn.liferay.com/geolite.maxmind.com/download/geoip/database/GeoIPASNum.dat.gz
 			gunzip GeoIPASNum.dat.gz
 			mv GeoIPASNum.dat /usr/share/GeoIP/GeoIPASNum.dat
-			wget http://download.maxmind.com/download/geoip/database/asnum/GeoIPASNumv6.dat.gz
+			wget https://mirrors-cdn.liferay.com/geolite.maxmind.com/download/geoip/database/GeoIPASNumv6.dat.gz
 			gunzip GeoIPASNumv6.dat.gz
 			mv GeoIPASNumv6.dat /usr/share/GeoIP/GeoIPASNumv6.dat
 		}
