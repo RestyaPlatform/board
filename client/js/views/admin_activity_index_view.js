@@ -60,7 +60,7 @@ App.AdminActivityIndexView = Backbone.View.extend({
         this.model.save({}, {
             patch: true,
             success: function(model, response) {
-                self.flash('danger', i18next.t('Undo Succeed'));
+                self.flash('success', i18next.t('Undo Succeed'));
                 emojify.run();
             }
         });

@@ -1434,13 +1434,13 @@ App.FooterView = Backbone.View.extend({
                                                 comment = self.board.activities.findWhere({
                                                     id: parseInt(activity.attributes.foreign_id)
                                                 });
+                                                var comment_value = self.converter.makeHtml(activity.attributes.revisions.new_value.comment);
+                                                $('.js-activity-' + activity.attributes.foreign_id).find('.github-markdown').html(comment_value);
                                                 if (!_.isUndefined(comment)) {
-                                                    var comment_value = self.converter.makeHtml(activity.attributes.revisions.new_value.comment);
                                                     comment.set(activity);
                                                     comment.set('id', parseInt(activity.attributes.foreign_id));
                                                     comment.set('user_id', parseInt(activity.attributes.user_id));
                                                     comment.set('card_id', parseInt(activity.attributes.card_id));
-                                                    $('.js-activity-' + activity.attributes.foreign_id).find('.github-markdown').html(comment_value);
                                                 }
                                             } else if (activity.attributes.type === 'add_card_user') {
                                                 if (activity.attributes.user !== false) {
