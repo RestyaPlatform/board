@@ -4610,6 +4610,9 @@ App.ModalCardView = Backbone.View.extend({
                 if (_.isUndefined(options.temp_id)) {
                     card.set('is_offline', false);
                 }
+                if (!_.isUndefined(response.id)) {
+                    card.set('id', parseInt(response.id));
+                }
                 if (data.board_id === current_card.board_id) {
                     card.set(response.cards);
                     if (parseInt(response.cards.is_archived) === 0) {
@@ -4697,7 +4700,6 @@ App.ModalCardView = Backbone.View.extend({
                         self.model.activities.unshift(new_activity, options);
                         i++;
                     });
-                    self.model.list.collection.board.cards.add(card);
                     var change_list_card_count = parseInt(self.boards.get(data.board_id).lists.get(data.list_id).get('card_count'));
                     if (parseInt(change_list_card_count) === 1) {
                         // Removing the &nbsp; from the new list
@@ -4708,6 +4710,15 @@ App.ModalCardView = Backbone.View.extend({
                     }
                     if (!_.isUndefined(response.cards.cards_checklists) && !_.isEmpty(response.cards.cards_checklists)) {
                         if (response.cards.cards_checklists.length > 0) {
+                            card.set('checklist_item_count', current_card.checklist_item_count, {
+                                silent: true
+                            });
+                            card.set('checklist_item_pending_count', current_card.checklist_item_count, {
+                                silent: true
+                            });
+                            card.set('checklist_item_completed_count', 0, {
+                                silent: true
+                            });
                             _.each(response.cards.cards_checklists, function(card_checklist) {
                                 self.model.list.collection.board.checklists.add(card_checklist, {
                                     silent: true
@@ -4734,6 +4745,7 @@ App.ModalCardView = Backbone.View.extend({
                             });
                         }
                     }
+                    self.model.list.collection.board.cards.add(card);
                     self.model.list.collection.board.labels.add(response.cards.cards_labels, {
                         silent: true
                     });
