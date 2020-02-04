@@ -4761,7 +4761,7 @@ App.ModalCardView = Backbone.View.extend({
                             self.model.list.collection.board.labels.add(new_label, {
                                 silent: true
                             });
-                            card.labels.add(new_label,{
+                            card.labels.add(new_label, {
                                 silent: true
                             });
                         });
