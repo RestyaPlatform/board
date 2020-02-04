@@ -4745,10 +4745,28 @@ App.ModalCardView = Backbone.View.extend({
                             });
                         }
                     }
+                    if (!_.isUndefined(response.cards.cards_labels) && !_.isEmpty(response.cards.cards_labels) && response.cards.cards_labels !== null && response.cards.cards_labels.length > 0) {
+                        _.each(response.cards.cards_labels, function(label) {
+                            var new_label = new App.Label();
+                            new_label.set(label);
+                            if (!_.isUndefined(label.id)) {
+                                new_label.set('id', parseInt(label.id));
+                                new_label.set('label_id', parseInt(label.label_id));
+                            } else {
+                                new_label.set('name', label);
+                            }
+                            new_label.set('board_id', self.model.attributes.board_id);
+                            new_label.set('list_id', self.model.attributes.list_id);
+                            new_label.set('card_id', self.model.id);
+                            self.model.list.collection.board.labels.add(new_label, {
+                                silent: true
+                            });
+                            card.labels.add(new_label,{
+                                silent: true
+                            });
+                        });
+                    }
                     self.model.list.collection.board.cards.add(card);
-                    self.model.list.collection.board.labels.add(response.cards.cards_labels, {
-                        silent: true
-                    });
                 }
             }
         });
