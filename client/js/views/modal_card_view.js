@@ -662,6 +662,7 @@ App.ModalCardView = Backbone.View.extend({
                 silent: true
             });
         });
+        self.model.attributes.cards_labels = [];
         var card_label = new App.Label();
         card_label.set('is_offline', true);
         card_label.set('board_id', self.model.attributes.board_id);
@@ -692,6 +693,9 @@ App.ModalCardView = Backbone.View.extend({
                     labels = response.cards_labels;
                 }
                 if (labels.length > 0) {
+                    self.model.set('cards_labels', labels, {
+                        silent: true
+                    });
                     _.each(labels, function(label) {
                         var new_label = new App.Label();
                         new_label.set(label);
