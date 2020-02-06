@@ -4525,7 +4525,7 @@ App.ModalCardView = Backbone.View.extend({
         e.preventDefault();
         var form_parent = $(e.target).attr('data-action');
         if ($('.js-copy-card').length) {
-            $('.js-copy-card #card-title').val(this.model.attributes.name);
+            $('.js-copy-card .card-title').val(this.model.attributes.name);
         }
         if (form_parent == 'modalcard-actions') {
             $('.js-show-copy-card-form-response-card-' + this.model.id).html('');

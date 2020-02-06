@@ -10,7 +10,7 @@
 		<li class="col-xs-12 clearfix text-center"><div> <span class="col-xs-10"><strong><%- i18next.t('Move Card') %></strong></span><a class="js-close-popover pull-right" href="#"><i class="icon-remove "></i></a></div></li>
 		<li class="col-xs-12 divider"></li>
 		<li class="col-xs-12">
-		<form role="form" class="js-move-card" name="MoveCardForm" id="MoveCardForm">
+		<form role="form" class="js-move-card" name="MoveCardForm" id="MoveCardForm1">
 		  <div class="js-show-move-card-form-response"> </div>
 		  <div class="form-group clearfix">
 			<label class="sr-only"><%- i18next.t('Move') %></label>
@@ -332,7 +332,7 @@
 						<li class="col-xs-12 clearfix text-center"><div> <span class="col-xs-10"><strong><%- i18next.t('Move Card') %></strong></span><a class="js-close-popover pull-right" href="#"><i class="icon-remove "></i></a></div></li>
 						<li class="col-xs-12 divider"></li>
 						<li class="col-xs-12">
-						  <form role="form" class="js-move-card" name="MoveCardForm" id="MoveCardForm">
+						  <form role="form" class="js-move-card" name="MoveCardForm" id="MoveCardForm2">
 							<div class="js-show-move-card-form-response"> </div>
 							<div class="form-group clearfix">
 							  <label class="sr-only"><%- i18next.t('Move') %></label>
@@ -352,7 +352,7 @@
 							  <form role="form" method="post" class="js-copy-card">
 								<div class="form-group">
 								  <label for="card-title"><%- i18next.t('Title') %></label>
-								  <input type="text" id="card-title" class="form-control" name="name" value="<%- card.attributes.name%>" required>
+								  <input type="text" id="card-title-action" class="card-title form-control" name="name" value="<%- card.attributes.name%>" required>
 								</div>
 								<div class="js-show-copy-card-form-response-copy-card-<%- card.id %>"> </div>
 								<div class="form-group clearfix">
@@ -735,7 +735,7 @@
 			<li class="col-xs-12 clearfix text-center"><div> <span class="col-xs-10"><strong><%- i18next.t('Move Card') %></strong></span><a class="js-close-popover pull-right" href="#"><i class="icon-remove "></i></a></div></li>
 			<li class="col-xs-12 divider"></li>
 			<li class="col-xs-12">
-				<form role="form" class="js-move-card" name="MoveCardForm" id="MoveCardForm">
+				<form role="form" class="js-move-card" name="MoveCardForm" id="MoveCardForm3">
 				<div class="js-show-move-card-form-response"> </div>
 				<div class="form-group clearfix">
 					<label class="sr-only"><%- i18next.t('Move') %></label>
@@ -755,7 +755,7 @@
 					<form role="form" method="post" class="js-copy-card">
 					<div class="form-group">
 						<label for="card-title"><%- i18next.t('Title') %></label>
-						<input type="text" id="card-title" class="form-control" name="name" value="<%- card.attributes.name%>" required>
+						<input type="text" id="card-title" class="card-title form-control" name="name" value="<%- card.attributes.name%>" required>
 					</div>
 					<div class="js-show-copy-card-form-response-card-<%- card.id %>"> </div>
 					<div class="form-group clearfix">
