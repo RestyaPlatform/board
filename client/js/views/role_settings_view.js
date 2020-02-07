@@ -31,9 +31,9 @@ App.RoleSettingsView = Backbone.View.extend({
         'click .js-back-to-users-roleEdit': 'BackToUserRoleEdit',
         'submit form#BoardUserRoleAddForm': 'boardUserRoleAdd',
         'submit form#OrganizationUserRoleAddForm': 'organizationUserRoleAdd',
-        'submit form#RoleEditForm': 'roleEdit',
-        'submit form#BoardUserRoleEditForm': 'boardUserRoleEdit',
-        'submit form#OrganizationUserRoleEditForm': 'organizationUserRoleEdit',
+        'submit form.js-roleEdit-form': 'roleEdit',
+        'submit form.js-boardUser-roleEditform': 'boardUserRoleEdit',
+        'submit form.js-orgUser-roleEditform': 'organizationUserRoleEdit',
         'click .js-delete-board-user-role': 'deleteBoardUserRole',
         'click .js-delete-organization-user-role': 'deleteOrganizationUserRole',
         'click .js-delete-role': 'deleteRole',
@@ -147,7 +147,7 @@ App.RoleSettingsView = Backbone.View.extend({
                 delete_button += '<div class="form-group"><a href="#" title="' + i18next.t('Delete') + '" class="js-delete-org-role btn btn-default col-xs-12" data-organization_user_role_id="' + org_role.attributes.id + '">' + i18next.t('Delete') + '</a></div>';
             }
             delete_button += '</form></li>';
-            self.parents('.js-org-user-roleEdit-response').html('<li><div class="clearfix text-center col-xs-12"><span class="col-xs-10"><strong>' + i18next.t('Edit Organization User Role') + '</strong></span><i class="icon-remove cur"></i></div></li><li class="col-xs-12 divider"></li><li class="col-xs-12"><form id="OrganizationUserRoleEditForm" name="OrganizationUserRoleEditForm" class="form-horizontal col-xs-12"><input type="hidden" name="id" value="' + org_role.attributes.id + '"><div class="form-group required"><label class="sr-only control-label" for="inputEditOrganizationName">' + i18next.t('Name') + '</label><input type="name" name="name" value="' + org_role.attributes.name + '" id="inputEditOrganizationName" class="form-control js-role-name" placeholder="' + i18next.t('Name') + '" required></div><div class="form-group required"><label class="sr-only control-label" for="inputEditOrganizationDescription">' + i18next.t('Description') + '</label><textarea name="description" id="inputEditOrganizationDescription" class="form-control js-role-name" placeholder="' + i18next.t('Description') + '">' + org_role.attributes.description + '</textarea></div><div class="form-group"><label class="sr-only control-label" for="submitEditOrganizationUserRole" >' + i18next.t("Update") + '</label><input type="submit" class="btn btn-primary col-xs-12" id="submitEditOrganizationUserRole" title="' + i18next.t('Update Organization User Role') + '" value="' + i18next.t('Update') + '"></div>' + delete_button + '');
+            self.parents('.js-org-user-roleEdit-response').html('<li><div class="clearfix text-center col-xs-12"><span class="col-xs-10"><strong>' + i18next.t('Edit Organization User Role') + '</strong></span><i class="icon-remove cur"></i></div></li><li class="col-xs-12 divider"></li><li class="col-xs-12"><form id="OrganizationUserRoleEditForm-' + org_role.attributes.id + '" name="OrganizationUserRoleEditForm" class="form-horizontal col-xs-12 js-orgUser-roleEditform"><input type="hidden" name="id" value="' + org_role.attributes.id + '"><div class="form-group required"><label class="sr-only control-label" for="inputEditOrganizationName-' + org_role.attributes.id + '">' + i18next.t('Name') + '</label><input type="name" name="name" value="' + org_role.attributes.name + '" id="inputEditOrganizationName-' + org_role.attributes.id + '" class="form-control js-role-name" placeholder="' + i18next.t('Name') + '" required></div><div class="form-group required"><label class="sr-only control-label" for="inputEditOrganizationDescription-' + org_role.attributes.id + '">' + i18next.t('Description') + '</label><textarea name="description" id="inputEditOrganizationDescription-' + org_role.attributes.id + '" class="form-control js-role-name" placeholder="' + i18next.t('Description') + '">' + org_role.attributes.description + '</textarea></div><div class="form-group"><label class="sr-only control-label" for="submitEditOrganizationUserRole" >' + i18next.t("Update") + '</label><input type="submit" class="btn btn-primary col-xs-12" id="submitEditOrganizationUserRole" title="' + i18next.t('Update Organization User Role') + '" value="' + i18next.t('Update') + '"></div>' + delete_button + '');
         }
         return false;
     },
@@ -203,7 +203,7 @@ App.RoleSettingsView = Backbone.View.extend({
                 delete_button += '<div class="form-group"><a href="#" title="' + i18next.t('Delete') + '" class="js-delete-users-role btn btn-default col-xs-12" data-role_id="' + role.attributes.id + '">' + i18next.t('Delete') + '</a></div>';
             }
             delete_button += '</form></li>';
-            self.parents('.js-users-roleEdit-response').html('<li><div class="clearfix text-center col-xs-12"><span class="col-xs-10"><strong>' + i18next.t('Edit Role') + '</strong></span><i class="icon-remove cur"></i></div></li><li class="col-xs-12 divider"></li><li class="col-xs-12"><form id="RoleEditForm" name="RoleEditForm" class="form-horizontal col-xs-12"><input type="hidden" name="id" value="' + role.attributes.id + '"><div class="form-group required"><label class="sr-only control-label" for="inputEditName">' + i18next.t('Name') + '</label><input type="name" name="name" value="' + role.attributes.name + '" id="inputEditName" class="form-control js-role-name" placeholder="' + i18next.t('Name') + '" required></div><div class="form-group"><label class="sr-only control-label" for="submitEditRole" >' + i18next.t("Update") + '</label><input type="submit" class="btn btn-primary col-xs-12" id="submitEditRole" title="' + i18next.t('Update Role') + '" value="' + i18next.t('Update') + '"></div>' + delete_button + '');
+            self.parents('.js-users-roleEdit-response').html('<li><div class="clearfix text-center col-xs-12"><span class="col-xs-10"><strong>' + i18next.t('Edit Role') + '</strong></span><i class="icon-remove cur"></i></div></li><li class="col-xs-12 divider"></li><li class="col-xs-12"><form id="RoleEditForm-' + role.attributes.id + '" name="RoleEditForm" class="form-horizontal col-xs-12 js-roleEdit-form"><input type="hidden" name="id" value="' + role.attributes.id + '"><div class="form-group required"><label class="sr-only control-label" for="inputEditName-' + role.attributes.id + '">' + i18next.t('Name') + '</label><input type="name" name="name" value="' + role.attributes.name + '" id="inputEditName-' + role.attributes.id + '" class="form-control js-role-name" placeholder="' + i18next.t('Name') + '" required></div><div class="form-group"><label class="sr-only control-label" for="submitEditRole-' + role.attributes.id + '" >' + i18next.t("Update") + '</label><input type="submit" class="btn btn-primary col-xs-12" id="submitEditRole-' + role.attributes.id + '" title="' + i18next.t('Update Role') + '" value="' + i18next.t('Update') + '"></div>' + delete_button + '');
         }
         return false;
     },
@@ -251,7 +251,7 @@ App.RoleSettingsView = Backbone.View.extend({
         organization_user_role.save(data, {
             success: function(model, response) {
                 self.flash('success', i18next.t('Organization user role added successfully.'));
-                app.navigate('#/roles', {
+                app.navigate('#/roles?tab=organizations', {
                     trigger: true,
                     replace: true
                 });
@@ -293,7 +293,7 @@ App.RoleSettingsView = Backbone.View.extend({
                 delete_button += '<div class="form-group"><a href="#" title="' + i18next.t('Delete') + '" class="js-delete-board-role btn btn-default col-xs-12" data-board_user_role_id="' + user_role.attributes.id + '">' + i18next.t('Delete') + '</a></div>';
             }
             delete_button += '</form></li>';
-            self.parents('.js-board-user-roleEdit-response').html('<li><div class="clearfix text-center col-xs-12"><span class="col-xs-10"><strong>' + i18next.t('Edit Board User Role') + '</strong></span><i class="icon-remove cur"></i></div></li><li class="col-xs-12 divider"></li><li class="col-xs-12"><form id="BoardUserRoleEditForm" name="BoardUserRoleEditForm" class="form-horizontal col-xs-12"><input type="hidden" name="id" value="' + user_role.attributes.id + '"><div class="form-group required"><label class="sr-only control-label" for="inputEditBoardName">' + i18next.t('Name') + '</label><input type="name" name="name" value="' + user_role.attributes.name + '" id="inputEditBoardName" class="form-control js-role-name" placeholder="' + i18next.t('Name') + '" required></div><div class="form-group required"><label class="sr-only control-label" for="inputEditBoardDescription">' + i18next.t('Description') + '</label><textarea name="description" id="inputEditBoardDescription" class="form-control js-role-name" placeholder="' + i18next.t('Description') + '">' + user_role.attributes.description + '</textarea></div><div class="form-group"><label class="sr-only control-label" for="submitEditBoardUserRole" >' + i18next.t("Update") + '</label><input type="submit" class="btn btn-primary col-xs-12" id="submitEditBoardUserRole" title="' + i18next.t('Update Board User Role') + '" value="' + i18next.t('Update') + '"></div>' + delete_button + '');
+            self.parents('.js-board-user-roleEdit-response').html('<li><div class="clearfix text-center col-xs-12"><span class="col-xs-10"><strong>' + i18next.t('Edit Board User Role') + '</strong></span><i class="icon-remove cur"></i></div></li><li class="col-xs-12 divider"></li><li class="col-xs-12"><form id="BoardUserRoleEditForm-' + user_role.attributes.id + '" name="BoardUserRoleEditForm" class="form-horizontal col-xs-12 js-boardUser-roleEditform"><input type="hidden" name="id" value="' + user_role.attributes.id + '"><div class="form-group required"><label class="sr-only control-label" for="inputEditBoardName-' + user_role.attributes.id + '">' + i18next.t('Name') + '</label><input type="name" name="name" value="' + user_role.attributes.name + '" id="inputEditBoardName-' + user_role.attributes.id + '" class="form-control js-role-name" placeholder="' + i18next.t('Name') + '" required></div><div class="form-group required"><label class="sr-only control-label" for="inputEditBoardDescription-' + user_role.attributes.id + '">' + i18next.t('Description') + '</label><textarea name="description" id="inputEditBoardDescription-' + user_role.attributes.id + '" class="form-control js-role-name" placeholder="' + i18next.t('Description') + '">' + user_role.attributes.description + '</textarea></div><div class="form-group"><label class="sr-only control-label" for="submitEditBoardUserRole-' + user_role.attributes.id + '" >' + i18next.t("Update") + '</label><input type="submit" class="btn btn-primary col-xs-12" id="submitEditBoardUserRole-' + user_role.attributes.id + '" title="' + i18next.t('Update Board User Role') + '" value="' + i18next.t('Update') + '"></div>' + delete_button + '');
         }
         return false;
     },
@@ -311,7 +311,7 @@ App.RoleSettingsView = Backbone.View.extend({
         board_user_role.save(data, {
             success: function(model, response) {
                 self.flash('success', i18next.t('Board user role added successfully.'));
-                app.navigate('#/roles', {
+                app.navigate('#/roles?tab=boards', {
                     trigger: true,
                     replace: true
                 });
@@ -357,7 +357,7 @@ App.RoleSettingsView = Backbone.View.extend({
         board_user_role.save(data, {
             success: function(model, response) {
                 self.flash('success', i18next.t('Role has been updated successfully.'));
-                app.navigate('#/roles', {
+                app.navigate('#/roles?tab=boards', {
                     trigger: true,
                     replace: true
                 });
@@ -380,7 +380,7 @@ App.RoleSettingsView = Backbone.View.extend({
         organization_user_role.save(data, {
             success: function(model, response) {
                 self.flash('success', i18next.t('Role has been updated successfully.'));
-                app.navigate('#/roles', {
+                app.navigate('#/roles?tab=organizations', {
                     trigger: true,
                     replace: true
                 });
@@ -404,7 +404,7 @@ App.RoleSettingsView = Backbone.View.extend({
         board_user_role.destroy({
             success: function(model, response) {
                 self.flash('success', i18next.t('Role deleted successfully.'));
-                app.navigate('#/roles', {
+                app.navigate('#/roles?tab=boards', {
                     trigger: true,
                     replace: true
                 });
@@ -427,7 +427,7 @@ App.RoleSettingsView = Backbone.View.extend({
         organization_user_role.destroy({
             success: function(model, response) {
                 self.flash('success', i18next.t('Role deleted successfully.'));
-                app.navigate('#/roles', {
+                app.navigate('#/roles?tab=organizations', {
                     trigger: true,
                     replace: true
                 });
