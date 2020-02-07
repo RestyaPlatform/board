@@ -662,6 +662,7 @@ App.ModalCardView = Backbone.View.extend({
                 silent: true
             });
         });
+        self.model.attributes.cards_labels = [];
         var card_label = new App.Label();
         card_label.set('is_offline', true);
         card_label.set('board_id', self.model.attributes.board_id);
@@ -692,6 +693,9 @@ App.ModalCardView = Backbone.View.extend({
                     labels = response.cards_labels;
                 }
                 if (labels.length > 0) {
+                    self.model.set('cards_labels', labels, {
+                        silent: true
+                    });
                     _.each(labels, function(label) {
                         var new_label = new App.Label();
                         new_label.set(label);
@@ -4429,7 +4433,7 @@ App.ModalCardView = Backbone.View.extend({
                     }
                 }
             }
-            content_list += '<option value="">' + i18next.t('Selct List') + '</option>';
+            content_list += '<option value="">' + i18next.t('Select List') + '</option>';
             _.each(board_lists, function(list) {
                 if (self.model.attributes.list_id == list.attributes.id) {
                     content_list += '<option value="' + list.id + '" selected="selected">' + _.escape(list.attributes.name) + ' ' + i18next.t('(current)') + '</option>';
@@ -4521,7 +4525,7 @@ App.ModalCardView = Backbone.View.extend({
         e.preventDefault();
         var form_parent = $(e.target).attr('data-action');
         if ($('.js-copy-card').length) {
-            $('.js-copy-card #card-title').val(this.model.attributes.name);
+            $('.js-copy-card .card-title').val(this.model.attributes.name);
         }
         if (form_parent == 'modalcard-actions') {
             $('.js-show-copy-card-form-response-card-' + this.model.id).html('');
@@ -4745,10 +4749,28 @@ App.ModalCardView = Backbone.View.extend({
                             });
                         }
                     }
+                    if (!_.isUndefined(response.cards.cards_labels) && !_.isEmpty(response.cards.cards_labels) && response.cards.cards_labels !== null && response.cards.cards_labels.length > 0) {
+                        _.each(response.cards.cards_labels, function(label) {
+                            var new_label = new App.Label();
+                            new_label.set(label);
+                            if (!_.isUndefined(label.id)) {
+                                new_label.set('id', parseInt(label.id));
+                                new_label.set('label_id', parseInt(label.label_id));
+                            } else {
+                                new_label.set('name', label);
+                            }
+                            new_label.set('board_id', self.model.attributes.board_id);
+                            new_label.set('list_id', self.model.attributes.list_id);
+                            new_label.set('card_id', self.model.id);
+                            self.model.list.collection.board.labels.add(new_label, {
+                                silent: true
+                            });
+                            card.labels.add(new_label, {
+                                silent: true
+                            });
+                        });
+                    }
                     self.model.list.collection.board.cards.add(card);
-                    self.model.list.collection.board.labels.add(response.cards.cards_labels, {
-                        silent: true
-                    });
                 }
             }
         });
