@@ -56,10 +56,6 @@ App.ApplicationView = Backbone.View.extend({
                 $.cookie('music_play', "1");
             }
         }
-        localforage.config({
-            driver: [localforage.WEBSQL, localforage.INDEXEDDB, localforage.LOCALSTORAGE],
-            name: 'WebSQL-Rox'
-        });
         localforage.getItem('links', function(err, value) {
             if (value) {
                 if (role_links.length === 0 && value !== undefined && value !== null) {
