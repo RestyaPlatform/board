@@ -3560,6 +3560,7 @@ App.FooterView = Backbone.View.extend({
                     $.cookie('activities_filter', 'activity');
                 }
             } else {
+                $('#all_activities').find('#modal-activities').find('a[href="#"]').blur();
                 if ($('#all_activities').find('#modal-comments').hasClass('active')) {
                     $.cookie('activities_filter', 'comment');
                     mode = 'comment';
@@ -3581,6 +3582,7 @@ App.FooterView = Backbone.View.extend({
                     mode = 'comment';
                 }
             } else {
+                $('#all_activities').find('#modal-comments').find('a[href="#"]').blur();
                 if ($('#all_activities').find('#modal-activities').hasClass('active')) {
                     $.cookie('activities_filter', 'activity');
                     mode = 'activity';

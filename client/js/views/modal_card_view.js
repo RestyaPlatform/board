@@ -582,6 +582,7 @@ App.ModalCardView = Backbone.View.extend({
                     $.cookie('filter', 'activity');
                 }
             } else {
+                self.$el.find('#modal-activities').find('a[href="#"]').blur();
                 if (self.$el.find('#modal-comments').hasClass('active')) {
                     mode = 'comment';
                     $.cookie('filter', 'comment');
@@ -603,6 +604,7 @@ App.ModalCardView = Backbone.View.extend({
                 }
             } else {
                 self.$el.find('#modal-comments').removeAttr('class');
+                self.$el.find('#modal-comments').find('a[href="#"]').blur();
                 if (self.$el.find('#modal-activities').hasClass('active')) {
                     mode = 'activity';
                     $.cookie('filter', 'activity');
