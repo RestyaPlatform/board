@@ -140,8 +140,10 @@ App.ApplicationView = Backbone.View.extend({
                                     }
                                     current_language = language_reg.join('_');
                                     current_language = current_language.replace("-", "_");
-                                    if (_.isUndefined(languages[current_language]) || languages[current_language] === null || _.isEmpty(languages[current_language])) {
-                                        current_language = DEFAULT_LANGUAGE;
+                                    if (!_.isUndefined(languages) && !_.isEmpty(languages) && languages !== null) {
+                                        if (_.isUndefined(languages[current_language]) || languages[current_language] === null || _.isEmpty(languages[current_language])) {
+                                            current_language = DEFAULT_LANGUAGE;
+                                        }
                                     }
                                 } else {
                                     current_language = DEFAULT_LANGUAGE;
@@ -265,8 +267,10 @@ App.ApplicationView = Backbone.View.extend({
                                 }
                                 current_language = language_reg.join('_');
                                 current_language = current_language.replace("-", "_");
-                                if (_.isUndefined(languages[current_language]) || languages[current_language] === null || _.isEmpty(languages[current_language])) {
-                                    current_language = DEFAULT_LANGUAGE;
+                                if (!_.isUndefined(languages) && !_.isEmpty(languages) && languages !== null) {
+                                    if (_.isUndefined(languages[current_language]) || languages[current_language] === null || _.isEmpty(languages[current_language])) {
+                                        current_language = DEFAULT_LANGUAGE;
+                                    }
                                 }
                             } else {
                                 current_language = DEFAULT_LANGUAGE;
