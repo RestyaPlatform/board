@@ -98,72 +98,72 @@ App.ApplicationView = Backbone.View.extend({
                                 });
                             });
                         }
-                        localforage.setItem('apps', response.apps).then(function() {
-                            role_links.add(JSON.parse(response.links));
-                            settings.url = api_url + 'settings.json';
-                            settings.fetch({
-                                cache: false,
-                                abortPending: true,
-                                success: function(collection, settings_response) {
-                                    SITE_NAME = settings_response.SITE_NAME;
-                                    page.set_page_title();
-                                    FLICKR_API_KEY = settings_response.FLICKR_API_KEY;
-                                    DROPBOX_APPKEY = settings_response.DROPBOX_APPKEY;
-                                    LABEL_ICON = settings_response.LABEL_ICON;
-                                    SITE_TIMEZONE = settings_response.SITE_TIMEZONE;
-                                    IS_TWO_FACTOR_AUTHENTICATION_ENABLED = settings_response.IS_TWO_FACTOR_AUTHENTICATION_ENABLED;
-                                    DEFAULT_LANGUAGE = settings_response.DEFAULT_LANGUAGE;
-                                    PAGING_COUNT = settings_response.PAGING_COUNT;
-                                    ALLOWED_FILE_EXTENSIONS = settings_response.ALLOWED_FILE_EXTENSIONS;
-                                    R_LDAP_LOGIN_HANDLE = settings_response.R_LDAP_LOGIN_HANDLE;
-                                    R_MLDAP_LOGIN_HANDLE = settings_response.R_MLDAP_LOGIN_HANDLE;
-                                    R_MLDAP_SERVERS = settings_response.R_MLDAP_SERVERS;
-                                    APPS = settings_response.apps;
-                                    IMAP_EMAIL = settings_response.IMAP_EMAIL;
-                                    DEFAULT_CARD_VIEW = settings_response.DEFAULT_CARD_VIEW;
-                                    CALENDAR_VIEW_CARD_COLOR = settings_response.CALENDAR_VIEW_CARD_COLOR;
-                                    var current_language;
-                                    if ($.cookie('auth') !== undefined && $.cookie('auth') !== null && authuser.user.language !== null && !_.isUndefined(authuser.user.language) && !_.isEmpty(authuser.user.language)) {
-                                        current_language = authuser.user.language;
-                                    } else if (navigator.language || navigator.userLanguage) {
-                                        var languages = ($.cookie('languages')) ? $.cookie('languages').split(',') : null;
-                                        if (languages !== null) {
-                                            languages = JSON.parse(languages);
-                                        }
-                                        current_language = navigator.language || navigator.userLanguage;
-                                        var language_reg = current_language.split('-');
-                                        if (language_reg.length > 1) {
-                                            language_reg['1'] = language_reg['1'].toUpperCase();
-                                        }
-                                        current_language = language_reg.join('_');
-                                        current_language = current_language.replace("-", "_");
+                        role_links.add(JSON.parse(response.links));
+                        settings.url = api_url + 'settings.json';
+                        settings.fetch({
+                            cache: false,
+                            abortPending: true,
+                            success: function(collection, settings_response) {
+                                SITE_NAME = settings_response.SITE_NAME;
+                                page.set_page_title();
+                                FLICKR_API_KEY = settings_response.FLICKR_API_KEY;
+                                DROPBOX_APPKEY = settings_response.DROPBOX_APPKEY;
+                                LABEL_ICON = settings_response.LABEL_ICON;
+                                SITE_TIMEZONE = settings_response.SITE_TIMEZONE;
+                                IS_TWO_FACTOR_AUTHENTICATION_ENABLED = settings_response.IS_TWO_FACTOR_AUTHENTICATION_ENABLED;
+                                DEFAULT_LANGUAGE = settings_response.DEFAULT_LANGUAGE;
+                                PAGING_COUNT = settings_response.PAGING_COUNT;
+                                ALLOWED_FILE_EXTENSIONS = settings_response.ALLOWED_FILE_EXTENSIONS;
+                                R_LDAP_LOGIN_HANDLE = settings_response.R_LDAP_LOGIN_HANDLE;
+                                R_MLDAP_LOGIN_HANDLE = settings_response.R_MLDAP_LOGIN_HANDLE;
+                                R_MLDAP_SERVERS = settings_response.R_MLDAP_SERVERS;
+                                APPS = settings_response.apps;
+                                IMAP_EMAIL = settings_response.IMAP_EMAIL;
+                                DEFAULT_CARD_VIEW = settings_response.DEFAULT_CARD_VIEW;
+                                CALENDAR_VIEW_CARD_COLOR = settings_response.CALENDAR_VIEW_CARD_COLOR;
+                                var current_language;
+                                if ($.cookie('auth') !== undefined && $.cookie('auth') !== null && authuser.user.language !== null && !_.isUndefined(authuser.user.language) && !_.isEmpty(authuser.user.language)) {
+                                    current_language = authuser.user.language;
+                                } else if (navigator.language || navigator.userLanguage) {
+                                    var languages = ($.cookie('languages')) ? $.cookie('languages').split(',') : null;
+                                    if (languages !== null) {
+                                        languages = JSON.parse(languages);
+                                    }
+                                    current_language = navigator.language || navigator.userLanguage;
+                                    var language_reg = current_language.split('-');
+                                    if (language_reg.length > 1) {
+                                        language_reg['1'] = language_reg['1'].toUpperCase();
+                                    }
+                                    current_language = language_reg.join('_');
+                                    current_language = current_language.replace("-", "_");
+                                    if (!_.isUndefined(languages) && !_.isEmpty(languages) && languages !== null) {
                                         if (_.isUndefined(languages[current_language]) || languages[current_language] === null || _.isEmpty(languages[current_language])) {
                                             current_language = DEFAULT_LANGUAGE;
                                         }
-                                    } else {
-                                        current_language = DEFAULT_LANGUAGE;
                                     }
-                                    i18next.use(window.i18nextXHRBackend).use(window.i18nextSprintfPostProcessor).init({
-                                        lng: current_language,
-                                        fallbackLng: current_language,
-                                        load: "all",
-                                        keySeparator: '~',
-                                        nsSeparator: '^',
-                                        backend: {
-                                            loadPath: "locales/{{lng}}/{{ns}}.json"
-                                        }
-                                    }, function() {
-                                        if (page.model === "admin_user_add" || page.model === "register") {
-                                            //@Todo
-                                            page.call_function();
-
-                                        } else {
-
-                                            page.call_function();
-                                        }
-                                    });
+                                } else {
+                                    current_language = DEFAULT_LANGUAGE;
                                 }
-                            });
+                                i18next.use(window.i18nextXHRBackend).use(window.i18nextSprintfPostProcessor).init({
+                                    lng: current_language,
+                                    fallbackLng: current_language,
+                                    load: "all",
+                                    keySeparator: '~',
+                                    nsSeparator: '^',
+                                    backend: {
+                                        loadPath: "locales/{{lng}}/{{ns}}.json"
+                                    }
+                                }, function() {
+                                    if (page.model === "admin_user_add" || page.model === "register") {
+                                        //@Todo
+                                        page.call_function();
+
+                                    } else {
+
+                                        page.call_function();
+                                    }
+                                });
+                            }
                         });
                     },
                     error: function() {
@@ -199,95 +199,95 @@ App.ApplicationView = Backbone.View.extend({
                                     });
                                 });
                             }
-                            localforage.setItem('apps', settings_response.apps_data).then(function() {
-                                if (role_links.length === 0) {
-                                    localforage.getItem('links', function(err, value) {
-                                        if (value) {
-                                            if (role_links.length === 0 && value !== undefined && value !== null) {
-                                                role_links.add(JSON.parse(value));
-                                            }
-                                            if (!_.isUndefined(APPS) && APPS !== null && !_.isEmpty(APPS.enabled_apps) && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null) {
-                                                APPS.permission_checked_apps = [];
-                                                _.each(APPS.enabled_apps, function(app) {
-                                                    if (!_.isEmpty(authuser.user) && !_.isUndefined(authuser.user)) {
-                                                        if ((!_.isEmpty(role_links.where({
-                                                                slug: app
-                                                            })) || parseInt(authuser.user.role_id) === 1) && $.inArray(app, APPS.permission_checked_apps) === -1) {
-                                                            APPS.permission_checked_apps.push(app);
-                                                        }
+                            if (role_links.length === 0) {
+                                localforage.getItem('links', function(err, value) {
+                                    if (value) {
+                                        if (role_links.length === 0 && value !== undefined && value !== null) {
+                                            role_links.add(JSON.parse(value));
+                                        }
+                                        if (!_.isUndefined(APPS) && APPS !== null && !_.isEmpty(APPS.enabled_apps) && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null) {
+                                            APPS.permission_checked_apps = [];
+                                            _.each(APPS.enabled_apps, function(app) {
+                                                if (!_.isEmpty(authuser.user) && !_.isUndefined(authuser.user)) {
+                                                    if ((!_.isEmpty(role_links.where({
+                                                            slug: app
+                                                        })) || parseInt(authuser.user.role_id) === 1) && $.inArray(app, APPS.permission_checked_apps) === -1) {
+                                                        APPS.permission_checked_apps.push(app);
                                                     }
-                                                });
-                                            }
+                                                }
+                                            });
                                         }
-                                    });
-                                }
-                                page.set_page_title();
-                                FLICKR_API_KEY = settings_response.FLICKR_API_KEY;
-                                DROPBOX_APPKEY = settings_response.DROPBOX_APPKEY;
-                                LABEL_ICON = settings_response.LABEL_ICON;
-                                SITE_TIMEZONE = settings_response.SITE_TIMEZONE;
-                                IS_TWO_FACTOR_AUTHENTICATION_ENABLED = settings_response.IS_TWO_FACTOR_AUTHENTICATION_ENABLED;
-                                DEFAULT_LANGUAGE = settings_response.DEFAULT_LANGUAGE;
-                                PAGING_COUNT = settings_response.PAGING_COUNT;
-                                ALLOWED_FILE_EXTENSIONS = settings_response.ALLOWED_FILE_EXTENSIONS;
-                                R_LDAP_LOGIN_HANDLE = settings_response.R_LDAP_LOGIN_HANDLE;
-                                R_MLDAP_LOGIN_HANDLE = settings_response.R_MLDAP_LOGIN_HANDLE;
-                                R_MLDAP_SERVERS = settings_response.R_MLDAP_SERVERS;
-                                APPS = settings_response.apps;
-                                if (!_.isUndefined(APPS) && APPS !== null && !_.isEmpty(APPS.enabled_apps) && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null) {
-                                    APPS.permission_checked_apps = [];
-                                    _.each(APPS.enabled_apps, function(app) {
-                                        if (!_.isEmpty(authuser.user) && !_.isUndefined(authuser.user)) {
-                                            if ((!_.isEmpty(role_links.where({
-                                                    slug: app
-                                                })) || parseInt(authuser.user.role_id) === 1) && $.inArray(app, APPS.permission_checked_apps) === -1) {
-                                                APPS.permission_checked_apps.push(app);
-                                            }
+                                    }
+                                });
+                            }
+                            page.set_page_title();
+                            FLICKR_API_KEY = settings_response.FLICKR_API_KEY;
+                            DROPBOX_APPKEY = settings_response.DROPBOX_APPKEY;
+                            LABEL_ICON = settings_response.LABEL_ICON;
+                            SITE_TIMEZONE = settings_response.SITE_TIMEZONE;
+                            IS_TWO_FACTOR_AUTHENTICATION_ENABLED = settings_response.IS_TWO_FACTOR_AUTHENTICATION_ENABLED;
+                            DEFAULT_LANGUAGE = settings_response.DEFAULT_LANGUAGE;
+                            PAGING_COUNT = settings_response.PAGING_COUNT;
+                            ALLOWED_FILE_EXTENSIONS = settings_response.ALLOWED_FILE_EXTENSIONS;
+                            R_LDAP_LOGIN_HANDLE = settings_response.R_LDAP_LOGIN_HANDLE;
+                            R_MLDAP_LOGIN_HANDLE = settings_response.R_MLDAP_LOGIN_HANDLE;
+                            R_MLDAP_SERVERS = settings_response.R_MLDAP_SERVERS;
+                            APPS = settings_response.apps;
+                            if (!_.isUndefined(APPS) && APPS !== null && !_.isEmpty(APPS.enabled_apps) && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null) {
+                                APPS.permission_checked_apps = [];
+                                _.each(APPS.enabled_apps, function(app) {
+                                    if (!_.isEmpty(authuser.user) && !_.isUndefined(authuser.user)) {
+                                        if ((!_.isEmpty(role_links.where({
+                                                slug: app
+                                            })) || parseInt(authuser.user.role_id) === 1) && $.inArray(app, APPS.permission_checked_apps) === -1) {
+                                            APPS.permission_checked_apps.push(app);
                                         }
-                                    });
+                                    }
+                                });
+                            }
+                            IMAP_EMAIL = settings_response.IMAP_EMAIL;
+                            DEFAULT_CARD_VIEW = settings_response.DEFAULT_CARD_VIEW;
+                            CALENDAR_VIEW_CARD_COLOR = settings_response.CALENDAR_VIEW_CARD_COLOR;
+                            var current_language;
+                            if ($.cookie('auth') !== undefined && $.cookie('auth') !== null && authuser.user.language !== null && !_.isUndefined(authuser.user.language) && !_.isEmpty(authuser.user.language)) {
+                                current_language = authuser.user.language;
+                            } else if (navigator.language || navigator.userLanguage) {
+                                var languages = ($.cookie('languages')) ? $.cookie('languages').split(',') : null;
+                                if (languages !== null) {
+                                    languages = JSON.parse(languages);
                                 }
-                                IMAP_EMAIL = settings_response.IMAP_EMAIL;
-                                DEFAULT_CARD_VIEW = settings_response.DEFAULT_CARD_VIEW;
-                                CALENDAR_VIEW_CARD_COLOR = settings_response.CALENDAR_VIEW_CARD_COLOR;
-                                var current_language;
-                                if ($.cookie('auth') !== undefined && $.cookie('auth') !== null && authuser.user.language !== null && !_.isUndefined(authuser.user.language) && !_.isEmpty(authuser.user.language)) {
-                                    current_language = authuser.user.language;
-                                } else if (navigator.language || navigator.userLanguage) {
-                                    var languages = ($.cookie('languages')) ? $.cookie('languages').split(',') : null;
-                                    if (languages !== null) {
-                                        languages = JSON.parse(languages);
-                                    }
-                                    current_language = navigator.language || navigator.userLanguage;
-                                    var language_reg = current_language.split('-');
-                                    if (language_reg.length > 1) {
-                                        language_reg['1'] = language_reg['1'].toUpperCase();
-                                    }
-                                    current_language = language_reg.join('_');
-                                    current_language = current_language.replace("-", "_");
+                                current_language = navigator.language || navigator.userLanguage;
+                                var language_reg = current_language.split('-');
+                                if (language_reg.length > 1) {
+                                    language_reg['1'] = language_reg['1'].toUpperCase();
+                                }
+                                current_language = language_reg.join('_');
+                                current_language = current_language.replace("-", "_");
+                                if (!_.isUndefined(languages) && !_.isEmpty(languages) && languages !== null) {
                                     if (_.isUndefined(languages[current_language]) || languages[current_language] === null || _.isEmpty(languages[current_language])) {
                                         current_language = DEFAULT_LANGUAGE;
                                     }
-                                } else {
-                                    current_language = DEFAULT_LANGUAGE;
                                 }
-                                i18next.use(window.i18nextXHRBackend).use(window.i18nextSprintfPostProcessor).init({
-                                    lng: current_language,
-                                    fallbackLng: current_language,
-                                    load: "all",
-                                    keySeparator: '~',
-                                    nsSeparator: '^',
-                                    backend: {
-                                        loadPath: "locales/{{lng}}/{{ns}}.json"
-                                    }
-                                }, function() {
-                                    if (page.model === "admin_user_add" || page.model === "register") {
-                                        //@Todo
-                                        page.call_function();
+                            } else {
+                                current_language = DEFAULT_LANGUAGE;
+                            }
+                            i18next.use(window.i18nextXHRBackend).use(window.i18nextSprintfPostProcessor).init({
+                                lng: current_language,
+                                fallbackLng: current_language,
+                                load: "all",
+                                keySeparator: '~',
+                                nsSeparator: '^',
+                                backend: {
+                                    loadPath: "locales/{{lng}}/{{ns}}.json"
+                                }
+                            }, function() {
+                                if (page.model === "admin_user_add" || page.model === "register") {
+                                    //@Todo
+                                    page.call_function();
 
-                                    } else {
-                                        page.call_function();
-                                    }
-                                });
+                                } else {
+                                    page.call_function();
+                                }
                             });
                         }
                     });
