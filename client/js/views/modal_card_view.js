@@ -3504,9 +3504,19 @@ App.ModalCardView = Backbone.View.extend({
      * @type Object(DOM event)
      */
     showChecklistAddForm: function(e) {
-        $('.js-checklist-add-form-response').html(new App.ChecklistAddFormView({
-            model: this.model
-        }).el);
+        e.preventDefault();
+        var form_parent = $(e.target).attr('data-action');
+        if (form_parent == 'modalcard-actions') {
+            $('.js-checklist-add-form-response-card-' + this.model.id).html('');
+            $('.js-checklist-add-form-response-actions-' + this.model.id).html(new App.ChecklistAddFormView({
+                model: this.model
+            }).el);
+        } else {
+            $('.js-checklist-add-form-response-actions-' + this.model.id).html('');
+            $('.js-checklist-add-form-response-card-' + this.model.id).html(new App.ChecklistAddFormView({
+                model: this.model
+            }).el);
+        }
         var target = $(e.target);
         $('li.dropdown').removeClass('open');
         target.parents('li.dropdown').addClass('open');
