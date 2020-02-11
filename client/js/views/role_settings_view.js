@@ -224,17 +224,22 @@ App.RoleSettingsView = Backbone.View.extend({
         var target = $(e.target);
         var data = target.serializeObject();
         var self = this;
-        var role = new App.Role();
-        role.url = api_url + 'roles.json';
-        role.save(data, {
-            success: function(model, response) {
-                self.flash('success', i18next.t('Role added successfully.'));
-                app.navigate('#/roles', {
-                    trigger: true,
-                    replace: true
-                });
-            }
-        });
+        if (_.isEmpty(data.name) || $.trim(data.name) == "") {
+            self.flash("danger", i18next.t("Please enter the role name."));
+            return false;
+        } else {
+            var role = new App.Role();
+            role.url = api_url + 'roles.json';
+            role.save(data, {
+                success: function(model, response) {
+                    self.flash('success', i18next.t('Role added successfully.'));
+                    app.navigate('#/roles', {
+                        trigger: true,
+                        replace: true
+                    });
+                }
+            });
+        }
         return false;
     },
     /**
@@ -246,17 +251,22 @@ App.RoleSettingsView = Backbone.View.extend({
         var target = $(e.target);
         var data = target.serializeObject();
         var self = this;
-        var organization_user_role = new App.OrganizationUserRoles();
-        organization_user_role.url = api_url + 'organization_user_roles.json';
-        organization_user_role.save(data, {
-            success: function(model, response) {
-                self.flash('success', i18next.t('Organization user role added successfully.'));
-                app.navigate('#/roles?tab=organizations', {
-                    trigger: true,
-                    replace: true
-                });
-            }
-        });
+        if (_.isEmpty(data.name) || $.trim(data.name) == "") {
+            self.flash("danger", i18next.t("Please enter the organization user role name."));
+            return false;
+        } else {
+            var organization_user_role = new App.OrganizationUserRoles();
+            organization_user_role.url = api_url + 'organization_user_roles.json';
+            organization_user_role.save(data, {
+                success: function(model, response) {
+                    self.flash('success', i18next.t('Organization user role added successfully.'));
+                    app.navigate('#/roles?tab=organizations', {
+                        trigger: true,
+                        replace: true
+                    });
+                }
+            });
+        }
         return false;
     },
     /**
@@ -306,17 +316,22 @@ App.RoleSettingsView = Backbone.View.extend({
         var target = $(e.target);
         var data = target.serializeObject();
         var self = this;
-        var board_user_role = new App.BoardUserRoles();
-        board_user_role.url = api_url + 'board_user_roles.json';
-        board_user_role.save(data, {
-            success: function(model, response) {
-                self.flash('success', i18next.t('Board user role added successfully.'));
-                app.navigate('#/roles?tab=boards', {
-                    trigger: true,
-                    replace: true
-                });
-            }
-        });
+        if (_.isEmpty(data.name) || $.trim(data.name) == "") {
+            self.flash("danger", i18next.t("Please enter the board user role name."));
+            return false;
+        } else {
+            var board_user_role = new App.BoardUserRoles();
+            board_user_role.url = api_url + 'board_user_roles.json';
+            board_user_role.save(data, {
+                success: function(model, response) {
+                    self.flash('success', i18next.t('Board user role added successfully.'));
+                    app.navigate('#/roles?tab=boards', {
+                        trigger: true,
+                        replace: true
+                    });
+                }
+            });
+        }
         return false;
     },
     /**
@@ -328,18 +343,23 @@ App.RoleSettingsView = Backbone.View.extend({
         var target = $(e.currentTarget);
         var data = target.serializeObject();
         var self = this;
-        var role = new App.Role();
-        role.set('id', data.id);
-        role.url = api_url + 'roles/' + data.id + '.json';
-        role.save(data, {
-            success: function(model, response) {
-                self.flash('success', i18next.t('Role has been updated successfully.'));
-                app.navigate('#/roles', {
-                    trigger: true,
-                    replace: true
-                });
-            }
-        });
+        if (_.isEmpty(data.name) || $.trim(data.name) == "") {
+            self.flash("danger", i18next.t("Please enter the role name."));
+            return false;
+        } else {
+            var role = new App.Role();
+            role.set('id', data.id);
+            role.url = api_url + 'roles/' + data.id + '.json';
+            role.save(data, {
+                success: function(model, response) {
+                    self.flash('success', i18next.t('Role has been updated successfully.'));
+                    app.navigate('#/roles', {
+                        trigger: true,
+                        replace: true
+                    });
+                }
+            });
+        }
         return false;
     },
     /**
@@ -351,18 +371,23 @@ App.RoleSettingsView = Backbone.View.extend({
         var target = $(e.currentTarget);
         var data = target.serializeObject();
         var self = this;
-        var board_user_role = new App.BoardUserRoles();
-        board_user_role.set('id', data.id);
-        board_user_role.url = api_url + 'board_user_roles/' + data.id + '.json';
-        board_user_role.save(data, {
-            success: function(model, response) {
-                self.flash('success', i18next.t('Role has been updated successfully.'));
-                app.navigate('#/roles?tab=boards', {
-                    trigger: true,
-                    replace: true
-                });
-            }
-        });
+        if (_.isEmpty(data.name) || $.trim(data.name) == "") {
+            self.flash("danger", i18next.t("Please enter the board user role name."));
+            return false;
+        } else {
+            var board_user_role = new App.BoardUserRoles();
+            board_user_role.set('id', data.id);
+            board_user_role.url = api_url + 'board_user_roles/' + data.id + '.json';
+            board_user_role.save(data, {
+                success: function(model, response) {
+                    self.flash('success', i18next.t('Role has been updated successfully.'));
+                    app.navigate('#/roles?tab=boards', {
+                        trigger: true,
+                        replace: true
+                    });
+                }
+            });
+        }
         return false;
     },
     /**
@@ -374,18 +399,23 @@ App.RoleSettingsView = Backbone.View.extend({
         var target = $(e.currentTarget);
         var data = target.serializeObject();
         var self = this;
-        var organization_user_role = new App.OrganizationUserRoles();
-        organization_user_role.set('id', data.id);
-        organization_user_role.url = api_url + 'organization_user_roles/' + data.id + '.json';
-        organization_user_role.save(data, {
-            success: function(model, response) {
-                self.flash('success', i18next.t('Role has been updated successfully.'));
-                app.navigate('#/roles?tab=organizations', {
-                    trigger: true,
-                    replace: true
-                });
-            }
-        });
+        if (_.isEmpty(data.name) || $.trim(data.name) == "") {
+            self.flash("danger", i18next.t("Please enter the organization user role name."));
+            return false;
+        } else {
+            var organization_user_role = new App.OrganizationUserRoles();
+            organization_user_role.set('id', data.id);
+            organization_user_role.url = api_url + 'organization_user_roles/' + data.id + '.json';
+            organization_user_role.save(data, {
+                success: function(model, response) {
+                    self.flash('success', i18next.t('Role has been updated successfully.'));
+                    app.navigate('#/roles?tab=organizations', {
+                        trigger: true,
+                        replace: true
+                    });
+                }
+            });
+        }
         return false;
     },
     /**
