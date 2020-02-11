@@ -1304,6 +1304,9 @@ App.ListView = Backbone.View.extend({
                         }
                         var scrollLeft = 0;
                         var list_per_page = Math.floor($(window).width() / 270);
+                        if (App.sortable.previous_offset_horizontal === 0 && ui.offset.left > 0) {
+                            App.sortable.is_moving_right = true;
+                        }
                         if (App.sortable.previous_offset_horizontal !== 0 && App.sortable.previous_offset_horizontal != ui.offset.left) {
                             if (App.sortable.previous_offset_horizontal > ui.offset.left) {
                                 App.sortable.is_moving_right = false;
