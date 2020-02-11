@@ -47,27 +47,32 @@ App.AdminUserAddView = Backbone.View.extend({
         data.is_send_newsletter = parseInt(data.is_send_newsletter);
         data.is_productivity_beats = true;
         var self = this;
-        var user = new App.User();
-        user.url = api_url + 'users.json';
-        user.save(data, {
-            success: function(model, response) {
-                if (response.error) {
-                    if (response.error === 1) {
-                        self.flash('danger', i18next.t('Email address already exist. Your registration process is not completed. Please, try again.'));
-                    } else if (response.error === 2) {
-                        self.flash('danger', i18next.t('Username already exists. Your registration process is not completed. Please, try again.'));
+        if (_.isEmpty(data.email) || $.trim(data.email) === '' || _.isEmpty(data.full_name) || $.trim(data.full_name) === '' || _.isEmpty(data.initials) || $.trim(data.initials) === '' || _.isEmpty(data.username) || $.trim(data.username) === '' || _.isEmpty(data.password) || $.trim(data.password) === '') {
+            self.flash('danger', i18next.t('Please enter the user details'));
+            return false;
+        } else {
+            var user = new App.User();
+            user.url = api_url + 'users.json';
+            user.save(data, {
+                success: function(model, response) {
+                    if (response.error) {
+                        if (response.error === 1) {
+                            self.flash('danger', i18next.t('Email address already exist. Your registration process is not completed. Please, try again.'));
+                        } else if (response.error === 2) {
+                            self.flash('danger', i18next.t('Username already exists. Your registration process is not completed. Please, try again.'));
+                        }
+                        $('#inputPassword').val('');
+                    } else {
+                        self.flash('success', i18next.t('User added successfully.'));
+                        target[0].reset();
+                        app.navigate('#/users', {
+                            trigger: true,
+                            replace: true
+                        });
                     }
-                    $('#inputPassword').val('');
-                } else {
-                    self.flash('success', i18next.t('User added successfully.'));
-                    target[0].reset();
-                    app.navigate('#/users', {
-                        trigger: true,
-                        replace: true
-                    });
                 }
-            }
-        });
+            });
+        }
         return false;
     },
     /**
