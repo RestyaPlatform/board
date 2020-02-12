@@ -864,7 +864,7 @@ App.FooterView = Backbone.View.extend({
         var card_labels_notifications_array = ['add_card_label', 'delete_card_label'];
         var card_checklists_notifications_array = ['add_card_checklist', 'add_checklist_item', 'update_card_checklist', 'update_card_checklist_item', 'delete_checklist_item', 'delete_checklist'];
         var card_attachments_notifications_array = ['add_card_attachment', 'delete_card_attachment'];
-        if ($.cookie('auth')) {
+        if (!_.isUndefined($.cookie('auth')) && !_.isEmpty($.cookie('auth')) & $.cookie('auth') !== null) {
             Auth = JSON.parse($.cookie('auth'));
             if (_.isUndefined(authuser.user.last_activity_id)) {
                 authuser.user.last_activity_id = Auth.user.last_activity_id;
@@ -989,7 +989,7 @@ App.FooterView = Backbone.View.extend({
                             }
                             activity.from_footer = true;
                             activity.attributes.original_comment = activity.attributes.comment;
-                            if (!_.isUndefined(Notification)) {
+                            if (typeof Notification != 'undefined') {
                                 if (mode == 1 && activity.attributes.token !== authuser.access_token && Notification.permission === 'granted') {
                                     var icon = window.location.pathname + 'img/logo-icon.png';
                                     if (activity.attributes.type != 'add_comment' && activity.attributes.type != 'edit_comment') {
@@ -3138,7 +3138,7 @@ App.FooterView = Backbone.View.extend({
     enabledesktopNotification: function(e) {
         e.preventDefault();
         var self = this;
-        if (!_.isUndefined(Notification)) {
+        if (typeof Notification != 'undefined') {
             Notification.requestPermission(function(permission) {
                 // Whatever the user answers, we make sure we store the information
                 if (!('permission' in Notification)) {
