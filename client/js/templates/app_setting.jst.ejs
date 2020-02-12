@@ -4,7 +4,7 @@
 	<h3><%- i18next.t(app_settings[0].app_name) %> - <%- i18next.t('Settings') %></h3>
 </div>
 <%  if(!_.isEmpty(app_settings[0].settings_description)){ %>
-<div class="alert alert-info list-group-item-text"><%= i18next.t(app_settings[0].settings_description) %></div>
+<div class="alert alert-info list-group-item-text text-wrap"><%= i18next.t(app_settings[0].settings_description) %></div>
 <% } %>
 <div class="well-sm"></div>
 <% if(!_.isUndefined(currenturl.hash) && (currenturl.hash !== '#/apps/r_multiple_ldap_login')){ %>
