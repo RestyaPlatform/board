@@ -277,7 +277,7 @@
 									<% } else {%>
 									<input type="<%- setting.type %>" id="inputSetting<%- setting.id %>" name="<%- i18next.t(setting.name) %>" class="form-control" value="<%- setting.value %>" />
 									<% } %>
-									<div><span class="help-block"><%= i18next.t(setting.description) %></span></div>
+									<div><span class="help-block text-wrap"><%= i18next.t(setting.description) %></span></div>
 								  </div>
 								</div>
 							<% } %>
