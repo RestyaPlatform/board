@@ -532,7 +532,7 @@ App.UserView = Backbone.View.extend({
                             var board = App.boards.findWhere({
                                 name: key
                             });
-                            if (!_.isUndefined(param) && !_.isEmpty(param) && board.attributes.is_closed) {
+                            if (!_.isUndefined(param) && !_.isEmpty(param) && !_.isUndefined(board) && !_.isEmpty(board) && board !== null && board.attributes.is_closed) {
                                 if (board.attributes.is_closed) {
                                     ++boards_count;
                                     self.$('#cards').append(new App.UserCardsView({
