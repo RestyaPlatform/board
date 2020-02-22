@@ -1345,7 +1345,9 @@ App.ApplicationView = Backbone.View.extend({
                 $('#js-navbar-default').remove();
                 if (!_.isEmpty(authuser.user) && authuser.user) {
                     var app_page = page.options.name + '_' + page.options.page;
-                    $('#content').html('<section id="' + app_page + '"></section>');
+                    if ($('#content').find('#' + app_page).length === 0) {
+                        $('#content').html('<section id="' + app_page + '"></section>');
+                    }
                 } else {
                     app.navigate('#/boards', {
                         trigger: true,
