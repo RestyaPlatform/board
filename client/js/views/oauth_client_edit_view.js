@@ -81,7 +81,9 @@ App.OauthClientEditView = Backbone.View.extend({
             cache: false,
             abortPending: true,
             success: function(collections, response) {
-                self.render(response);
+                if (!_.isEmpty(response) && response.length > 0) {
+                    self.render(response['0']);
+                }
             }
         });
     },
