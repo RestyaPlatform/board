@@ -511,9 +511,9 @@ App.UserView = Backbone.View.extend({
             cache: false,
             success: function(card, response) {
                 if (!_.isUndefined(param) && !_.isEmpty(param)) {
-                    self.$('#cards').html('<div class="pull-right well-sm"><a href="javascript:void(0);" class="btn btn-primary js-hide-closedBoards-cards" title="' + i18next.t('Hide Closed Boards Cards') + '">' + i18next.t('Hide Closed Boards Cards') + '</a></div>');
+                    self.$('#cards').html('<div class="col-xs-12 js-userCards-option"><div class="pull-right well-sm"><a href="javascript:void(0);" class="btn btn-primary js-hide-closedBoards-cards" title="' + i18next.t('Hide Closed Boards Cards') + '">' + i18next.t('Hide Closed Boards Cards') + '</a></div></div>');
                 } else {
-                    self.$('#cards').html('<div class="pull-right well-sm"><a href="javascript:void(0);" class="btn btn-primary js-show-closedBoards-cards" title="' + i18next.t('Show Closed Boards Cards') + '">' + i18next.t('Show Closed Boards Cards') + '</a></div>');
+                    self.$('#cards').html('<div class="col-xs-12 js-userCards-option"><div class="pull-right well-sm"><a href="javascript:void(0);" class="btn btn-primary js-show-closedBoards-cards" title="' + i18next.t('Show Closed Boards Cards') + '">' + i18next.t('Show Closed Boards Cards') + '</a></div></div>');
                 }
                 $('body').trigger('IcalfeedRendered');
                 if (response.length === 0) {
