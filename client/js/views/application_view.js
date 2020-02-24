@@ -1379,6 +1379,11 @@ App.ApplicationView = Backbone.View.extend({
                     model: authuser
                 }).render();
                 $('#footer').html(this.footerView.el);
+            } else if (adminUrlModels.indexOf(page.model) !== -1 && $('#footer-menu').length === 1 && $('#footer .js-product-beat-action').length === 1) {
+                this.footerView = new App.FooterView({
+                    model: authuser
+                }).render();
+                $('#footer').html(this.footerView.el);
             }
             if (!_.isUndefined(authuser.user)) {
                 var count = authuser.user.notify_count;
