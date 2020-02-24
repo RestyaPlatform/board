@@ -12,9 +12,11 @@
 					if(timezones !== '') {
 						timezones = settingCategory.get('timezones');
 					}
+					if (!_.isUndefined(settingCategory.get('id')) && !_.isEmpty(settingCategory.get('id')) && (settingCategory.get('id')) !== null) {
 		%>
-				<li <% if (!_.isUndefined(id) && id == settingCategory.get('id')) { %>class="active" <%} else if (_.isUndefined(id) && settingCategory.get('id') == 3) { %>class="active" <%}%> ><a href="#/settings/<%-settingCategory.get('id')%>" data-setting_category_id="<%-settingCategory.get('id')%>" id="js-setting_trigger"><%- i18next.t(settingCategory.get('name')) %></a></li>
-		<% 
+						<li <% if (!_.isUndefined(id) && id == settingCategory.get('id')) { %>class="active" <%} else if (_.isUndefined(id) && settingCategory.get('id') == 3) { %>class="active" <%}%> ><a href="#/settings/<%-settingCategory.get('id')%>" data-setting_category_id="<%-settingCategory.get('id')%>" id="js-setting_trigger"><%- i18next.t(settingCategory.get('name')) %></a></li>
+		<% 			
+					}
 					i++;
 				});
 			}
@@ -27,6 +29,7 @@
 				var j = 0;
 				_.each(list.models, function(settingCategory) {				
 					var settings = settingCategory.get('settings');
+					if (!_.isUndefined(settingCategory.get('id')) && !_.isEmpty(settingCategory.get('id')) && (settingCategory.get('id')) !== null) {
 		%>		
 				<div class="modal-body tab-pane clearfix <% if (!_.isUndefined(id) && id == settingCategory.get('id')) { %> active <%} else if (_.isUndefined(id) && settingCategory.get('id') == 3) { %> active <%} else { %> hide <% } %>" id="settingTab<%- settingCategory.get('id') %>">
 					<% if(!_.isEmpty(settings)){ %>
@@ -310,8 +313,9 @@
 					</form>
 					<% } %>
 				</div>
-		<% j++; %>
-		<% });
+		<%  			j++; 
+					}
+				});
 			} 
 		%>	
 		</div>
