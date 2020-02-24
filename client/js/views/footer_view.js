@@ -75,7 +75,7 @@ App.FooterView = Backbone.View.extend({
         },
         'click .js-board-load-more-all': function(e) {
             e.preventDefault();
-            this.loadMore('board', '0');
+            this.loadMore('user', '0');
             return false;
         },
         'click .js-all-load-more-all': function(e) {
