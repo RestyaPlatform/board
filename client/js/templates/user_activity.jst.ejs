@@ -42,20 +42,20 @@
 				activity.attributes.comment = activity.attributes.comment.replace('##USER_NAME##', '<span class="h5">'+_.escape(activity.attributes.full_name)+'</span>');
 				if(activity.attributes.comment.indexOf('##CHECKLIST_ITEM_NAME##') != -1){
 					if (activity.attributes.checklist_item_name !== null) {
-						activity.attributes.comment = activity.attributes.comment.replace('##CHECKLIST_ITEM_NAME##', (activity.attributes.checklist_item_name));
+						activity.attributes.comment = activity.attributes.comment.replace('##CHECKLIST_ITEM_NAME##', _.escape(activity.attributes.checklist_item_name));
 					} else {
 						activity.attributes.comment = activity.attributes.comment.replace('##CHECKLIST_ITEM_NAME##', i18next.t("[deleted]"));
 					}
 				}
 				if(activity.attributes.comment.indexOf('##CHECKLIST_ITEM_PARENT_NAME##') != -1){
 					if (activity.attributes.checklist_item_parent_name !== null) {
-						activity.attributes.comment = activity.attributes.comment.replace('##CHECKLIST_ITEM_PARENT_NAME##', (activity.attributes.checklist_item_parent_name));
+						activity.attributes.comment = activity.attributes.comment.replace('##CHECKLIST_ITEM_PARENT_NAME##', _.escape(activity.attributes.checklist_item_parent_name));
 					} else {
 						activity.attributes.comment = activity.attributes.comment.replace('##CHECKLIST_ITEM_PARENT_NAME##', i18next.t("[deleted]"));
 					}
 				}
 				if(activity.attributes.comment.indexOf('##CHECKLIST_NAME##') != -1){
-					activity.attributes.comment = activity.attributes.comment.replace('##CHECKLIST_NAME##', (activity.attributes.checklist_name));
+					activity.attributes.comment = activity.attributes.comment.replace('##CHECKLIST_NAME##', _.escape(activity.attributes.checklist_name));
 				}
 			} else if(activity.attributes.type != 'edit_comment'){
 				var comment = filterXSS(activity.attributes.full_name) + ' commented in card ' + cardLink;
@@ -102,7 +102,7 @@
 							<% parse_date(activity.attributes.created, authuser,'js-timeago-'+activity.attributes.id); %>
 						<% }, 10000); %>
 						<span class="js-timeago-<%- activity.attributes.id %>"><%= parse_date(activity.attributes.created, authuser,'js-timeago-'+activity.attributes.id, true) %></span>
-						<% if(!_.isEmpty(activity.attributes.board_name)){ %><a class="pull-left" href="#/board/<%= activity.attributes.board_id %>">&nbsp;on&nbsp;<%- activity.attributes.board_name %></a><% } %></small>
+						<% if(!_.isEmpty(activity.attributes.board_name)){ %><a class="pull-left" href="#/board/<%= activity.attributes.board_id %>">&nbsp;<%- i18next.t('on') %>&nbsp;<%- activity.attributes.board_name %></a><% } %></small>
 						<div class="clearfix">
 								<small class="pull-left">
 									<% if(!_.isUndefined(authuser.user) && activity.attributes.type == "add_comment" && type != "all") { %>
