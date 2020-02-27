@@ -297,7 +297,7 @@ App.SwitchToListView = Backbone.View.extend({
             if (!_.isUndefined(board_custom_fields.r_listview_configure) && board_custom_fields.r_listview_configure !== null) {
                 r_listview_configure = board_custom_fields.r_listview_configure.split(',');
                 field_wrapper_items.each(function(label, key) {
-                    if (r_listview_configure.indexOf($(key).data('field-name')) === -1) {
+                    if (r_listview_configure.indexOf($(key).data('field-name')) === -1 && r_listview_configure.indexOf('selectall') === -1) {
                         if ($(key).data('field-name') === 'id') {
                             $(key).addClass('hide');
                         } else {
