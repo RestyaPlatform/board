@@ -331,10 +331,10 @@ App.CardView = Backbone.View.extend({
         }
         if (current_param[1]) {
             query_params = current_param[1].split(',');
-            query_params[0] = query_params[0].replace('filter=', '');
-            if (query_params.length > 0) {
+            if (query_params[0].indexOf('filter=') !== -1) {
                 $('.js-clear-filter-btn').removeClass('hide').addClass('show');
             }
+            query_params[0] = query_params[0].replace('filter=', '');
             $.each(query_params, function(index, value) {
                 if (value.indexOf('label:') > -1) {
                     total_filter += 1;
