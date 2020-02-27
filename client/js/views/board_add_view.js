@@ -88,28 +88,34 @@ App.BoardAddView = Backbone.View.extend({
         return false;
     },
     submitBoardAdd: function(e) {
+        var self = this;
         e.preventDefault();
         $(e.target).find('#submitBoardAdd').addClass('disabled');
         var data = $(e.target).serializeObject();
-        var board = new App.Board();
-        board.url = api_url + 'boards.json';
-        if (this.model.organization_id) {
-            data.organization_id = this.model.organization_id;
-        }
-        board.save(data, {
-            success: function(model, response) {
-                $(e.target).find('#submitBoardAdd').removeClass('disabled');
-                App.boards.add(response.simple_board);
-                if (response.simple_board.lists !== null) {
-                    App.boards.get(parseInt(response.simple_board.id)).lists.add(response.simple_board.lists);
-                }
-                $.removeCookie("chat_initialize");
-                app.navigate('#/board/' + response.id, {
-                    trigger: true,
-                    replace: true
-                });
+        if (_.isEmpty(data.name) || data.name.trim() === '') {
+            self.flash('danger', i18next.t('Please add the board name'));
+            return false;
+        } else {
+            var board = new App.Board();
+            board.url = api_url + 'boards.json';
+            if (this.model.organization_id) {
+                data.organization_id = this.model.organization_id;
             }
-        });
+            board.save(data, {
+                success: function(model, response) {
+                    $(e.target).find('#submitBoardAdd').removeClass('disabled');
+                    App.boards.add(response.simple_board);
+                    if (response.simple_board.lists !== null) {
+                        App.boards.get(parseInt(response.simple_board.id)).lists.add(response.simple_board.lists);
+                    }
+                    $.removeCookie("chat_initialize");
+                    app.navigate('#/board/' + response.id, {
+                        trigger: true,
+                        replace: true
+                    });
+                }
+            });
+        }
         return false;
     },
     /**
