@@ -2259,6 +2259,7 @@ App.ModalCardView = Backbone.View.extend({
         if (target.hasClass('js-card-header-action')) {
             return false;
         }
+        return false;
     },
     /**
      * moveCard()
