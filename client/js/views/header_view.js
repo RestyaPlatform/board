@@ -267,24 +267,45 @@ App.HeaderView = Backbone.View.extend({
     },
     sortBy: function(e) {
         e.preventDefault();
-        var sortField = $(e.currentTarget).data('field');
+        var target = $(e.target);
+        var sortField;
+        var field_text;
+        var parentElement;
+        if (target.hasClass('icon')) {
+            parentElement = target.parent();
+            field_text = i18next.t(target.parent().text());
+            sortField = target.parent().data('field');
+        } else {
+            field_text = i18next.t(target.text());
+            sortField = target.data('field');
+        }
         if ($('.js-sort-by-users').hasClass('active')) {
             $('.js-sort-by-users').removeClass('active');
         }
         $('.js-sort-down-users').remove();
         $('.js-sort-up-users').remove();
-        $(e.target).parent().addClass('active');
+        var sortFieldstring = '';
+        if (target.hasClass('icon')) {
+            parentElement.parents('.js-sort-by-users').addClass('active');
+        } else {
+            target.parents('.js-sort-by-users').addClass('active');
+        }
         if (_.isUndefined(this.sortDirection)) {
-            $(e.target).html('<i class="icon icon-arrow-down js-sort-down-users"></i>' + i18next.t($(e.target).text()));
+            sortFieldstring += '<i class="icon icon-arrow-down js-sort-down-users"></i>' + field_text;
             this.sortDirection = 'desc';
         } else {
             if (this.sortDirection === 'desc') {
-                $(e.target).html('<i class="icon icon-arrow-up js-sort-up-users"></i>' + i18next.t($(e.target).text()));
+                sortFieldstring += '<i class="icon icon-arrow-up js-sort-up-users"></i>' + field_text;
                 this.sortDirection = 'asc';
             } else {
-                $(e.target).html('<i class="icon icon-arrow-down js-sort-down-users"></i>' + i18next.t($(e.target).text()));
+                sortFieldstring += '<i class="icon icon-arrow-down js-sort-down-users"></i>' + field_text;
                 this.sortDirection = 'desc';
             }
+        }
+        if (target.hasClass('icon')) {
+            parentElement.html(sortFieldstring);
+        } else {
+            target.html(sortFieldstring);
         }
         this.sortField = sortField;
         this.renderList();
