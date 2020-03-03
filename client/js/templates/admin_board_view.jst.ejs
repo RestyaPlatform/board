@@ -57,7 +57,11 @@
 </td> 
 <td>
 	<div class="clearfix">
-	   <a href="#/user/<%- board.attributes.user_id %>" class="small-user pull-left show" title="<%-board.attributes.full_name%> (<%-board.attributes.username%>)">
+		<% if(!board.attributes.full_name || !board.attributes.username){
+			board.attributes.full_name = i18next.t("[deleted account]");
+			board.attributes.username =  i18next.t("[deleted user]");
+	   }%>
+	   <a href="<% if (board.attributes.full_name !== '[deleted account]') { %>#/user/<%- board.attributes.user_id %><% }else{ %>javascript:void(0);<% } %>" class="small-user pull-left show" title="<%-board.attributes.full_name%> (<%-board.attributes.username%>)">
 	   		<% if(!_.isEmpty(board.attributes.profile_picture_path)){ 
 				var profile_picture_path = board.showImage('User', board.attributes.user_id, 'micro_thumb', true);
 			%>
@@ -66,7 +70,7 @@
 				<i class="avatar avatar-color-194 avatar-sm img-rounded"><%- board.attributes.initials%></i>
 			<% } %> 
 	   </a>
-	   <a href="#/user/<%- board.attributes.user_id %>" title="<%-board.attributes.full_name%> (<%-board.attributes.username%>)" class="col-xs-7 htruncate"><%-board.attributes.username%></a>
+	   <a href="<% if (board.attributes.full_name !== '[deleted account]') { %>#/user/<%- board.attributes.user_id %><% }else{ %>javascript:void(0);<% } %>" title="<%-board.attributes.full_name%> (<%-board.attributes.username%>)" class="col-xs-7 htruncate"><%-board.attributes.username%></a>
 	</div>
 </td>
 <td>
