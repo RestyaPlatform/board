@@ -199,11 +199,15 @@ App.AdminBoardView = Backbone.View.extend({
         var target = $(e.currentTarget);
         this.$('.js-back-to-board-visibility').addClass('hide');
         var visibility = this.model.attributes.board_visibility;
-        var insert = $('.js-visibility-list', target.next('.dropdown-menu'));
+        var insert = $('.js-visibility-list', target.parents('.js-visibility-list-dropdown').find('.dropdown-menu'));
         insert.nextAll().remove();
         $(new App.ShowBoardVisibilityView({
             model: visibility
         }).el).insertAfter(insert);
+        if (!target.parents('.js-visibility-list-dropdown').hasClass('open')) {
+            target.parents('.js-visibility-list-dropdown').addClass('open');
+        }
+        return false;
     },
     /**
      * backShowBoardVisibility()
