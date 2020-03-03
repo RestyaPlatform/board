@@ -2326,7 +2326,18 @@ App.ListView = Backbone.View.extend({
     sortBy: function(e) {
         e.preventDefault();
         var self = this;
-        var sort_by = $(e.target).data('sort-by');
+        var target = $(e.target);
+        var sort_by;
+        var field_text;
+        var parentElement;
+        if (target.hasClass('icon')) {
+            parentElement = target.parent();
+            field_text = i18next.t(target.parent().text());
+            sort_by = target.parent().data('sort-by');
+        } else {
+            field_text = i18next.t(target.text());
+            sort_by = target.data('sort-by');
+        }
         if ($('.js-sort-by-' + self.model.attributes.id).hasClass('active')) {
             $('.js-sort-by-' + self.model.attributes.id).removeClass('active');
         }
@@ -2350,18 +2361,27 @@ App.ListView = Backbone.View.extend({
                 this.model.cards.add(cards.toJSON(), {
                     silent: true
                 });
+                var sortFieldstring = '';
+                if (target.hasClass('icon')) {
+                    parentElement.parents('.js-sort-by-' + self.model.attributes.id).addClass('active');
+                } else {
+                    target.parents('.js-sort-by-' + self.model.attributes.id).addClass('active');
+                }
                 if (!_.isUndefined(this.sort_by) && !_.isEmpty(this.sort_by) && this.sort_by !== null && (this.sort_by === sort_by)) {
-                    $(e.target).parent().addClass('active');
-                    $(e.target).html('<i class="icon icon-arrow-up js-sort-up-' + self.model.attributes.id + '"></i>' + i18next.t($(e.target).text()));
+                    sortFieldstring += '<i class="icon icon-arrow-up js-sort-up-' + self.model.attributes.id + '"></i>' + field_text;
                     self.model.cards.sortByColumn(this.sort_by, 'asc');
                     cards.sortByColumn(this.sort_by, 'asc');
                     this.sort_by = null;
                 } else {
-                    $(e.target).parent().addClass('active');
-                    $(e.target).html('<i class="icon icon-arrow-down js-sort-down-' + self.model.attributes.id + '"></i>' + i18next.t($(e.target).text()));
+                    sortFieldstring += '<i class="icon icon-arrow-down js-sort-down-' + self.model.attributes.id + '"></i>' + field_text;
                     this.sort_by = sort_by;
                     self.model.cards.sortByColumn(this.sort_by, 'desc');
                     cards.sortByColumn(this.sort_by, 'desc');
+                }
+                if (target.hasClass('icon')) {
+                    parentElement.html(sortFieldstring);
+                } else {
+                    target.html(sortFieldstring);
                 }
 
                 cards.each(function(card) {
