@@ -942,7 +942,7 @@ App.CardView = Backbone.View.extend({
                 labels.push(e.choice.text);
                 self.$el.find('.js-card-add-labels').val(labels.join(','));
                 var labelColor;
-                if (!_.isEmpty(tagColors) && !_.isUndefined(tagColors[e.choice.text]) && tagColors[e.choice.text] !== null) {
+                if (!_.isEmpty(tagColors) && !_.isUndefined(tagColors[e.choice.text]) && tagColors[e.choice.text] !== null && !_.isEmpty(tagColors[e.choice.text])) {
                     labelColor = tagColors[e.choice.text];
                 } else {
                     labelColor = '#' + calcMD5("" + e.choice.text).slice(0, 6).substring(0, 6);
