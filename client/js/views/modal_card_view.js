@@ -2259,7 +2259,6 @@ App.ModalCardView = Backbone.View.extend({
         if (target.hasClass('js-card-header-action')) {
             return false;
         }
-        return false;
     },
     /**
      * moveCard()
@@ -4513,20 +4512,22 @@ App.ModalCardView = Backbone.View.extend({
             id: parseInt(list_id)
         });
         var current_position = this.model.collection.indexOf(this.model) + 1;
-        for (var i = 1; i <= list.attributes.card_count; i++) {
-            if (self.model.attributes.list_id == list.attributes.id && i == current_position) {
-                content_position += '<option value="' + self.model.attributes.position + '" selected="selected">' + self.model.attributes.position + ' ' + i18next.t('(current)') + '</option>';
-            } else {
-                content_position += '<option value="' + i + '">' + i + '</option>';
+        if (!_.isUndefined(list) && !_.isEmpty(list) && list !== null) {
+            for (var i = 1; i <= list.attributes.card_count; i++) {
+                if (self.model.attributes.list_id == list.attributes.id && i == current_position) {
+                    content_position += '<option value="' + self.model.attributes.position + '" selected="selected">' + self.model.attributes.position + ' ' + i18next.t('(current)') + '</option>';
+                } else {
+                    content_position += '<option value="' + i + '">' + i + '</option>';
+                }
             }
+            if (this.model.attributes.list_id != list.attributes.id) {
+                var next_position = parseInt(list.attributes.card_count) + 1;
+                if (isNaN(list.attributes.card_count))
+                    next_position = 1;
+                content_position += '<option value="' + next_position + '">' + next_position + '</option>';
+            }
+            self.$el.find('.js-position').html(content_position);
         }
-        if (this.model.attributes.list_id != list.attributes.id) {
-            var next_position = parseInt(list.attributes.card_count) + 1;
-            if (isNaN(list.attributes.card_count))
-                next_position = 1;
-            content_position += '<option value="' + next_position + '">' + next_position + '</option>';
-        }
-        self.$el.find('.js-position').html(content_position);
     },
     /**
      * showCopyCardForm()

@@ -5511,8 +5511,8 @@
                 "tags": [
                     "cards"
                 ],
-                "summary": "Archived card send back to board",
-                "description": "Archived card send back to board",
+                "summary": "View list cards of the board",
+                "description": "View list cards of the board",
                 "produces": [
                     "application/json"
                 ],
@@ -5542,19 +5542,6 @@
                         "required": true,
                         "type": "integer",
                         "format": "int64"
-                    },
-                    {
-                        "name": "body",
-                        "in": "body",
-                        "description": "Created comment object",
-                        "required": true,
-                        "schema": {
-                            "properties": {
-                                "name": {
-                                    "type": "string"
-                                }
-                            }
-                        }
                     }
                 ],
                 "responses": {
