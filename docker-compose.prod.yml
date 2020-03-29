@@ -1,22 +1,27 @@
-version: '2'
+version: "2"
 services:
   restyaboard:
     volumes:
-       - /var/opt/restya/media:/usr/share/nginx/html/media
+      - /var/opt/restya/media:/usr/share/nginx/html/media
     environment:
       - POSTGRES_HOST=postgres
       - POSTGRES_USER=admin
       - POSTGRES_PASSWORD=admin
       - POSTGRES_DB=restyaboard
-      - SMTP_DOMAIN=domain
-      - SMTP_USERNAME=user
-      - SMTP_PASSWORD=pass
-      - SMTP_SERVER=server
-      - SMTP_PORT=465
+      #- SMTP_SERVER=smtp_relay
+      #- SMTP_PORT=587
       - TZ=Etc/UTC
     depends_on:
       - postgres
     restart: always
+
+  # See https://hub.docker.com/r/boky/postfix for documentation
+  # or try https://github.com/WeAreGenki/docker-smtp
+  smtp_relay:
+    image: boky/postfix
+    environment:
+      - RELAYHOST=CONFIGURE_ME
+      - ALLOW_EMPTY_SENDER_DOMAINS=true
 
   postgres:
     image: postgres:9-alpine

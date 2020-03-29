@@ -11,29 +11,14 @@ if [ "$1" = 'start' ]; then
       -e "s/^.*'R_DB_PASSWORD'.*$/define('R_DB_PASSWORD', '${POSTGRES_PASSWORD}');/g" \
       -e "s/^.*'R_DB_NAME'.*$/define('R_DB_NAME', '${POSTGRES_DB}');/g" \
       ${ROOT_DIR}/server/php/config.inc.php
-  echo $TZ > /etc/timezone
 
+  # Relay SMTP server should be configured in another service
+  echo "sendmail_path = /usr/sbin/sendmail -S $SMTP_SERVER:$SMTP_PORT -t -i" >> /etc/php7/php.ini
+
+  # Configure Timezone
+  echo $TZ > /etc/timezone
   cp /usr/share/zoneinfo/$TZ /etc/localtime
   sed -i "s|;date.timezone = |date.timezone = ${TZ}|" /etc/php7/php.ini
-
-  # smtp config
-  cat > /etc/msmtprc <<EOF
-# Set default values for all following accounts.
-defaults
-auth           on
-tls            on
-tls_trust_file /etc/ssl/certs/ca-certificates.crt
-syslog         on
-account        smtp
-host           $SMTP_SERVER
-port           $SMTP_PORT
-from           $SMTP_EMAIL
-user           $SMTP_USERNAME
-password       $SMTP_PASSWORD
-# Set a default account
-account default : smtp
-aliases        /etc/aliases
-EOF
 
   # Log errors from php-fpm
   cat >> /etc/php7/php-fpm.d/www.conf <<EOF

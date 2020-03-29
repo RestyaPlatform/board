@@ -40,7 +40,6 @@ RUN apk add -u --no-cache \
     # imagemagick is heavy. Adds a couple of MB to the image
     imagemagick \
     jq \
-    msmtp \
     nginx \
     php7 \
     php7-curl \
@@ -55,19 +54,15 @@ RUN apk add -u --no-cache \
     php7-xml \
     postgresql-client \
     unzip \
-    tzdata                                                && \
-    sed -i 's/nobody/nginx/g' /etc/php7/php-fpm.d/www.conf    && \
-    echo 'sendmail_path = /usr/bin/msmtp -t' > /etc/php7/php.ini && \
+    tzdata && \
+    sed -i 's/nobody/nginx/g' /etc/php7/php-fpm.d/www.conf && \
     rm /etc/nginx/conf.d/default.conf                       
 
 # after initial setup of deps to improve rebuilding speed
 ENV ROOT_DIR=/var/lib/nginx/html \
     CONF_FILE=/etc/nginx/conf.d/restyaboard.conf \
-    SMTP_DOMAIN=localhost \
-    SMTP_USERNAME=root \
-    SMTP_PASSWORD=root \
-    SMTP_SERVER=localhost \
-    SMTP_PORT=465 \
+    SMTP_SERVER=smtp_relay \
+    SMTP_PORT=587 \
     TZ=Etc/UTC
 
 # deploy app
