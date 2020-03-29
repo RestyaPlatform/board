@@ -100,7 +100,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             );
             $role_links = executeQuery('SELECT * FROM role_links_listing WHERE id = $1', $qry_val_arr);
             $response = array_merge($response, $role_links);
-            $files = glob(APP_PATH . '/client/locales/*/translation.json', GLOB_BRACE);
+            $files = glob(APP_PATH . '/client/locales/*/translation.json');
             $lang_iso2_codes = array();
             foreach ($files as $file) {
                 $folder = explode(DS, $file);
@@ -116,7 +116,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 $languages[$row['iso2']] = $row['name'];
             }
             $response['languages'] = json_encode($languages);
-            $files = glob(APP_PATH . DS . 'client' . DS . 'apps' . DS . '*' . DS . 'app.json', GLOB_BRACE);
+            $files = glob(APP_PATH . DS . 'client' . DS . 'apps' . DS . '*' . DS . 'app.json');
             if (!empty($files)) {
                 foreach ($files as $file) {
                     $content = file_get_contents($file);
@@ -1030,7 +1030,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             $timezones[] = $timezones_row;
         }
         $response[]['timezones'] = $timezones;
-        $files = glob(APP_PATH . '/client/locales/*/translation.json', GLOB_BRACE);
+        $files = glob(APP_PATH . '/client/locales/*/translation.json');
         $lang_iso2_codes = array();
         foreach ($files as $file) {
             $folder = explode(DS, $file);
@@ -1790,7 +1790,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         break;
 
     case '/workflow_templates':
-        $files = glob(APP_PATH . DS . 'client' . DS . 'js' . DS . 'workflow_templates' . DS . '*.json', GLOB_BRACE);
+        $files = glob(APP_PATH . DS . 'client' . DS . 'js' . DS . 'workflow_templates' . DS . '*.json');
         foreach ($files as $file) {
             $data = file_get_contents($file);
             $json = json_decode($data, true);
@@ -1906,7 +1906,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         while ($row = pg_fetch_assoc($s_sql)) {
             $response[$row['name']] = $row['value'];
         }
-        $files = glob(APP_PATH . DS . 'client' . DS . 'apps' . DS . '*' . DS . 'app.json', GLOB_BRACE);
+        $files = glob(APP_PATH . DS . 'client' . DS . 'apps' . DS . '*' . DS . 'app.json');
         if (!empty($files)) {
             foreach ($files as $file) {
                 $content = file_get_contents($file);
@@ -1962,7 +1962,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         break;
 
     case '/apps':
-        $files = glob(APP_PATH . DS . 'client' . DS . 'apps' . DS . '*' . DS . 'app.json', GLOB_BRACE);
+        $files = glob(APP_PATH . DS . 'client' . DS . 'apps' . DS . '*' . DS . 'app.json');
         if (!empty($files)) {
             foreach ($files as $file) {
                 $folder = explode(DS, $file);
