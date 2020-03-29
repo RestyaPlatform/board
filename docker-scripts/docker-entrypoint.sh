@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 set -e
 
 if [ "$1" = 'start' ]; then
@@ -11,37 +11,22 @@ if [ "$1" = 'start' ]; then
       -e "s/^.*'R_DB_PASSWORD'.*$/define('R_DB_PASSWORD', '${POSTGRES_PASSWORD}');/g" \
       -e "s/^.*'R_DB_NAME'.*$/define('R_DB_NAME', '${POSTGRES_DB}');/g" \
       ${ROOT_DIR}/server/php/config.inc.php
-  echo $TZ > /etc/timezone
-  rm /etc/localtime
-  cp /usr/share/zoneinfo/$TZ /etc/localtime
-  sed -i "s|;date.timezone = |date.timezone = ${TZ}|" /etc/php/7.2/fpm/php.ini
 
-  # postfix
-  echo "[${SMTP_SERVER}]:${SMTP_PORT} ${SMTP_USERNAME}:${SMTP_PASSWORD}" > /etc/postfix/sasl_passwd
-  postmap /etc/postfix/sasl_passwd
-  echo "www-data@${SMTP_DOMAIN} ${SMTP_USERNAME}" > /etc/postfix/sender_canonical
-  postmap /etc/postfix/sender_canonical
-  sed -i \
-      -e '/mydomain.*/d' \
-      -e '/myhostname.*/d' \
-      -e '/myorigin.*/d' \
-      -e '/mydestination.*/d' \
-      -e "$ a mydomain = ${SMTP_DOMAIN}" \
-      -e "$ a myhostname = localhost" \
-      -e '$ a myorigin = $mydomain' \
-      -e '$ a mydestination = localhost, $myhostname, localhost.$mydomain' \
-      -e '$ a sender_canonical_maps = hash:/etc/postfix/sender_canonical' \
-      -e "s/relayhost =.*$/relayhost = [${SMTP_SERVER}]:${SMTP_PORT}/" \
-      -e '/smtp_.*/d' \
-      -e '$ a smtpd_tls_session_cache_database = btree:${data_directory}/smtpd_scache' \
-      -e '$ a smtp_sasl_auth_enable = yes' \
-      -e '$ a smtp_sasl_security_options = noanonymous' \
-      -e '$ a smtp_sasl_password_maps = hash:/etc/postfix/sasl_passwd' \
-      -e '$ a smtp_use_tls = yes' \
-      -e '$ a smtp_tls_CAfile = /etc/ssl/certs/ca-certificates.crt' \
-      -e '$ a smtp_tls_wrappermode = yes' \
-      -e '$ a smtp_tls_security_level = encrypt' \
-      /etc/postfix/main.cf
+  # Relay SMTP server should be configured in another service
+  echo "sendmail_path = /usr/sbin/sendmail -S $SMTP_SERVER:$SMTP_PORT -t -i" >> /etc/php7/php.ini
+
+  # Configure Timezone
+  echo $TZ > /etc/timezone
+  cp /usr/share/zoneinfo/$TZ /etc/localtime
+  sed -i "s|;date.timezone = |date.timezone = ${TZ}|" /etc/php7/php.ini
+
+  # Log errors from php-fpm
+  cat >> /etc/php7/php-fpm.d/www.conf <<EOF
+; CUSTOM FROM HERE
+php_flag[display_errors] = off
+php_admin_value[error_log] = /var/log/php7/$pool.error.log
+php_admin_flag[log_errors] = on
+EOF
 
   # init db
   export PGHOST=${POSTGRES_HOST}
@@ -49,6 +34,7 @@ if [ "$1" = 'start' ]; then
   export PGUSER=${POSTGRES_USER}
   export PGPASSWORD=${POSTGRES_PASSWORD}
   export PGDATABASE=${POSTGRES_DB}
+  
   set +e
   while :
   do
@@ -58,7 +44,7 @@ if [ "$1" = 'start' ]; then
     fi
     sleep 1
   done
-  if [ "$(psql -c '\d')" = "No relations found." ]; then
+  if [ "$(psql -c '\d')" = "" ]; then
     psql -f "${ROOT_DIR}/sql/restyaboard_with_empty_data.sql"
   fi
   set -e
@@ -66,14 +52,21 @@ if [ "$1" = 'start' ]; then
   # cron shell
   echo "*/5 * * * * ${ROOT_DIR}/server/php/shell/main.sh" >> /var/spool/cron/crontabs/root
 
+  mkdir -p /run/nginx
+
+  mkdir -p /var/lib/nginx/html/tmp/cache
+  chown -R nginx:nginx /var/lib/nginx/html/tmp/cache
+
+  mkdir -p /var/lib/nginx/html/media
+  chown -R nginx:nginx /var/lib/nginx/html/media
+
   # service start
-  service cron start
-  service php7.2-fpm start
-  service nginx start
-  service postfix start
+  php-fpm7
+  crond -b -L /var/log/cron.log
+  nginx
 
   # tail log
-  exec tail -f /var/log/nginx/access.log /var/log/nginx/error.log
+  exec tail -F /var/log/nginx/*.log /var/log/cron.log /var/log/php7/error.log
 fi
 
 exec "$@"
