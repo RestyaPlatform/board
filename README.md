@@ -68,6 +68,33 @@ To upgrade, overwrite application files and apply respective DB script:
 
 * [Restya Google Group](https://groups.google.com/d/forum/restya)
 
+
+### Docker configuration
+
+In the container you can set following variables:
+
+| Variable            | Description                                                                  | Default       |
+| ------------------- | ---------------------------------------------------------------------------- | ------------- |
+| POSTGRES_HOST       | The host address of postgres.                                                | `postgres`    |
+| POSTGRES_PORT       | The port of the postgres host.                                               | `5432`        |
+| POSTGRES_ADMIN_USER | An admin user in postgres. (Needed for creating restya user and extensions.) |               |
+| POSTGRES_ADMIN_PASS | The password of the admin postgres user.                                     |               |
+| RESTYA_DB_USERNAME  | The desired restya db user which has access to the restya database.          |               |
+| RESTYA_DB_USERPASS  | The restya db user password.                                                 |               |
+| RESTYA_DB           | Name of the database for restya.                                             | `restyaboard` |
+| SMTP_SERVER         | Address of the SMTP server.                                                  | `smtp_relay`  |
+| SMTP_PORT           | Port of the SMTP server.                                                     | `587`         |
+| TZ                  | Used timezone inside container.                                              | `Etc/UTC`     |
+
+
+#### Database
+
+The docker container creates necessary restyaboard user and relations in postgres during startup.
+Therefore it checks if the `RESTYA_DB` database already exists.
+If it exists it skips the init step for database.
+
+This means if you setup the database on your own you have also to make sure that all relations and users will be added.
+
 ------------
 
 ### Current Status / Plans / Roadmap

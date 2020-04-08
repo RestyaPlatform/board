@@ -5,12 +5,15 @@ services:
       - /var/opt/restya/media:/usr/share/nginx/html/media
     environment:
       - POSTGRES_HOST=postgres
-      - POSTGRES_USER=admin
-      - POSTGRES_PASSWORD=admin
-      - POSTGRES_DB=restyaboard
+      - POSTGRES_PORT=5432
+      - POSTGRES_ADMIN_USER=postgres
+      - POSTGRES_ADMIN_PASS=admin
+      - RESTYA_DB_USERNAME=restya
+      - RESTYA_DB_USERPASS=restya
+      #- RESTYA_DB=restyaboard
       #- SMTP_SERVER=smtp_relay
       #- SMTP_PORT=587
-      - TZ=Etc/UTC
+      #- TZ=Etc/UTC
     depends_on:
       - postgres
     restart: always
@@ -24,10 +27,8 @@ services:
       - ALLOW_EMPTY_SENDER_DOMAINS=true
 
   postgres:
-    image: postgres:9-alpine
+    image: postgres:12-alpine
     environment:
-      - POSTGRES_HOST=postgres
-      - POSTGRES_USER=admin
+      - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=admin
-      - POSTGRES_DB=restyaboard
     restart: always

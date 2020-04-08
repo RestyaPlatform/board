@@ -16,7 +16,7 @@ $app_path = dirname(dirname(__FILE__));
 require_once $app_path . '/config.inc.php';
 require_once $app_path . '/libs/core.php';
 require_once $app_path . '/libs/vendors/finediff.php';
-$files = glob(APP_PATH . DS . 'server/php/shell/*.php', GLOB_BRACE);
+$files = glob(APP_PATH . DS . 'server/php/shell/*.php');
 if (!empty($files)) {
     foreach ($files as $file) {
         if ($file !== APP_PATH . DS . 'server/php/shell/main.php') {
@@ -24,7 +24,7 @@ if (!empty($files)) {
         }
     }
 }
-$pluginfiles = glob(PLUGIN_PATH . DS . '*' . DS . 'shell' . DS . '*.php', GLOB_BRACE);
+$pluginfiles = glob(PLUGIN_PATH . DS . '*' . DS . 'shell' . DS . '*.php');
 if (!empty($pluginfiles)) {
     foreach ($pluginfiles as $pluginfile) {
         include_once $pluginfile;
