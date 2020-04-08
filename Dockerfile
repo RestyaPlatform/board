@@ -86,15 +86,15 @@ RUN cp restyaboard.conf ${CONF_FILE} && \
 
 # entrypoint
 COPY docker-scripts/docker-entrypoint.sh /
+COPY docker-scripts/init-db.sh /
 
 # Default values. Can be changed during container start.
 ENV POSTGRES_HOST=postgres \
     POSTGRES_PORT=5432 \
-    POSTGRES_USER=admin \
-    POSTGRES_PASSWORD=admin \
-    POSTGRES_DB=restyaboard
+    RESTYA_DB=restyaboard
 
 RUN chmod +x /docker-entrypoint.sh
+RUN chmod +x /init-db.sh
 RUN chmod +x server/php/shell/main.sh
 
 # TODO root user should be avoided but required for now
