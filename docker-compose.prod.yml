@@ -27,7 +27,7 @@ services:
       - ALLOW_EMPTY_SENDER_DOMAINS=true
 
   postgres:
-    image: postgres:9-alpine
+    image: postgres:12-alpine
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=admin
