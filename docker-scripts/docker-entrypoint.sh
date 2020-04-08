@@ -7,9 +7,9 @@ if [ "$1" = 'start' ]; then
   [[ -z "${POSTGRES_PORT:+x}" ]] && echo "Variable POSTGRES_PORT is not set!" && exit 1
   [[ -z "${POSTGRES_ADMIN_USER:+x}" ]] && echo "Variable POSTGRES_ADMIN_USER is not set!" && exit 1
   [[ -z "${POSTGRES_ADMIN_PASS:+x}" ]] && echo "Variable POSTGRES_ADMIN_PASS is not set!" && exit 1
-  [[ -z "${RESTYA_DB_USERNAME:+x}" ]] && echo "Variable is not set!" && exit 1
-  [[ -z "${RESTYA_DB_USERPASS:+x}" ]] && echo "Variable is not set!" && exit 1
-  [[ -z "${RESTYA_DB:+x}" ]] && echo "Variable is not set!" && exit 1
+  [[ -z "${RESTYA_DB_USERNAME:+x}" ]] && echo "Variable RESTYA_DB_USERNAME is not set!" && exit 1
+  [[ -z "${RESTYA_DB_USERPASS:+x}" ]] && echo "Variable RESTYA_DB_USERPASS is not set!" && exit 1
+  [[ -z "${RESTYA_DB:+x}" ]] && echo "Variable RESTYA_DB is not set!" && exit 1
 
   # config
   sed -i \
