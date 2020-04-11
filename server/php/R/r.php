@@ -7884,6 +7884,12 @@ function r_delete($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                     unlink($thumb_file);
                 }
             }
+            $file_ext = explode('.', $attachment['name']);
+            $hash = md5(SECURITYSALT . 'CardAttachment' . $r_resource_vars['attachments'] . $file_ext[1] . $key);
+            $thumb_file = IMG_PATH . DS . 'original' . DS . 'CardAttachment' . DS . $r_resource_vars['attachments'] . '.' . $hash . '.' . $file_ext[1];
+            if (file_exists($thumb_file)) {
+                unlink($thumb_file);
+            }
         }
         break;
 

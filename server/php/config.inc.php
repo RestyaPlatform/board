@@ -96,8 +96,7 @@ $thumbsizes = array(
     'CardAttachment' => array(
         'small_thumb' => '108x78',
         'medium_thumb' => '153x153',
-        'large_thumb' => '202x151',
-        'original' => '2000x1263'
+        'large_thumb' => '202x151'
     )
 );
 $aspect['CardAttachment']['large_thumb'] = 1;
