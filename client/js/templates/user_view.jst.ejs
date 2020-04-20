@@ -109,7 +109,7 @@
 							<% if(!_.isEmpty(role_links.where({slug: "add_user_profile_picture"}))){ %>
 								<div class="form-group" id="dropzone" data-mode="1">
 									<label for="inputAttachment" class="col-sm-2 control-label sr-only"><%- i18next.t("Upload Avatar") %></label>
-									<div class="col-xs-2">
+									<div class="col-xs-4 col-sm-3">
 										<a data-placement="bottom" title="<%- user.attributes.username%>" data-toggle="tooltip" href="#" class="avatar-option js-use-uploaded-avatar drag-box navbar-left"> 
 											<% if(!_.isEmpty(user.attributes.profile_picture_path) && user.attributes.profile_picture_path != 'NULL') { 
 												var profile_picture_path = user.showImage('User', user.attributes.id, 'normal_thumb' ) +'?'+ new Date().getTime();
@@ -159,7 +159,9 @@
 								<legend><span class="show h4"><%- i18next.t('Notifications') %></span></legend>
 								<fieldset class="col-sm-offset-1 well-sm">
 									<legend><span class="show h4"><%- i18next.t('Email Notification') %></span></legend>
-									<div class="hide alert alert-info text-justify js-user-settings-info"><%- i18next.t('In order to get email notification, you should subscribe to the card, list or board. In case, if someone mentions you with @') %><%- user.attributes.username %><%- i18next.t(', you\'ll be auto subscribed to the card to get email notification.') %></div>
+									<div class="col-xs-12">
+										<div class="hide alert alert-info text-justify"><%- i18next.t('In order to get email notification, you should subscribe to the card, list or board. In case, if someone mentions you with @') %><%- user.attributes.username %><%- i18next.t(', you\'ll be auto subscribed to the card to get email notification.') %></div>
+									</div>
 									<div class="form-group">
 										<label for="is_send_newsletter" class="col-sm-3 control-label"><%- i18next.t("Email Notification") %></label>
 										<div class="col-sm-8">
@@ -178,9 +180,13 @@
 										<% 
 										if (typeof Notification != 'undefined' && (Notification.permission !== 'granted')) { %>
 											<% if (Notification.permission === 'denied') { %>
-												<div class="alert alert-info text-justify js-user-settings-info"><%- i18next.t('Note: Notifications have been disabled in this browser.') %> <a href ="http://restya.com/board/docs/desktop-notifications" class="text-primary" target="_blank" title="<%- i18next.t('Learn more') %>"><%- i18next.t('Learn more') %></a></div>
+												<div class="col-xs-12">
+													<div class="alert alert-info text-justify"><%- i18next.t('Note: Notifications have been disabled in this browser.') %> <a href ="http://restya.com/board/docs/desktop-notifications" class="text-primary" target="_blank" title="<%- i18next.t('Learn more') %>"><%- i18next.t('Learn more') %></a></div>
+												</div>
 											<% } else {  %>
-												<div class="alert alert-info text-justify js-user-settings-info"><%- i18next.t('Click ') %> <a href ="#" class="js-enable-user-desktop-notification text-primary" title="<%- i18next.t('To enable browser notification') %>"><%- i18next.t('here') %></a><%- i18next.t(' to enable desktop notifications.') %> <a href ="http://restya.com/board/docs/desktop-notifications" class="text-primary" target="_blank" title="<%- i18next.t('Learn more') %>"><%- i18next.t('Learn more') %></a></div>
+												<div class="col-xs-12">
+													<div class="alert alert-info text-justify"><%- i18next.t('Click ') %> <a href ="#" class="js-enable-user-desktop-notification text-primary" title="<%- i18next.t('To enable browser notification') %>"><%- i18next.t('here') %></a><%- i18next.t(' to enable desktop notifications.') %> <a href ="http://restya.com/board/docs/desktop-notifications" class="text-primary" target="_blank" title="<%- i18next.t('Learn more') %>"><%- i18next.t('Learn more') %></a></div>
+												</div>
 											<% } %>
 											<% if (typeof Notification != 'undefined' && Notification.permission === 'granted') { %>
 												<div class="form-group">
@@ -194,10 +200,11 @@
 												</div>
 											<% } %>
 										<% } else { %>
-										 	<% if(!user.attributes.default_desktop_notification || user.attributes.default_desktop_notification === 'false') { %>
-												<p class="alert alert-info text-justify"><%- i18next.t('Browser notification is in enabled in your browser. But, you have turned it off below.') %> <a href ="http://restya.com/board/docs/desktop-notifications" class="text-primary" target="_blank" title="<%- i18next.t('Learn more') %>"><%- i18next.t('Learn more') %></a></p>
+											 <% if(!user.attributes.default_desktop_notification || user.attributes.default_desktop_notification === 'false') { %>
+												<div class="col-xs-12">
+													<p class="alert alert-info text-justify"><%- i18next.t('Browser notification is in enabled in your browser. But, you have turned it off below.') %> <a href ="http://restya.com/board/docs/desktop-notifications" class="text-primary" target="_blank" title="<%- i18next.t('Learn more') %>"><%- i18next.t('Learn more') %></a></p>
+												</div>
 											<% } %>
-											<div class="js-user-settings-info">&nbsp;</div>
 											<% if (typeof Notification != 'undefined' && Notification.permission === 'granted') { %>
 												<div class="form-group">
 													<label for="default_desktop_notification" class="col-sm-3 control-label"><%- i18next.t("Desktop Notification") %></label>

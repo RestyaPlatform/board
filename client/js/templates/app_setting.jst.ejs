@@ -4,7 +4,7 @@
 	<h3><%- i18next.t(app_settings[0].app_name) %> - <%- i18next.t('Settings') %></h3>
 </div>
 <%  if(!_.isEmpty(app_settings[0].settings_description)){ %>
-<div class="alert alert-info list-group-item-text"><%= i18next.t(app_settings[0].settings_description) %></div>
+<div class="alert alert-info list-group-item-text text-wrap"><%= i18next.t(app_settings[0].settings_description) %></div>
 <% } %>
 <div class="well-sm"></div>
 <% if(!_.isUndefined(currenturl.hash) && (currenturl.hash !== '#/apps/r_multiple_ldap_login')){ %>
@@ -30,7 +30,7 @@ _.each(app_settings, function(app_setting) {
 				<% } else { %>
 					<input type="text" value="<%- app_setting.value %>" class="form-control" name="<%- app_setting.name %>" id="<%- app_setting.name %>">					
 				<% } %>
-				<div><span class="help-block"><%= app_setting.info %></span></div>
+				<div><span class="help-block text-wrap"><%= app_setting.info %></span></div>
 			  </div>
 	</div>
 <% } %>
@@ -39,7 +39,7 @@ _.each(app_settings, function(app_setting) {
 <input type="hidden" value="<%- folder %>" name="folder" id="folder">
   <div class="form-group">
 	<label for="submit" class="sr-only  col-sm-4  control-label col-xs-12"><%- i18next.t('Submit') %></label>
-	<div class="col-lg-offset-2 col-lg-10">
+	<div class="col-sm-offset-2 col-sm-10 col-xs-12">
 		<input type="submit" value="<%- i18next.t('Update') %>" id="submit" class="btn btn-primary">
 		<%  var currenturl = window.location; %>
 		<% if(!_.isUndefined(currenturl.hash) && (currenturl.hash === '#/apps/r_ldap_login')){ %>
@@ -68,7 +68,7 @@ _.each(app_settings, function(app_setting) {
 			<label class="col-sm-2  control-label col-xs-12"><%- i18next.t(ldap_servers[0].label ) %></label>
 			<div class=" col-sm-7  col-xs-12">
 				  <input type="text" name="<%- ldap_servers[0].name %>" value="<%- ldap_servers[0].value %>" class="form-control js-ldap_servers_input" >					
-			  <div><span class="help-block"><%- ldap_servers[0].info %></span></div>
+			  <div><span class="help-block text-wrap"><%- ldap_servers[0].info %></span></div>
 			</div>
 		  </div>
 		  <div class="form-group col-xs-12">
@@ -90,7 +90,7 @@ _.each(app_settings, function(app_setting) {
 		<div class="form-group js-ldap-submit hide">
 				<input type="hidden" value="r_multiple_ldap_login" name="folder" id="folder">
 				<label for="submit" class="sr-only  col-sm-4  control-label col-xs-12"><%- i18next.t('Submit') %></label>
-				<div class="col-lg-offset-2 col-lg-10">
+				<div class="col-sm-offset-2 col-sm-10 col-xs-12">
 					<input type="submit" value="<%- i18next.t('Update') %>" id="submit" class="btn btn-primary">	 
 						<input type="button" value="<%- i18next.t('Test Connection') %>" class="btn btn-default js-test-connection">
 						<button type="button" id="importUsersSubmit" class="js-import-users btn btn-default"><%- i18next.t('Import users') %></button>

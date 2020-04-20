@@ -47,7 +47,13 @@ if (!_.isUndefined(authuser.user)) {
 				<% if(organization.attributes.organizations_user_count != 0){ %>
 					<ul class="dropdown-menu arrow arrow-left  text-left" role="boards">
 						<% _.each(organization.attributes.organizations_users, function(organizations_user){%>
-							<li><a href="#/user/<%-organizations_user.user_id%>"><%-organizations_user.username%></a></li>
+							<li>
+								<a href="#/user/<%-organizations_user.user_id%>" class="clearfix">
+									<span class="details navbar-btn">
+										<span class="htruncate btn-block navbar-btn"><%-organizations_user.username%></span>
+									</span>
+								</a>
+							</li>
 						<%})%>
 					</ul>
 				<%}%>
@@ -81,10 +87,10 @@ if (!_.isUndefined(authuser.user)) {
 								}
 							%>
 								<li>
-									<a href="#/board/<%-board.id%>">
-										<span style="<%= style %>" class="preview-thumbnail"></span>
+									<a href="#/board/<%-board.id%>" class="clearfix">
+										<span style="<%= style %>" class="mt5 preview-thumbnail"></span>
 										<span class="details navbar-btn">
-											<span title="<%- board.name %>" class="board-list-item-name navbar-btn"><%- board.name %></span>
+											<span title="<%- board.name %>" class="board-list-item-name htruncate btn-block navbar-btn"><%- board.name %></span>
 										</span> 
 									</a>
 								</li>

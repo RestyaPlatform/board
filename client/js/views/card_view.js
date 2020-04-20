@@ -331,10 +331,10 @@ App.CardView = Backbone.View.extend({
         }
         if (current_param[1]) {
             query_params = current_param[1].split(',');
-            query_params[0] = query_params[0].replace('filter=', '');
-            if (query_params.length > 0) {
+            if (query_params[0].indexOf('filter=') !== -1) {
                 $('.js-clear-filter-btn').removeClass('hide').addClass('show');
             }
+            query_params[0] = query_params[0].replace('filter=', '');
             $.each(query_params, function(index, value) {
                 if (value.indexOf('label:') > -1) {
                     total_filter += 1;
@@ -925,15 +925,29 @@ App.CardView = Backbone.View.extend({
             labels = labels.split(',');
         }
         var self = this;
+        var labelPluckerData = self.model.collection.list.board.labels.invoke('pick', ['name', 'color']);
+        var tagColors = {};
+        if (labelPluckerData.length > 0) {
+            labelPluckerData.forEach(function(value) {
+                tagColors[value.name] = value.color;
+            });
+        }
         $('.inputCardLabel').select2({
             tags: _.uniq(self.model.collection.list.board.labels.pluck('name')),
+            tagColors: tagColors,
             tokenSeparators: [',', ' ']
         }).on('select2-selecting', function(e) {
             if (!_.isEmpty(e.choice.text)) {
                 var labels = _.pluck(self.$('.inputCardLabel').select2('data'), 'text');
                 labels.push(e.choice.text);
                 self.$el.find('.js-card-add-labels').val(labels.join(','));
-                var iTag = '<i style="color:#' + calcMD5("" + e.choice.text).slice(0, 6).substring(0, 6) + '" data-toggle="tooltip" data-container="body" data-placement="top" data-original-title="' + e.choice.text + '" title="' + e.choice.text + '" class="js-label-' + e.choice.text + ' ' + LABEL_ICON + '"></i>';
+                var labelColor;
+                if (!_.isEmpty(tagColors) && !_.isUndefined(tagColors[e.choice.text]) && tagColors[e.choice.text] !== null && !_.isEmpty(tagColors[e.choice.text])) {
+                    labelColor = tagColors[e.choice.text];
+                } else {
+                    labelColor = '#' + calcMD5("" + e.choice.text).slice(0, 6).substring(0, 6);
+                }
+                var iTag = '<i style="color:' + labelColor + '" data-toggle="tooltip" data-container="body" data-placement="top" data-original-title="' + e.choice.text + '" title="' + e.choice.text + '" class="js-label-' + e.choice.text + ' ' + LABEL_ICON + '"></i>';
                 $('.js-lables-list').append(iTag);
             }
         }).on('select2-removed', function(e) {

@@ -713,16 +713,16 @@
 						echo "Installing PostgreSQL..."
 						if [ $(getconf LONG_BIT) = "32" ]; then
 							if [[ $OS_REQUIREMENT = "Fedora" ]]; then
-								rpm -Uvh "https://download.postgresql.org/pub/repos/yum/9.6/fedora/fedora-${OS_VERSION}-i386/pgdg-fedora96-9.6-3.noarch.rpm"
+								rpm -Uvh "https://download.postgresql.org/pub/repos/yum/9.6/fedora/fedora-${OS_VERSION}-i386/pgdg-fedora-repo-latest.noarch.rpm"
 							else
-								rpm -Uvh "https://download.postgresql.org/pub/repos/yum/9.6/redhat/rhel-${OS_VERSION}-i386/pgdg-redhat96-9.6-3.noarch.rpm"
+								rpm -Uvh "https://download.postgresql.org/pub/repos/yum/9.6/redhat/rhel-${OS_VERSION}-i386/pgdg-redhat-repo-latest.noarch.rpm"
 							fi
 						fi
 						if [ $(getconf LONG_BIT) = "64" ]; then
 							if [[ $OS_REQUIREMENT = "Fedora" ]]; then
-								rpm -Uvh "https://download.postgresql.org/pub/repos/yum/9.6/fedora/fedora-${OS_VERSION}-x86_64/pgdg-fedora96-9.6-3.noarch.rpm"
+								rpm -Uvh "https://download.postgresql.org/pub/repos/yum/9.6/fedora/fedora-${OS_VERSION}-x86_64/pgdg-fedora-repo-latest.noarch.rpm"
 							else
-								rpm -Uvh "https://download.postgresql.org/pub/repos/yum/9.6/redhat/rhel-${OS_VERSION}-x86_64/pgdg-redhat96-9.6-3.noarch.rpm"
+								rpm -Uvh "https://download.postgresql.org/pub/repos/yum/9.6/redhat/rhel-${OS_VERSION}-x86_64/pgdg-redhat-repo-latest.noarch.rpm"
 							fi
 						fi
 
@@ -741,15 +741,15 @@
 						echo "Restyaboard will not work in your PostgreSQL version (i.e. less than 9.3). So script going to update PostgreSQL version 9.6"
 						if [ $(getconf LONG_BIT) = "32" ]; then
 							if [[ $OS_REQUIREMENT = "Fedora" ]]; then
-								rpm -Uvh "https://download.postgresql.org/pub/repos/yum/9.6/fedora/fedora-${OS_VERSION}-i386/pgdg-fedora96-9.6-3.noarch.rpm"
+								rpm -Uvh "https://download.postgresql.org/pub/repos/yum/9.6/fedora/fedora-${OS_VERSION}-i386/pgdg-fedora-repo-latest.noarch.rpm"
 							else
-								rpm -Uvh "https://download.postgresql.org/pub/repos/yum/9.6/redhat/rhel-${OS_VERSION}-i386/pgdg-redhat96-9.6-3.noarch.rpm"
+								rpm -Uvh "https://download.postgresql.org/pub/repos/yum/9.6/redhat/rhel-${OS_VERSION}-i386/pgdg-redhat-repo-latest.noarch.rpm"
 							fi
 						else
 							if [[ $OS_REQUIREMENT = "Fedora" ]]; then
-								rpm -Uvh "https://download.postgresql.org/pub/repos/yum/9.6/fedora/fedora-${OS_VERSION}-x86_64/pgdg-fedora96-9.6-3.noarch.rpm"
+								rpm -Uvh "https://download.postgresql.org/pub/repos/yum/9.6/fedora/fedora-${OS_VERSION}-x86_64/pgdg-fedora-repo-latest.noarch.rpm"
 							else
-								rpm -Uvh "https://download.postgresql.org/pub/repos/yum/9.6/redhat/rhel-${OS_VERSION}-x86_64/pgdg-redhat96-9.6-3.noarch.rpm"
+								rpm -Uvh "https://download.postgresql.org/pub/repos/yum/9.6/redhat/rhel-${OS_VERSION}-x86_64/pgdg-redhat-repo-latest.noarch.rpm"
 							fi
 						fi
 
@@ -1236,22 +1236,22 @@
 		
 		get_geoip_data () 
 		{
-			wget http://geolite.maxmind.com/download/geoip/database/GeoLiteCountry/GeoIP.dat.gz
+			wget https://mirrors-cdn.liferay.com/geolite.maxmind.com/download/geoip/database/GeoIP.dat.gz
 			gunzip GeoIP.dat.gz
 			mv GeoIP.dat /usr/share/GeoIP/GeoIP.dat
-			wget http://geolite.maxmind.com/download/geoip/database/GeoIPv6.dat.gz
+			wget https://mirrors-cdn.liferay.com/geolite.maxmind.com/download/geoip/database/GeoIPv6.dat.gz
 			gunzip GeoIPv6.dat.gz
 			mv GeoIPv6.dat /usr/share/GeoIP/GeoIPv6.dat
-			wget http://geolite.maxmind.com/download/geoip/database/GeoLiteCity.dat.gz
-			gunzip GeoLiteCity.dat.gz
+			wget https://mirrors-cdn.liferay.com/geolite.maxmind.com/download/geoip/database/GeoLiteCity.dat.xz
+			unxz GeoLiteCity.dat.xz
 			mv GeoLiteCity.dat /usr/share/GeoIP/GeoIPCity.dat
-			wget http://geolite.maxmind.com/download/geoip/database/GeoLiteCityv6-beta/GeoLiteCityv6.dat.gz
+			wget https://mirrors-cdn.liferay.com/geolite.maxmind.com/download/geoip/database/GeoLiteCityv6.dat.gz
 			gunzip GeoLiteCityv6.dat.gz
 			mv GeoLiteCityv6.dat /usr/share/GeoIP/GeoLiteCityv6.dat
-			wget http://download.maxmind.com/download/geoip/database/asnum/GeoIPASNum.dat.gz
+			wget https://mirrors-cdn.liferay.com/geolite.maxmind.com/download/geoip/database/GeoIPASNum.dat.gz
 			gunzip GeoIPASNum.dat.gz
 			mv GeoIPASNum.dat /usr/share/GeoIP/GeoIPASNum.dat
-			wget http://download.maxmind.com/download/geoip/database/asnum/GeoIPASNumv6.dat.gz
+			wget https://mirrors-cdn.liferay.com/geolite.maxmind.com/download/geoip/database/GeoIPASNumv6.dat.gz
 			gunzip GeoIPASNumv6.dat.gz
 			mv GeoIPASNumv6.dat /usr/share/GeoIP/GeoIPASNumv6.dat
 		}

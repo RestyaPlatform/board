@@ -46,9 +46,9 @@ App.ModalActivityView = Backbone.View.extend({
         if (this.type === 'board') {
             this.activities.url = api_url + 'boards/' + authuser.board_id + '/activities.json?type=all';
         } else if (this.type === 'user_listing') {
-            this.activities.url = api_url + 'users/' + this.model.attributes.id + '/activities.json?type=all' + query_string;
+            this.activities.url = api_url + 'users/' + this.model.attributes.id + '/activities.json?type=profile' + query_string;
         } else if (this.type === 'org_user_listing') {
-            this.activities.url = api_url + 'users/' + this.model + '/activities.json?type=all' + query_string;
+            this.activities.url = api_url + 'users/' + this.model + '/activities.json?type=profile' + query_string;
         } else {
             this.activities.url = api_url + 'users/' + authuser.user.id + '/activities.json?type=all' + query_string;
         }
@@ -89,7 +89,7 @@ App.ModalActivityView = Backbone.View.extend({
                 });
                 self.last_activity_id = last_activity.id;
                 self.renderActivitiesCollection(false);
-                if (self.activity_count != PAGING_COUNT && self.activities.models.length >= PAGING_COUNT) {
+                if (self.modal_activity_count != PAGING_COUNT && self.activities.models.length >= PAGING_COUNT) {
                     self.$el.find('.js-load-more').removeClass('hide');
                 } else {
                     self.$el.find('.js-load-more').addClass('hide');
@@ -170,7 +170,7 @@ App.ModalActivityView = Backbone.View.extend({
                 });
                 self.last_activity_id = last_activity.id;
                 self.renderActivitiesCollection(true);
-                if (self.activity_count != PAGING_COUNT && self.activities.models.length >= PAGING_COUNT) {
+                if (self.modal_activity_count != PAGING_COUNT && self.activities.models.length >= PAGING_COUNT) {
                     self.$el.find('.js-load-more').removeClass('hide');
                 } else {
                     self.$el.find('.js-load-more').addClass('hide');

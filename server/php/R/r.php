@@ -100,7 +100,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             );
             $role_links = executeQuery('SELECT * FROM role_links_listing WHERE id = $1', $qry_val_arr);
             $response = array_merge($response, $role_links);
-            $files = glob(APP_PATH . '/client/locales/*/translation.json', GLOB_BRACE);
+            $files = glob(APP_PATH . '/client/locales/*/translation.json');
             $lang_iso2_codes = array();
             foreach ($files as $file) {
                 $folder = explode(DS, $file);
@@ -116,7 +116,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 $languages[$row['iso2']] = $row['name'];
             }
             $response['languages'] = json_encode($languages);
-            $files = glob(APP_PATH . DS . 'client' . DS . 'apps' . DS . '*' . DS . 'app.json', GLOB_BRACE);
+            $files = glob(APP_PATH . DS . 'client' . DS . 'apps' . DS . '*' . DS . 'app.json');
             if (!empty($files)) {
                 foreach ($files as $file) {
                     $content = file_get_contents($file);
@@ -1030,6 +1030,22 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             $timezones[] = $timezones_row;
         }
         $response[]['timezones'] = $timezones;
+        $files = glob(APP_PATH . '/client/locales/*/translation.json');
+        $lang_iso2_codes = array();
+        foreach ($files as $file) {
+            $folder = explode(DS, $file);
+            $folder_iso2_code = $folder[count($folder) - 2];
+            array_push($lang_iso2_codes, $folder_iso2_code);
+        }
+        $languages = array();
+        $qry_val_arr = array(
+            '{' . implode($lang_iso2_codes, ',') . '}'
+        );
+        $result = pg_query_params($db_lnk, 'SELECT name, iso2 FROM languages WHERE iso2 = ANY ( $1 ) ORDER BY name ASC', $qry_val_arr);
+        while ($row = pg_fetch_assoc($result)) {
+            $languages[$row['iso2']] = $row['name'];
+        }
+        $response[]['languages'] = json_encode($languages);
         echo json_encode($response);
         break;
 
@@ -1774,7 +1790,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         break;
 
     case '/workflow_templates':
-        $files = glob(APP_PATH . DS . 'client' . DS . 'js' . DS . 'workflow_templates' . DS . '*.json', GLOB_BRACE);
+        $files = glob(APP_PATH . DS . 'client' . DS . 'js' . DS . 'workflow_templates' . DS . '*.json');
         foreach ($files as $file) {
             $data = file_get_contents($file);
             $json = json_decode($data, true);
@@ -1890,7 +1906,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         while ($row = pg_fetch_assoc($s_sql)) {
             $response[$row['name']] = $row['value'];
         }
-        $files = glob(APP_PATH . DS . 'client' . DS . 'apps' . DS . '*' . DS . 'app.json', GLOB_BRACE);
+        $files = glob(APP_PATH . DS . 'client' . DS . 'apps' . DS . '*' . DS . 'app.json');
         if (!empty($files)) {
             foreach ($files as $file) {
                 $content = file_get_contents($file);
@@ -1946,7 +1962,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         break;
 
     case '/apps':
-        $files = glob(APP_PATH . DS . 'client' . DS . 'apps' . DS . '*' . DS . 'app.json', GLOB_BRACE);
+        $files = glob(APP_PATH . DS . 'client' . DS . 'apps' . DS . '*' . DS . 'app.json');
         if (!empty($files)) {
             foreach ($files as $file) {
                 $folder = explode(DS, $file);
@@ -5283,18 +5299,18 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             $response['cards_labels'] = $cards_labels;
             if (count($newlabel) && !count(array_diff($previous_cards_labels, $oldlabel))) {
                 $names = implode(",", $newlabel);
-                $names = preg_replace('/[ ,]+/', ', ', $names);
+                $names = preg_replace('/[,]+/', ', ', $names);
                 $comment = '##USER_NAME## added label(s) to the card ##CARD_LINK## - ' . $names;
                 $type = 'add_card_label';
             } else if (!count($newlabel) && count(array_diff($previous_cards_labels, $oldlabel))) {
                 $names = implode(",", array_diff($previous_cards_labels, $oldlabel));
-                $names = preg_replace('/[ ,]+/', ', ', $names);
+                $names = preg_replace('/[,]+/', ', ', $names);
                 $comment = '##USER_NAME## removed label(s) to the card ##CARD_LINK## - ' . $names;
                 $type = 'update_card_label';
             } else if (count($newlabel) && count(array_diff($previous_cards_labels, $oldlabel))) {
                 $deletenames = implode(",", array_diff($previous_cards_labels, $oldlabel));
                 $names = implode(",", $newlabel);
-                $names = preg_replace('/[ ,]+/', ', ', $names);
+                $names = preg_replace('/[,]+/', ', ', $names);
                 $comment = '##USER_NAME## removed the label(s) ' . ' - ' . $deletenames . ' and added the label(s) ' . ' - ' . $names . ' to the card ##CARD_LINK##';
                 $type = 'update_card_label';
             } else {
@@ -7856,17 +7872,23 @@ function r_delete($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         );
         $attachment = executeQuery('SELECT name, path FROM card_attachments WHERE id =  $1', $qry_val_arr);
         if (!empty($attachment)) {
-            $file = APP_PATH . DS . $attachment['path'];
+            $file = MEDIA_PATH . DS . $attachment['path'];
             if (file_exists($file)) {
                 unlink($file);
             }
             foreach ($thumbsizes['CardAttachment'] as $key => $value) {
                 $file_ext = explode('.', $attachment['name']);
                 $hash = md5(SECURITYSALT . 'CardAttachment' . $r_resource_vars['attachments'] . $file_ext[1] . $key);
-                $thumb_file = IMG_PATH . DS . $key . DS . 'Organization' . DS . $r_resource_vars['attachments'] . '.' . $hash . '.' . $file_ext[1];
+                $thumb_file = IMG_PATH . DS . $key . DS . 'CardAttachment' . DS . $r_resource_vars['attachments'] . '.' . $hash . '.' . $file_ext[1];
                 if (file_exists($thumb_file)) {
                     unlink($thumb_file);
                 }
+            }
+            $file_ext = explode('.', $attachment['name']);
+            $hash = md5(SECURITYSALT . 'CardAttachment' . $r_resource_vars['attachments'] . $file_ext[1] . $key);
+            $thumb_file = IMG_PATH . DS . 'original' . DS . 'CardAttachment' . DS . $r_resource_vars['attachments'] . '.' . $hash . '.' . $file_ext[1];
+            if (file_exists($thumb_file)) {
+                unlink($thumb_file);
             }
         }
         break;
