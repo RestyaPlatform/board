@@ -713,16 +713,16 @@
 						echo "Installing PostgreSQL..."
 						if [ $(getconf LONG_BIT) = "32" ]; then
 							if [[ $OS_REQUIREMENT = "Fedora" ]]; then
-								rpm -Uvh "https://download.postgresql.org/pub/repos/yum/9.6/fedora/fedora-${OS_VERSION}-i386/pgdg-fedora96-9.6-3.noarch.rpm"
+								rpm -Uvh "https://download.postgresql.org/pub/repos/yum/9.6/fedora/fedora-${OS_VERSION}-i386/pgdg-fedora-repo-latest.noarch.rpm"
 							else
-								rpm -Uvh "https://download.postgresql.org/pub/repos/yum/9.6/redhat/rhel-${OS_VERSION}-i386/pgdg-redhat96-9.6-3.noarch.rpm"
+								rpm -Uvh "https://download.postgresql.org/pub/repos/yum/9.6/redhat/rhel-${OS_VERSION}-i386/pgdg-redhat-repo-latest.noarch.rpm"
 							fi
 						fi
 						if [ $(getconf LONG_BIT) = "64" ]; then
 							if [[ $OS_REQUIREMENT = "Fedora" ]]; then
-								rpm -Uvh "https://download.postgresql.org/pub/repos/yum/9.6/fedora/fedora-${OS_VERSION}-x86_64/pgdg-fedora96-9.6-3.noarch.rpm"
+								rpm -Uvh "https://download.postgresql.org/pub/repos/yum/9.6/fedora/fedora-${OS_VERSION}-x86_64/pgdg-fedora-repo-latest.noarch.rpm"
 							else
-								rpm -Uvh "https://download.postgresql.org/pub/repos/yum/9.6/redhat/rhel-${OS_VERSION}-x86_64/pgdg-redhat96-9.6-3.noarch.rpm"
+								rpm -Uvh "https://download.postgresql.org/pub/repos/yum/9.6/redhat/rhel-${OS_VERSION}-x86_64/pgdg-redhat-repo-latest.noarch.rpm"
 							fi
 						fi
 
@@ -741,15 +741,15 @@
 						echo "Restyaboard will not work in your PostgreSQL version (i.e. less than 9.3). So script going to update PostgreSQL version 9.6"
 						if [ $(getconf LONG_BIT) = "32" ]; then
 							if [[ $OS_REQUIREMENT = "Fedora" ]]; then
-								rpm -Uvh "https://download.postgresql.org/pub/repos/yum/9.6/fedora/fedora-${OS_VERSION}-i386/pgdg-fedora96-9.6-3.noarch.rpm"
+								rpm -Uvh "https://download.postgresql.org/pub/repos/yum/9.6/fedora/fedora-${OS_VERSION}-i386/pgdg-fedora-repo-latest.noarch.rpm"
 							else
-								rpm -Uvh "https://download.postgresql.org/pub/repos/yum/9.6/redhat/rhel-${OS_VERSION}-i386/pgdg-redhat96-9.6-3.noarch.rpm"
+								rpm -Uvh "https://download.postgresql.org/pub/repos/yum/9.6/redhat/rhel-${OS_VERSION}-i386/pgdg-redhat-repo-latest.noarch.rpm"
 							fi
 						else
 							if [[ $OS_REQUIREMENT = "Fedora" ]]; then
-								rpm -Uvh "https://download.postgresql.org/pub/repos/yum/9.6/fedora/fedora-${OS_VERSION}-x86_64/pgdg-fedora96-9.6-3.noarch.rpm"
+								rpm -Uvh "https://download.postgresql.org/pub/repos/yum/9.6/fedora/fedora-${OS_VERSION}-x86_64/pgdg-fedora-repo-latest.noarch.rpm"
 							else
-								rpm -Uvh "https://download.postgresql.org/pub/repos/yum/9.6/redhat/rhel-${OS_VERSION}-x86_64/pgdg-redhat96-9.6-3.noarch.rpm"
+								rpm -Uvh "https://download.postgresql.org/pub/repos/yum/9.6/redhat/rhel-${OS_VERSION}-x86_64/pgdg-redhat-repo-latest.noarch.rpm"
 							fi
 						fi
 
