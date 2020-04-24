@@ -138,7 +138,9 @@ App.BoardView = Backbone.View.extend({
                         }).length <= 0) {
                         var new_label = new App.Label();
                         new_label.set(value);
-                        self.model.labels.unshift(new_label);
+                        self.model.labels.unshift(new_label, {
+                            silent: true
+                        });
                     }
                 });
             }
@@ -743,7 +745,7 @@ App.BoardView = Backbone.View.extend({
      * display the lists in the board
      *
      */
-    renderListsCollection: function() {
+    renderListsCollection: function(e) {
         App.sortable = {};
         App.sortable.setintervalid_horizontal = '';
         App.sortable.setintervalid_vertical = '';
@@ -758,76 +760,168 @@ App.BoardView = Backbone.View.extend({
         App.sortable.previous_id = '';
         var self = this;
         var view_list = self.$('#js-add-list-block');
-        var list_content = '';
-        $('.js-board-list').remove();
-        var postion = this.model.lists.max(function(list) {
-            return list.get('position');
-        });
-        var new_position = 1;
-        if (_.isObject(postion)) {
-            new_position += postion.get('position');
-        }
-
-        self.model.lists.sortByColumn('position', 'asc');
-        self.model.lists.each(function(list) {
-            list.board_users = self.model.board_users;
-            list.labels = self.model.labels;
-            _.map(list.get('lists_cards'), function(num) {
-                _.map(num.card_labels, function(label) {
-                    var data = {
-                        id: label.label_id,
-                        name: label.label_name
-                    };
-                    var _match = _.matches(data);
-                    if (_.isEmpty(_.filter(self.model.labels, _match))) {
-                        self.model.labels.unshift(data, {
-                            silent: true
-                        });
+        if (!_.isUndefined(e) && e.storeName === 'list') {
+            self.model.lists.sortByColumn('position', 'asc');
+            var bool = true;
+            i = 0;
+            if (parseInt(e.attributes.is_archived) === 0) {
+                self.model.lists.each(function(list) {
+                    if (bool) {
+                        if (parseInt(list.attributes.id) === parseInt(e.attributes.id)) {
+                            list.board_users = self.model.board_users;
+                            list.labels = self.model.labels;
+                            _.map(list.get('lists_cards'), function(num) {
+                                _.map(num.card_labels, function(label) {
+                                    var data = {
+                                        id: label.label_id,
+                                        name: label.label_name
+                                    };
+                                    var _match = _.matches(data);
+                                    if (_.isEmpty(_.filter(self.model.labels, _match))) {
+                                        self.model.labels.unshift(data, {
+                                            silent: true
+                                        });
+                                    }
+                                });
+                            });
+                            var view;
+                            if (!_.isUndefined(list.get('is_new')) && list.get('is_new') === true) {
+                                list.set('board_id', self.model.id);
+                            } else {
+                                if (parseInt(list.get('is_archived')) === 0) {
+                                    var subscribers = new App.ListSubscriberCollection();
+                                    subscribers.add(list.get('lists_subscribers'), {
+                                        silent: true
+                                    });
+                                    if (!_.isUndefined(self.authuser)) {
+                                        var subscribe = subscribers.findWhere({
+                                            user_id: parseInt(self.authuser.id)
+                                        });
+                                        if (!_.isUndefined(subscribe)) {
+                                            list.subscriber.set(subscribe.attributes, {
+                                                silent: true
+                                            });
+                                        }
+                                    }
+                                    list.activities.add(self.model.activities, {
+                                        silent: true
+                                    });
+                                    list.attachments = self.model.attachments;
+                                    list.board_user_role_id = self.model.board_user_role_id;
+                                    list.board = self.model;
+                                    view = new App.ListView({
+                                        model: list,
+                                        attributes: {
+                                            'data-list_id': list.attributes.id
+                                        }
+                                    });
+                                    if ($('#listview_table').length === 0) {
+                                        if (!_.isUndefined(self.model.lists.models[i - 1])) {
+                                            var prev_list_id = self.model.lists.models[i - 1].id;
+                                            var next_list = '';
+                                            if ($('.js-list-' + prev_list_id).parent(".js-board-list").next().length > 0) {
+                                                next_list = $('.js-list-' + e.attributes.id).parent(".js-board-list").next().data('list_id');
+                                            }
+                                            if (next_list !== parseInt(e.attributes.id)) {
+                                                $('.js-list-' + e.attributes.id).parent(".js-board-list").remove();
+                                                $('.js-list-' + prev_list_id).parent(".js-board-list").after(view.render().el);
+                                            }
+                                            bool = false;
+                                        } else {
+                                            var first_card = '';
+                                            if ($("#js-board-lists").find('.js-board-list:first').length > 0) {
+                                                first_card = $('#js-board-lists').find('.js-board-list:first').data('list_id');
+                                            }
+                                            if (first_card !== parseInt(e.attributes.id)) {
+                                                $('.js-list-' + e.attributes.id).parent(".js-board-list").remove();
+                                                self.$('#js-board-lists').prepend(view.render().el);
+                                            }
+                                            bool = false;
+                                        }
+                                        $('#js-board-lists').sortable("refresh");
+                                    }
+                                }
+                            }
+                        }
+                        i++;
                     }
                 });
-            });
-            var view;
-            if (!_.isUndefined(list.get('is_new')) && list.get('is_new') === true) {
-                list.set('board_id', self.model.id);
             } else {
-                if (parseInt(list.get('is_archived')) === 0) {
-                    var subscribers = new App.ListSubscriberCollection();
-                    subscribers.add(list.get('lists_subscribers'), {
-                        silent: true
-                    });
-                    if (!_.isUndefined(self.authuser)) {
-                        var subscribe = subscribers.findWhere({
-                            user_id: parseInt(self.authuser.id)
-                        });
-                        if (!_.isUndefined(subscribe)) {
-                            list.subscriber.set(subscribe.attributes, {
+                $('.js-list-' + e.attributes.id).parent(".js-board-list").remove();
+            }
+        } else {
+
+            var list_content = '';
+            $('.js-board-list').remove();
+            var postion = this.model.lists.max(function(list) {
+                return list.get('position');
+            });
+            var new_position = 1;
+            if (_.isObject(postion)) {
+                new_position += postion.get('position');
+            }
+
+            self.model.lists.sortByColumn('position', 'asc');
+            self.model.lists.each(function(list) {
+                list.board_users = self.model.board_users;
+                list.labels = self.model.labels;
+                _.map(list.get('lists_cards'), function(num) {
+                    _.map(num.card_labels, function(label) {
+                        var data = {
+                            id: label.label_id,
+                            name: label.label_name
+                        };
+                        var _match = _.matches(data);
+                        if (_.isEmpty(_.filter(self.model.labels, _match))) {
+                            self.model.labels.unshift(data, {
                                 silent: true
                             });
                         }
-                    }
-                    list.activities.add(self.model.activities, {
-                        silent: true
                     });
-                    list.attachments = self.model.attachments;
-                    list.board_user_role_id = self.model.board_user_role_id;
-                    list.board = self.model;
-                    if ($('#listview_table').length === 0) {
-                        view = new App.ListView({
-                            model: list,
-                            attributes: {
-                                'data-list_id': list.attributes.id
-                            }
+                });
+                var view;
+                if (!_.isUndefined(list.get('is_new')) && list.get('is_new') === true) {
+                    list.set('board_id', self.model.id);
+                } else {
+                    if (parseInt(list.get('is_archived')) === 0) {
+                        var subscribers = new App.ListSubscriberCollection();
+                        subscribers.add(list.get('lists_subscribers'), {
+                            silent: true
                         });
-                        if (view_list.length > 0) {
-                            view_list.before(view.render().el);
-                        } else {
-                            self.$('#js-board-lists').append(view.render().el);
+                        if (!_.isUndefined(self.authuser)) {
+                            var subscribe = subscribers.findWhere({
+                                user_id: parseInt(self.authuser.id)
+                            });
+                            if (!_.isUndefined(subscribe)) {
+                                list.subscriber.set(subscribe.attributes, {
+                                    silent: true
+                                });
+                            }
                         }
-                        $('#js-board-lists').sortable("refresh");
+                        list.activities.add(self.model.activities, {
+                            silent: true
+                        });
+                        list.attachments = self.model.attachments;
+                        list.board_user_role_id = self.model.board_user_role_id;
+                        list.board = self.model;
+                        if ($('#listview_table').length === 0) {
+                            view = new App.ListView({
+                                model: list,
+                                attributes: {
+                                    'data-list_id': list.attributes.id
+                                }
+                            });
+                            if (view_list.length > 0) {
+                                view_list.before(view.render().el);
+                            } else {
+                                self.$('#js-board-lists').append(view.render().el);
+                            }
+                            $('#js-board-lists').sortable("refresh");
+                        }
                     }
                 }
-            }
-        });
+            });
+        }
         _(function() {
             $('body').trigger('editListRendered');
         }).defer();
@@ -1083,7 +1177,7 @@ App.BoardView = Backbone.View.extend({
         list.url = api_url + 'boards/' + self.model.id + '/lists.json';
         list.save(data, {
             success: function(model, response, options) {
-                if (!_.isUndefined(data.clone_list_id)) {
+                if (!_.isUndefined(data.clone_list_id) && !_.isUndefined(response.list) && !_.isEmpty(response.list) && response.list !== null) {
                     if (!_.isUndefined(response.list.labels) && response.list.labels.length > 0) {
                         self.model.labels.add(response.list.labels, {
                             silent: true

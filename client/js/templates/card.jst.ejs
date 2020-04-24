@@ -99,6 +99,102 @@
 		</li>
 	<%}%>
 	<li id="js-card-customfields-list-<%- card.attributes.id %>" class="hide"></li>
+	<% if (!_.isUndefined(APPS.permission_checked_apps) && APPS.permission_checked_apps.indexOf('r_custom_fields') !== -1) {  
+		var card_customfield_list = '';
+		if (!_.isUndefined(App.current_board) && !_.isEmpty(App.current_board) && App.current_board !== null && !_.isUndefined(App.current_board.attributes) && !_.isEmpty(App.current_board.attributes) && App.current_board.attributes !== null && App.current_board.attributes.custom_fields && App.current_board.attributes.custom_fields.length > 0) { 
+			_.each(App.current_board.attributes.custom_fields, function(custom_field) { 
+				var custom_visibility = '';
+				if (custom_field.visibility != '1') {
+					custom_visibility = 'hide';
+				}
+				var card_customfield_value = '';
+				var labelClass = '';
+				if (_.isEmpty(custom_field.color) || _.isUndefined(custom_field.color)) {
+					labelClass = 'label-default';
+				}
+				if (!_.isEmpty(custom_field.cards_custom_fields) && custom_field.cards_custom_fields !== null) {
+					var custom_field_json = jQuery.parseJSON(custom_field.cards_custom_fields);
+					var filtered_cards_custom_fields = custom_field_json.filter(function(x) {
+						return x.card_id === card.id;
+					});
+					if (!_.isUndefined(filtered_cards_custom_fields) && !_.isEmpty(filtered_cards_custom_fields) && filtered_cards_custom_fields.length > 0) {
+						_.each(filtered_cards_custom_fields, function(value) {
+							card_customfield_value = value.value;
+							card_customfield_cardId = value.card_id;
+							if (card_customfield_value) {
+								var hours_mins;
+								if (custom_field.type === 'date') {
+									card_customfield_value = dateFormat(card_customfield_value, "mediumDate");
+								}
+								if (custom_field.type === 'time') {
+									var field_time = card_customfield_value.split(':');
+									var time_noon = '';
+									if (field_time[0] <= 12) {
+										if (field_time[0] < 10 && field_time[0].indexOf('0') == -1) {
+											field_time[0] = '0' + field_time[0];
+										}
+										time_noon = 'AM';
+									} else {
+										time_noon = 'PM';
+										field_time[0] = field_time[0] - 12;
+										if (field_time[0] < 10) {
+											field_time[0] = '0' + field_time[0];
+										}
+									}
+									card_customfield_value = field_time[0] + ':' + field_time[1] + ' ' + time_noon;
+								}
+								if (custom_field.type === 'datetime') {
+									if (card_customfield_value.indexOf('T') > -1) {
+										card_customfield_value = card_customfield_value.replace('T', ' ');
+										var date = card_customfield_value.split(' ');
+										card_customfield_value = date['0'];
+										card_customfield_value = dateFormat(card_customfield_value, "mediumDate");
+										if (!_.isEmpty(date[1])) {
+											hours_mins = date[1].split(':');
+											var noon = '';
+											if (hours_mins[0] <= 12) {
+												if (hours_mins[0] < 10 && hours_mins[0].indexOf('0') == -1) {
+													hours_mins[0] = '0' + hours_mins[0];
+												}
+												noon = 'AM';
+											} else {
+												noon = 'PM';
+												hours_mins[0] = hours_mins[0] - 12;
+												if (hours_mins[0] < 10) {
+													hours_mins[0] = '0' + hours_mins[0];
+												}
+											}
+											hours_mins = hours_mins[0] + ':' + hours_mins[1] + ' ' + noon;
+										}
+										card_customfield_list += '<li class=" js-custom-field-' + card.id + '-' + custom_field.id + ' card-listing-truncate">';
+										if (CheckFieldExists(App.current_board, custom_field.name, null, 'boolean', 'r_gridview_configure')) {
+											card_customfield_list += '<small title="' + custom_field.name + ': ' + card_customfield_value + ' at ' + hours_mins + '" ><span class="' + custom_visibility + ' label ' + labelClass + '" style="background:' + custom_field.color + ';">' + card_customfield_value + ' at ' + hours_mins + '</span></small>';
+										}
+										card_customfield_list += '</li>';
+									}
+								} else {
+									if (CheckFieldExists(App.current_board, custom_field.name, null, 'boolean', 'r_gridview_configure')) {
+										card_customfield_list += '<li class=" js-custom-field-' + card.id + '-' + custom_field.id + ' card-listing-truncate">';
+									}
+									if (CheckFieldExists(App.current_board, custom_field.name, null, 'boolean', 'r_gridview_configure')) {
+										card_customfield_list += '<small title="' + custom_field.name + ': ' + card_customfield_value + '" ><span class="' + custom_visibility + ' label ' + labelClass + '" style="background:' + custom_field.color + ';">' + card_customfield_value + '</span></small>';
+									}
+									if (CheckFieldExists(App.current_board, custom_field.name, null, 'boolean', 'r_gridview_configure')) {
+										card_customfield_list += '</li>';
+									}
+								}
+							}
+						});
+					} else {
+						card_customfield_list += '<li class=" js-custom-field-' + card.id + '-' + custom_field.id + ' card-listing-truncate hide"></li>';
+					}
+				} else {
+					card_customfield_list += '<li class=" js-custom-field-' + card.id + '-' + custom_field.id + ' card-listing-truncate hide"></li>';
+				}
+			}); %>
+			<%= card_customfield_list %>
+		<% }  
+	} %>
 	<% if(!_.isUndefined(card.attributes.due_date) && !_.isEmpty(card.attributes.due_date) && card.attributes.due_date != 'NULL'){
 		var date_times = card.attributes.due_date.split('T'),hours_mins;
 		var date_time = date_times[0].split(' ');

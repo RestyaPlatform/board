@@ -510,18 +510,18 @@ App.UserView = Backbone.View.extend({
         self.model.cards.fetch({
             cache: false,
             success: function(card, response) {
-                if (!_.isUndefined(param) && !_.isEmpty(param)) {
-                    self.$('#cards').html('<div class="pull-right well-sm"><a href="javascript:void(0);" class="btn btn-primary js-hide-closedBoards-cards" title="' + i18next.t('Hide Closed Boards Cards') + '">' + i18next.t('Hide Closed Boards Cards') + '</a></div>');
-                } else {
-                    self.$('#cards').html('<div class="pull-right well-sm"><a href="javascript:void(0);" class="btn btn-primary js-show-closedBoards-cards" title="' + i18next.t('Show Closed Boards Cards') + '">' + i18next.t('Show Closed Boards Cards') + '</a></div>');
-                }
-                $('body').trigger('IcalfeedRendered');
                 if (response.length === 0) {
                     self.$('#cards').html('<span class="alert alert-info col-xs-12">' + i18next.t('No %s available.', {
                         postProcess: 'sprintf',
                         sprintf: [i18next.t('cards')]
                     }) + '</span>');
                 } else {
+                    if (!_.isUndefined(param) && !_.isEmpty(param)) {
+                        self.$('#cards').html('<div class="col-xs-12 js-userCards-option"><div class="pull-right well-sm"><a href="javascript:void(0);" class="btn btn-primary js-hide-closedBoards-cards" title="' + i18next.t('Hide Closed Boards Cards') + '">' + i18next.t('Hide Closed Boards Cards') + '</a></div></div>');
+                    } else {
+                        self.$('#cards').html('<div class="col-xs-12 js-userCards-option"><div class="pull-right well-sm"><a href="javascript:void(0);" class="btn btn-primary js-show-closedBoards-cards" title="' + i18next.t('Show Closed Boards Cards') + '">' + i18next.t('Show Closed Boards Cards') + '</a></div></div>');
+                    }
+                    $('body').trigger('IcalfeedRendered');
                     var card_users = new App.CardUserCollection();
                     card_users = self.model.cards.groupBy(function(model) {
                         return [model.get('board_name')];
@@ -532,22 +532,24 @@ App.UserView = Backbone.View.extend({
                             var board = App.boards.findWhere({
                                 name: key
                             });
-                            if (!_.isUndefined(param) && !_.isEmpty(param) && board.attributes.is_closed) {
-                                if (board.attributes.is_closed) {
-                                    ++boards_count;
-                                    self.$('#cards').append(new App.UserCardsView({
-                                        key: key,
-                                        model: card_user
-                                    }).el);
-                                }
-                            } else if (_.isUndefined(param) && _.isEmpty(param)) {
-                                if (!board.attributes.is_closed) {
-                                    ++boards_count;
-                                    self.$('#cards').append(new App.UserCardsView({
-                                        key: key,
-                                        model: card_user
-                                    }).el);
-                                }
+                            var cards = new App.CardCollection();
+                            cards.add(card_user);
+                            var unArchivedCards;
+                            unArchivedCards = cards.where({
+                                is_archived: 0
+                            });
+                            if (!_.isUndefined(param) && !_.isEmpty(param) && !_.isUndefined(board) && !_.isEmpty(board) && board !== null && board.attributes.is_closed && unArchivedCards.length !== 0) {
+                                ++boards_count;
+                                self.$('#cards').append(new App.UserCardsView({
+                                    key: key,
+                                    model: card_user
+                                }).el);
+                            } else if (_.isUndefined(param) && _.isEmpty(param) && !_.isUndefined(board) && !_.isEmpty(board) && board !== null && !board.attributes.is_closed && unArchivedCards.length !== 0) {
+                                ++boards_count;
+                                self.$('#cards').append(new App.UserCardsView({
+                                    key: key,
+                                    model: card_user
+                                }).el);
                             }
                         });
                         if (!boards_count) {
@@ -579,18 +581,37 @@ App.UserView = Backbone.View.extend({
             success: function(card, response) {
                 self.$('.js-userCreated-cards-tabContent').addClass('active');
                 self.$('.js-membered-cards-tabContent').removeClass('active');
+                $('body').trigger('IcalfeedRendered');
                 var card_users = new App.CardUserCollection();
                 card_users = self.model.cards.groupBy(function(model) {
                     return [model.get('board_name')];
                 });
                 if (!_.isEmpty(card_users)) {
+                    var boards_count = 0;
                     _.map(card_users, function(card_user, key) {
-                        self.$('#created-cards').append(new App.UserCardsView({
-                            key: key,
-                            model: card_user
-                        }).el);
+                        var board = App.boards.findWhere({
+                            name: key
+                        });
+                        var cards = new App.CardCollection();
+                        cards.add(card_user);
+                        var unArchivedCards;
+                        unArchivedCards = cards.where({
+                            is_archived: 0
+                        });
+                        if (!_.isUndefined(board) && !_.isEmpty(board) && board !== null && !board.attributes.is_closed && unArchivedCards.length !== 0) {
+                            ++boards_count;
+                            self.$('#created-cards').append(new App.UserCardsView({
+                                key: key,
+                                model: card_user
+                            }).el);
+                        }
                     });
-                    $('body').trigger('IcalfeedRendered');
+                    if (!boards_count) {
+                        self.$('#cards').append('<span class="alert alert-info col-xs-12">' + i18next.t('No %s available.', {
+                            postProcess: 'sprintf',
+                            sprintf: [i18next.t('cards')]
+                        }) + '</span>');
+                    }
                 } else {
                     self.$('#created-cards').html('<span class="alert alert-info col-xs-12">' + i18next.t('No %s available.', {
                         postProcess: 'sprintf',

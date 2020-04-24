@@ -1,8 +1,19 @@
 <% if(!_.isEmpty(activity) && activity != null){  %> 
 	<%			activity.attributes.card_name = (activity.attributes.card_name !== null) ? activity.attributes.card_name : i18next.t("[deleted]");
+				activity.attributes.board_name = (activity.attributes.board_name !== null) ? activity.attributes.board_name : i18next.t("[deleted]");
 				activity.attributes.organization_name = (activity.attributes.organization_name !== null) ? activity.attributes.organization_name : i18next.t("[deleted]");
-				var cardLink = '<a href="#/board/' + activity.attributes.board_id + '/card/' + activity.attributes.card_id + '">' + _.escape(activity.attributes.card_name) + '</a>';
-				var organizationLink = '<a href="#/organization/' + activity.attributes.organization_id + '">' + _.escape(activity.attributes.organization_name) + '</a>';
+				var cardLink;
+				if (activity.attributes.card_name !== '[deleted]') {
+					cardLink = '<a href="#/board/' + activity.attributes.board_id + '/card/' + activity.attributes.card_id + '">' + _.escape(activity.attributes.card_name) + '</a>';
+				} else {
+					cardLink = '<a href="javascript:void(0);">' + _.escape(activity.attributes.card_name) + '</a>';
+				}
+				var organizationLink;
+				if (activity.attributes.organization_name !== '[deleted]') {
+					organizationLink = '<a href="#/organization/' + activity.attributes.organization_id + '">' + _.escape(activity.attributes.organization_name) + '</a>';
+				} else {
+					organizationLink = '<a href="javascript:void(0);">' + _.escape(activity.attributes.organization_name) + '</a>';
+				}
 			if(activity.attributes.type != 'add_comment') {
 				if(activity.attributes.comment.indexOf('##ORGANIZATION_LINK##') != -1){
 					activity.attributes.comment = activity.attributes.comment.replace('##ORGANIZATION_LINK##', organizationLink);
@@ -42,20 +53,20 @@
 				activity.attributes.comment = activity.attributes.comment.replace('##USER_NAME##', '<span class="h5">'+_.escape(activity.attributes.full_name)+'</span>');
 				if(activity.attributes.comment.indexOf('##CHECKLIST_ITEM_NAME##') != -1){
 					if (activity.attributes.checklist_item_name !== null) {
-						activity.attributes.comment = activity.attributes.comment.replace('##CHECKLIST_ITEM_NAME##', (activity.attributes.checklist_item_name));
+						activity.attributes.comment = activity.attributes.comment.replace('##CHECKLIST_ITEM_NAME##', _.escape(activity.attributes.checklist_item_name));
 					} else {
 						activity.attributes.comment = activity.attributes.comment.replace('##CHECKLIST_ITEM_NAME##', i18next.t("[deleted]"));
 					}
 				}
 				if(activity.attributes.comment.indexOf('##CHECKLIST_ITEM_PARENT_NAME##') != -1){
 					if (activity.attributes.checklist_item_parent_name !== null) {
-						activity.attributes.comment = activity.attributes.comment.replace('##CHECKLIST_ITEM_PARENT_NAME##', (activity.attributes.checklist_item_parent_name));
+						activity.attributes.comment = activity.attributes.comment.replace('##CHECKLIST_ITEM_PARENT_NAME##', _.escape(activity.attributes.checklist_item_parent_name));
 					} else {
 						activity.attributes.comment = activity.attributes.comment.replace('##CHECKLIST_ITEM_PARENT_NAME##', i18next.t("[deleted]"));
 					}
 				}
 				if(activity.attributes.comment.indexOf('##CHECKLIST_NAME##') != -1){
-					activity.attributes.comment = activity.attributes.comment.replace('##CHECKLIST_NAME##', (activity.attributes.checklist_name));
+					activity.attributes.comment = activity.attributes.comment.replace('##CHECKLIST_NAME##', _.escape(activity.attributes.checklist_name));
 				}
 			} else if(activity.attributes.type != 'edit_comment'){
 				var comment = filterXSS(activity.attributes.full_name) + ' commented in card ' + cardLink;
@@ -102,7 +113,7 @@
 							<% parse_date(activity.attributes.created, authuser,'js-timeago-'+activity.attributes.id); %>
 						<% }, 10000); %>
 						<span class="js-timeago-<%- activity.attributes.id %>"><%= parse_date(activity.attributes.created, authuser,'js-timeago-'+activity.attributes.id, true) %></span>
-						<% if(!_.isEmpty(activity.attributes.board_name)){ %><a class="pull-left" href="#/board/<%= activity.attributes.board_id %>">&nbsp;on&nbsp;<%- activity.attributes.board_name %></a><% } %></small>
+						<% if(!_.isEmpty(activity.attributes.board_name)){ %><a class="pull-left" href="<% if(activity.attributes.board_name !== '[deleted]'){ %>#/board/<%= activity.attributes.board_id %><% }else{ %>javascript:void(0);<% } %>">&nbsp;<%- i18next.t('on') %>&nbsp;<%- activity.attributes.board_name %></a><% } %></small>
 						<div class="clearfix">
 								<small class="pull-left">
 									<% if(!_.isUndefined(authuser.user) && activity.attributes.type == "add_comment" && type != "all") { %>

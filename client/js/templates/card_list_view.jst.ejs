@@ -147,7 +147,88 @@
 		if (!_.isUndefined(card.board) && !_.isEmpty(card.board) && !_.isUndefined(card.board.attributes.custom_fields) && card.board.attributes.custom_fields !== null) {
 			_.each(card.board.attributes.custom_fields, function(customfield){ %>
 				<% if(CheckFieldExists(card.board, customfield.name , null , 'boolean', 'r_listview_configure')){ %>
-					<td class="js-list-view-card-<%- card.attributes.id %>-customfield-<%- customfield.id %> card-listing-truncate" data-title="<%- customfield.label %>"  id="list_view_config_data-<%- customfield.name %>"><small>-</small></td>
+					<td class="js-list-view-card-<%- card.attributes.id %>-customfield-<%- customfield.id %> card-listing-truncate" data-title="<%- customfield.label %>"  id="list_view_config_data-<%- customfield.name %>">
+						<% if (!_.isUndefined(APPS.permission_checked_apps) && APPS.permission_checked_apps.indexOf('r_custom_fields') !== -1) {  
+							var card_customfield_list = '';
+							var custom_visibility = '';
+							if (customfield.visibility != '1') {
+								custom_visibility = 'hide';
+							}
+							var card_customfield_value = '';
+							var labelClass = '';
+							if (_.isEmpty(customfield.color) || _.isUndefined(customfield.color)) {
+								labelClass = 'label-default';
+							}
+							if (!_.isEmpty(customfield.cards_custom_fields) && customfield.cards_custom_fields !== null) {
+								var custom_field_json = jQuery.parseJSON(customfield.cards_custom_fields);
+								var filtered_cards_custom_fields = custom_field_json.filter(function(x) {
+									return x.card_id === card.id;
+								});
+								if (!_.isUndefined(filtered_cards_custom_fields) && !_.isEmpty(filtered_cards_custom_fields) && filtered_cards_custom_fields.length > 0) {
+									_.each(filtered_cards_custom_fields, function(value) {
+										card_customfield_value = value.value;
+										card_customfield_cardId = value.card_id;
+										if (card_customfield_value) {
+											var hours_mins;
+											if (customfield.type === 'date') {
+												card_customfield_value = dateFormat(card_customfield_value, "mediumDate");
+											}
+											if (customfield.type === 'time') {
+												var field_time = card_customfield_value.split(':');
+												var time_noon = '';
+												if (field_time[0] <= 12) {
+													if (field_time[0] < 10 && field_time[0].indexOf('0') == -1) {
+														field_time[0] = '0' + field_time[0];
+													}
+													time_noon = 'AM';
+												} else {
+													time_noon = 'PM';
+													field_time[0] = field_time[0] - 12;
+													if (field_time[0] < 10) {
+														field_time[0] = '0' + field_time[0];
+													}
+												}
+												card_customfield_value = field_time[0] + ':' + field_time[1] + ' ' + time_noon;
+											}
+											if (customfield.type === 'datetime') {
+												if (card_customfield_value.indexOf('T') > -1) {
+													card_customfield_value = card_customfield_value.replace('T', ' ');
+													var date = card_customfield_value.split(' ');
+													card_customfield_value = date['0'];
+													card_customfield_value = dateFormat(card_customfield_value, "mediumDate");
+													if (!_.isEmpty(date[1])) {
+														hours_mins = date[1].split(':');
+														var noon = '';
+														if (hours_mins[0] <= 12) {
+															if (hours_mins[0] < 10 && hours_mins[0].indexOf('0') == -1) {
+																hours_mins[0] = '0' + hours_mins[0];
+															}
+															noon = 'AM';
+														} else {
+															noon = 'PM';
+															hours_mins[0] = hours_mins[0] - 12;
+															if (hours_mins[0] < 10) {
+																hours_mins[0] = '0' + hours_mins[0];
+															}
+														}
+														hours_mins = hours_mins[0] + ':' + hours_mins[1] + ' ' + noon;
+													}
+													card_customfield_list += '<small title="' + customfield.name + ': ' + card_customfield_value + ' at ' + hours_mins + '" ><span class="' + custom_visibility + ' label ' + labelClass + '" style="background:' + customfield.color + ';">' + card_customfield_value + ' at ' + hours_mins + '</span></small>';
+												}
+											} else {
+												card_customfield_list += '<small title="' + customfield.name + ': ' + card_customfield_value + '" ><span class="' + custom_visibility + ' label ' + labelClass + '" style="background:' + customfield.color + ';">' + card_customfield_value + '</span></small>';
+											} %>
+											<%= card_customfield_list %>
+										<% }
+									});
+								} else { %>
+									<small>-</small>
+								<% } %>
+							<% } else { %>
+								<small>-</small>
+							<% } 
+						} %>
+					</td>
 				<% } %>
 			<% });
 		} else { %>

@@ -424,29 +424,42 @@ App.CardCheckListView = Backbone.View.extend({
                     self.model.card.list.collection.board.checklist_items.add(checklist_item, {
                         silent: true
                     });
+                    var checklist = self.model.card.list.collection.board.checklists.findWhere({
+                        id: self.model.id
+                    });
+                    if (!_.isUndefined(checklist) && !_.isEmpty(checklist) && checklist !== null) {
+                        var total_count = isNaN(checklist.attributes.checklist_item_count) ? 0 : parseInt(checklist.attributes.checklist_item_count);
+                        checklist.set('checklist_item_count', total_count + 1, {
+                            silent: true
+                        });
+                    }
                     self.model.card.set('checklist_item_count', self.model.card.get('checklist_item_count') + 1);
                     self.model.card.set('checklist_item_pending_count', self.model.card.get('checklist_item_pending_count') + 1);
                     self.renderItemsCollection(false);
                     checklist_item.save(data, {
                         success: function(model, response) {
-                            checklist_item.set('position', parseInt(response.checklist_items[0].position));
-                            self.model.checklist_items.get(data.uuid).id = parseInt(response.checklist_items[0].id);
-                            self.model.checklist_items.get(data.uuid).attributes.id = parseInt(response.checklist_items[0].id);
-                            self.model.card.list.collection.board.checklist_items.get(data.uuid).attributes.id = parseInt(response.checklist_items[0].id);
-                            self.model.card.list.collection.board.checklist_items.get(data.uuid).id = parseInt(response.checklist_items[0].id);
-                            self.renderItemsCollection(false);
-                            if (!_.isUndefined(response.activities)) {
-                                _.each(response.activities, function(_activity) {
-                                    _activity = activityCommentReplace(_activity);
-                                    var activity = new App.Activity();
-                                    activity.set(_activity);
-                                    var view = new App.ActivityView({
-                                        model: activity
+                            if (!_.isUndefined(response) && !_.isEmpty(response) && response !== null) {
+                                if (!_.isUndefined(response.checklist_items) && !_.isEmpty(response.checklist_items) && response.checklist_items !== null && response.checklist_items.length > 0) {
+                                    checklist_item.set('position', parseInt(response.checklist_items[0].position));
+                                    self.model.checklist_items.get(data.uuid).id = parseInt(response.checklist_items[0].id);
+                                    self.model.checklist_items.get(data.uuid).attributes.id = parseInt(response.checklist_items[0].id);
+                                    self.model.card.list.collection.board.checklist_items.get(data.uuid).attributes.id = parseInt(response.checklist_items[0].id);
+                                    self.model.card.list.collection.board.checklist_items.get(data.uuid).id = parseInt(response.checklist_items[0].id);
+                                    self.renderItemsCollection(false);
+                                }
+                                if (!_.isUndefined(response.activities) && !_.isEmpty(response.activities) && response.activities !== null) {
+                                    _.each(response.activities, function(_activity) {
+                                        _activity = activityCommentReplace(_activity);
+                                        var activity = new App.Activity();
+                                        activity.set(_activity);
+                                        var view = new App.ActivityView({
+                                            model: activity
+                                        });
+                                        self.model.set('activities', activity);
+                                        var view_activity = $('#js-card-activities-' + self.model.card.attributes.id);
+                                        view_activity.prepend(view.render().el);
                                     });
-                                    self.model.set('activities', activity);
-                                    var view_activity = $('#js-card-activities-' + self.model.card.attributes.id);
-                                    view_activity.prepend(view.render().el);
-                                });
+                                }
                             }
                         }
                     });

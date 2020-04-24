@@ -73,7 +73,7 @@ $dc.ready(function() {
                 if (!_.isUndefined(App.current_board) && !_.isEmpty(App.current_board) && App.current_board !== null && !App.current_board.attributes.is_closed) {
                     $('#content .js-boards-view').remove('');
                     view_type_tab = "task";
-                    $('#content').html('<section id="boards-view-' + $(this).data('board-viewtype') + '" class="clearfix js-boards-view col-xs-12"></section>');
+                    $('#content').html('<section id="boards-view-' + $(this).data('board-viewtype') + '" class="clearfix js-boards-view col-xs-12"><div class="cssloader"></div></section>');
                 }
             }
         }
@@ -213,7 +213,7 @@ function parse_date(dateTime, logged_user, classname, isAbbrReturn) {
     var s = dateTime.replace("T", " "),
         current_timezone;
     new_date = moment.tz(s, 'YYYY-MM-DD HH:mm:ss', SITE_TIMEZONE).utc().format('YYYY-MM-DD HH:mm:ss');
-    if (logged_user && logged_user.user) {
+    if (logged_user && logged_user.user && !_.isUndefined(logged_user.user.timezone) && !_.isEmpty(logged_user.user.timezone) && logged_user.user.timezone !== null) {
         current_timezone = moment.tz(logged_user.user.timezone).format('Z').replace(':', '');
     } else {
         current_timezone = moment.tz(SITE_TIMEZONE).format('Z').replace(':', '');
