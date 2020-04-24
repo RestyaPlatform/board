@@ -2607,8 +2607,13 @@ App.BoardHeaderView = Backbone.View.extend({
         var filter = '';
         if (current_url.length === 3 && current_url[2] == 'list') {
             filter = 'list';
-        } else if (current_url.length === 5 && current_url[2] == 'gantt') {
-            filter = 'gantt';
+        } else if (current_url.length === 4 && current_url[2] == 'gantt') {
+            filter += 'gantt';
+            if (current_url[3] == "task") {
+                filter += '/task';
+            } else if (current_url[3] == "member") {
+                filter += '/member';
+            }
         }
         if (!_.isEmpty(filter)) {
             filter = '/' + filter;
