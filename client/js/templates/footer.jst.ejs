@@ -186,7 +186,7 @@ if (_.isEmpty(role_links.where({
 												<ul role="menu" class="dropdown-menu js-dropdown-popup col-xs-12 pre-scrollable vertical-scrollbar">
 													<% if (!_.isEmpty(apps) && apps.length !== 0) {
 														_.each(apps, function(key,value) { 
-															if (APPS.enabled_apps.indexOf(key.id) !== -1 && (key.price === 'Free' || (!_.isEmpty(role_links.where({
+															if (!_.isUndefined(APPS) && APPS !== null && APPS.enabled_apps.indexOf(key.id) !== -1 && (key.price === 'Free' || (!_.isEmpty(role_links.where({
 																slug: key.id
 															})) || parseInt(authuser.user.role_id) === 1))) { %>
 																<li id="<%- value %>" class="org-btn">

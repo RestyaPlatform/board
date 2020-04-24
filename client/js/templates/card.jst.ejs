@@ -99,7 +99,7 @@
 		</li>
 	<%}%>
 	<li id="js-card-customfields-list-<%- card.attributes.id %>" class="hide"></li>
-	<% if (!_.isUndefined(APPS.permission_checked_apps) && APPS.permission_checked_apps.indexOf('r_custom_fields') !== -1) {  
+	<% if (!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.permission_checked_apps) && APPS.permission_checked_apps.indexOf('r_custom_fields') !== -1) {  
 		var card_customfield_list = '';
 		if (!_.isUndefined(App.current_board) && !_.isEmpty(App.current_board) && App.current_board !== null && !_.isUndefined(App.current_board.attributes) && !_.isEmpty(App.current_board.attributes) && App.current_board.attributes !== null && App.current_board.attributes.custom_fields && App.current_board.attributes.custom_fields.length > 0) { 
 			_.each(App.current_board.attributes.custom_fields, function(custom_field) { 
