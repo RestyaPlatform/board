@@ -60,6 +60,8 @@ App.BoardHeaderView = Backbone.View.extend({
         this.model.cards.bind('change:checklist_item_completed_count', this.updateListView, this);
         this.model.cards.bind('add:labels', this.updateListView, this);
         this.model.cards.bind('change:labels', this.updateListView, this);
+        this.model.cards.bind('change:is_filtered', this.switchListView, this);
+        this.model.cards.bind('change:is_filtered', this.switchCalendarView, this);
         this.model.cards.bind('add:users', this.updateListView, this);
         this.model.cards.bind('change:users', this.updateListView, this);
         this.model.lists.bind('remove', this.updateListView, this);
@@ -1010,7 +1012,7 @@ App.BoardHeaderView = Backbone.View.extend({
             };
             cards.reset(filtered_cards);
             cards.each(function(card) {
-                if (parseInt(card.get('is_archived')) === 0 && !_.isUndefined(card.list) && parseInt(card.list.get('is_archived')) === 0) {
+                if (parseInt(card.get('is_archived')) === 0 && !_.isUndefined(card.list) && parseInt(card.list.get('is_archived')) === 0 && !card.attributes.is_filtered) {
                     var card_id = card.id;
                     var card_list = self.model.lists.findWhere({
                         id: parseInt(card.attributes.list_id)
@@ -1406,7 +1408,15 @@ App.BoardHeaderView = Backbone.View.extend({
                         }
                     }
                 });
-                $('div.js-board-view-' + self.model.id).fullCalendar('addEventSource', self.model.cards.invoke('pick', ['id', 'title', 'start', 'end']));
+                var plucked = self.model.cards.map(function(model) {
+                    if (!model.attributes.is_filtered) {
+                        return _.pick(model.toJSON(), ['id', 'title', 'start', 'end']);
+                    } else {
+                        return '';
+                    }
+                });
+                $('div.js-board-view-' + self.model.id).fullCalendar('addEventSource', plucked);
+                // $('div.js-board-view-' + self.model.id).fullCalendar('addEventSource', self.model.cards.invoke('pick', ['id', 'title', 'start', 'end']));
             }
             if (!_.isUndefined(App.current_board) && !_.isEmpty(App.current_board) && App.current_board !== null && !_.isUndefined(App.current_board.attributes) && App.current_board.attributes !== null) {
                 if (!_.isUndefined(App.current_board.attributes.calendar_date) && App.current_board.attributes.calendar_date !== null) {
@@ -2606,8 +2616,15 @@ App.BoardHeaderView = Backbone.View.extend({
         var filter = '';
         if (current_url.length === 3 && current_url[2] == 'list') {
             filter = 'list';
-        } else if (current_url.length === 3 && current_url[2] == 'gantt') {
-            filter = 'gantt';
+        } else if (current_url.length === 3 && current_url[2] == "calendar") {
+            filter = "calendar";
+        } else if (current_url.length === 4 && current_url[2] == 'gantt') {
+            filter += 'gantt';
+            if (current_url[3] == "task") {
+                filter += '/task';
+            } else if (current_url[3] == "member") {
+                filter += '/member';
+            }
         }
         if (!_.isEmpty(filter)) {
             filter = '/' + filter;
