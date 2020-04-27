@@ -1679,6 +1679,9 @@ App.FooterView = Backbone.View.extend({
                                                     cardList.set('card_count', parseInt(cardList.attributes.card_count) + 1);
                                                     $('body').trigger('cardAddRendered', [cardList.id, cardList]);
                                                 }
+                                                if (!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && $.inArray('r_gantt_view', APPS.enabled_apps) !== -1) {
+                                                    $('body').trigger('GanttFilterRendered');
+                                                }
                                                 if (parseInt(cardList.attributes.card_count) === 1) {
                                                     if ($('#js-card-listing-' + cardList.id).length > 0) {
                                                         $('#js-card-listing-' + cardList.id).find('.js-list-placeholder-' + cardList.id).remove();
@@ -2145,6 +2148,9 @@ App.FooterView = Backbone.View.extend({
                                                     list.set('card_count', 0);
                                                     if (!_.isUndefined(list) && wip_enabled) {
                                                         $('body').trigger('cardAddRendered', [list.id, list]);
+                                                    }
+                                                    if (!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && $.inArray('r_gantt_view', APPS.enabled_apps) !== -1) {
+                                                        $('body').trigger('GanttFilterRendered');
                                                     }
                                                     $('#js-card-listing-' + list.id).find('.js-list-placeholder-' + list.id).remove();
                                                     $('#js-card-listing-' + list.id).html('<span class="js-list-placeholder-' + list.id + '">&nbsp;</span>');
@@ -2664,6 +2670,9 @@ App.FooterView = Backbone.View.extend({
                                                 } else {
                                                     App.boards.get(list_board_id).lists.get(parseInt(activity.attributes.list_id)).set('is_archived', 0);
                                                 }
+                                            }
+                                            if (!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && $.inArray('r_gantt_view', APPS.enabled_apps) !== -1) {
+                                                $('body').trigger('GanttFilterRendered');
                                             }
                                             if (App.boards.get(list_board_id).attributes && !_.isUndefined(App.boards.get(list_board_id).attributes.lists) && App.boards.get(list_board_id).attributes.lists !== null) {
                                                 if (App.boards.get(list_board_id).attributes.lists.length > 0) {
