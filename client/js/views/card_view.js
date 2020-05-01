@@ -2,7 +2,7 @@
  * @fileOverview This file has functions related to card view. This view calling from list view.
  * Available Object:
  *	App.boards						: this object contain all boards(Based on logged in user)
- *	this.model						: card model and it's related values
+ *	this.model						: card model and its related values
  *	this.model.attachments			: attachments collection(Based on card)
  *	this.model.board_users 			: board users collection(Based on board)
  *  this.model.card_voters			: card users collection(Based on card)
