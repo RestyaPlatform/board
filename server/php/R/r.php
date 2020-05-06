@@ -2053,9 +2053,9 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
     case '/oauth/applications':
         $response['applications'] = array();
         $_metadata = array();
-        $sql = 'SELECT row_to_json(d) FROM (SELECT DISTINCT ON (ort.client_id) ort.client_id, oc.client_name FROM oauth_refresh_tokens ort LEFT JOIN oauth_clients oc ON ort.client_id = oc.client_id WHERE ort.user_id = $1 AND ort.client_id != $2) as d ';
+        $sql = 'SELECT row_to_json(d) FROM (SELECT DISTINCT ON (ort.client_id) ort.client_id, oc.client_name FROM oauth_access_tokens ort LEFT JOIN oauth_clients oc ON ort.client_id = oc.client_id WHERE ort.user_id = $1 AND ort.client_id != $2) as d ';
         array_push($pg_params, $authUser['username'], '7742632501382313');
-        $c_sql = 'SELECT COUNT(*) FROM (SELECT DISTINCT ON (ort.client_id) ort.client_id, oc.client_name FROM oauth_refresh_tokens ort LEFT JOIN oauth_clients oc ON ort.client_id = oc.client_id WHERE ort.user_id = $1 AND ort.client_id != $2) As oc';
+        $c_sql = 'SELECT COUNT(*) FROM (SELECT DISTINCT ON (ort.client_id) ort.client_id, oc.client_name FROM oauth_access_tokens ort LEFT JOIN oauth_clients oc ON ort.client_id = oc.client_id WHERE ort.user_id = $1 AND ort.client_id != $2) As oc';
         if (!empty($c_sql)) {
             $paging_data = paginate_data($c_sql, $db_lnk, $pg_params, $r_resource_filters);
             $sql.= $paging_data['sql'];
@@ -2065,7 +2065,11 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             $data = array();
             while ($row = pg_fetch_row($result)) {
                 $obj = json_decode($row[0], true);
-                $data[] = $obj;
+                if (!empty($_metadata)) {
+                    $data['data'][] = $obj;
+                } else {
+                    $data[] = $obj;
+                }
             }
             if (!empty($_metadata)) {
                 $data['_metadata'] = $_metadata;
