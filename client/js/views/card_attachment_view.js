@@ -37,7 +37,9 @@ App.CardAttachmentView = Backbone.View.extend({
         'click a.js-show-confirm-delete-attachment': 'showConfirmAttachmentDelete',
         'click .js-close-popup': 'closePopup',
         'click .js-span-close-popup': 'closeSpanPopup',
-        'click .js-delete-attachment': 'deleteAttachment'
+        'click .js-delete-attachment': 'deleteAttachment',
+        'click .js-attachment-make-cover': 'changeCover',
+        'click .js-attachment-remove-cover': 'removeCover'
     },
     /**
      * render()
@@ -83,6 +85,12 @@ App.CardAttachmentView = Backbone.View.extend({
             }
         });
         return false;
+    },
+    changeCover: function(e) {
+        var target = $(e.target);
+    },
+    removeCover: function(e) {
+        var target = $(e.target);
     },
     /**
      * showConfirmAttachmentDelete()
