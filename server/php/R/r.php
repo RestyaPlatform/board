@@ -6921,9 +6921,10 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
                         $comment = '##USER_NAME## updated Agile WIP limit - ' . $custom_fields['wip_limit'] . ' on list "##LIST_NAME##"';
                         $activity_type = 'edit_list_agile_wip_limit';
                     }
-                    if (empty($custom_fields['hard_wip_limit']) && isset($custom_fields['hard_wip_limit'])) {
+                    if (empty($custom_fields['hard_wip_limit']) && isset($custom_fields['hard_wip_limit']) && $previous_custom_fields_value['hard_wip_limit'] !== $custom_fields['hard_wip_limit']) {
                         $comment.= " and removed hard limit";
-                    } else {
+                    }
+                    if (isset($custom_fields['hard_wip_limit']) && !empty($custom_fields['hard_wip_limit']) && $previous_custom_fields_value['hard_wip_limit'] !== $custom_fields['hard_wip_limit']) {
                         $comment.= " and set as hard limit";
                     }
                 }
