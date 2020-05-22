@@ -15,7 +15,7 @@ if (typeof App === 'undefined') {
  */
 App.FooterView = Backbone.View.extend({
     converter: new showdown.Converter({
-        extensions: ['targetblank', 'xssfilter', 'codehighlight']
+        extensions: window.extensionslist
     }),
     template: JST['templates/footer'],
     className: 'action-sheet',

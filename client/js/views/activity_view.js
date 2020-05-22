@@ -45,7 +45,7 @@ App.ActivityView = Backbone.View.extend({
         emojify.run();
     },
     converter: new showdown.Converter({
-        extensions: ['targetblank', 'xssfilter', 'codehighlight']
+        extensions: window.extensionslist
     }),
     template: JST['templates/activity'],
     tagName: 'li',
