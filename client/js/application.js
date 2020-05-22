@@ -49,6 +49,13 @@ var view_type_tab = '';
 var AppsFunction = [];
 var appsurlFunc = {};
 var overallApps = [];
+var extensionslist = [];
+$.browser.device = (/android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(navigator.userAgent.toLowerCase()));
+if ($.browser.device) {
+    extensionslist = ['xssfilter', 'codehighlight'];
+} else {
+    extensionslist = ['targetblank', 'xssfilter', 'codehighlight'];
+}
 
 Backbone.View.prototype.flash = function(type, message, delay, position, align) {
     if (!delay) {
@@ -539,6 +546,10 @@ var AppRouter = Backbone.Router.extend({
         });
     },
     card_view: function(id, card_id) {
+        $.each($('#base-modal'), function() {
+            $(this).remove();
+        });
+        $('.modal-backdrop').remove();
         history.pushState(null, document.title, window.location.href);
         card_ids = card_id;
         card_ids_ref = card_id.split(',').map(Number);
