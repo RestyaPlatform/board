@@ -148,12 +148,15 @@ App.CardCheckListView = Backbone.View.extend({
         this.model.url = api_url + 'boards/' + this.model.card.attributes.board_id + '/lists/' + this.model.card.attributes.list_id + '/cards/' + this.model.card.attributes.id + '/checklists/' + this.model.id + '.json';
         var cnt = 0;
         var completed_cnt = 0;
+        var pending_cnt = 0;
         var checkLists = this.model.card.list.collection.board.cards.get(this.model.card.attributes.id).checklists;
         checkLists.each(function(list) {
             completed_cnt += parseInt(list.attributes.checklist_item_completed_count);
+            pending_cnt += parseInt(list.attributes.checklist_item_pending_count);
             cnt += parseInt(list.checklist_items.length);
         });
         var this_complete_count = completed_cnt - parseInt(this.model.attributes.checklist_item_completed_count);
+        var this_pending_count = pending_cnt - parseInt(this.model.attributes.checklist_item_pending_count);
         var this_count = cnt - parseInt(this.model.checklist_items.length);
         if (!this_complete_count.isNan) {
             this.model.set({
@@ -164,6 +167,19 @@ App.CardCheckListView = Backbone.View.extend({
             this.model.card.set('checklist_item_completed_count', this_complete_count);
             this.model.card.list.collection.board.cards.get(this.model.card.attributes.id).set({
                 checklist_item_completed_count: this_complete_count
+            }, {
+                silent: true
+            });
+        }
+        if (!this_pending_count.isNan) {
+            this.model.set({
+                checklist_item_pending_count: this_pending_count
+            }, {
+                silent: true
+            });
+            this.model.card.set('checklist_item_pending_count', this_pending_count);
+            this.model.card.list.collection.board.cards.get(this.model.card.attributes.id).set({
+                checklist_item_pending_count: this_pending_count
             }, {
                 silent: true
             });
@@ -289,7 +305,7 @@ App.CardCheckListView = Backbone.View.extend({
         e.preventDefault();
         var form = $('form.checklist-edit-form');
         form.prev().removeClass('hide');
-        $('a', form.prev()).html($('textarea', form).val());
+        $('a', form.prev()).html(this.model.attributes.name);
         form.remove();
     },
     /**
@@ -390,7 +406,7 @@ App.CardCheckListView = Backbone.View.extend({
             var data = target.serializeObject();
             var lines = data.name.split(/\n/);
             $.each(lines, function(i, line) {
-                if (line) {
+                if (!_.isUndefined(line) && !_.isEmpty(line) && line !== null && $.trim(line).length > 0) {
                     data.uuid = new Date().getTime();
                     data.name = line;
                     var checklist_item = new App.CheckListItem();
@@ -408,28 +424,42 @@ App.CardCheckListView = Backbone.View.extend({
                     self.model.card.list.collection.board.checklist_items.add(checklist_item, {
                         silent: true
                     });
+                    var checklist = self.model.card.list.collection.board.checklists.findWhere({
+                        id: self.model.id
+                    });
+                    if (!_.isUndefined(checklist) && !_.isEmpty(checklist) && checklist !== null) {
+                        var total_count = isNaN(checklist.attributes.checklist_item_count) ? 0 : parseInt(checklist.attributes.checklist_item_count);
+                        checklist.set('checklist_item_count', total_count + 1, {
+                            silent: true
+                        });
+                    }
                     self.model.card.set('checklist_item_count', self.model.card.get('checklist_item_count') + 1);
+                    self.model.card.set('checklist_item_pending_count', self.model.card.get('checklist_item_pending_count') + 1);
                     self.renderItemsCollection(false);
                     checklist_item.save(data, {
                         success: function(model, response) {
-                            checklist_item.set('position', parseInt(response.checklist_items[0].position));
-                            self.model.checklist_items.get(data.uuid).id = parseInt(response.checklist_items[0].id);
-                            self.model.checklist_items.get(data.uuid).attributes.id = parseInt(response.checklist_items[0].id);
-                            self.model.card.list.collection.board.checklist_items.get(data.uuid).attributes.id = parseInt(response.checklist_items[0].id);
-                            self.model.card.list.collection.board.checklist_items.get(data.uuid).id = parseInt(response.checklist_items[0].id);
-                            self.renderItemsCollection(false);
-                            if (!_.isUndefined(response.activities)) {
-                                _.each(response.activities, function(_activity) {
-                                    _activity = activityCommentReplace(_activity);
-                                    var activity = new App.Activity();
-                                    activity.set(_activity);
-                                    var view = new App.ActivityView({
-                                        model: activity
+                            if (!_.isUndefined(response) && !_.isEmpty(response) && response !== null) {
+                                if (!_.isUndefined(response.checklist_items) && !_.isEmpty(response.checklist_items) && response.checklist_items !== null && response.checklist_items.length > 0) {
+                                    checklist_item.set('position', parseInt(response.checklist_items[0].position));
+                                    self.model.checklist_items.get(data.uuid).id = parseInt(response.checklist_items[0].id);
+                                    self.model.checklist_items.get(data.uuid).attributes.id = parseInt(response.checklist_items[0].id);
+                                    self.model.card.list.collection.board.checklist_items.get(data.uuid).attributes.id = parseInt(response.checklist_items[0].id);
+                                    self.model.card.list.collection.board.checklist_items.get(data.uuid).id = parseInt(response.checklist_items[0].id);
+                                    self.renderItemsCollection(false);
+                                }
+                                if (!_.isUndefined(response.activities) && !_.isEmpty(response.activities) && response.activities !== null) {
+                                    _.each(response.activities, function(_activity) {
+                                        _activity = activityCommentReplace(_activity);
+                                        var activity = new App.Activity();
+                                        activity.set(_activity);
+                                        var view = new App.ActivityView({
+                                            model: activity
+                                        });
+                                        self.model.set('activities', activity);
+                                        var view_activity = $('#js-card-activities-' + self.model.card.attributes.id);
+                                        view_activity.prepend(view.render().el);
                                     });
-                                    self.model.set('activities', activity);
-                                    var view_activity = $('#js-card-activities-' + self.model.card.attributes.id);
-                                    view_activity.prepend(view.render().el);
-                                });
+                                }
                             }
                         }
                     });

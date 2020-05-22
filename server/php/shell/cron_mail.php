@@ -31,14 +31,14 @@ if (!empty($argv) && !empty($argv[1])) {
             $email = pg_fetch_assoc($result);
             $subject = 'Restyaboard / From cron (' . $argv[1] . ')';
             $from_email = DEFAULT_FROM_EMAIL_ADDRESS;
-            $message = 'Please check the permission for the shell script file of ' . $argv[1] . ' in your server ' . $_server_domain_url;
+            $message = 'Please check the permission for the shell folder of ' . $argv[1] . ' in your server ' . $_server_domain_url;
             $headers = 'From:' . $from_email . PHP_EOL;
             if (!empty($to_email)) {
                 $headers.= 'Reply-To:' . $to_email . PHP_EOL;
             }
             $headers.= "MIME-Version: 1.0" . PHP_EOL;
             $headers.= "Content-Type: text/html; charset=UTF-8" . PHP_EOL;
-            $headers.= "X-Mailer: Restyaboard (0.6.7; +http://restya.com/board)" . PHP_EOL;
+            $headers.= "X-Mailer: Restyaboard (0.6.8; +http://restya.com/board)" . PHP_EOL;
             $headers.= "X-Auto-Response-Suppress: All" . PHP_EOL;
             $result = mail($to_email, $subject, $message, $headers, '-f' . $from_email);
             if (R_DEBUG) {

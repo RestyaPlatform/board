@@ -43,7 +43,7 @@ App.OrganizationBoardView = Backbone.View.extend({
         'click .js-set-public-board': 'setPublicBoard',
         'click .js-show-board-organization': 'showBoardOrganization',
         'submit .js-save-board-visibility': 'saveBoardVisibility',
-        'click .js-back-to-board-visibility': 'showBoardVisibility',
+        'click .js-back-to-board-visibility': 'backShowBoardVisibility',
         'click .js-show-organization-board-add-form': 'showBoardAddForm',
     },
     /**
@@ -55,6 +55,9 @@ App.OrganizationBoardView = Backbone.View.extend({
      */
     render: function() {
         if (!_.isEmpty(this.$el) && !_.isUndefined(this.$el)) {
+            if (!_.isUndefined(this.model) && !_.isEmpty(this.model) && this.model !== null) {
+                this.$el.addClass('js-board-view-' + this.model.id);
+            }
             this.$el.html(this.template({
                 board: this.model,
                 stared: this.stared
@@ -100,34 +103,46 @@ App.OrganizationBoardView = Backbone.View.extend({
      *
      */
     showBoardAddForm: function(e) {
-        var self = this;
-        var current_param = Backbone.history.fragment.split('?');
-        var current_url = current_param[0].split('/');
-        var organization_id = (current_url[0] == 'organization') ? current_url[1] : null;
-
-        var workflow_template = new App.WorkFlowTemplateCollection();
-        workflow_template.url = api_url + 'workflow_templates.json';
-        workflow_template.fetch({
-            success: function(model, response) {
-                var templates = '';
-                var target = $(e.target);
-                var parent = target.parents('.js-show-add-boards-list-organization');
-                self.$el.find('li.js-back').addClass('hide');
-                var data = {};
-                data = workflow_template;
+        if (!_.isUndefined(authuser.user) && !_.isEmpty(authuser.user) && authuser.user !== null) {
+            var self = this;
+            var target = $(e.target);
+            var parent = target.parents('.js-show-add-boards-list-organization');
+            var data = {};
+            var current_param = Backbone.history.fragment.split('?');
+            var current_url = current_param[0].split('/');
+            var organization_id = (current_url[0] == 'organization') ? current_url[1] : null;
+            var load_workflow_template = false;
+            load_workflow_template = (parseInt(authuser.user.role_id) === 1 || !_.isEmpty(role_links.where({
+                slug: "view_workflow_templates"
+            })));
+            self.$el.find('li.js-back').addClass('hide');
+            if (load_workflow_template) {
+                var workflow_template = new App.WorkFlowTemplateCollection();
+                workflow_template.url = api_url + 'workflow_templates.json';
+                workflow_template.fetch({
+                    success: function(model, response) {
+                        data = workflow_template;
+                        data.page_mode = 2;
+                        data.organization_id = organization_id;
+                        $('.js-show-boards-organization-list-response', parent).html(new App.BoardAddView({
+                            model: data
+                        }).el).find('#inputtemplatelist').select2({
+                            formatResult: function(repo) {
+                                markup = '<div class="clearfix"><span class="show">' + repo.text + '</span><span class="show small">' + repo.id + '</span></div>';
+                                return markup;
+                            }
+                        });
+                    }
+                });
+            } else {
                 data.page_mode = 2;
                 data.organization_id = organization_id;
                 $('.js-show-boards-organization-list-response', parent).html(new App.BoardAddView({
                     model: data
-                }).el).find('#inputtemplatelist').select2({
-                    formatResult: function(repo) {
-                        markup = '<div class="clearfix"><span class="show">' + repo.text + '</span><span class="show small">' + repo.id + '</span></div>';
-                        return markup;
-                    }
-                });
+                }).el);
             }
-        });
-        $('footer').trigger('footerActionRendered');
+            $('footer').trigger('footerActionRendered');
+        }
         return false;
     },
     /**
@@ -195,6 +210,23 @@ App.OrganizationBoardView = Backbone.View.extend({
         }).el).insertAfter(insert);
     },
     /**
+     * backShowBoardVisibility()
+     * render the board visibilities
+     * @param e
+     * @type Object(DOM event)
+     *
+     */
+    backShowBoardVisibility: function(e) {
+        var target = $(e.currentTarget);
+        this.$('.js-back-to-board-visibility').addClass('hide');
+        var visibility = this.model.attributes.board_visibility;
+        var insert = $(target).parents('.dropdown-menu:first').find('.js-visibility-list');
+        insert.nextAll().remove();
+        $(new App.ShowBoardVisibilityView({
+            model: visibility
+        }).el).insertAfter(insert);
+    },
+    /**
      * closePopup()
      * close the opend dropdown
      * @param e
@@ -250,6 +282,7 @@ App.OrganizationBoardView = Backbone.View.extend({
      */
     setPrivteBoard: function(e) {
         e.preventDefault();
+        var self = this;
         this.model.url = api_url + 'boards/' + this.model.attributes.id + '.json';
         this.model.set({
             board_visibility: 0,
@@ -260,10 +293,14 @@ App.OrganizationBoardView = Backbone.View.extend({
             board_visibility: 0,
             organization_id: 0
         }, {
-            patch: true
+            patch: true,
+            success: function(response) {
+                self.model.collection.remove(self.model);
+            }
         });
         var target = $(e.target);
         target.parents('div.dropdown').removeClass('open');
+        $('.js-board-view-' + this.model.id).remove();
         return false;
     },
     /**
@@ -276,6 +313,7 @@ App.OrganizationBoardView = Backbone.View.extend({
      */
     setPublicBoard: function(e) {
         e.preventDefault();
+        var self = this;
         this.model.url = api_url + 'boards/' + this.model.attributes.id + '.json';
         this.model.set({
             board_visibility: 2,
@@ -286,10 +324,14 @@ App.OrganizationBoardView = Backbone.View.extend({
             board_visibility: 2,
             organization_id: 0
         }, {
-            patch: true
+            patch: true,
+            success: function(response) {
+                self.model.collection.remove(self.model);
+            }
         });
         var target = $(e.target);
         target.parents('div.dropdown').removeClass('open');
+        $('.js-board-view-' + this.model.id).remove();
         return false;
     },
     /**
@@ -304,6 +346,43 @@ App.OrganizationBoardView = Backbone.View.extend({
         e.preventDefault();
         this.$('.js-back-to-board-visibility').removeClass('hide');
         this.showChangeOrganizationForm(e);
+        return false;
+    },
+    /**
+     * saveBoardVisibility()
+     * change the board visibility
+     * @param e
+     * @type Object(DOM event)
+     * @return false
+     *
+     */
+    saveBoardVisibility: function(e) {
+        e.preventDefault();
+        var target = $(e.target);
+        data = target.serializeObject();
+        var organization_id = parseInt(this.model.attributes.organization_id);
+        data.board_visibility = 1;
+        var organizations = auth_user_organizations;
+        var org = organizations.findWhere({
+            id: parseInt(data.organization_id)
+        });
+        this.model.set('organization_name', _.escape(org.attributes.name));
+        this.model.set('organization_logo_url', _.escape(org.attributes.organization_logo_url));
+        this.model.set('board_visibility', 1);
+        this.model.set('organization_id', parseInt(data.organization_id));
+        $('.js-sidebar-board-visibility').html(i18next.t('Change Visibility'));
+        this.model.url = api_url + 'boards/' + this.model.attributes.id + '.json';
+        this.closePopup(e);
+        this.model.save(data, {
+            patch: true,
+            success: function(response) {
+                self.model.collection.remove(self.model);
+            }
+        });
+        target.parents('div.dropdown').removeClass('open');
+        if (organization_id !== parseInt(data.organization_id)) {
+            $('.js-board-view-' + this.model.id).remove();
+        }
         return false;
     }
 });

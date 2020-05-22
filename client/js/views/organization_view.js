@@ -287,7 +287,7 @@ App.OrganizationsView = Backbone.View.extend({
         formData.append('file', $('input[type=file]')[0].files[0]);
         //var data = $(e.target).serializeObject();
         //this.model.set(data);
-        this.render();
+        //this.render();
         this.model.url = api_url + 'organizations/' + this.model.organization_id + '/upload_logo.json';
         this.model.save(formData, {
             patch: true,

@@ -231,6 +231,7 @@ header {
 	&.datetimepicker {
 		padding-left: 5px;
 		padding-right: 5px;
+		color: #333;
 	}
 	&.list-group {
 		li.list-group-item {
@@ -794,8 +795,6 @@ table.acl-link-list > tbody> tr {
 }
 .board-listview {
 	.card-list-view {
-		.box-shadow(0 1px 1px rgba(0,0,0,0.15));
-		border: 1px solid #fff;
 		&.active {
 			.box-shadow(5px 5px 15px @brand-primary);
 			.card-id {
@@ -965,6 +964,7 @@ table.acl-link-list > tbody> tr {
 		}
 	}
 	.board-list-placeholder.list {
+		background: transparent;
 		border: 1px dashed #999;
 		height: 150px;
 	}
@@ -2279,7 +2279,7 @@ footer, header, .dashboard-header {
 	}
 	.js-show-item-edit-form {
 		p {
-			margin: 0 0 5px;
+			margin: 3px 0 5px 0px;
 		}
 	}
 	label { 
@@ -2409,9 +2409,6 @@ ul.card_activitiesnew{
 			margin-bottom: 0;
 		}
 	}
-}
-.custom-filed-btn{
-	width:83.4%;
 }
 .txt-aligns{
 	.card-listing-truncate{
@@ -2648,4 +2645,8 @@ header{
 }
 .left-mar{
 	margin-left: 5px;
+}
+.wrap-text {
+	word-wrap: break-word;
+	white-space: normal;
 }

@@ -428,7 +428,7 @@ function checkAclLinks($r_request_method = 'GET', $r_resource_cmd = '/users', $r
 {
     global $r_debug, $db_lnk, $authUser;
     $role = 3; // Guest role id
-    if (is_plugin_enabled('r_support_app')) {
+    if (is_plugin_enabled('r_support_app') && !isset($_POST['is_instant_add_Card'])) {
         require_once PLUGIN_PATH . DS . 'SupportApp' . DS . 'functions.php';
         if (checkSupportAppEnabled($r_resource_vars, $r_request_method, $r_resource_cmd)) {
             return true;
@@ -485,7 +485,10 @@ function checkAclLinks($r_request_method = 'GET', $r_resource_cmd = '/users', $r
         '/boards/?/lists/?/cards/?/comments',
         '/boards/?/board_subscribers',
         '/boards/?/lists/?/list_subscribers',
-        '/boards/?/lists/?/cards/?/card_subscribers'
+        '/boards/?/lists/?/cards/?/card_subscribers',
+        '/boards/?/board_subscribers/?',
+        '/boards/?/lists/?/list_subscribers/?',
+        '/boards/?/lists/?/cards/?/card_subscribers/?'
     );
     if (in_array($r_resource_cmd, $public_board_exception_url)) {
         $board_star = false;
@@ -607,7 +610,7 @@ function sendMail($template, $replace_content, $to, $reply_to_mail = '')
         }
         $headers.= "MIME-Version: 1.0" . PHP_EOL;
         $headers.= "Content-Type: text/html; charset=UTF-8" . PHP_EOL;
-        $headers.= "X-Mailer: Restyaboard (0.6.7; +http://restya.com/board)" . PHP_EOL;
+        $headers.= "X-Mailer: Restyaboard (0.6.8; +http://restya.com/board)" . PHP_EOL;
         $headers.= "X-Auto-Response-Suppress: All" . PHP_EOL;
         if (is_plugin_enabled('r_sparkpost')) {
             require_once PLUGIN_PATH . DS . 'SparkPost' . DS . 'functions.php';
@@ -761,6 +764,7 @@ function copyCards($cards, $new_list_id, $name, $new_board_id = '')
                     $comment->board_id = $new_board_id;
                     $comment->list_id = $new_list_id;
                     $comment->card_id = $new_card_id;
+                    $comment->token = $_GET['token'];
                     pg_execute_insert('activities', $comment);
                 }
             }
@@ -843,24 +847,26 @@ function copyCards($cards, $new_list_id, $name, $new_board_id = '')
                 }
             }
             // Copy card custom fields
-            $cards_custom_fields = 'list_id, card_id, board_id, custom_field_id';
-            if (!empty($new_board_id)) {
-                $cards_custom_fields = 'board_id, list_id, card_id, custom_field_id';
-            }
-            $qry_val_arr = array(
-                $card_id
-            );
-            $cards_custom_field = pg_query_params($db_lnk, 'SELECT id, ' . $cards_custom_fields . ',value,is_active,value FROM cards_custom_fields WHERE card_id = $1 ORDER BY id', $qry_val_arr);
-            if ($cards_custom_field && pg_num_rows($cards_custom_field)) {
-                while ($cards_field = pg_fetch_object($cards_custom_field)) {
-                    if (!empty($new_board_id)) {
-                        $cards_field->board_id = $new_board_id;
-                        $cards_field->list_id = $new_list_id;
-                        $cards_field->card_id = $new_card_id;
+            if (is_plugin_enabled('r_custom_fields')) {
+                $cards_custom_fields = 'list_id, card_id, board_id, custom_field_id';
+                if (!empty($new_board_id)) {
+                    $cards_custom_fields = 'board_id, list_id, card_id, custom_field_id';
+                }
+                $qry_val_arr = array(
+                    $card_id
+                );
+                $cards_custom_field = pg_query_params($db_lnk, 'SELECT id, ' . $cards_custom_fields . ',value,is_active,value FROM cards_custom_fields WHERE card_id = $1 ORDER BY id', $qry_val_arr);
+                if ($cards_custom_field && pg_num_rows($cards_custom_field)) {
+                    while ($cards_field = pg_fetch_object($cards_custom_field)) {
+                        if (!empty($new_board_id)) {
+                            $cards_field->board_id = $new_board_id;
+                            $cards_field->list_id = $new_list_id;
+                            $cards_field->card_id = $new_card_id;
+                        }
+                        pg_execute_insert('cards_custom_fields', $cards_field);
+                        $comment = __l('##USER_NAME## added card custom field(s) to the card ##CARD_LINK## ');
+                        insertActivity($authUser['id'], $comment, 'add_card_custom_field', $foreign_ids);
                     }
-                    pg_execute_insert('cards_custom_fields', $cards_field);
-                    $comment = __l('##USER_NAME## added card custom field(s) to the card ##CARD_LINK## ');
-                    insertActivity($authUser['id'], $comment, 'add_card_custom_field', $foreign_ids);
                 }
             }
         }
@@ -1459,7 +1465,7 @@ function importTrelloBoard($board = array())
                 } else if ($action['type'] == 'updateList') {
                     if (isset($action['data']['list']['closed'])) {
                         $type = 'archive_list';
-                        $comment = __l('##USER_NAME## archived ##LIST_NAME##');
+                        $comment = __l('##USER_NAME## archived list ##LIST_NAME##');
                     } else if (!empty($action['data']['list']['pos'])) {
                         $type = 'change_list_position';
                         $listName = '';
@@ -1544,9 +1550,10 @@ function importTrelloBoard($board = array())
                             $new_board['id'],
                             $users[$action['idMemberCreator']],
                             $type,
-                            $comment
+                            $comment,
+                            $_GET['token']
                         );
-                        $activity = pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO activities (created, modified, board_id, user_id, type, comment) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id', $qry_val_arr));
+                        $activity = pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO activities (created, modified, board_id, user_id, type, comment, token) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id', $qry_val_arr));
                     } else if (!empty($lists_key) && empty($cards_key)) {
                         $qry_val_arr = array(
                             $created,
@@ -1555,9 +1562,10 @@ function importTrelloBoard($board = array())
                             $lists_key,
                             $users[$action['idMemberCreator']],
                             $type,
-                            $comment
+                            $comment,
+                            $_GET['token']
                         );
-                        $activity = pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO activities (created, modified, board_id, list_id, user_id, type, comment) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id', $qry_val_arr));
+                        $activity = pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO activities (created, modified, board_id, list_id, user_id, type, comment, token) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id', $qry_val_arr));
                     } else if (empty($lists_key) && !empty($cards_key)) {
                         $qry_val_arr = array(
                             $created,
@@ -1566,9 +1574,10 @@ function importTrelloBoard($board = array())
                             $cards_key,
                             $users[$action['idMemberCreator']],
                             $type,
-                            $comment
+                            $comment,
+                            $_GET['token']
                         );
-                        $activity = pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO activities (created, modified, board_id, card_id, user_id, type, comment) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id', $qry_val_arr));
+                        $activity = pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO activities (created, modified, board_id, card_id, user_id, type, comment, token) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id', $qry_val_arr));
                     } else if (!empty($lists_key) && !empty($cards_key)) {
                         $qry_val_arr = array(
                             $created,
@@ -1578,9 +1587,10 @@ function importTrelloBoard($board = array())
                             $cards_key,
                             $users[$action['idMemberCreator']],
                             $type,
-                            $comment
+                            $comment,
+                            $_GET['token']
                         );
-                        $activity = pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO activities (created, modified, board_id, list_id, card_id, user_id, type, comment) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id', $qry_val_arr));
+                        $activity = pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO activities (created, modified, board_id, list_id, card_id, user_id, type, comment, token) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id', $qry_val_arr));
                     }
                     if (!empty($activity)) {
                         $id_converted = base_convert($activity['id'], 10, 36);
@@ -1944,9 +1954,10 @@ function importKantreeBoard($jsonArr = array())
                             $cards_key,
                             $users[$action['actor']['id']],
                             $type,
-                            $comment
+                            $comment,
+                            $_GET['token']
                         );
-                        $activity = pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO activities (created, modified, board_id, list_id, card_id, user_id, type, comment) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id', $qry_val_arr));
+                        $activity = pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO activities (created, modified, board_id, list_id, card_id, user_id, type, comment, token) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id', $qry_val_arr));
                         if (!empty($activity)) {
                             $id_converted = base_convert($activity['id'], 10, 36);
                             $materialized_path = sprintf("%08s", $id_converted);
@@ -2217,9 +2228,10 @@ function importTaigaBoard($board = array())
                         $cards_key,
                         $userNames[$action['data']['user']['email']],
                         $type,
-                        $comment
+                        $comment,
+                        $_GET['token']
                     );
-                    $activity = pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO activities (created, modified, board_id, list_id, card_id, user_id, type, comment) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id', $qry_val_arr));
+                    $activity = pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO activities (created, modified, board_id, list_id, card_id, user_id, type, comment, token) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id', $qry_val_arr));
                     if (!empty($activity)) {
                         $id_converted = base_convert($activity['id'], 10, 36);
                         $materialized_path = sprintf("%08s", $id_converted);
@@ -2534,7 +2546,7 @@ function importWekanBoard($board = array())
                     $comment = __l('##USER_NAME## created board');
                 } else if ($action['activityType'] == 'archivedList') {
                     $type = 'archive_list';
-                    $comment = __l('##USER_NAME## archived ##LIST_NAME##');
+                    $comment = __l('##USER_NAME## archived list ##LIST_NAME##');
                 } else if ($action['activityType'] == 'moveCard') {
                     $type = 'moved_list_card';
                     $comment = sprintf(__l('##USER_NAME## moved cards FROM %s to %s') , utf8_decode($lists_data[$action['listId']]) , utf8_decode($lists_data[$action['listId']]));
@@ -2568,9 +2580,10 @@ function importWekanBoard($board = array())
                         $new_board['id'],
                         $users[$action['userId']],
                         $type,
-                        $comment
+                        $comment,
+                        $_GET['token']
                     );
-                    $activity = pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO activities (created, modified, board_id, user_id, type, comment) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id', $qry_val_arr));
+                    $activity = pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO activities (created, modified, board_id, user_id, type, comment, token) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id', $qry_val_arr));
                 } else if (!empty($lists_key) && empty($cards_key)) {
                     $qry_val_arr = array(
                         $created,
@@ -2579,9 +2592,10 @@ function importWekanBoard($board = array())
                         $lists_key,
                         $users[$action['userId']],
                         $type,
-                        $comment
+                        $comment,
+                        $_GET['token']
                     );
-                    $activity = pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO activities (created, modified, board_id, list_id, user_id, type, comment) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id', $qry_val_arr));
+                    $activity = pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO activities (created, modified, board_id, list_id, user_id, type, comment, token) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id', $qry_val_arr));
                 } else if (empty($lists_key) && !empty($cards_key)) {
                     $qry_val_arr = array(
                         $created,
@@ -2590,9 +2604,10 @@ function importWekanBoard($board = array())
                         $cards_key,
                         $users[$action['userId']],
                         $type,
-                        $comment
+                        $comment,
+                        $_GET['token']
                     );
-                    $activity = pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO activities (created, modified, board_id, card_id, user_id, type, comment) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id', $qry_val_arr));
+                    $activity = pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO activities (created, modified, board_id, card_id, user_id, type, comment, token) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id', $qry_val_arr));
                 } else if (!empty($lists_key) && !empty($cards_key)) {
                     $qry_val_arr = array(
                         $created,
@@ -2602,9 +2617,10 @@ function importWekanBoard($board = array())
                         $cards_key,
                         $users[$action['userId']],
                         $type,
-                        $comment
+                        $comment,
+                        $_GET['token']
                     );
-                    $activity = pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO activities (created, modified, board_id, list_id, card_id, user_id, type, comment) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id', $qry_val_arr));
+                    $activity = pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO activities (created, modified, board_id, list_id, card_id, user_id, type, comment, token) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id', $qry_val_arr));
                 }
                 if (!empty($activity)) {
                     $id_converted = base_convert($activity['id'], 10, 36);
@@ -3394,16 +3410,18 @@ function update_query($table_name, $id, $r_resource_cmd, $r_put, $comment = '', 
         }
         if (!empty($comment)) {
             $revision = '';
-            if ($activity_type != 'reopen_board' && $activity_type != 'close_board' && $activity_type != 'moved_list_card' && $activity_type != 'moved_card_checklist_item' && $activity_type != 'delete_organization_attachment' && $activity_type != 'move_card') {
+            if ($activity_type != 'reopen_board' && $activity_type != 'close_board' && $activity_type != 'moved_list_card' && $activity_type != 'moved_card_checklist_item' && $activity_type != 'delete_organization_attachment') {
                 $qry_va_arr = array(
                     $id
                 );
                 $revisions['old_value'] = executeQuery('SELECT ' . $sfields . ' FROM ' . $table_name . ' WHERE id =  $1', $qry_va_arr);
-                if (!empty($r_put['position'])) {
-                    unset($r_put['position']);
-                }
-                if (!empty($r_put['id'])) {
-                    unset($r_put['id']);
+                if ($activity_type != 'change_list_position' && $activity_type != 'change_card_position' && $activity_type != 'move_card' && $activity_type != 'update_card_checklist' && $activity_type != 'update_card_checklist_item') {
+                    if (!empty($r_put['position'])) {
+                        unset($r_put['position']);
+                    }
+                    if (!empty($r_put['id'])) {
+                        unset($r_put['id']);
+                    }
                 }
                 $revisions['new_value'] = $r_put;
                 $revision = serialize($revisions);
@@ -4189,4 +4207,28 @@ function sendMailNotification($notification_type)
             sendMail('email_notification', $emailFindReplace, $user['email'], $reply_to_mail);
         }
     }
+}
+function updateDependency($parentCard)
+{
+    global $db_lnk;
+    $val_array = array(
+        $parentCard['id']
+    );
+    $child_cards = pg_query_params($db_lnk, 'SELECT child_card_id FROM card_dependencies WHERE parent_card_id = $1', $val_array);
+    while ($row = pg_fetch_assoc($child_cards)) {
+        if (!empty($row)) {
+            $condition = array(
+                $row['child_card_id']
+            );
+            $childCard = executeQuery('SELECT id FROM cards where id = $1', $condition);
+            $parentCard[] = updateDependency($childCard);
+        }
+    }
+    $response = "";
+    if (!empty($parentCard)) {
+        foreach ($parentCard as $card_id) {
+            $response = $card_id . "," . $response;
+        }
+    }
+    return $response;
 }

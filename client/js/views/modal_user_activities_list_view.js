@@ -78,7 +78,9 @@ App.ModalUserActivitiesListView = Backbone.View.extend({
                         return activity.id;
                     });
                     self.last_activity_id = last_activity.id;
-                    self.model.set('activity_count', response._metadata.total_records);
+                    self.model.set('activity_count', response._metadata.total_records, {
+                        silent: true
+                    });
                     self.renderActivitiesCollection(activities);
                 } else {
                     var view = new App.ActivityView({
@@ -127,7 +129,9 @@ App.ModalUserActivitiesListView = Backbone.View.extend({
                         return activity.id;
                     });
                     self.last_activity_id = last_activity.id;
-                    self.model.set('activity_count', response._metadata.total_records);
+                    self.model.set('activity_count', response._metadata.total_records, {
+                        silent: true
+                    });
                     self.renderActivitiesCollection(activities);
                 }
             }
@@ -151,7 +155,8 @@ App.ModalUserActivitiesListView = Backbone.View.extend({
                 activity.from_footer = true;
                 var view = new App.ActivityView({
                     model: activity,
-                    is_from: self.is_from
+                    is_from: self.is_from,
+                    type: 'board_user_activity'
                 });
                 view_user_activities.append(view.render().el);
             }

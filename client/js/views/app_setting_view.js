@@ -36,8 +36,18 @@ App.AppSettingsView = Backbone.View.extend({
         _app.url = api_url + 'apps/settings.json';
         _app.save(data, {
             success: function(model, response) {
-                if (!_.isEmpty(response.success)) {
+                if (!_.isUndefined(response.success) && !_.isEmpty(response.success)) {
                     self.flash('success', i18next.t('App updated successfully'));
+                    _.each(data, function(val, field) {
+                        if (field !== 'folder' && field in window) {
+                            window[field] = val;
+                        }
+                    });
+                } else if (!_.isUndefined(response.error) && !_.isEmpty(response.error) && response.error !== null && response.error.type === 'File permission') {
+                    self.flash('danger', i18next.t(' Please set permission to write in  %s', {
+                        postProcess: 'sprintf',
+                        sprintf: [response.error.content]
+                    }));
                 } else {
                     self.flash('danger', i18next.t('App not updated successfully.'));
                 }

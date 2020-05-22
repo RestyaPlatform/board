@@ -186,7 +186,7 @@ if (_.isEmpty(role_links.where({
 												<ul role="menu" class="dropdown-menu js-dropdown-popup col-xs-12 pre-scrollable vertical-scrollbar">
 													<% if (!_.isEmpty(apps) && apps.length !== 0) {
 														_.each(apps, function(key,value) { 
-															if (APPS.enabled_apps.indexOf(key.id) !== -1 && (key.price === 'Free' || (!_.isEmpty(role_links.where({
+															if (!_.isUndefined(APPS) && APPS !== null && APPS.enabled_apps.indexOf(key.id) !== -1 && (key.price === 'Free' || (!_.isEmpty(role_links.where({
 																slug: key.id
 															})) || parseInt(authuser.user.role_id) === 1))) { %>
 																<li id="<%- value %>" class="org-btn">
@@ -368,6 +368,11 @@ if (_.isEmpty(role_links.where({
 																				</li>
 																				<% var site_url = window.location.origin; %>
 																					<li>
+																						<a title="<%- i18next.t('Restya Core ...') %>" target="_blank" href="https://restya.com/core-jira-slack-alternative?utm_source=Restyaboard - <%- SITE_NAME %>&utm_medium=web&utm_campaign=core">
+																							<%- i18next.t('Restya Core ...') %>
+																						</a>
+																					</li>
+																					<li>
 																						<a title="<%- i18next.t('Donate Restyaboard') %>" target="_blank" href="http://restya.com/donate/?utm_source=Restyaboard - <%- SITE_NAME %>&utm_medium=web&utm_campaign=footer">
 																							<%- i18next.t('Donate Restyaboard') %>
 																						</a>
@@ -384,7 +389,7 @@ if (_.isEmpty(role_links.where({
 																								<li>
 																									<a class="cur <% if(k !== authuser.user.language) { %>js-change-language<%}%>" data-lang="<%- k %>">
 																										<%- v %>
-																											<% if((!_.isEmpty(authuser.user.language) && k === authuser.user.language) || (_.isEmpty(authuser.user.language) && k === DEFAULT_LANGUAGE)){ %>
+																											<% if((!_.isEmpty(authuser.user.language) && k === authuser.user.language) || (_.isEmpty(authuser.user.language) && k === current_language)){ %>
 																												<i class="icon-ok"></i>
 																												<% } %>
 																									</a>

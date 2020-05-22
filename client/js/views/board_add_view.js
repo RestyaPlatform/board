@@ -48,10 +48,11 @@ App.BoardAddView = Backbone.View.extend({
     },
     showAllVisibility: function(e) {
         e.preventDefault();
-        $('.js-open-dropdown').addClass('open');
-        $('.js-visibility-container').html('');
-        var visibility = $('#inputBoardAddVisibility').val();
-        $('.js-visibility-chooser').html(new App.ShowAllVisibilityView({
+        var target = $(e.target);
+        var parent = target.parents('form#BoardAddForm');
+        $('.js-open-dropdown', parent).addClass('open');
+        var visibility = $('#inputBoardAddVisibility', parent).val();
+        $('.js-visibility-chooser', parent).html(new App.ShowAllVisibilityView({
             model: visibility
         }).el);
 
@@ -66,9 +67,11 @@ App.BoardAddView = Backbone.View.extend({
      *
      */
     selectBoardVisibility: function(e) {
+        var target = $(e.target);
+        var parent = target.parents('form#BoardAddForm');
         var name = $(e.currentTarget).attr('name');
         var value = 0;
-        $('#js-board-add-organization').html('');
+        $('#js-board-add-organization', parent).html('');
         if (name == 'org') {
             value = 1;
             this.showBoardAddeOrganizationForm(e);
@@ -78,35 +81,41 @@ App.BoardAddView = Backbone.View.extend({
         var content = new App.SelectedBoardVisibilityView({
             model: name
         }).el;
-        $('#inputBoardAddVisibility').val(value);
-        $('.js-visibility-container').html(content);
+        $('#inputBoardAddVisibility', parent).val(value);
+        $('.js-visibility-container', parent).html(content);
         content = '';
-        $('.js-board-add-dropdown').removeClass('open');
+        $('.js-board-add-dropdown', parent).removeClass('open');
         return false;
     },
     submitBoardAdd: function(e) {
+        var self = this;
         e.preventDefault();
         $(e.target).find('#submitBoardAdd').addClass('disabled');
         var data = $(e.target).serializeObject();
-        var board = new App.Board();
-        board.url = api_url + 'boards.json';
-        if (this.model.organization_id) {
-            data.organization_id = this.model.organization_id;
-        }
-        board.save(data, {
-            success: function(model, response) {
-                $(e.target).find('#submitBoardAdd').removeClass('disabled');
-                App.boards.add(response.simple_board);
-                if (response.simple_board.lists !== null) {
-                    App.boards.get(parseInt(response.simple_board.id)).lists.add(response.simple_board.lists);
-                }
-                $.removeCookie("chat_initialize");
-                app.navigate('#/board/' + response.id, {
-                    trigger: true,
-                    replace: true
-                });
+        if (_.isEmpty(data.name) || data.name.trim() === '') {
+            self.flash('danger', i18next.t('Please add the board name'));
+            return false;
+        } else {
+            var board = new App.Board();
+            board.url = api_url + 'boards.json';
+            if (this.model.organization_id) {
+                data.organization_id = this.model.organization_id;
             }
-        });
+            board.save(data, {
+                success: function(model, response) {
+                    $(e.target).find('#submitBoardAdd').removeClass('disabled');
+                    App.boards.add(response.simple_board);
+                    if (response.simple_board.lists !== null) {
+                        App.boards.get(parseInt(response.simple_board.id)).lists.add(response.simple_board.lists);
+                    }
+                    $.removeCookie("chat_initialize");
+                    app.navigate('#/board/' + response.id, {
+                        trigger: true,
+                        replace: true
+                    });
+                }
+            });
+        }
         return false;
     },
     /**
@@ -118,12 +127,14 @@ App.BoardAddView = Backbone.View.extend({
      */
     showBoardAddeOrganizationForm: function(e) {
         e.preventDefault();
+        var target = $(e.target);
+        var parent = target.parents('form#BoardAddForm');
         organizations = auth_user_organizations;
         if (auth_user_organizations !== null && _.isUndefined(auth_user_organizations.models)) {
             organizations.add(JSON.parse(auth_user_organizations));
         }
         auth_user_organizations = organizations;
-        $('#js-board-add-organization').html(new App.BoardAddOrganizationFormView({
+        $('#js-board-add-organization', parent).html(new App.BoardAddOrganizationFormView({
             model: auth_user_organizations
         }).el);
     }

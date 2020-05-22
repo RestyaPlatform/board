@@ -29,7 +29,7 @@ App.OrganizationsListsHeaderView = Backbone.View.extend({
      * initialize default values and actions
      */
     initialize: function() {
-        this.sortField = 'id';
+        this.sortField = 'name';
         this.sortDirection = 'desc';
         if (!_.isUndefined(this.model) && this.model !== null) {
             this.model.showImage = this.showImage;
@@ -58,18 +58,46 @@ App.OrganizationsListsHeaderView = Backbone.View.extend({
             sortField: this.sortField,
             sortDirection: this.sortDirection
         }).el);
+        if (this.sortDirection === 'asc') {
+            this.sortField = null;
+        }
     },
     sortBy: function(e) {
         e.preventDefault();
-        var sortField = $(e.currentTarget).data('field');
-        if (_.isUndefined(this.sortDirection)) {
-            this.sortDirection = 'desc';
+        var target = $(e.target);
+        var sortField;
+        var field_text;
+        var parentElement;
+        if (target.hasClass('icon')) {
+            parentElement = target.parent();
+            field_text = i18next.t(target.parent().text());
+            sortField = target.parent().data('field');
         } else {
-            if (this.sortDirection === 'desc') {
-                this.sortDirection = 'asc';
-            } else {
-                this.sortDirection = 'desc';
-            }
+            field_text = i18next.t(target.text());
+            sortField = target.data('field');
+        }
+        if ($('.js-sort-by-organizations').hasClass('active')) {
+            $('.js-sort-by-organizations').removeClass('active');
+        }
+        $('.js-sort-down-organizations').remove();
+        $('.js-sort-up-organizations').remove();
+        var sortFieldstring = '';
+        if (target.hasClass('icon')) {
+            parentElement.parents('.js-sort-by-organizations').addClass('active');
+        } else {
+            target.parents('.js-sort-by-organizations').addClass('active');
+        }
+        if (this.sortField === sortField) {
+            sortFieldstring += '<i class="icon icon-arrow-up js-sort-up-organizations"></i>' + field_text;
+            this.sortDirection = 'asc';
+        } else {
+            sortFieldstring += '<i class="icon icon-arrow-down js-sort-down-organizations"></i>' + field_text;
+            this.sortDirection = 'desc';
+        }
+        if (target.hasClass('icon')) {
+            parentElement.html(sortFieldstring);
+        } else {
+            target.html(sortFieldstring);
         }
         this.sortField = sortField;
         this.renderList();

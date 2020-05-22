@@ -1,20 +1,74 @@
 <% if(!_.isEmpty(activity) && activity != null){ %> 
-<% 
-	var cardLink = '<a href="#/board/' + activity.attributes.board_id + '/card/' + activity.attributes.card_id + '">' + (activity.attributes.card_name) + '</a>';
-	var organizationLink = '<a href="#/organization/' + activity.attributes.organization_id + '">' + (activity.attributes.organization_name) + '</a>';
-	if(activity.attributes.type != 'add_comment' && activity.attributes.type != 'edit_comment') {
-		activity.attributes.comment = activity.attributes.comment.replace('##ORGANIZATION_LINK##', organizationLink);
-		activity.attributes.comment = activity.attributes.comment.replace('##CARD_LINK##', cardLink);
-		activity.attributes.comment = activity.attributes.comment.replace('##LABEL_NAME##', (activity.attributes.label_name));
-		activity.attributes.comment = activity.attributes.comment.replace('##CARD_NAME##', (activity.attributes.card_name));
-		activity.attributes.comment = activity.attributes.comment.replace('##DESCRIPTION##', (activity.attributes.card_description));
-		activity.attributes.comment = activity.attributes.comment.replace('##LIST_NAME##', (activity.attributes.list_name));
-		activity.attributes.comment = activity.attributes.comment.replace('##BOARD_NAME##', (activity.attributes.board_name));
-		activity.attributes.comment = activity.attributes.comment.replace('##USER_NAME##', '<span class="h5">'+_.escape(activity.attributes.full_name)+'</span>');
-		activity.attributes.comment = activity.attributes.comment.replace('##CHECKLIST_ITEM_NAME##', (activity.attributes.checklist_item_name));
-		activity.attributes.comment = activity.attributes.comment.replace('##CHECKLIST_ITEM_PARENT_NAME##', (activity.attributes.checklist_item_parent_name));
-		activity.attributes.comment = activity.attributes.comment.replace('##CHECKLIST_NAME##', (activity.attributes.checklist_name));
+<%  activity.attributes.card_name = (activity.attributes.card_name !== null) ? activity.attributes.card_name : i18next.t("[deleted]");
+	activity.attributes.organization_name = (activity.attributes.organization_name !== null) ? activity.attributes.organization_name : i18next.t("[deleted]");
+	activity.attributes.board_name = (activity.attributes.board_name !== null) ? activity.attributes.board_name : i18next.t("[deleted]");
+	var cardLink;
+	if (activity.attributes.card_name !== '[deleted]') {
+		cardLink = '<a href="#/board/' + activity.attributes.board_id + '/card/' + activity.attributes.card_id + '">' + _.escape(activity.attributes.card_name) + '</a>';
 	} else {
+		cardLink = '<a href="javascript:void(0);">' + _.escape(activity.attributes.card_name) + '</a>';
+	}
+	var organizationLink;
+	if (activity.attributes.organization_name !== '[deleted]') {
+		organizationLink = '<a href="#/organization/' + activity.attributes.organization_id + '">' + _.escape(activity.attributes.organization_name) + '</a>';
+	} else {
+		organizationLink = '<a href="javascript:void(0);">' + _.escape(activity.attributes.organization_name) + '</a>';
+	}
+	if(activity.attributes.type != 'add_comment') {
+		if(activity.attributes.comment.indexOf('##ORGANIZATION_LINK##') != -1){
+			activity.attributes.comment = activity.attributes.comment.replace('##ORGANIZATION_LINK##', organizationLink);
+		}
+		if(activity.attributes.comment.indexOf('##CARD_LINK##') != -1){
+			activity.attributes.comment = activity.attributes.comment.replace('##CARD_LINK##', cardLink);
+		}
+		if(activity.attributes.comment.indexOf('##LABEL_NAME##') != -1){
+			if (activity.attributes.label_name !== null) {
+				activity.attributes.comment = activity.attributes.comment.replace('##LABEL_NAME##', _.escape(activity.attributes.label_name));
+			} else {
+				activity.attributes.comment = activity.attributes.comment.replace('##LABEL_NAME##', i18next.t("[deleted]"));
+			}
+		}
+		if(activity.attributes.comment.indexOf('##CARD_NAME##') != -1){
+			if (activity.attributes.card_name !== null) {
+				activity.attributes.comment = activity.attributes.comment.replace('##CARD_NAME##', _.escape(activity.attributes.card_name));
+			} else {
+				activity.attributes.comment = activity.attributes.comment.replace('##CARD_NAME##', i18next.t("[deleted]"));
+			}
+		}
+		activity.attributes.comment = activity.attributes.comment.replace('##DESCRIPTION##', _.escape(activity.attributes.card_description));
+		if(activity.attributes.comment.indexOf('##LIST_NAME##') != -1){
+			if (activity.attributes.list_name !== null) {
+				activity.attributes.comment = activity.attributes.comment.replace('##LIST_NAME##', _.escape(activity.attributes.list_name));
+			} else {
+				activity.attributes.comment = activity.attributes.comment.replace('##LIST_NAME##', i18next.t("[deleted]"));
+			}
+		}
+		if(activity.attributes.comment.indexOf('##BOARD_NAME##') != -1){
+			if (activity.attributes.board_name !== null) {
+				activity.attributes.comment = activity.attributes.comment.replace('##BOARD_NAME##', _.escape(activity.attributes.board_name));
+			} else {
+				activity.attributes.comment = activity.attributes.comment.replace('##BOARD_NAME##', i18next.t("[deleted]"));
+			}
+		}
+		activity.attributes.comment = activity.attributes.comment.replace('##USER_NAME##', '<span class="h5">'+_.escape(activity.attributes.full_name)+'</span>');
+		if(activity.attributes.comment.indexOf('##CHECKLIST_ITEM_NAME##') != -1){
+			if (activity.attributes.checklist_item_name !== null) {
+				activity.attributes.comment = activity.attributes.comment.replace('##CHECKLIST_ITEM_NAME##', (activity.attributes.checklist_item_name));
+			} else {
+				activity.attributes.comment = activity.attributes.comment.replace('##CHECKLIST_ITEM_NAME##', i18next.t("[deleted]"));
+			}
+		}
+		if(activity.attributes.comment.indexOf('##CHECKLIST_ITEM_PARENT_NAME##') != -1){
+			if (activity.attributes.checklist_item_parent_name !== null) {
+				activity.attributes.comment = activity.attributes.comment.replace('##CHECKLIST_ITEM_PARENT_NAME##', _.escape(activity.attributes.checklist_item_parent_name));
+			} else {
+				activity.attributes.comment = activity.attributes.comment.replace('##CHECKLIST_ITEM_PARENT_NAME##', i18next.t("[deleted]"));
+			}
+		}
+		if(activity.attributes.comment.indexOf('##CHECKLIST_NAME##') != -1){
+			activity.attributes.comment = activity.attributes.comment.replace('##CHECKLIST_NAME##', _.escape(activity.attributes.checklist_name));
+		}
+	} else if(activity.attributes.type != 'edit_comment'){
 		var comment = filterXSS(activity.attributes.full_name) + ' commented in card ' + cardLink;
 		var matches = activity.attributes.comment.match(/@([^ ]*)/g);
 		var _username = [];
@@ -43,16 +97,20 @@
 				<% if(activity.attributes.type == 'add_comment' || activity.attributes.type == 'edit_comment') { %>	
 					<span><%= comment %></span>
 					<%= makeLink(converter.makeHtml((activity.attributes.comment)), activity.attributes.board_id) %>
-				<% } else{%>
-					<%= makeLink(converter.makeHtml(activity.attributes.comment), activity.attributes.board_id) %> 
+				<% } else if((activity.attributes.type !== 'add_card_color' && activity.attributes.type !== 'delete_card_color' && activity.attributes.type !== 'edit_card_color')) { %>
+					<%= makeLink(converter.makeHtml(activity.attributes.comment), activity.attributes.board_id) %>
+				<% } else { %>
+					<%= converter.makeHtml(activity.attributes.comment) %>
 				<% } %>
 			</span>
 			<% if(activity.attributes.difference != null && _.contains(['edit_comment', 'edit_list', 'edit_organization', 'edit_board', 'update_card_checklist', 'update_profile', 'edit_card', 'delete_card_comment', 'edit_list_color', 'delete_list_color', 'edit_card_desc'], activity.attributes.type)) { %>
-                <div class="thumbnail media-body no-mar">
-					<% _.each(activity.attributes.difference, function(difference) { %>
-						<%= converter.makeHtml(difference) %>
-					<% }); %>
-				</div>
+				<%if(!_.isEmpty(activity.attributes.difference) && !_.isEmpty(activity.attributes.difference['0'])) { %>
+					<div class="thumbnail media-body no-mar">
+						<% _.each(activity.attributes.difference, function(difference) { %>
+								<%= converter.makeHtml(difference) %>
+						<% }); %>
+					</div>
+				<% } %>
             <% } %>
 		</div>   
         <% } else {%>             
@@ -68,7 +126,9 @@
 						<% } %>
 					</span>
 					<% if(activity.attributes.difference != null && _.contains(['edit_comment', 'edit_list', 'edit_organization', 'edit_board', 'update_card_checklist', 'update_profile', 'edit_card', 'edit_list_color', 'delete_list_color', 'edit_card_color', 'delete_card_color'], activity.attributes.type)) { %>
-						<div class="thumbnail media-body no-mar"><%= converter.makeHtml(activity.attributes.difference[0]) %></div>
+						<% if(!_.isEmpty(activity.attributes.difference) && !_.isEmpty(activity.attributes.difference['0'])) { %>
+							<div class="thumbnail media-body no-mar"><%= converter.makeHtml(activity.attributes.difference[0]) %></div>
+						<% } %>
 					<% } %>
 					
 				</div>
@@ -77,48 +137,45 @@
         <% } %>
 	</div>
 </div>
-<div class="clearfix col-xs-12">
-	<div class="clearfix col-xs-12">
-		<small class="col-xs-12 pull-left">
-			&nbsp;&nbsp;
-			<% setInterval(function() {%>
-				<% parse_date(activity.attributes.created, authuser,'js-timeago-'+activity.attributes.id); %>
-			<% }, 10000); %>
-			<span class="js-timeago-<%- activity.attributes.id %>"></span>
+<div class="clearfix col-xs-12 left-mar">
+	<small class="col-xs-12 pull-left left-mar">
+		&nbsp;&nbsp;
+		<% setInterval(function() {%>
 			<% parse_date(activity.attributes.created, authuser,'js-timeago-'+activity.attributes.id); %>
-			<% if((activity.attributes.type == 'add_organization_attachment' || activity.attributes.type == 'change_visibility' || activity.attributes.type == 'add_organization_user' || activity.attributes.type == 'delete_organization_user') && (!_.isEmpty(activity.attributes.organization_name))) { %>
-				<a class="pull-left" href="#/organization/<%= activity.attributes.organization_id %>">&nbsp;<%- i18next.t('on') %>&nbsp;<%- activity.attributes.organization_name %></a>
-			<% } else if((type == 'all' && activity.attributes.type != 'update_profile' && activity.attributes.type != 'edit_organization' && activity.attributes.type != 'add_organization') && (!_.isEmpty(activity.attributes.board_name))) { %>
-				<a class="pull-left" href="#/board/<%= activity.attributes.board_id %>">&nbsp;<%- i18next.t('on') %>&nbsp;<%- activity.attributes.board_name %></a>
-			<% } %>
-					<% if(!_.isUndefined(authuser.user) && activity.attributes.type == "add_comment" && type != "all") { %>    
-						<div class="js-acticity-action-<%- activity.attributes.id %> pull-left">
-							<ul class="list-inline col-xs-offset-0">
-							<% if(!_.isEmpty(role_links.where({slug: "edit_comment"}))){ %>
-								<li><a title="<%- i18next.t('Edit') %>" class="js-show-edit-activity js-edit-activity-link-<%- activity.attributes.id %>" href="#" data-activity-id="<%- activity.attributes.id %>"><i class="icon-edit"></i><%- i18next.t("Edit") %></a></li>
-							<% } %> 
-								<li><a title="<%- i18next.t('Reply') %>" class="js-show-reply-activity-form js-reply-activity-link-<%- activity.attributes.id %>" href="#" data-activity-id="<%- activity.attributes.id %>"><i class="icon-repeat"></i><%- i18next.t("Reply") %></a></li>
-							<% if(!_.isEmpty(role_links.where({slug: "delete_comment"}))){ %>								
-									<li class="dropdown">   
-										<a title="<%- i18next.t('Delete') %>" class="dropdown-toggle js-show-confirm-comment-delete" data-toggle="dropdown" href="#" data-activity-id="<%- activity.attributes.id %>"><i class="icon-remove"></i><%- i18next.t("Delete") %></a>
-										<ul class="dropdown-menu arrow arrow-right">
-											<li id="js-acticity-actions-response-<%- activity.attributes.id %>" class="js-dropdown-popup dropdown-popup"></li>
-										</ul>
-									</li>
-								
-							<% } %>
-							</ul>
-						</div>
-					<% } else if(activity.attributes.revisions != null && activity.attributes.revisions != "" && (parseInt(authuser.user.id) == 1)){ %>
-						<% if(!_.isEmpty(role_links.where({slug: "undo_activity"}))){ %>
-							<% if(_.isUndefined(activity.from_footer)) { %>
-								<div class="pull-left js-acticity-action-<%- activity.attributes.id %>"><ul class="list-inline col-xs-offset-0"><li><a title="<%- i18next.t('Undo') %>" class="js-undo2 pull-left" href="#" data-activity-id="<%- activity.attributes.id %>"><i class="icon-undo"></i><%- i18next.t("Undo") %></a></li></ul></div>
-							<% }%>	
+		<% }, 10000); %>
+		<span class="js-timeago-<%- activity.attributes.id %>"><%= parse_date(activity.attributes.created, authuser,'js-timeago-'+activity.attributes.id, true) %></span>
+		<% if((activity.attributes.type == 'add_organization_attachment' || activity.attributes.type == 'change_visibility' || activity.attributes.type == 'add_organization_user' || activity.attributes.type == 'delete_organization_user') && (!_.isEmpty(activity.attributes.organization_name))) { %>
+			<a class="pull-left" href="<% if(activity.attributes.organization_name !== '[deleted]'){ %>#/organization/<%= activity.attributes.organization_id %><% }else{ %>javascript:void(0);<% } %>">&nbsp;<%- i18next.t('on') %>&nbsp;<%- activity.attributes.organization_name %></a>
+		<% } else if((type == 'all' && activity.attributes.type != 'update_profile' && activity.attributes.type != 'edit_organization' && activity.attributes.type != 'add_organization') && (!_.isEmpty(activity.attributes.board_name))) { %>
+			<a class="pull-left" href="<% if(activity.attributes.board_name !== '[deleted]'){ %>#/board/<%= activity.attributes.board_id %><% }else{ %>javascript:void(0);<% } %>">&nbsp;<%- i18next.t('on') %>&nbsp;<%- activity.attributes.board_name %></a>
+		<% } %>
+				<% if(!_.isUndefined(authuser.user) && activity.attributes.type == "add_comment" && type != "all") { %>    
+					<div class="js-acticity-action-<%- activity.attributes.id %> pull-left">
+						<ul class="list-inline col-xs-offset-0">
+						<% if(!_.isEmpty(role_links.where({slug: "edit_comment"}))){ %>
+							<li><a title="<%- i18next.t('Edit') %>" class="js-show-edit-activity js-edit-activity-link-<%- activity.attributes.id %>" href="#" data-activity-id="<%- activity.attributes.id %>"><i class="icon-edit"></i><%- i18next.t("Edit") %></a></li>
+						<% } %> 
+							<li><a title="<%- i18next.t('Reply') %>" class="js-show-reply-activity-form js-reply-activity-link-<%- activity.attributes.id %>" href="#" data-activity-id="<%- activity.attributes.id %>"><i class="icon-repeat"></i><%- i18next.t("Reply") %></a></li>
+						<% if(!_.isEmpty(role_links.where({slug: "delete_comment"}))){ %>								
+								<li class="dropdown">   
+									<a title="<%- i18next.t('Delete') %>" class="dropdown-toggle js-show-confirm-comment-delete" data-toggle="dropdown" href="#" data-activity-id="<%- activity.attributes.id %>"><i class="icon-remove"></i><%- i18next.t("Delete") %></a>
+									<ul class="dropdown-menu arrow arrow-right">
+										<li id="js-acticity-actions-response-<%- activity.attributes.id %>" class="js-dropdown-popup dropdown-popup"></li>
+									</ul>
+								</li>
+							
 						<% } %>
+						</ul>
+					</div>
+				<% } else if(activity.attributes.revisions != null && activity.attributes.revisions != "" && (parseInt(authuser.user.id) == 1)){ %>
+					<% if(!_.isEmpty(role_links.where({slug: "undo_activity"}))){ %>
+						<% if(_.isUndefined(activity.from_footer)) { %>
+							<div class="pull-left js-acticity-action-<%- activity.attributes.id %>"><ul class="list-inline col-xs-offset-0"><li><a title="<%- i18next.t('Undo') %>" class="js-undo2 pull-left" href="#" data-activity-id="<%- activity.attributes.id %>"><i class="icon-undo"></i><%- i18next.t("Undo") %></a></li></ul></div>
+						<% }%>	
 					<% } %>
-					<span class="pull-left col-xs-12 js-activity-reply-form-response-<%- activity.attributes.id %>"></span>
-		</small>
-	</div>
+				<% } %>
+				<span class="pull-left col-xs-12 js-activity-reply-form-response-<%- activity.attributes.id %>"></span>
+	</small>
 </div>
 <hr class="clearfix col-xs-12 btn-block"/>
 <% }else{ %><div class="media-body alert alert-info"><%- i18next.t('No %s available.', { postProcess: 'sprintf', sprintf: [i18next.t('activities')] }) %></div><% } %>

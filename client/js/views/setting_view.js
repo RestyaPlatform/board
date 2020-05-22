@@ -81,6 +81,11 @@ App.SettingView = Backbone.View.extend({
         settingModel.save(data, {
             success: function(model, response) {
                 if (!_.isEmpty(response.success)) {
+                    _.each(data, function(val, field) {
+                        if (field in window) {
+                            window[field] = val;
+                        }
+                    });
                     self.flash('success', i18next.t('Settings updated successfully.'));
                 } else {
                     self.flash('danger', i18next.t('Settings not updated properly.'));

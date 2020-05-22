@@ -42,19 +42,21 @@ App.BoardAdditionalSettingsView = Backbone.View.extend({
     updateSortBy: function(e) {
         e.preventDefault();
         var target = $(e.target);
-        var sort_by = target.find('.js-sort-by-group').val();
-        var sort_direction = target.find('.js-sort-direction-group').val();
+        var board_sort_by = target.find('.js-sort-by-group').val();
+        var board_sort_direction = target.find('.js-sort-direction-group').val();
         var board = new App.Board();
         board.url = api_url + 'boards/' + this.model.id + '.json';
-        App.boards.get(this.model.id).set('sort_by', sort_by);
-        App.boards.get(this.model.id).set('sort_direction', sort_direction);
-        this.model.set('sort_by', sort_by);
-        this.model.set('sort_direction', sort_direction);
+        App.boards.get(this.model.id).set('sort_by', board_sort_by);
+        App.boards.get(this.model.id).set('sort_direction', board_sort_direction);
+        window.sort_by = board_sort_by;
+        window.sort_direction = board_sort_direction;
+        this.model.set('sort_by', board_sort_by);
+        this.model.set('sort_direction', board_sort_direction);
         $('.js-back-to-sidebar').trigger('click');
         $('.js-show-board-actions').parent('.dropdown').removeClass('open');
         board.save({
-            sort_by: sort_by,
-            sort_direction: sort_direction,
+            sort_by: board_sort_by,
+            sort_direction: board_sort_direction,
             id: this.model.id
         }, {
             success: function(model, response) {}
@@ -78,8 +80,12 @@ App.BoardAdditionalSettingsView = Backbone.View.extend({
         var self = this;
         this.showTooltip();
         _(function() {
-            if (self.model !== null && !_.isUndefined(self.model) && !_.isEmpty(self.model) && !_.isUndefined(self.model.attributes.sort_by) && !_.isEmpty(self.model.attributes.sort_by)) {
-                $('body').trigger('boardAdditionalSettingsRendered', self.model.attributes.sort_by);
+            if (self.model !== null && !_.isUndefined(self.model) && !_.isEmpty(self.model)) {
+                var board_sort_by = 'position';
+                if (!_.isUndefined(self.model.attributes.sort_by) && !_.isEmpty(self.model.attributes.sort_by) && self.model.attributes.sort_by !== null) {
+                    board_sort_by = self.model.attributes.sort_by;
+                }
+                $('body').trigger('boardAdditionalSettingsRendered', board_sort_by);
             }
         }).defer();
         return this;

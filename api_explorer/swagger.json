@@ -13,9 +13,6 @@
         "version": "1.0.0"
     },
     "basePath": "/v1",
-    "schemes": [
-        "http"
-    ],
     "consumes": [
         "application/json"
     ],
@@ -2812,6 +2809,54 @@
                         "description": "Page not found"
                     }
                 }
+            },
+            "delete": {
+                "tags": [
+                    "boards"
+                ],
+                "summary": "Deletes the board",
+                "description": "",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "token",
+                        "in": "query",
+                        "description": "OAuth token",
+                        "required": true,
+                        "type": "string",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "boardId",
+                        "in": "path",
+                        "description": "ID of Board that needs to be fetched",
+                        "required": true,
+                        "type": "integer",
+                        "format": "int64"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "schema": {
+                            "properties": {
+                                "success": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid ID supplied"
+                    },
+                    "404": {
+                        "description": "Page not found"
+                    }
+                }
             }
         },
         "/v1/organizations.json": {
@@ -5514,8 +5559,8 @@
                 "tags": [
                     "cards"
                 ],
-                "summary": "Archived card send back to board",
-                "description": "Archived card send back to board",
+                "summary": "View list cards of the board",
+                "description": "View list cards of the board",
                 "produces": [
                     "application/json"
                 ],
@@ -5545,19 +5590,6 @@
                         "required": true,
                         "type": "integer",
                         "format": "int64"
-                    },
-                    {
-                        "name": "body",
-                        "in": "body",
-                        "description": "Created comment object",
-                        "required": true,
-                        "schema": {
-                            "properties": {
-                                "name": {
-                                    "type": "string"
-                                }
-                            }
-                        }
                     }
                 ],
                 "responses": {
@@ -9382,6 +9414,26 @@
                         "required": true,
                         "type": "integer",
                         "format": "int64"
+                    },
+                    {
+                        "name": "imageLink",
+                        "in": "body",
+                        "description": "Paste Link.",
+                        "required": false,
+                        "schema": {
+                            "properties": {
+                                "image_link": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "name": "attachment",
+                        "in": "formData",
+                        "description": "Upload File.",
+                        "required": false,
+                        "type": "file"
                     }
                 ],
                 "responses": {

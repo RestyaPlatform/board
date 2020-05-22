@@ -84,10 +84,24 @@ App.ChangepasswordView = Backbone.View.extend({
                         }
                     } else {
                         self.flash('success', i18next.t('Password has been changed successfully.'));
-                        app.navigate('#/users/logout', {
+                        $.removeCookie('auth');
+                        delete(App.boards);
+                        custom_fields = {};
+                        $.removeCookie('chat_initialize');
+                        $.removeCookie('filter');
+                        $.removeCookie('activities_filter');
+                        localforage.clear();
+                        api_token = '';
+                        authuser = new App.User();
+                        app.navigate('#/users/login', {
                             trigger: true,
                             replace: true
                         });
+                        clearInterval(set_interval_id);
+                        if (!_.isUndefined(authuser.user) && !_.isEmpty(BOSH_SERVICE_URL)) {
+                            converse.user.logout();
+                        }
+                        $('#conversejs').remove();
                     }
                 }
             });

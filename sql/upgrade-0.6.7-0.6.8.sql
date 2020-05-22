@@ -19,7 +19,7 @@ ALTER "is_productivity_beats" SET NOT NULL;
 UPDATE "users" SET "is_productivity_beats" = '1';
 
 INSERT INTO "settings" ("setting_category_id", "setting_category_parent_id", "name", "value", "description", "type", "options", "label", "order")
-VALUES ('17', '0', 'CALENDAR_VIEW_CARD_COLOR', 'Default Color', NULL, 'select', 'Past Present Future colors based on Due Date, Card Color, Color of first Label', 'Calendar View Card Color ', '4');
+VALUES ((select id from setting_categories where name = 'Board'), '0', 'CALENDAR_VIEW_CARD_COLOR', 'Default Color', NULL, 'select', 'Past Present Future colors based on Due Date, Card Color, Color of first Label', 'Calendar View Card Color ', '4');
 
  CREATE OR REPLACE VIEW users_listing AS
  SELECT users.id,
@@ -190,14 +190,20 @@ VALUES ('17', '0', 'CALENDAR_VIEW_CARD_COLOR', 'Default Color', NULL, 'select', 
 
 UPDATE "settings" SET "options" = 'Never,Periodically,Instantly,Daily,Weekly' WHERE "name" = 'DEFAULT_EMAIL_NOTIFICATION';
 
-ALTER TABLE "oauth_clients"
-ADD "is_expirable_token" bigint NULL DEFAULT '1';
-COMMENT ON TABLE "oauth_clients" IS '';
+DO $$ 
+   BEGIN
+        BEGIN
+            ALTER TABLE "oauth_clients" ADD "is_expirable_token" bigint NULL DEFAULT '1';
+        EXCEPTION
+            WHEN duplicate_column THEN RAISE NOTICE 'column is_expirable_token already exists in users';
+        END;  
+  END;
+$$;
 
 UPDATE "oauth_clients" SET "is_expirable_token" = '0' WHERE "client_id" != '7742632501382313';
 
 INSERT INTO "email_templates" ("created", "modified", "from_email", "reply_to_email", "name", "description", "subject", "email_text_content", "email_variables", "display_name")
-VALUES (now(), now(), '##SITE_NAME## Restyaboard <##FROM_EMAIL##>', '##REPLY_TO_EMAIL##', 'board_import_user_notification', 'We will send this mail to user, when user import the boards ', 'Restyaboard / Import Board', '<html>
+VALUES (now(), now(), '##SITE_NAME## Restyaboard <##FROM_EMAIL##>', '##REPLY_TO_EMAIL##', 'board_import_user_notification', 'We will send this mail to user, when user import the boards ', 'Restyaboard / Board imported', '<html>
 <head></head>
 <body style="margin:0">
 <header style="display:block;width:100%;padding-left:0;padding-right:0; border-bottom:solid 1px #dedede; float:left;background-color: #f7f7f7;">
@@ -208,7 +214,7 @@ VALUES (now(), now(), '##SITE_NAME## Restyaboard <##FROM_EMAIL##>', '##REPLY_TO_
 <main style="width:100%;padding-top:10px; padding-bottom:10px; margin:0 auto; float:left;">
 <div style="background-color:#f3f5f7;padding:10px;border: 1px solid #EEEEEE;">
 <div style="width: 500px;background-color: #f3f5f7;margin:0 auto;">
-<pre style="font-family: Arial, Helvetica, sans-serif; font-size: 13px;line-height:20px;"><h2 style="font-size:16px; font-family:Arial, Helvetica, sans-serif; margin: 20px 0px 0px;padding:10px 0px 0px 0px;">Hi ##NAME##,</h2><p style="white-space: normal; width: 100%;margin: 10px 0px 0px; font-family:Arial, Helvetica, sans-serif;"><br></p><p style="white-space: normal; width: 100%;margin: 0px 0px 0px; font-family:Arial, Helvetica, sans-serif;"> ##BOARD_IMPORT_OPTION## "##BOARD_NAME##" imported successfully. Please check here ##BOARD_URL##<br></p><br><p style="white-space: normal; width: 100%;margin: 0px 0px 0px;font-family:Arial, Helvetica, sans-serif;">Thanks,<br>
+<pre style="font-family: Arial, Helvetica, sans-serif; font-size: 13px;line-height:20px;"><h2 style="font-size:16px; font-family:Arial, Helvetica, sans-serif; margin: 20px 0px 0px;padding:10px 0px 0px 0px;">Hi ##NAME##,</h2><p style="white-space: normal; width: 100%;margin: 10px 0px 0px; font-family:Arial, Helvetica, sans-serif;"><br></p><p style="white-space: normal; width: 100%;margin: 0px 0px 0px; font-family:Arial, Helvetica, sans-serif;">"##BOARD_NAME##" board has been successfully imported from ##BOARD_IMPORT_OPTION## ##BOARD_URL##<br></p><br><p style="white-space: normal; width: 100%;margin: 0px 0px 0px;font-family:Arial, Helvetica, sans-serif;">Thanks,<br>
 Restyaboard<br>
 ##SITE_URL##</p>
 </pre>
@@ -222,4 +228,327 @@ Restyaboard<br>
 </body>
 </html>', 'SITE_NAME, SITE_URL, BOARD_IMPORT_OPTION, NAME, BOARD_URL, BOARD_NAME', 'Board Import User Notification');
 
-UPDATE "users" SET "is_intro_video_skipped" = 'f';
+DELETE FROM "acl_links_roles" WHERE acl_link_id = (select id from acl_links where slug='unsubscribe_board');
+DELETE FROM "acl_links_roles" WHERE acl_link_id = (select id from acl_links where slug='unsubscribe_list');
+DELETE FROM "acl_links_roles" WHERE acl_link_id = (select id from acl_links where slug='unsubscribe_card');
+
+DELETE FROM "acl_links" WHERE slug = 'unsubscribe_board';
+DELETE FROM "acl_links" WHERE slug = 'unsubscribe_list';
+DELETE FROM "acl_links" WHERE slug = 'unsubscribe_card';
+
+SELECT pg_catalog.setval('acl_links_id_seq', (SELECT MAX(id) FROM acl_links), true);
+
+INSERT INTO "acl_links" ("created", "modified", "name", "url", "method", "slug", "group_id", "is_user_action", "is_guest_action", "is_admin_action", "is_hide") values (now(), now(), 'Allow to unsubscribe board in public board', '/boards/?/board_subscribers/?', 'PUT', 'unsubscribe_board', '2', '1', '0', '0', '0'),
+(now(), now(), 'Allow to unsubscribe list in public board', '/boards/?/lists/?/list_subscribers/?', 'PUT', 'unsubscribe_list', '2', '1', '0', '0', '0'),
+(now(), now(), 'Allow to unsubscribe card in public board', '/boards/?/lists/?/cards/?/card_subscribers/?', 'POST', 'unsubscribe_card', '2', '1', '0', '0', '0');
+
+INSERT INTO "acl_links_roles" ("created", "modified", "acl_link_id", "role_id") VALUES 
+(now(), now(), (select id from acl_links where slug='unsubscribe_board'), '1'),
+(now(), now(), (select id from acl_links where slug='unsubscribe_board'), '2'),
+(now(), now(), (select id from acl_links where slug='unsubscribe_list'), '1'),
+(now(), now(), (select id from acl_links where slug='unsubscribe_list'), '2'),
+(now(), now(), (select id from acl_links where slug='unsubscribe_card'), '1'),
+(now(), now(), (select id from acl_links where slug='unsubscribe_card'), '2');
+
+DROP VIEW "simple_board_listing";
+
+CREATE OR REPLACE VIEW simple_board_listing AS
+SELECT board.id,
+    board.name,
+    board.user_id,
+    board.organization_id,
+    board.board_visibility,
+    board.background_color,
+    board.background_picture_url,
+    board.commenting_permissions,
+    board.voting_permissions,
+    (board.is_closed)::integer AS is_closed,
+    (board.is_allow_organization_members_to_join)::integer AS is_allow_organization_members_to_join,
+    board.boards_user_count,
+    board.list_count,
+    board.card_count,
+    board.boards_subscriber_count,
+    board.background_pattern_url,
+    ( SELECT array_to_json(array_agg(row_to_json(l.*))) AS array_to_json
+           FROM ( SELECT lists.id,
+                    to_char(lists.created, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS created,
+                    to_char(lists.modified, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS modified,
+                    lists.board_id,
+                    lists.user_id,
+                    lists.name,
+                    lists."position",
+                    (lists.is_archived)::integer AS is_archived,
+                    lists.card_count,
+                    lists.lists_subscriber_count,
+                    lists.color,
+                    (lists.is_deleted)::integer AS is_deleted,
+                    lists.custom_fields
+                   FROM lists lists
+                  WHERE (lists.board_id = board.id)
+                  ORDER BY lists."position") l) AS lists,
+    ( SELECT array_to_json(array_agg(row_to_json(l.*))) AS array_to_json
+           FROM ( SELECT cll.label_id,
+                    cll.name
+                   FROM cards_labels_listing cll
+                  WHERE (cll.board_id = board.id)
+                  ORDER BY cll.name) l) AS labels,
+    ( SELECT array_to_json(array_agg(row_to_json(l.*))) AS array_to_json
+           FROM ( SELECT bs.id,
+                    bs.board_id,
+                    bs.user_id,
+                    (bs.is_starred)::integer AS is_starred
+                   FROM board_stars bs
+                  WHERE (bs.board_id = board.id)
+                  ORDER BY bs.id) l) AS stars,
+    org.name AS organization_name,
+    org.organization_visibility,
+    org.logo_url AS organization_logo_url,
+    board.music_content,
+    board.music_name,
+    board.sort_by,
+    board.sort_direction,
+    ( SELECT array_to_json(array_agg(row_to_json(cl.*))) AS array_to_json
+      FROM ( SELECT cards_listing.id,
+              cards_listing.created,
+              cards_listing.modified,
+              cards_listing.board_id,
+              cards_listing.list_id,
+              cards_listing.name,
+              cards_listing.due_date,
+              cards_listing."position",
+              cards_listing.list_moved_date,
+              ((cards_listing.is_archived)::boolean)::integer AS is_archived,
+              cards_listing.card_voter_count,
+              cards_listing.attachment_count,
+              cards_listing.comment_count,
+              cards_listing.checklist_item_count,
+              cards_listing.checklist_item_completed_count,
+              ((cards_listing.checklist_item_count)::integer - (cards_listing.checklist_item_completed_count)::integer) AS checklist_item_pending_count,
+              cards_listing.custom_fields
+              FROM public.cards_listing cards_listing
+            WHERE (cards_listing.board_id = board.id)
+            ORDER BY cards_listing."position") cl) AS cards
+   FROM (boards board
+     LEFT JOIN organizations org ON ((org.id = board.organization_id)))
+  ORDER BY board.name;
+
+
+
+
+
+
+DROP TRIGGER "update_card_count" ON "cards";
+
+DROP FUNCTION "update_card_count"();
+
+CREATE FUNCTION public.update_card_count() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+
+BEGIN
+
+	IF (TG_OP = 'DELETE') THEN
+
+		UPDATE "lists" SET "card_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "cards" WHERE "list_id" = OLD."list_id" AND "is_archived" = false) t WHERE "id" = OLD."list_id";
+
+	        UPDATE "boards" SET "card_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "cards" WHERE "board_id" = OLD."board_id" AND "is_archived" = false) t WHERE "id" = OLD."board_id";
+
+            UPDATE "boards" SET "archived_card_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "cards" WHERE "board_id" = OLD."board_id"  AND "is_archived" = true) t WHERE "id" = OLD."board_id";
+
+		UPDATE "users" SET "created_card_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "cards" WHERE "user_id" = OLD."user_id") t WHERE "id" = OLD."user_id";
+
+		RETURN OLD;
+
+	ELSIF (TG_OP = 'UPDATE') THEN
+
+		UPDATE "lists" SET "card_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "cards" WHERE "list_id" = OLD."list_id" AND "is_archived" = false) t WHERE "id" = OLD."list_id";
+
+		UPDATE "lists" SET "card_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "cards" WHERE "list_id" = NEW."list_id" AND "is_archived" = false) t WHERE "id" = NEW."list_id";
+
+		UPDATE "boards" SET "card_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "cards" WHERE "board_id" = OLD."board_id") t WHERE "id" = OLD."board_id";
+
+		UPDATE "boards" SET "card_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "cards" WHERE "board_id" = NEW."board_id") t WHERE "id" = NEW."board_id";
+
+		UPDATE "boards" SET "archived_card_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "cards" WHERE "board_id" = OLD."board_id" AND "is_archived" = true) t WHERE "id" = OLD."board_id";
+
+		UPDATE "users" SET "created_card_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "cards" WHERE "user_id" = OLD."user_id") t WHERE "id" = OLD."user_id";
+
+		UPDATE "users" SET "created_card_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "cards" WHERE "user_id" = NEW."user_id") t WHERE "id" = NEW."user_id";
+
+		RETURN OLD;
+
+	ELSIF (TG_OP = 'INSERT') THEN
+
+		UPDATE "lists" SET "card_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "cards" WHERE "list_id" = NEW."list_id" AND "is_archived" = false) t WHERE "id" = NEW."list_id";
+
+		UPDATE "boards" SET "card_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "cards" WHERE "board_id" = NEW."board_id" AND "is_archived" = false) t WHERE "id" = NEW."board_id";
+
+		UPDATE "users" SET "created_card_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "cards" WHERE "user_id" = NEW."user_id") t WHERE "id" = NEW."user_id";
+
+		RETURN NEW;
+
+	END IF;
+
+END;
+
+$$;
+
+CREATE TRIGGER update_card_count AFTER INSERT OR DELETE OR UPDATE ON public.cards FOR EACH ROW EXECUTE PROCEDURE public.update_card_count();
+
+
+
+
+
+DROP TRIGGER "update_list_count" ON "lists";
+
+DROP FUNCTION "update_list_count"();
+
+CREATE FUNCTION public.update_list_count() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+
+BEGIN
+
+	IF (TG_OP = 'DELETE') THEN
+
+		UPDATE "boards" SET "list_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "lists" WHERE "board_id" = OLD."board_id") t WHERE "id" = OLD."board_id";
+
+        UPDATE "boards" SET "archived_list_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "lists" WHERE  "board_id" = OLD."board_id" AND "is_archived" = true) t WHERE "id" = OLD."board_id";
+
+		UPDATE "users" SET "list_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "lists" WHERE "user_id" = OLD."user_id") t WHERE "id" = OLD."user_id";
+
+		RETURN OLD;
+
+	ELSIF (TG_OP = 'UPDATE') THEN
+
+		UPDATE "boards" SET "list_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "lists" WHERE  "board_id" = OLD."board_id") t WHERE "id" = OLD."board_id";
+
+		UPDATE "boards" SET "archived_list_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "lists" WHERE  "board_id" = NEW."board_id" AND "is_archived" = true) t WHERE "id" = NEW."board_id";
+
+		UPDATE "users" SET "list_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "lists" WHERE "user_id" = OLD."user_id") t WHERE "id" = OLD."user_id";
+
+		RETURN OLD;
+
+	ELSIF (TG_OP = 'INSERT') THEN
+
+		UPDATE "boards" SET "list_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "lists" WHERE "board_id" = NEW."board_id") t WHERE "id" = NEW."board_id";
+
+		UPDATE "users" SET "list_count" = total_count FROM (SELECT COUNT(*) as total_count FROM "lists" WHERE "user_id" = NEW."user_id") t WHERE "id" = NEW."user_id";
+
+		RETURN NEW;
+
+	END IF;
+
+END;
+
+$$;
+
+CREATE TRIGGER update_list_count AFTER INSERT OR DELETE OR UPDATE ON public.lists FOR EACH ROW EXECUTE PROCEDURE public.update_list_count();
+
+CREATE OR REPLACE VIEW "cards_listing" AS
+SELECT cards.id,
+    to_char(cards.created, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS created,
+    to_char(cards.modified, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS modified,
+    cards.board_id,
+    cards.list_id,
+    cards.name,
+    cards.description,
+    to_char(cards.due_date, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS due_date,
+    to_date(to_char(cards.due_date, 'YYYY/MM/DD'::text), 'YYYY/MM/DD'::text) AS to_date,
+    cards."position",
+    (cards.is_archived)::integer AS is_archived,
+    cards.attachment_count,
+    cards.checklist_count,
+    cards.checklist_item_count,
+    cards.checklist_item_completed_count,
+    cards.label_count,
+    cards.cards_user_count,
+    cards.cards_subscriber_count,
+    cards.card_voter_count,
+    cards.activity_count,
+    cards.user_id,
+    cards.name AS title,
+    cards.due_date AS start,
+    cards.due_date AS "end",
+    ( SELECT array_to_json(array_agg(row_to_json(cc.*))) AS array_to_json
+           FROM ( SELECT checklists_listing.id,
+                    checklists_listing.created,
+                    checklists_listing.modified,
+                    checklists_listing.user_id,
+                    checklists_listing.card_id,
+                    checklists_listing.name,
+                    checklists_listing.checklist_item_count,
+                    checklists_listing.checklist_item_completed_count,
+                    checklists_listing."position",
+                    checklists_listing.checklists_items
+                   FROM checklists_listing checklists_listing
+                  WHERE (checklists_listing.card_id = cards.id)
+                  ORDER BY checklists_listing.id) cc) AS cards_checklists,
+    ( SELECT array_to_json(array_agg(row_to_json(cc.*))) AS array_to_json
+           FROM ( SELECT cards_users_listing.username,
+                    cards_users_listing.profile_picture_path,
+                    cards_users_listing.id,
+                    cards_users_listing.created,
+                    cards_users_listing.modified,
+                    cards_users_listing.card_id,
+                    cards_users_listing.user_id,
+                    cards_users_listing.initials,
+                    cards_users_listing.full_name,
+                    cards_users_listing.email
+                   FROM cards_users_listing cards_users_listing
+                  WHERE (cards_users_listing.card_id = cards.id)
+                  ORDER BY cards_users_listing.id) cc) AS cards_users,
+    ( SELECT array_to_json(array_agg(row_to_json(cv.*))) AS array_to_json
+           FROM ( SELECT card_voters_listing.id,
+                    card_voters_listing.created,
+                    card_voters_listing.modified,
+                    card_voters_listing.user_id,
+                    card_voters_listing.card_id,
+                    card_voters_listing.username,
+                    card_voters_listing.role_id,
+                    card_voters_listing.profile_picture_path,
+                    card_voters_listing.initials,
+                    card_voters_listing.full_name
+                   FROM card_voters_listing card_voters_listing
+                  WHERE (card_voters_listing.card_id = cards.id)
+                  ORDER BY card_voters_listing.id) cv) AS cards_voters,
+    ( SELECT array_to_json(array_agg(row_to_json(cs.*))) AS array_to_json
+           FROM ( SELECT cards_subscribers.id,
+                    to_char(cards_subscribers.created, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS created,
+                    to_char(cards_subscribers.modified, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS modified,
+                    cards_subscribers.card_id,
+                    cards_subscribers.user_id,
+                    (cards_subscribers.is_subscribed)::integer AS is_subscribed
+                   FROM card_subscribers cards_subscribers
+                  WHERE (cards_subscribers.card_id = cards.id)
+                  ORDER BY cards_subscribers.id) cs) AS cards_subscribers,
+    ( SELECT array_to_json(array_agg(row_to_json(cl.*))) AS array_to_json
+           FROM ( SELECT cards_labels.label_id,
+                    cards_labels.id,
+                    cards_labels.card_id,
+                    cards_labels.list_id,
+                    cards_labels.board_id,
+                    cards_labels.name,
+                    cards_labels.color
+                   FROM cards_labels_listing cards_labels
+                  WHERE (cards_labels.card_id = cards.id)
+                  ORDER BY cards_labels.id) cl) AS cards_labels,
+    cards.comment_count,
+    u.username,
+    b.name AS board_name,
+    l.name AS list_name,
+    cards.custom_fields,
+    cards.color,
+    cards.due_date AS notification_due_date,
+    cards.is_due_date_notification_sent,
+    cards.archived_date,
+    to_char(( SELECT activities.created
+           FROM activities
+          WHERE ((activities.card_id = cards.id) AND ((activities.type)::text = 'move_card'::text))
+          ORDER BY activities.id DESC
+         LIMIT 1), 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS list_moved_date,
+    u.full_name AS card_created_user
+   FROM (((cards cards
+     LEFT JOIN users u ON ((u.id = cards.user_id)))
+     LEFT JOIN boards b ON ((b.id = cards.board_id)))
+     LEFT JOIN lists l ON ((l.id = cards.list_id)));

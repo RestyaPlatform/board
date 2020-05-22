@@ -193,10 +193,10 @@ $_writable_files = array(
 );
 foreach($_writable_files as $file) {
     if (file_exists($file)) {
-        if (is_writable($file)) {
-            $writable.= '<tr><td> ' . $file . '</td><td class="green">Writable</td></tr>';
+        if (is_executable($file)) {
+            $writable.= '<tr><td> ' . $file . '</td><td class="green">Executable</td></tr>';
         } else {
-            $writable.= '<tr><td>' . $file . '</td><td class="red">Not Writable</td></tr>';
+            $writable.= '<tr><td>' . $file . '</td><td class="red">Not Executable</td></tr>';
         }
     }
 }
