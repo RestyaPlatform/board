@@ -604,6 +604,13 @@
 				}
 			}
 		}	
+		.fc-header-title h2 {
+			overflow: hidden;
+			text-overflow: ellipsis;
+			white-space: nowrap;
+			display: inline-block;
+			max-width: 90px;
+		}
 	}
 	.attachement-list {
 		float: none;
@@ -612,6 +619,9 @@
 	}
 }
 @media (max-width:374px) {
+	.fc-header-title h2 {
+		max-width: 35px !important;
+	}
 	.js-board-name-truncate {
 		max-width: 197px;
 	}
