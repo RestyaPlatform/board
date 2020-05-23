@@ -19,7 +19,7 @@ ALTER "is_productivity_beats" SET NOT NULL;
 UPDATE "users" SET "is_productivity_beats" = '1';
 
 INSERT INTO "settings" ("setting_category_id", "setting_category_parent_id", "name", "value", "description", "type", "options", "label", "order")
-VALUES ('17', '0', 'CALENDAR_VIEW_CARD_COLOR', 'Default Color', NULL, 'select', 'Past Present Future colors based on Due Date, Card Color, Color of first Label', 'Calendar View Card Color ', '4');
+VALUES ((select id from setting_categories where name = 'Board'), '0', 'CALENDAR_VIEW_CARD_COLOR', 'Default Color', NULL, 'select', 'Past Present Future colors based on Due Date, Card Color, Color of first Label', 'Calendar View Card Color ', '4');
 
  CREATE OR REPLACE VIEW users_listing AS
  SELECT users.id,
@@ -190,9 +190,15 @@ VALUES ('17', '0', 'CALENDAR_VIEW_CARD_COLOR', 'Default Color', NULL, 'select', 
 
 UPDATE "settings" SET "options" = 'Never,Periodically,Instantly,Daily,Weekly' WHERE "name" = 'DEFAULT_EMAIL_NOTIFICATION';
 
-ALTER TABLE "oauth_clients"
-ADD "is_expirable_token" bigint NULL DEFAULT '1';
-COMMENT ON TABLE "oauth_clients" IS '';
+DO $$ 
+   BEGIN
+        BEGIN
+            ALTER TABLE "oauth_clients" ADD "is_expirable_token" bigint NULL DEFAULT '1';
+        EXCEPTION
+            WHEN duplicate_column THEN RAISE NOTICE 'column is_expirable_token already exists in users';
+        END;  
+  END;
+$$;
 
 UPDATE "oauth_clients" SET "is_expirable_token" = '0' WHERE "client_id" != '7742632501382313';
 

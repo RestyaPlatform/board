@@ -138,7 +138,9 @@ App.BoardView = Backbone.View.extend({
                         }).length <= 0) {
                         var new_label = new App.Label();
                         new_label.set(value);
-                        self.model.labels.unshift(new_label);
+                        self.model.labels.unshift(new_label, {
+                            silent: true
+                        });
                     }
                 });
             }

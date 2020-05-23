@@ -130,7 +130,20 @@ App.CardCheckListItemView = Backbone.View.extend({
             silent: true
         });
         this.model.save(data, {
-            patch: true
+            patch: true,
+            success: function(model, response) {
+                if (!_.isUndefined(response.activity) && !_.isEmpty(response.activity) && response.activity !== null) {
+                    response.activity = activityCommentReplace(response.activity);
+                    var activity = new App.Activity();
+                    activity.set(response.activity);
+                    var view_act = new App.ActivityView({
+                        model: activity
+                    });
+                    self.model.activities.unshift(activity);
+                    var view_activity = $('#js-card-activities-' + parseInt(response.activity.card_id));
+                    view_activity.prepend(view_act.render().el);
+                }
+            }
         });
         this.renderProgress();
     },

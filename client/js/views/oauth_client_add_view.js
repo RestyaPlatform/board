@@ -44,21 +44,26 @@ App.OauthClientAddView = Backbone.View.extend({
         var target = $(e.target);
         var data = target.serializeObject();
         var self = this;
-        var oauth_client = new App.OauthClient();
-        oauth_client.url = api_url + 'oauth/clients.json';
-        oauth_client.save(data, {
-            success: function(model, response) {
-                if (!_.isEmpty(response.id)) {
-                    self.flash('success', i18next.t('OAuth application has been added successfully.'));
-                    app.navigate('#/oauth_clients', {
-                        trigger: true,
-                        replace: true
-                    });
-                } else {
-                    self.flash('danger', i18next.t('OAuth application not added successfully.'));
+        if (_.isEmpty(data.client_name) || data.client_name.trim() === '') {
+            self.flash('danger', i18next.t('Please enter the OAuth application name'));
+            return false;
+        } else {
+            var oauth_client = new App.OauthClient();
+            oauth_client.url = api_url + 'oauth/clients.json';
+            oauth_client.save(data, {
+                success: function(model, response) {
+                    if (!_.isEmpty(response.id)) {
+                        self.flash('success', i18next.t('OAuth application has been added successfully.'));
+                        app.navigate('#/oauth_clients', {
+                            trigger: true,
+                            replace: true
+                        });
+                    } else {
+                        self.flash('danger', i18next.t('OAuth application not added successfully.'));
+                    }
                 }
-            }
-        });
+            });
+        }
         return false;
     },
     /**

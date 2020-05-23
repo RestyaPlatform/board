@@ -154,14 +154,21 @@ App.OrganizationsUserView = Backbone.View.extend({
         var self = this;
         var target = $(ev.currentTarget);
         var organizations_user_id = target.data('organizations_user_id');
+        var removeUser = self.model.organizations_users.get(parseInt(organizations_user_id));
         target.parents('li.dropdown').removeClass('open');
-        self.model.organizations_users.remove(self.model.organizations_users.get(parseInt(organizations_user_id)));
+        self.model.organizations_users.remove(removeUser);
         self.flash('success', i18next.t('User removed from this organization'));
         self.render();
         var organizationsUser = new App.OrganizationsUser();
         organizationsUser.url = api_url + 'organizations/' + self.model.id + '/organizations_users/' + organizations_user_id + '.json';
         organizationsUser.set('id', organizations_user_id);
         organizationsUser.destroy();
+        if (parseInt(removeUser.attributes.user_id) === parseInt(authuser.user.id)) {
+            app.navigate('#/organizations', {
+                trigger: true,
+                replace: true
+            });
+        }
         return false;
     },
     /**

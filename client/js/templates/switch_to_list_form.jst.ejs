@@ -36,7 +36,7 @@
 <% 
 	var listviewconfigure = false;
 	if (!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && $.inArray('r_listview_configure', APPS.enabled_apps) !== -1) {
-		if (!_.isUndefined(board) && !_.isEmpty(board) && !_.isUndefined(board.attributes) && !_.isEmpty(board.attributes) && !_.isUndefined(board.attributes.board_custom_fields) && !_.isEmpty(board.attributes.board_custom_fields)) {
+		if (!_.isUndefined(board) && !_.isEmpty(board) && !_.isUndefined(board.attributes) && !_.isEmpty(board.attributes) && !_.isUndefined(board.attributes.board_custom_fields) && !_.isEmpty(board.attributes.board_custom_fields) && board.attributes.board_custom_fields !== null) {
 			var board_custom_fields = JSON.parse(board.attributes.board_custom_fields);
 			if (!_.isUndefined(board_custom_fields['r_listview_configure']) && _.isEmpty(board_custom_fields['r_listview_configure'])) {
 				listviewconfigure = true;

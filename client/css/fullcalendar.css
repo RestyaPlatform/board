@@ -65,7 +65,7 @@ html .fc,
 	}
 	
 .fc .fc-header-space {
-	padding-left: 10px;
+	padding-left: 0px;
 	}
 	
 .fc-header .fc-button {
@@ -169,7 +169,7 @@ html .fc,
 	float: left;
 	height: 1.9em;
 	line-height: 1.9em;
-	padding: 0 .6em;
+	padding: 0 .3em;
 	white-space: nowrap;
 	}
 	

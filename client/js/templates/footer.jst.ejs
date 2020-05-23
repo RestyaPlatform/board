@@ -13,7 +13,7 @@ if (_.isEmpty(role_links.where({
 	</section>
 	<section class="action-block action-content">
 		<div class="row navbar navbar-default list-group-item-text">
-			<ul class="nav nav-pills navbar-left">
+			<ul class="nav nav-pills navbar-left <% if(board_id !== undefined && board_id !== null && board_id !== '' && !_.isEmpty(this.music_content) && this.music_content !== ''){ %> board-view-footer-option <% } else { %> no-music-icon-footer <% } %>">
 				<li class="footer-logo active">
 					<a href="javascript:void(0);" title="<%- SITE_NAME %>" class="js-start visible-xs hidden-sm hidden-md hidden-lg">
 						<img src="img/logo-icon.png" alt="[Images: <%- SITE_NAME %>]" title="<%- SITE_NAME %>" data-container="body" id="js-footer-brand-img"
@@ -73,7 +73,7 @@ if (_.isEmpty(role_links.where({
 
 						<% }%>
 							<% if(!_.isUndefined(authuser.user)){%>
-								<li class="dropdown hidden-xs board-btn">
+								<li class="dropdown hidden-xs board-btn add-board-dropdown">
 									<a title="<%- i18next.t('Dashboard') %>" href="#" data-toggle="dropdown" class="btn btn-default js-show-boards-list">
 										<span>
 											<%- i18next.t("Boards") %>
@@ -175,7 +175,7 @@ if (_.isEmpty(role_links.where({
 									<% } %>
 										<% if(apps !== ""){ %>
 											<li class="dropdown hidden-xs board-btn js-show-add-apps-list add-apps-list">
-												<a title="<%- i18next.t('Apps') %>" href="#" data-toggle="dropdown" class="btn btn-default js-show-apps-list">
+												<a title="<%- i18next.t('Apps') %>" href="#" data-toggle="dropdown" class="btn btn-default">
 													<span>
 														<%- i18next.t("Apps") %>
 													</span>
@@ -183,10 +183,10 @@ if (_.isEmpty(role_links.where({
 														<i class="icon-collapse"></i>
 													</span>
 												</a>
-												<ul role="menu" class="dropdown-menu js-dropdown-popup col-xs-12 pre-scrollable vertical-scrollbar">
+												<ul role="menu" class="dropdown-menu js-dropdown-popup col-xs-12 pre-scrollable vertical-scrollbar js-show-apps-list">
 													<% if (!_.isEmpty(apps) && apps.length !== 0) {
 														_.each(apps, function(key,value) { 
-															if (APPS.enabled_apps.indexOf(key.id) !== -1 && (key.price === 'Free' || (!_.isEmpty(role_links.where({
+															if (!_.isUndefined(APPS) && APPS !== null && APPS.enabled_apps.indexOf(key.id) !== -1 && (key.price === 'Free' || (!_.isEmpty(role_links.where({
 																slug: key.id
 															})) || parseInt(authuser.user.role_id) === 1))) { %>
 																<li id="<%- value %>" class="org-btn">
@@ -367,6 +367,11 @@ if (_.isEmpty(role_links.where({
 																					</a>
 																				</li>
 																				<% var site_url = window.location.origin; %>
+																					<li>
+																						<a title="<%- i18next.t('Restya Core ...') %>" target="_blank" href="https://restya.com/core-jira-slack-alternative?utm_source=Restyaboard - <%- SITE_NAME %>&utm_medium=web&utm_campaign=core">
+																							<%- i18next.t('Restya Core ...') %>
+																						</a>
+																					</li>
 																					<li>
 																						<a title="<%- i18next.t('Donate Restyaboard') %>" target="_blank" href="http://restya.com/donate/?utm_source=Restyaboard - <%- SITE_NAME %>&utm_medium=web&utm_campaign=footer">
 																							<%- i18next.t('Donate Restyaboard') %>

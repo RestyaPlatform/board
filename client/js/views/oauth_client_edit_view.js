@@ -45,18 +45,27 @@ App.OauthClientEditView = Backbone.View.extend({
         var target = $(e.currentTarget);
         var data = target.serializeObject();
         var self = this;
-        var oauth_client = new App.OauthClient();
-        oauth_client.set('id', this.id);
-        oauth_client.url = api_url + 'oauth/clients/' + this.id + '.json';
-        oauth_client.save(data, {
-            success: function(model, response) {
-                if (!_.isEmpty(response) && (response == 'Success')) {
-                    self.flash('success', i18next.t('OAuth application has been updated successfully.'));
-                } else {
-                    self.flash('danger', i18next.t('OAuth application not updated successfully.'));
+        if (_.isEmpty(data.client_name) || data.client_name.trim() === '') {
+            self.flash('danger', i18next.t('Please enter the OAuth application name'));
+            return false;
+        } else {
+            var oauth_client = new App.OauthClient();
+            oauth_client.set('id', this.id);
+            oauth_client.url = api_url + 'oauth/clients/' + this.id + '.json';
+            oauth_client.save(data, {
+                success: function(model, response) {
+                    if (!_.isEmpty(response) && (response == 'Success')) {
+                        self.flash('success', i18next.t('OAuth application has been updated successfully.'));
+                        app.navigate('#/oauth_clients', {
+                            trigger: true,
+                            replace: true
+                        });
+                    } else {
+                        self.flash('danger', i18next.t('OAuth application not updated successfully.'));
+                    }
                 }
-            }
-        });
+            });
+        }
         return false;
     },
     /** 
@@ -72,7 +81,9 @@ App.OauthClientEditView = Backbone.View.extend({
             cache: false,
             abortPending: true,
             success: function(collections, response) {
-                self.render(response);
+                if (!_.isEmpty(response) && response.length > 0) {
+                    self.render(response['0']);
+                }
             }
         });
     },

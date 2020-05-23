@@ -26,9 +26,20 @@
 	<% } %>
 		<div class="media-body">    
 			<%  activity.attributes.organization_name = (activity.attributes.organization_name !== null) ? activity.attributes.organization_name : i18next.t("[deleted]");
+				activity.attributes.board_name = (activity.attributes.board_name !== null) ? activity.attributes.board_name : i18next.t("[deleted]");
 				activity.attributes.card_name = (activity.attributes.card_name !== null) ? activity.attributes.card_name : i18next.t("[deleted]");
-				var cardLink = '<a href="#/board/' + activity.attributes.board_id + '/card/' + activity.attributes.card_id + '">' + (activity.attributes.card_name) + '</a>';
-				var organizationLink = '<a href="#/organization/' + activity.attributes.organization_id + '">' + (activity.attributes.organization_name) + '</a>';
+				var cardLink;
+				if (activity.attributes.card_name !== '[deleted]') {
+					cardLink = '<a href="#/board/' + activity.attributes.board_id + '/card/' + activity.attributes.card_id + '">' + _.escape(activity.attributes.card_name) + '</a>';
+				} else {
+					cardLink = '<a href="javascript:void(0);">' + _.escape(activity.attributes.card_name) + '</a>';
+				}
+				var organizationLink;
+				if (activity.attributes.organization_name !== '[deleted]') {
+					organizationLink = '<a href="#/organization/' + activity.attributes.organization_id + '">' + _.escape(activity.attributes.organization_name) + '</a>';
+				} else {
+					organizationLink = '<a href="javascript:void(0);">' + _.escape(activity.attributes.organization_name) + '</a>';
+				}
 				if(activity.attributes.type != 'add_comment') {
 					if (activity.attributes.comment.indexOf('##DESCRIPTION##') != -1){
 						if(activity.attributes.type !== 'add_card_desc') {
@@ -129,7 +140,11 @@
 							<% } else { %>
 								<div class="panel no-mar">
 									<div class="panel-body github-markdown no-whitespace">
-										<%= makeLink(converter.makeHtml(originalComment), activity.attributes.board_id) %>
+										<% if (!_.isUndefined(type) && !_.isEmpty(type) && type !== null && type === 'modal_card') { %>
+											<%= makeLink(converter.makeHtml(activity.attributes.comment), activity.attributes.board_id) %>
+										<% } else { %>
+											<%= makeLink(converter.makeHtml(originalComment), activity.attributes.board_id) %>
+										<% } %>
 										<% if(activity.attributes.difference != null && activity.attributes.difference != '' && !_.isUndefined(activity.attributes.difference['0']) && activity.attributes.difference['0'] != '' && _.contains(['edit_comment', 'edit_list', 'edit_organization', 'edit_board', 'update_card_checklist', 'update_profile', 'edit_card', 'delete_card_comment', 'edit_list_color'], activity.attributes.type)) { %>
 											<div class="<%if(!_.isUndefined(activity.from_footer)) { %>thumbnail<% } %> list-group-item-text no-whitespace">
 												<% _.each(activity.attributes.difference, function(difference) { %>
@@ -178,9 +193,9 @@
 						<small>
 						&nbsp;&nbsp;
 				<% if((activity.attributes.type == 'add_organization_attachment' || activity.attributes.type == 'change_visibility' || activity.attributes.type == 'add_organization_user' || activity.attributes.type == 'delete_organization_user') && (!_.isEmpty(activity.attributes.organization_name))) { %>
-					<a href="#/organization/<%= activity.attributes.organization_id %>">&nbsp;<%- i18next.t("on") %>&nbsp;<%- activity.attributes.organization_name %></a>
+					<a href="<% if(activity.attributes.organization_name !== '[deleted]'){ %>#/organization/<%= activity.attributes.organization_id %><% }else{ %>javascript:void(0);<% } %>">&nbsp;<%- i18next.t("on") %>&nbsp;<%- activity.attributes.organization_name %></a>
 				<% } else if(type == 'all' && activity.attributes.type != 'edit_organization' && activity.attributes.type != 'add_organization' && (!_.isEmpty(activity.attributes.board_name))) { %>
-					<a class="pull-left" href="#/board/<%= activity.attributes.board_id %>">&nbsp;<%- i18next.t("on") %>&nbsp;<%- activity.attributes.board_name %></a>
+					<a class="pull-left" href="<% if(activity.attributes.board_name !== '[deleted]'){ %>#/board/<%= activity.attributes.board_id %><% }else{ %>javascript:void(0);<% } %>">&nbsp;<%- i18next.t("on") %>&nbsp;<%- activity.attributes.board_name %></a>
 				<% } %>
 				<% setInterval(function() {%>
 					<% parse_date(activity.attributes.created, authuser,'js-timeago-'+activity.attributes.id); %>

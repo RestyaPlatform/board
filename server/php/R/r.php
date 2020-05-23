@@ -100,7 +100,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             );
             $role_links = executeQuery('SELECT * FROM role_links_listing WHERE id = $1', $qry_val_arr);
             $response = array_merge($response, $role_links);
-            $files = glob(APP_PATH . '/client/locales/*/translation.json', GLOB_BRACE);
+            $files = glob(APP_PATH . '/client/locales/*/translation.json');
             $lang_iso2_codes = array();
             foreach ($files as $file) {
                 $folder = explode(DS, $file);
@@ -116,7 +116,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 $languages[$row['iso2']] = $row['name'];
             }
             $response['languages'] = json_encode($languages);
-            $files = glob(APP_PATH . DS . 'client' . DS . 'apps' . DS . '*' . DS . 'app.json', GLOB_BRACE);
+            $files = glob(APP_PATH . DS . 'client' . DS . 'apps' . DS . '*' . DS . 'app.json');
             if (!empty($files)) {
                 foreach ($files as $file) {
                     $content = file_get_contents($file);
@@ -1007,6 +1007,22 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             $timezones[] = $timezones_row;
         }
         $response[]['timezones'] = $timezones;
+        $files = glob(APP_PATH . '/client/locales/*/translation.json');
+        $lang_iso2_codes = array();
+        foreach ($files as $file) {
+            $folder = explode(DS, $file);
+            $folder_iso2_code = $folder[count($folder) - 2];
+            array_push($lang_iso2_codes, $folder_iso2_code);
+        }
+        $languages = array();
+        $qry_val_arr = array(
+            '{' . implode($lang_iso2_codes, ',') . '}'
+        );
+        $result = pg_query_params($db_lnk, 'SELECT name, iso2 FROM languages WHERE iso2 = ANY ( $1 ) ORDER BY name ASC', $qry_val_arr);
+        while ($row = pg_fetch_assoc($result)) {
+            $languages[$row['iso2']] = $row['name'];
+        }
+        $response[]['languages'] = json_encode($languages);
         echo json_encode($response);
         break;
 
@@ -1400,6 +1416,10 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                                 'the card ##CARD_LINK##' => 'this card',
                             );
                             $obj['comment'] = strtr($obj['comment'], $replaceContent);
+                            $replaceContent = array(
+                                'on card ##CARD_LINK##' => 'this card',
+                            );
+                            $obj['comment'] = strtr($obj['comment'], $replaceContent);
                             if ($obj['type'] === 'add_card') {
                                 $obj['comment'] = '##USER_NAME## added this card';
                             }
@@ -1628,6 +1648,30 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         }
         break;
 
+    case '/cards/search':
+        $_metadata = array();
+        $data = array();
+        $fields = !empty($r_resource_filters['fields']) ? $r_resource_filters['fields'] : '*';
+        $sql = "SELECT row_to_json(d) FROM (SELECT " . $fields . " FROM cards_listing cll WHERE custom_fields LIKE '%" . $r_resource_filters['custom_field'] . "%' ORDER BY position asc) as d ";
+        if ($result = pg_query_params($db_lnk, $sql, array())) {
+            $board_lists = array();
+            while ($row = pg_fetch_row($result)) {
+                $obj = json_decode($row[0], true);
+                if (!empty($_metadata)) {
+                    $data['data'][] = $obj;
+                } else {
+                    $data[] = $obj;
+                }
+            }
+            if (!empty($_metadata)) {
+                $data['_metadata'] = $_metadata;
+            }
+            echo json_encode($data);
+        } else {
+            $r_debug.= __LINE__ . ': ' . pg_last_error($db_lnk) . '\n';
+        }
+        break;
+
     case '/activities':
         $condition = '';
         $i = 1;
@@ -1747,7 +1791,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         break;
 
     case '/workflow_templates':
-        $files = glob(APP_PATH . DS . 'client' . DS . 'js' . DS . 'workflow_templates' . DS . '*.json', GLOB_BRACE);
+        $files = glob(APP_PATH . DS . 'client' . DS . 'js' . DS . 'workflow_templates' . DS . '*.json');
         foreach ($files as $file) {
             $data = file_get_contents($file);
             $json = json_decode($data, true);
@@ -1863,7 +1907,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         while ($row = pg_fetch_assoc($s_sql)) {
             $response[$row['name']] = $row['value'];
         }
-        $files = glob(APP_PATH . DS . 'client' . DS . 'apps' . DS . '*' . DS . 'app.json', GLOB_BRACE);
+        $files = glob(APP_PATH . DS . 'client' . DS . 'apps' . DS . '*' . DS . 'app.json');
         if (!empty($files)) {
             foreach ($files as $file) {
                 $content = file_get_contents($file);
@@ -1919,7 +1963,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         break;
 
     case '/apps':
-        $files = glob(APP_PATH . DS . 'client' . DS . 'apps' . DS . '*' . DS . 'app.json', GLOB_BRACE);
+        $files = glob(APP_PATH . DS . 'client' . DS . 'apps' . DS . '*' . DS . 'app.json');
         if (!empty($files)) {
             foreach ($files as $file) {
                 $folder = explode(DS, $file);
@@ -2010,9 +2054,9 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
     case '/oauth/applications':
         $response['applications'] = array();
         $_metadata = array();
-        $sql = 'SELECT row_to_json(d) FROM (SELECT DISTINCT ON (ort.client_id) ort.client_id, oc.client_name FROM oauth_refresh_tokens ort LEFT JOIN oauth_clients oc ON ort.client_id = oc.client_id WHERE ort.user_id = $1 AND ort.client_id != $2) as d ';
+        $sql = 'SELECT row_to_json(d) FROM (SELECT DISTINCT ON (ort.client_id) ort.client_id, oc.client_name FROM oauth_access_tokens ort LEFT JOIN oauth_clients oc ON ort.client_id = oc.client_id WHERE ort.user_id = $1 AND ort.client_id != $2) as d ';
         array_push($pg_params, $authUser['username'], '7742632501382313');
-        $c_sql = 'SELECT COUNT(*) FROM (SELECT DISTINCT ON (ort.client_id) ort.client_id, oc.client_name FROM oauth_refresh_tokens ort LEFT JOIN oauth_clients oc ON ort.client_id = oc.client_id WHERE ort.user_id = $1 AND ort.client_id != $2) As oc';
+        $c_sql = 'SELECT COUNT(*) FROM (SELECT DISTINCT ON (ort.client_id) ort.client_id, oc.client_name FROM oauth_access_tokens ort LEFT JOIN oauth_clients oc ON ort.client_id = oc.client_id WHERE ort.user_id = $1 AND ort.client_id != $2) As oc';
         if (!empty($c_sql)) {
             $paging_data = paginate_data($c_sql, $db_lnk, $pg_params, $r_resource_filters);
             $sql.= $paging_data['sql'];
@@ -2022,7 +2066,11 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             $data = array();
             while ($row = pg_fetch_row($result)) {
                 $obj = json_decode($row[0], true);
-                $data[] = $obj;
+                if (!empty($_metadata)) {
+                    $data['data'][] = $obj;
+                } else {
+                    $data[] = $obj;
+                }
             }
             if (!empty($_metadata)) {
                 $data['_metadata'] = $_metadata;
@@ -2706,7 +2754,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 pg_query_params($db_lnk, 'INSERT INTO user_logins (created, modified, user_id, ip_id, user_agent, is_login_failed) VALUES (now(), now(), $1, $2, $3, $4)', $val_arr);
             }
             // login failed error logged
-            $login_fail_string = date('Y-m-d H:i:s') . '|' . $last_login_ip_id . '|' . $r_post['email'] . '|' . $user_agent;
+            $login_fail_string = date('Y-m-d H:i:s') . '|' . $_SERVER['REMOTE_ADDR'] . '|' . $r_post['email'] . '|' . $user_agent;
             error_log($login_fail_string . PHP_EOL, 3, CACHE_PATH . DS . 'user_logins_failed.log');
             if (!empty($ldap_error)) {
                 $response = array(
@@ -4114,9 +4162,8 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                         }
                     }
                     $hash = md5(SECURITYSALT . 'Board' . $r_resource_vars['boards'] . 'jpg' . 'extra_large_thumb');
-                    $background_picture_url = $_server_domain_url . '/img/extra_large_thumb/Board/' . $r_resource_vars['boards'] . '.' . $hash . '.jpg';
+                    $background_picture_url = '/img/extra_large_thumb/Board/' . $r_resource_vars['boards'] . '.' . $hash . '.jpg';
                     $r_post['background_picture_path'] = $save_path . DS . $file['name'];
-                    $background_picture_url = preg_replace('/(http|https):/', '', $background_picture_url);
                     $r_post['path'] = $background_picture_url;
                     $r_post['background_picture_url'] = $background_picture_url;
                     $response['background_picture_url'] = $background_picture_url;
@@ -5256,18 +5303,18 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             $response['cards_labels'] = $cards_labels;
             if (count($newlabel) && !count(array_diff($previous_cards_labels, $oldlabel))) {
                 $names = implode(",", $newlabel);
-                $names = preg_replace('/[ ,]+/', ', ', $names);
+                $names = preg_replace('/[,]+/', ', ', $names);
                 $comment = '##USER_NAME## added label(s) to the card ##CARD_LINK## - ' . $names;
                 $type = 'add_card_label';
             } else if (!count($newlabel) && count(array_diff($previous_cards_labels, $oldlabel))) {
                 $names = implode(",", array_diff($previous_cards_labels, $oldlabel));
-                $names = preg_replace('/[ ,]+/', ', ', $names);
+                $names = preg_replace('/[,]+/', ', ', $names);
                 $comment = '##USER_NAME## removed label(s) to the card ##CARD_LINK## - ' . $names;
                 $type = 'update_card_label';
             } else if (count($newlabel) && count(array_diff($previous_cards_labels, $oldlabel))) {
                 $deletenames = implode(",", array_diff($previous_cards_labels, $oldlabel));
                 $names = implode(",", $newlabel);
-                $names = preg_replace('/[ ,]+/', ', ', $names);
+                $names = preg_replace('/[,]+/', ', ', $names);
                 $comment = '##USER_NAME## removed the label(s) ' . ' - ' . $deletenames . ' and added the label(s) ' . ' - ' . $names . ' to the card ##CARD_LINK##';
                 $type = 'update_card_label';
             } else {
@@ -6851,9 +6898,10 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
                         $comment = '##USER_NAME## updated Agile WIP limit - ' . $custom_fields['wip_limit'] . ' on list "##LIST_NAME##"';
                         $activity_type = 'edit_list_agile_wip_limit';
                     }
-                    if (empty($custom_fields['hard_wip_limit']) && isset($custom_fields['hard_wip_limit'])) {
+                    if (empty($custom_fields['hard_wip_limit']) && isset($custom_fields['hard_wip_limit']) && $previous_custom_fields_value['hard_wip_limit'] !== $custom_fields['hard_wip_limit']) {
                         $comment.= " and removed hard limit";
-                    } else {
+                    }
+                    if (isset($custom_fields['hard_wip_limit']) && !empty($custom_fields['hard_wip_limit']) && $previous_custom_fields_value['hard_wip_limit'] !== $custom_fields['hard_wip_limit']) {
                         $comment.= " and set as hard limit";
                     }
                 }
@@ -7241,7 +7289,7 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
         unset($r_put['list_id']);
         unset($r_put['board_id']);
         if (isset($r_put['position']) && !empty($r_put['position'])) {
-            $comment.= ' position';
+            $comment = '##USER_NAME## moved checklist ##CHECKLIST_NAME## on the card ##CARD_LINK##';
         }
         $activity_type = 'update_card_checklist';
         $response = update_query($table_name, $id, $r_resource_cmd, $r_put, $comment, $activity_type, $foreign_ids);
@@ -7268,7 +7316,7 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
         if (!empty($r_put['is_completed'])) {
             $comment = '##USER_NAME## updated ' . $prev_value['name'] . ' as completed on the card ##CARD_LINK##';
         } else if (isset($r_put['position'])) {
-            $comment = '##USER_NAME## moved checklist item on card ##CARD_LINK##';
+            $comment = '##USER_NAME## moved checklist item ##CHECKLIST_ITEM_NAME## on the card ##CARD_LINK##';
             if (isset($r_put['checklist_id']) && $r_put['checklist_id'] != $prev_value['checklist_id']) {
                 $activity_type = 'moved_card_checklist_item';
             }
@@ -7829,17 +7877,23 @@ function r_delete($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         );
         $attachment = executeQuery('SELECT name, path FROM card_attachments WHERE id =  $1', $qry_val_arr);
         if (!empty($attachment)) {
-            $file = APP_PATH . DS . $attachment['path'];
+            $file = MEDIA_PATH . DS . $attachment['path'];
             if (file_exists($file)) {
                 unlink($file);
             }
             foreach ($thumbsizes['CardAttachment'] as $key => $value) {
                 $file_ext = explode('.', $attachment['name']);
                 $hash = md5(SECURITYSALT . 'CardAttachment' . $r_resource_vars['attachments'] . $file_ext[1] . $key);
-                $thumb_file = IMG_PATH . DS . $key . DS . 'Organization' . DS . $r_resource_vars['attachments'] . '.' . $hash . '.' . $file_ext[1];
+                $thumb_file = IMG_PATH . DS . $key . DS . 'CardAttachment' . DS . $r_resource_vars['attachments'] . '.' . $hash . '.' . $file_ext[1];
                 if (file_exists($thumb_file)) {
                     unlink($thumb_file);
                 }
+            }
+            $file_ext = explode('.', $attachment['name']);
+            $hash = md5(SECURITYSALT . 'CardAttachment' . $r_resource_vars['attachments'] . $file_ext[1] . $key);
+            $thumb_file = IMG_PATH . DS . 'original' . DS . 'CardAttachment' . DS . $r_resource_vars['attachments'] . '.' . $hash . '.' . $file_ext[1];
+            if (file_exists($thumb_file)) {
+                unlink($thumb_file);
             }
         }
         break;

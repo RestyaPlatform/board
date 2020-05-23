@@ -55,15 +55,15 @@
 					</li>
 					<li class="col-xs-12 divider"></li>
 					<li class="col-xs-12">
-					    <form id="RoleEditForm" name="RoleEditForm" class="form-horizontal col-xs-12">
+					    <form id="RoleEditForm-<%- role.attributes.id %>" name="RoleEditForm" class="form-horizontal col-xs-12 js-roleEdit-form">
 							<input type="hidden" name="id" value="<%- role.attributes.id %>">
 						  <div class="form-group required">
-							<label class="sr-only control-label" for="inputEditName"><%- i18next.t("Name") %></label>
-							<input type="name" name="name" id="inputEditName" value="<%- role.attributes.name %>" class="form-control js-role-name" placeholder="<%- i18next.t('Name') %>" required>
+							<label class="sr-only control-label" for="inputEditName-<%- role.attributes.id %>"><%- i18next.t("Name") %></label>
+							<input type="name" name="name" id="inputEditName-<%- role.attributes.id %>" value="<%- role.attributes.name %>" class="form-control js-role-name" placeholder="<%- i18next.t('Name') %>" required>
 						  </div>
 						  <div class="form-group">
-							<label class="sr-only control-label" for="submitEditRole"><%- i18next.t("Update") %></label>
-							<input type="submit" class="btn btn-primary col-xs-12" id="submitEditRole" title="<%- i18next.t('Update Role') %>" value="<%- i18next.t('Update') %>">
+							<label class="sr-only control-label" for="submitEditRole-<%- role.attributes.id %>"><%- i18next.t("Update") %></label>
+							<input type="submit" class="btn btn-primary col-xs-12" id="submitEditRole-<%- role.attributes.id %>" title="<%- i18next.t('Update Role') %>" value="<%- i18next.t('Update') %>">
 						  </div>
 							<% if(parseInt(role.attributes.id) > 3) { %>
 								<div class="form-group">
@@ -149,7 +149,7 @@
 												<input type="checkbox" class="cur" name="acl_link_id[<%- role.attributes.id %>][<%- acl_link.attributes.id %>]" value="<%- acl_link.attributes.id%>" <% if(!_.isEmpty(is_enabled)) { %> checked="checked" <% } %> id="acl_link_id_<%- role.attributes.id %>_<%- acl_link.attributes.id %>"/>
 												<label class="js-update-role" data-table="acl_links_roles" data-acl_link_id="<%- acl_link.attributes.id %>"  data-role_id="<%- role.attributes.id %>" for="acl_link_id_<%- role.attributes.id %>_<%- acl_link.attributes.id %>"></label>
 												<% if (acl_link.attributes.name === 'User activation') { %>
-													<a  data-placement="left" id="js-question-mark" href="#" data-toggle="tooltip" title="By clicking this, user can't login after registration without confirm the email"><i class="icon-question-sign" aria-hidden="true"></i></a>
+													<a  data-placement="left" id="js-question-mark" href="javascript:void(0);" data-toggle="tooltip" title="By clicking this, user can't login after registration without confirm the email"><i class="icon-question-sign" aria-hidden="true"></i></a>
 												<% } %>
 											</div>
 										</td>
@@ -234,19 +234,19 @@
 								</li>
 								<li class="col-xs-12 divider"></li>
 								<li class="col-xs-12">
-									<form id="BoardUserRoleEditForm" name="BoardUserRoleEditForm" class="form-horizontal col-xs-12">
+									<form id="BoardUserRoleEditForm-<%- board_user_role.attributes.id %>" name="BoardUserRoleEditForm" class="form-horizontal col-xs-12 js-boardUser-roleEditform">
 									  <input type="hidden" name="id" value="<%- board_user_role.attributes.id %>">
 									  <div class="form-group required">
-										<label class="sr-only control-label" for="inputEditBoardName"><%- i18next.t("Name") %></label>
-										<input type="name" name="name" value="<%- board_user_role.attributes.name %>" id="inputEditBoardName" class="form-control js-role-name" placeholder="<%- i18next.t('Name') %>" required>
+										<label class="sr-only control-label" for="inputEditBoardName-<%- board_user_role.attributes.id %>"><%- i18next.t("Name") %></label>
+										<input type="name" name="name" value="<%- board_user_role.attributes.name %>" id="inputEditBoardName-<%- board_user_role.attributes.id %>" class="form-control js-role-name" placeholder="<%- i18next.t('Name') %>" required>
 									  </div>
 									  <div class="form-group required">
-										<label class="sr-only control-label" for="inputEditBoardDescription"><%- i18next.t("Description") %></label>
-										<textarea name="description" id="inputEditBoardDescription" class="form-control js-role-name" placeholder="<%- i18next.t('Description') %>"><%- board_user_role.attributes.description %></textarea>
+										<label class="sr-only control-label" for="inputEditBoardDescription-<%- board_user_role.attributes.id %>"><%- i18next.t("Description") %></label>
+										<textarea name="description" id="inputEditBoardDescription-<%- board_user_role.attributes.id %>" class="form-control js-role-name" placeholder="<%- i18next.t('Description') %>"><%- board_user_role.attributes.description %></textarea>
 									  </div>
 									  <div class="form-group">
-										<label class="sr-only control-label" for="submitEditBoardUserRole"><%- i18next.t("Update") %></label>
-										<input type="submit" class="btn btn-primary col-xs-12" id="submitEditBoardUserRole" value="<%- i18next.t('Update') %>" title="<%- i18next.t('Update Board User Role') %>">
+										<label class="sr-only control-label" for="submitEditBoardUserRole-<%- board_user_role.attributes.id %>"><%- i18next.t("Update") %></label>
+										<input type="submit" class="btn btn-primary col-xs-12" id="submitEditBoardUserRole-<%- board_user_role.attributes.id %>" value="<%- i18next.t('Update') %>" title="<%- i18next.t('Update Board User Role') %>">
 									  </div>
 										<% if(parseInt(board_user_role.attributes.id) > 3) { %>
 											<div class="form-group">
@@ -345,19 +345,19 @@
 										</li>
 										<li class="col-xs-12 divider"></li>
 										<li class="col-xs-12">
-											<form id="OrganizationUserRoleEditForm" name="OrganizationUserRoleEditForm" class="form-horizontal col-xs-12">
+											<form id="OrganizationUserRoleEditForm-<%- organization_user_role.attributes.id %>" name="OrganizationUserRoleEditForm" class="form-horizontal col-xs-12 js-orgUser-roleEditform">
 											<input type="hidden" name="id" value="<%- organization_user_role.attributes.id %>">
 											  <div class="form-group required">
-												<label class="sr-only control-label" for="inputEditOrganizationName"><%- i18next.t("Name") %></label>
-												<input type="name" name="name" id="inputEditOrganizationName" value="<%- organization_user_role.attributes.name %>" class="form-control js-role-name" placeholder="<%- i18next.t('Name') %>" required>
+												<label class="sr-only control-label" for="inputEditOrganizationName-<%- organization_user_role.attributes.id %>"><%- i18next.t("Name") %></label>
+												<input type="name" name="name" id="inputEditOrganizationName-<%- organization_user_role.attributes.id %>" value="<%- organization_user_role.attributes.name %>" class="form-control js-role-name" placeholder="<%- i18next.t('Name') %>" required>
 											  </div>
 											  <div class="form-group required">
-												<label class="sr-only control-label" for="inputEditOrganizationDescription"><%- i18next.t("Description") %></label>
-												<textarea name="description" id="inputEditOrganizationDescription" class="form-control js-role-name" placeholder="<%- i18next.t('Description') %>"><%- organization_user_role.attributes.description %></textarea>
+												<label class="sr-only control-label" for="inputEditOrganizationDescription-<%- organization_user_role.attributes.id %>"><%- i18next.t("Description") %></label>
+												<textarea name="description" id="inputEditOrganizationDescription-<%- organization_user_role.attributes.id %>" class="form-control js-role-name" placeholder="<%- i18next.t('Description') %>"><%- organization_user_role.attributes.description %></textarea>
 											  </div>
 											  <div class="form-group">
-												<label class="sr-only control-label" for="submitEditOrganizationUserRole" title="<%- i18next.t('Update Organization User Role') %>"><%- i18next.t("Update") %></label>
-												<input type="submit" class="btn btn-primary col-xs-12" id="submitEditOrganizationUserRole" value="<%- i18next.t('Update') %>">
+												<label class="sr-only control-label" for="submitEditOrganizationUserRole-<%- organization_user_role.attributes.id %>" title="<%- i18next.t('Update Organization User Role') %>"><%- i18next.t("Update") %></label>
+												<input type="submit" class="btn btn-primary col-xs-12" id="submitEditOrganizationUserRole-<%- organization_user_role.attributes.id %>" value="<%- i18next.t('Update') %>">
 											  </div>
 												<% if(parseInt(organization_user_role.attributes.id) > 3) { %>
 													<div class="form-group">
