@@ -4171,23 +4171,47 @@ App.ModalCardView = Backbone.View.extend({
                         self.flash('danger', i18next.t('Sorry, attachment not added. Internet connection not available.'));
                     } else {
                         self.closePopup(e);
-                        if (!_.isUndefined(response) && !_.isEmpty(response) && response !== null && !_.isUndefined(response.card_attachments) && !_.isEmpty(response.card_attachments) && response.card_attachments !== null) {
-                            card_attachment.set(response.card_attachments);
-                            card_attachment.set('id', parseInt(response.card_attachments.id));
-                            card_attachment.set('board_id', parseInt(response.card_attachments.board_id));
-                            card_attachment.set('list_id', parseInt(response.card_attachments.list_id));
-                            card_attachment.set('card_id', parseInt(response.card_attachments.card_id));
-                            self.model.list.collection.board.attachments.unshift(card_attachment, {
+                        $('#js-card-modal-' + self.model.id).parent('.dockmodal-body').prev('.dockmodal-header').find('.cssloader').remove();
+                        $('.js-attachment-loader', $('#js-card-modal-' + self.model.id)).html('');
+                        var card_attachments = new App.CardAttachmentCollection();
+                        var i = 1;
+                        card_attachments.add(response.card_attachments);
+                        card_attachments.each(function(attachment) {
+                            var options = {
+                                silent: true
+                            };
+                            if (i === card_attachments.models.length) {
+                                options.silent = false;
+                            }
+                            attachment.set('id', parseInt(attachment.attributes.id));
+                            attachment.set('board_id', parseInt(attachment.attributes.board_id));
+                            attachment.set('list_id', parseInt(attachment.attributes.list_id));
+                            attachment.set('card_id', parseInt(attachment.attributes.card_id));
+                            self.model.attachments.unshift(attachment, options);
+                            self.model.list.collection.board.attachments.unshift(attachment, {
                                 silent: true
                             });
-                            if (!_.isUndefined(self.model.attributes.attachment_count) && self.model.attributes.attachment_count !== null) {
-                                var previous_attachment_count = self.model.attachments.length;
-                                self.model.set('attachment_count', previous_attachment_count + response.card_attachments.length);
-                            }
-                            self.model.attachments.unshift(card_attachment, {
-                                silent: false
-                            });
+                            i++;
+                        });
+                        if (!_.isUndefined(self.model.attributes.attachment_count) && self.model.attributes.attachment_count !== null) {
+                            var previous_attachment_count = isNaN(self.model.attributes.attachment_count) ? 0 : parseInt(self.model.attributes.attachment_count);
+                            self.model.set('attachment_count', previous_attachment_count + response.card_attachments.length);
                         }
+                        response.activity = activityCommentReplace(response.activity);
+                        var activity = new App.Activity();
+                        activity.set(response.activity);
+                        activity.board_users = self.model.board_users;
+                        var view_act = new App.ActivityView({
+                            model: activity,
+                            board: self.model.list.collection.board,
+                            flag: '1'
+                        });
+                        self.model.activities.unshift(activity);
+                        if ($.cookie('filter') !== 'comment') {
+                            var view_activity = $('#js-card-activities-' + self.model.id);
+                            view_activity.prepend(view_act.render().el);
+                        }
+                        emojify.run();
                     }
                 }
             });

@@ -5196,14 +5196,26 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 $i = 0;
                 foreach ($r_post['image_link'] as $image_link) {
                     $r_post['name'] = $r_post['link'] = $image_link;
+                    $mediadir = MEDIA_PATH . DS . 'Card' . DS . $r_post['card_id'];
+                    $save_path = 'Card' . DS . $r_post['card_id'];
+                    $save_path = str_replace('\\', '/', $save_path);
+                    $filename = curlExecute($image_link, 'get', $mediadir, 'image');
+                    $path = $save_path . DS . $filename['file_name'];
+                    $mimetype = explode('.', $r_post['name']);
+                    $mimetypeStore = "";
+                    if ($mimetype[count($mimetype) - 1] == "jpg" || $mimetype[count($mimetype) - 1] == "gif" || $mimetype[count($mimetype) - 1] == "jpeg" || $mimetype[count($mimetype) - 1] == "png") {
+                        $mimetypeStore = "image/" + $mimetype[count($mimetype) - 1];
+                    } else {
+                        $mimetypeStore = "application/" + $mimetype[count($mimetype) - 1];
+                    }
                     $qry_val_arr = array(
                         $r_post['card_id'],
-                        $r_post['name'],
-                        'NULL',
+                        $filename['file_name'],
+                        $path,
                         $r_post['list_id'],
                         $r_post['board_id'],
-                        'NULL',
-                        $r_post['link']
+                        $mimetypeStore,
+                        'NULL'
                     );
                     $s_result = pg_query_params($db_lnk, 'INSERT INTO card_attachments (created, modified, card_id, name, path, list_id, board_id, mimetype, link) VALUES (now(), now(), $1, $2, $3, $4, $5, $6, $7) RETURNING *', $qry_val_arr);
                     $response['card_attachments'][] = pg_fetch_assoc($s_result);
@@ -5217,28 +5229,37 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             } else {
                 $sql = true;
                 $r_post['name'] = $r_post['link'] = $r_post['image_link'];
-                $r_post['path'] = '';
-                unset($r_post['image_link']);
-                if (!empty($sql)) {
-                    $post = getbindValues($table_name, $r_post);
-                    $result = pg_execute_insert($table_name, $post);
-                    if ($result) {
-                        $row = pg_fetch_assoc($result);
-                        $response['card_attachments'] = $row;
-                        $foreign_ids['board_id'] = $r_post['board_id'];
-                        $foreign_ids['list_id'] = $r_post['list_id'];
-                        $foreign_ids['card_id'] = $r_post['card_id'];
-                        $comment = '##USER_NAME## added attachment to the card ##CARD_LINK##';
-                        $response['activity'] = insertActivity($authUser['id'], $comment, 'add_card_attachment', $foreign_ids, null, $row['id']);
-                        foreach ($thumbsizes['CardAttachment'] as $key => $value) {
-                            $mediadir = IMG_PATH . DS . $key . DS . 'CardAttachment' . DS . $row['id'];
-                            $list = glob($mediadir . '.*');
-                            if (!empty($list) && isset($list[0]) && file_exists($list[0])) {
-                                unlink($list[0]);
-                            }
-                        }
-                    }
+                $mediadir = MEDIA_PATH . DS . 'Card' . DS . $r_post['card_id'];
+                if (!file_exists($mediadir)) {
+                    mkdir($mediadir, 0777, true);
                 }
+                $save_path = 'Card' . DS . $r_post['card_id'];
+                $save_path = str_replace('\\', '/', $save_path);
+                $filename = curlExecute($r_post['image_link'], 'get', $mediadir, 'image');
+                $path = $save_path . DS . $filename['file_name'];
+                $mimetype = array();
+                $mimetype = explode('.', $r_post['name']);
+                $mimetypeStore = "";
+                if ($mimetype[count($mimetype) - 1] == "jpg" || $mimetype[count($mimetype) - 1] == "gif" || $mimetype[count($mimetype) - 1] == "jpeg" || $mimetype[count($mimetype) - 1] == "png") {
+                    $mimetypeStore = "image/" . $mimetype[count($mimetype) - 1];
+                } else {
+                    $mimetypeStore = "application/" . $mimetype[count($mimetype) - 1];
+                }
+                $qry_val_arr = array(
+                    $r_post['card_id'],
+                    $filename['file_name'],
+                    $path,
+                    $r_post['list_id'],
+                    $r_post['board_id'],
+                    $mimetypeStore
+                );
+                $s_result = pg_query_params($db_lnk, 'INSERT INTO card_attachments (created, modified, card_id, name, path, list_id, board_id, mimetype) VALUES (now(), now(), $1, $2, $3, $4, $5, $6) RETURNING *', $qry_val_arr);
+                $response['card_attachments'][0] = pg_fetch_assoc($s_result);
+                $foreign_ids['board_id'] = $r_resource_vars['boards'];
+                $foreign_ids['list_id'] = $r_resource_vars['lists'];
+                $foreign_ids['card_id'] = $r_resource_vars['cards'];
+                $comment = '##USER_NAME## added attachment to the card ##CARD_LINK##';
+                $response['activity'] = insertActivity($authUser['id'], $comment, 'add_card_attachment', $foreign_ids, null, $response['card_attachments'][0]['id']);
             }
         }
         echo json_encode($response);
