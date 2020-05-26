@@ -119,11 +119,7 @@
       .off('focusin.bs.modal') // guard against infinite focus loop
       .on('focusin.bs.modal', $.proxy(function (e) {
         if (this.$element[0] !== e.target && !this.$element.has(e.target).length) {
-          try {
-            this.$element.focus()
-          } catch (err) {
-          }
-          
+          this.$element.focus()
         }
       }, this))
   }
