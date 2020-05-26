@@ -1977,8 +1977,9 @@
                 $el = this.$refs.container;
 
             }
-
-            $el.focus();
+            
+            // Commenting the below code for avoiding the focus on the element while closing
+            //$el.focus();
 
             // Scroll position of wrapper element sometimes changes after focusing (IE)
             this.$refs.slider_wrap.scrollLeft(0);
