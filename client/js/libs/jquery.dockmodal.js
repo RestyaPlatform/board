@@ -250,20 +250,19 @@
                             "height": "0"
                         });
                     }
-                    setTimeout(function () {
-                        $this.removeData('dockmodal');
-                        $this.placeholder.replaceWith($this);
-                        $dockModal.remove();
-                        if ($('.dockmodal').length === 0 || !$('.dockmodal').hasClass('popped-out')) {
-                            $("." + dClass + "-overlay").hide();
-                        }
-                        methods.refreshLayout();
+                    /* Removed the settimeout function for mobile responsive */
+                    $this.removeData('dockmodal');
+                    $this.placeholder.replaceWith($this);
+                    $dockModal.remove();
+                    if ($('.dockmodal').length === 0 || !$('.dockmodal').hasClass('popped-out')) {
+                        $("." + dClass + "-overlay").hide();
+                    }
+                    methods.refreshLayout();
 
-                        // raise close event
-                        if ($.isFunction($this.options.close)) {
-                            $this.options.close($this);
-                        }
-                    });
+                    // raise close event
+                    if ($.isFunction($this.options.close)) {
+                        $this.options.close($this);
+                    }
                 }
                 catch (err) {
                     alert(err.message);
@@ -402,28 +401,27 @@
                 });
 
                 setAnimationCSS($this, $dockModal);
-                setTimeout(function () {
-                    $dockModal.removeClass("minimized").addClass("popped-out").css({
-                        "width": "auto",
-                        "height": "auto",
-                        "left": $this.options.poppedOutDistance,
-                        "right": $this.options.poppedOutDistance,
-                        "top": $this.options.poppedOutDistance,
-                        "bottom": 42 + "px"
-                    });
-					$("." + dClass + "-overlay").click(function (e) {
-                        methods.destroy.apply($this);
-                        return false;
-                    }).show();
-                    $.browser.device = (/android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(navigator.userAgent.toLowerCase()));
-                    if ($.browser.device) {
-                        $dockModal.find(".action-popout").addClass('hide');
-                    } else {
-                        $dockModal.find(".action-popout").attr("title", "Pop-in");
-                    }
+                /* Removed the settimeout function with 10 seconds for mobile responsive popout initial design */
+                $dockModal.removeClass("minimized").addClass("popped-out").css({
+                    "width": "auto",
+                    "height": "auto",
+                    "left": $this.options.poppedOutDistance,
+                    "right": $this.options.poppedOutDistance,
+                    "top": $this.options.poppedOutDistance,
+                    "bottom": 42 + "px"
+                });
+                $("." + dClass + "-overlay").click(function (e) {
+                    methods.destroy.apply($this);
+                    return false;
+                }).show();
+                $.browser.device = (/android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(navigator.userAgent.toLowerCase()));
+                if ($.browser.device) {
+                    $dockModal.find(".action-popout").addClass('hide');
+                } else {
+                    $dockModal.find(".action-popout").attr("title", "Pop-in");
+                }
 
-                    methods.refreshLayout();
-                }, 10);
+                methods.refreshLayout();
 
                 setTimeout(function () {
                     // raise popout event
