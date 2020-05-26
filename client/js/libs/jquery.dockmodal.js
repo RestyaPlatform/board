@@ -312,6 +312,10 @@
                 if ($('.dockmodal').length === 0 || !$('.dockmodal').hasClass('popped-out')) {
                     $("." + dClass + "-overlay").hide();
                 }
+                $.browser.device = (/android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(navigator.userAgent.toLowerCase()));
+                if ($.browser.device) {
+                    $dockModal.find(".action-popout").removeClass('hide');
+                }
                 $dockModal.find(".action-minimize").attr("title", "Restore");
 
                 methods.refreshLayout();
@@ -348,8 +352,12 @@
                     $("." + dClass + "-overlay").hide();
                 }
                 $dockModal.find(".action-minimize").attr("title", "Minimize");
-                $dockModal.find(".action-popout").attr("title", "Pop-out (ctrl+click)");
-
+                $.browser.device = (/android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(navigator.userAgent.toLowerCase()));
+                if ($.browser.device) {
+                    $dockModal.find(".action-popout").addClass('hide');
+                } else {
+                    $dockModal.find(".action-popout").attr("title", "Pop-out (ctrl+click)");
+                }
                 setTimeout(function () {
                     // raise restore event
                     if ($.isFunction($this.options.restore)) {
@@ -407,7 +415,12 @@
                         methods.destroy.apply($this);
                         return false;
                     }).show();
-                    $dockModal.find(".action-popout").attr("title", "Pop-in");
+                    $.browser.device = (/android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(navigator.userAgent.toLowerCase()));
+                    if ($.browser.device) {
+                        $dockModal.find(".action-popout").addClass('hide');
+                    } else {
+                        $dockModal.find(".action-popout").attr("title", "Pop-in");
+                    }
 
                     methods.refreshLayout();
                 }, 10);
