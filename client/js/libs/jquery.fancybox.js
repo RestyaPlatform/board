@@ -549,9 +549,10 @@
 
                 if ( instance && !$( e.target ).hasClass( 'fancybox-container' ) && !$.contains( instance.$refs.container[0], e.target ) ) {
                     e.stopPropagation();
-
-                    instance.focus();
-
+                    try {
+                        instance.focus();
+                    } catch (err) {
+                    }
                     // Sometimes page gets scrolled, set it back
                     $W.scrollTop( self.scrollTop ).scrollLeft( self.scrollLeft );
                 }
@@ -1977,8 +1978,10 @@
                 $el = this.$refs.container;
 
             }
-
-            $el.focus();
+            try {
+                $el.focus();
+            } catch (err) {
+            }
 
             // Scroll position of wrapper element sometimes changes after focusing (IE)
             this.$refs.slider_wrap.scrollLeft(0);
