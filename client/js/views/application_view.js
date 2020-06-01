@@ -1329,7 +1329,7 @@ App.ApplicationView = Backbone.View.extend({
                     }
                 });
             } else if (page.model == 'app_settings_manage') {
-                changeTitle(i18next.t('App Settings Manage'));
+                changeTitle(i18next.t('Manage App Settings'));
                 $('#js-navbar-default').remove();
                 if (!_.isEmpty(authuser.user) && authuser.user.role_id == 1 && !_.isEmpty(page.options.name)) {
                     var custom_field_page_id = 'admin_' + page.options.name + '_view';
