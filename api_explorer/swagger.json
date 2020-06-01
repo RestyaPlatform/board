@@ -9380,6 +9380,9 @@
                 "produces": [
                     "application/json"
                 ],
+                "consumes": [
+                  "multipart/form-data"
+                ],
                 "parameters": [
                     {
                         "name": "token",
@@ -15377,6 +15380,9 @@
                 "produces": [
                     "application/json"
                 ],
+                "consumes": [
+                  "multipart/form-data"
+                ],
                 "parameters": [
                     {
                         "name": "token",
@@ -16166,6 +16172,9 @@
                 "description": "Created card_diagrams",
                 "produces": [
                     "application/json"
+                ],
+                "consumes": [
+                  "multipart/form-data"
                 ],
                 "parameters": [
                     {
