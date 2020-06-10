@@ -3224,10 +3224,10 @@ App.ModalCardView = Backbone.View.extend({
                 slug: "unsubscribe_card"
             })) && this.model.list.collection.board.attributes.board_visibility == 2))) {
             if (view_subscribe.length == 1) {
-                view_subscribe.append('	<a class="btn btn-default ' + subscribe_disabled + ' ' + subscribe_class + ' even-action htruncate" title=" ' + i18next.t(subscribe_title) + '" href="javascript:void(0);"><i class="icon-eye-close"></i> ' + i18next.t('Unsubsribe') + '</a>');
+                view_subscribe.append('	<a class="btn btn-default ' + subscribe_disabled + ' ' + subscribe_class + ' even-action htruncate" title=" ' + i18next.t(subscribe_title) + '" href="javascript:void(0);"><i class="icon-eye-close"></i> ' + i18next.t('Unsubscribe') + '</a>');
             }
             if (view_headdropsubscribe.length == 1) {
-                view_headdropsubscribe.append(' <a class="' + subscribe_class + '" title="' + subscribe_title + '" href="javascript:void(0);"> ' + i18next.t('Unsubsribe') + ' <i class="icon-ok"></i></a>');
+                view_headdropsubscribe.append(' <a class="' + subscribe_class + '" title="' + subscribe_title + '" href="javascript:void(0);"> ' + i18next.t('Unsubscribe') + ' <i class="icon-ok"></i></a>');
                 view_headdropsubscribe.addClass(subscribe_disabled);
 
             }

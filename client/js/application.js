@@ -151,7 +151,7 @@ callbackTranslator = {
                 model.is_offline = true;
                 $('.js-hide-on-offline').addClass('hide');
                 $('#js-activity-loader').remove();
-                $('#js-footer-brand-img').attr('title', i18next.t('Site is in offline')).attr('src', 'img/logo-icon-offline.png').attr('data-original-title', i18next.t('Site is in offline')).tooltip("show");
+                $('#js-footer-brand-img').attr('title', i18next.t('Site is offline')).attr('src', 'img/logo-icon-offline.png').attr('data-original-title', i18next.t('Site is offline')).tooltip("show");
             } else {
                 is_online = true;
                 $('.js-hide-on-offline').removeClass('hide');
