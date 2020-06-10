@@ -2,15 +2,14 @@
     "swagger": "2.0",
     "info": {
         "title": "RestyaBoard",
-        "termsOfService": "http://swagger.io/terms/",
         "contact": {
-            "email": "apiteam@swagger.io"
+            "email": "info@restya.com"
         },
         "license": {
-            "name": "Apache 2.0",
-            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+            "name": "Dual License (OSL 3.0 & Commercial License)",
+            "url": "https://github.com/RestyaPlatform/board/blob/master/LICENSE.txt"
         },
-        "version": "1.0.0"
+        "version": "0.6.8"
     },
     "basePath": "/v1",
     "consumes": [
@@ -9380,6 +9379,9 @@
                 "produces": [
                     "application/json"
                 ],
+                "consumes": [
+                  "multipart/form-data"
+                ],
                 "parameters": [
                     {
                         "name": "token",
@@ -9414,19 +9416,6 @@
                         "required": true,
                         "type": "integer",
                         "format": "int64"
-                    },
-                    {
-                        "name": "imageLink",
-                        "in": "body",
-                        "description": "Paste Link.",
-                        "required": false,
-                        "schema": {
-                            "properties": {
-                                "image_link": {
-                                    "type": "string"
-                                }
-                            }
-                        }
                     },
                     {
                         "name": "attachment",
@@ -15377,6 +15366,9 @@
                 "produces": [
                     "application/json"
                 ],
+                "consumes": [
+                  "multipart/form-data"
+                ],
                 "parameters": [
                     {
                         "name": "token",
@@ -16110,114 +16102,6 @@
                         "items": {
                             "type": "string"
                         }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "successful operation",
-                        "schema": {
-                            "properties": {
-                                "id": {
-                                    "type": "integer"
-                                },
-                                "created": {
-                                    "type": "string"
-                                },
-                                "modified": {
-                                    "type": "string"
-                                },
-                                "name": {
-                                    "type": "string"
-                                },
-                                "user_id": {
-                                    "type": "string"
-                                },
-                                "board_id": {
-                                    "type": "string"
-                                },
-                                "list_id": {
-                                    "type": "string"
-                                },
-                                "card_id": {
-                                    "type": "string"
-                                },
-                                "parent_id": {
-                                    "type": "string"
-                                },
-                                "path": {
-                                    "type": "string"
-                                },
-                                "version": {
-                                    "type": "string"
-                                }
-                            }
-                        }
-                    },
-                    "405": {
-                        "description": "Invalid input"
-                    }
-                }
-            },
-            "post": {
-                "tags": [
-                    "card_diagrams"
-                ],
-                "summary": "Add a new card_diagrams to the card",
-                "description": "Created card_diagrams",
-                "produces": [
-                    "application/json"
-                ],
-                "parameters": [
-                    {
-                        "name": "token",
-                        "in": "query",
-                        "description": "OAuth token",
-                        "required": true,
-                        "type": "string",
-                        "items": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "name": "body",
-                        "in": "body",
-                        "description": "Created comment object",
-                        "required": true,
-                        "schema": {
-                            "properties": {                               
-                                "name": {
-                                    "type": "string"
-                                },
-                                "user_id": {
-                                    "type": "string"
-                                },
-                                "board_id": {
-                                    "type": "string"
-                                },
-                                "list_id": {
-                                    "type": "string"
-                                },
-                                "card_id": {
-                                    "type": "string"
-                                },
-                                "parent_id": {
-                                    "type": "string"
-                                },
-                                "path": {
-                                    "type": "string"
-                                },
-                                "version": {
-                                    "type": "string"
-                                }
-                            }
-                        }
-                    },
-                    {
-                        "name": "attachment",
-                        "in": "formData",
-                        "description": "Upload File.",
-                        "required": false,
-                        "type": "file"
                     }
                 ],
                 "responses": {
