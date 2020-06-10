@@ -4,15 +4,15 @@
 		_.each(apps, function(app) {
 %>  
 	<div class="clearfix">
-		<div class="col-xs-1">
+		<div class="col-xs-12 col-md-1">
 			<div class="pull-left"><img width="80" height="80" src="<%- app.icon %>"></div>
 		</div>
-		<div class="col-xs-9">
+		<div class="col-xs-12 col-md-9">
 			<h4><span class="c"><%- i18next.t(app.name) %></span></h4>
 			<div class="grayc top-space"><%- i18next.t(app.description) %></div>
 			<div class="grayc top-space"><%- i18next.t('Version') %> <%- app.version %> | <%- i18next.t('By') %> <a href="<%- app.authorUrl %>" target="_blank"><%- app.author %></a></div>
 		</div>
-		<div class="col-xs-2 pull-right">
+		<div class="col-xs-12 col-md-2 pull-right">
 			<div class="row-fluid">
 				<div class="pull-right">
 					<div class="btn-group">
