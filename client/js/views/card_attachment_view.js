@@ -95,7 +95,7 @@ App.CardAttachmentView = Backbone.View.extend({
         this.model.save(data, {
             patch: true,
             success: function(model, response, options) {
-                if (!_.isUndefined(response.activity)) {
+                if (!_.isUndefined(response)) {
                     card.set('cover_image_id', data.cover_image_id);
                     var attachmentsList = $('#js-card-modal-' + cardId).find('#js-card-attachments-list');
                     $.each(attachmentsList.find('.js-cover-img-option'), function(i, attachment) {
@@ -107,15 +107,17 @@ App.CardAttachmentView = Backbone.View.extend({
                             $(attachment).html('<i class="icon-folder-close cur icon-light"></i>' + i18next.t('Make Cover'));
                         }
                     });
-                    response.activity = activityCommentReplace(response.activity);
-                    var activity = new App.Activity();
-                    activity.set(response.activity);
-                    var view_act = new App.ActivityView({
-                        model: activity
-                    });
-                    self.model.activities.unshift(activity);
-                    var view_activity = $('#js-card-activities-' + parseInt(response.activity.card_id));
-                    view_activity.prepend(view_act.render().el);
+                    if (!_.isUndefined(response.activity)) {
+                        response.activity = activityCommentReplace(response.activity);
+                        var activity = new App.Activity();
+                        activity.set(response.activity);
+                        var view_act = new App.ActivityView({
+                            model: activity
+                        });
+                        self.model.activities.unshift(activity);
+                        var view_activity = $('#js-card-activities-' + parseInt(response.activity.card_id));
+                        view_activity.prepend(view_act.render().el);
+                    }
                 }
             }
         });
@@ -129,7 +131,7 @@ App.CardAttachmentView = Backbone.View.extend({
         this.model.save(data, {
             patch: true,
             success: function(model, response, options) {
-                if (!_.isUndefined(response.activity)) {
+                if (!_.isUndefined(response)) {
                     card.set('cover_image_id', 0);
                     var attachmentsList = $('#js-card-modal-' + cardId).find('#js-card-attachments-list');
                     $.each(attachmentsList.find('.js-cover-img-option'), function(i, attachment) {
@@ -138,15 +140,17 @@ App.CardAttachmentView = Backbone.View.extend({
                             $(attachment).html('<i class="icon-folder-close cur icon-light"></i>' + i18next.t('Make Cover'));
                         }
                     });
-                    response.activity = activityCommentReplace(response.activity);
-                    var activity = new App.Activity();
-                    activity.set(response.activity);
-                    var view_act = new App.ActivityView({
-                        model: activity
-                    });
-                    self.model.activities.unshift(activity);
-                    var view_activity = $('#js-card-activities-' + parseInt(response.activity.card_id));
-                    view_activity.prepend(view_act.render().el);
+                    if (!_.isUndefined(response.activity)) {
+                        response.activity = activityCommentReplace(response.activity);
+                        var activity = new App.Activity();
+                        activity.set(response.activity);
+                        var view_act = new App.ActivityView({
+                            model: activity
+                        });
+                        self.model.activities.unshift(activity);
+                        var view_activity = $('#js-card-activities-' + parseInt(response.activity.card_id));
+                        view_activity.prepend(view_act.render().el);
+                    }
                 }
             }
         });
