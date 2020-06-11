@@ -43,7 +43,13 @@ class ActivityHandler
                     if (!in_array($key, ActivityHandler::$not_acceptable_diff_keys, true) && !in_array($obj_type, ActivityHandler::$not_acceptable_diff_obj_types, true)) {
                         $old_val = (isset($revisions['old_value'][$key]) && $revisions['old_value'][$key] != null && $revisions['old_value'][$key] != 'null') ? $revisions['old_value'][$key] : '';
                         $new_val = (isset($revisions['new_value'][$key]) && $revisions['new_value'][$key] != null && $revisions['new_value'][$key] != 'null') ? $revisions['new_value'][$key] : '';
-                        $diff[] = nl2br(getRevisiondifference($old_val, $new_val));
+                        if ($obj_type == 'edit_comment') {
+                            if (getRevisiondifference($old_val, $new_val) !== false) {
+                                $diff[] = getRevisiondifference($old_val, $new_val);
+                            }
+                        } else {
+                            $diff[] = nl2br(getRevisiondifference($old_val, $new_val));
+                        }
                     }
                     if (in_array($obj_type, ActivityHandler::$acceptable_diff_obj_types, true)) {
                         $diff[] = $revisions['new_value'][$key];

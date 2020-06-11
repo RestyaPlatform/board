@@ -3441,7 +3441,13 @@ function update_query($table_name, $id, $r_resource_cmd, $r_put, $comment = '', 
                         if ($key != 'is_archived' && $key != 'is_deleted' && $key != 'created' && $key != 'modified' && $key != 'is_offline' && $key != 'uuid' && $key != 'to_date' && $key != 'temp_id' && $activity_type != 'moved_card_checklist_item' && $activity_type != 'add_card_desc' && $activity_type != 'add_card_duedate' && $activity_type != 'delete_card_duedate' && $activity_type != 'add_background' && $activity_type != 'change_background' && $activity_type != 'change_visibility') {
                             $old_val = (isset($revisions['old_value'][$key])) ? $revisions['old_value'][$key] : '';
                             $new_val = (isset($revisions['new_value'][$key])) ? $revisions['new_value'][$key] : '';
-                            $diff[] = nl2br(getRevisiondifference($old_val, $new_val));
+                            if ($activity_type == 'edit_comment') {
+                                if (getRevisiondifference($old_val, $new_val) !== false) {
+                                    $diff[] = getRevisiondifference($old_val, $new_val);
+                                }
+                            } else {
+                                $diff[] = nl2br(getRevisiondifference($old_val, $new_val));
+                            }
                         }
                         if ($activity_type == 'add_card_desc' || $activity_type == 'edit_card_duedate' || $activity_type == 'add_background' || $activity_type == 'change_background' || $activity_type == 'change_visibility') {
                             $diff[] = $revisions['new_value'][$key];
