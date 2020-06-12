@@ -21,7 +21,7 @@ App.AdminActivityIndexView = Backbone.View.extend({
     },
     template: JST['templates/admin_activity_index'],
     converter: new showdown.Converter({
-        extensions: ['targetblank', 'xssfilter', 'codehighlight']
+        extensions: window.extensionslist
     }),
     tagName: 'li',
     className: 'row col-xs-12 activity-github-styles',

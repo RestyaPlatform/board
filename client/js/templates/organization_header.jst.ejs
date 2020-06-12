@@ -58,7 +58,7 @@
 				</li>
 			<% } %>
 			<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(organization.acl_links.where({slug: "view_organization_visibility",organization_user_role_id: parseInt(organization.organization_user_role_id)})))) { %>
-			<li class="dropdown navbar-btn">
+			<li class="dropdown navbar-btn organization-visibility-form">
 			<a href="" title="<% if(organization.attributes.organization_visibility == 1){ %><%- i18next.t('Public') %><% } else { %><%- i18next.t('Private') %><% } %>" class="js-org-visibility-name js-show-organization-visibility-form text-muted dropdown-toggle" data-toggle="dropdown"><span class="js-org-visibility-icon <% if(organization.attributes.organization_visibility == 1){ %>icon-circle <% } else { %>icon-lock<% } %> text-muted"></span><span class="h4 js-org-visibility-type"><% if(organization.attributes.organization_visibility == 1){ %><%- i18next.t('Public') %><% } else { %><%- i18next.t('Private') %><% } %></span></a>
 			<ul class="dropdown-menu arrow arrow-right list-unstyled clearfix pull-left js-organization-visibility">
 			<% } %>	

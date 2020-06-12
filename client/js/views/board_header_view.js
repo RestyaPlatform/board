@@ -62,7 +62,6 @@ App.BoardHeaderView = Backbone.View.extend({
         this.model.cards.bind('change:checklist_item_completed_count', this.updateListView, this);
         this.model.cards.bind('add:labels', this.updateListView, this);
         this.model.cards.bind('change:labels', this.updateListView, this);
-        this.model.cards.bind('change:is_filtered', this.switchListView, this);
         this.model.cards.bind('change:is_filtered', this.switchCalendarView, this);
         this.model.cards.bind('add:users', this.updateListView, this);
         this.model.cards.bind('change:users', this.updateListView, this);

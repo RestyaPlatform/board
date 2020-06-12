@@ -34,7 +34,7 @@ class ActivityHandler
     {
         global $r_debug, $db_lnk, $authUser, $_server_domain_url;
         $obj_type = $obj['type'];
-        if (!empty($obj['revisions']) && trim($obj['revisions']) !== '' && $obj_type !== 'delete_label' && $obj_type !== 'change_grid_view_configuration' && $obj_type !== 'change_list_view_configuration' && $obj_type !== 'update_label' && $obj_type !== 'delete_card_dependency') {
+        if (!empty($obj['revisions']) && trim($obj['revisions']) !== '' && $obj_type !== 'delete_label' && $obj_type !== 'change_grid_view_configuration' && $obj_type !== 'change_list_view_configuration' && $obj_type !== 'update_label' && $obj_type !== 'delete_card_dependency' && $obj_type !== 'delete_board_user') {
             $revisions = unserialize($obj['revisions']);
             $obj['revisions'] = $revisions;
             $diff = array();
@@ -43,7 +43,13 @@ class ActivityHandler
                     if (!in_array($key, ActivityHandler::$not_acceptable_diff_keys, true) && !in_array($obj_type, ActivityHandler::$not_acceptable_diff_obj_types, true)) {
                         $old_val = (isset($revisions['old_value'][$key]) && $revisions['old_value'][$key] != null && $revisions['old_value'][$key] != 'null') ? $revisions['old_value'][$key] : '';
                         $new_val = (isset($revisions['new_value'][$key]) && $revisions['new_value'][$key] != null && $revisions['new_value'][$key] != 'null') ? $revisions['new_value'][$key] : '';
-                        $diff[] = nl2br(getRevisiondifference($old_val, $new_val));
+                        if ($obj_type == 'edit_comment') {
+                            if (getRevisiondifference($old_val, $new_val) !== false) {
+                                $diff[] = getRevisiondifference($old_val, $new_val);
+                            }
+                        } else {
+                            $diff[] = nl2br(getRevisiondifference($old_val, $new_val));
+                        }
                     }
                     if (in_array($obj_type, ActivityHandler::$acceptable_diff_obj_types, true)) {
                         $diff[] = $revisions['new_value'][$key];

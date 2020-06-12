@@ -1600,16 +1600,18 @@
 				apt upgrade -y
 				apt install python-software-properties -y
 				apt install software-properties-common -y
-				set +x
-				echo "To install latest version of PHP, script will add 'ppa:ondrej/php' repository in sources.list.d directory. Do you want to continue (y/n)?"
-				read -r answer
-				set -x
-				case "${answer}" in
-					[Yy])
-					add-apt-repository ppa:ondrej/php
-				esac
-				apt update -y
-				apt install libjpeg8 -y --allow-unauthenticated
+				if ! hash php 2>&-; then
+					set +x
+					echo "To install latest version of PHP, script will add 'ppa:ondrej/php' repository in sources.list.d directory. Do you want to continue (y/n)?"
+					read -r answer
+					set -x
+					case "${answer}" in
+						[Yy])
+						add-apt-repository ppa:ondrej/php
+					esac
+					apt update -y
+					apt install libjpeg8 -y --allow-unauthenticated
+				fi
 			fi
 			install_nginx
 			

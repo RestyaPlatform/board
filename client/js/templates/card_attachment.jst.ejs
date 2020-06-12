@@ -108,6 +108,19 @@
 						</ul>
 					</div>
 				<% } %>
+				<% if(_.isEmpty(attachment.attributes.link) && !_.isEmpty(attachment.attributes.name) && (attachment.attributes.name.toLowerCase().match(/\.(jpg|jpeg|png|gif|webp|bmp|ico)$/) || (attachment.attributes.name.toLowerCase().match(/\.(pdf)$/) && !_.isUndefined(attachment.attributes.doc_image_path) && !_.isEmpty(attachment.attributes.doc_image_path) && attachment.attributes.doc_image_path !== null))) { %> 
+				<div class="btn btn-primary">
+					<% if (this.card.attributes.cover_image_id === attachment.id) {%>
+						<a href="javascript:void(0);" title="<%- i18next.t('Remove cover') %>" class="js-attachment-remove-cover js-cover-img-option" data-id="<%- attachment.id %>">
+							<i class="icon-folder-close cur icon-light"></i> Remove cover
+						</a>
+					<% } else { %>
+						<a href="javascript:void(0);" title="<%- i18next.t('Make cover') %>" class="js-attachment-make-cover js-cover-img-option" data-id="<%- attachment.id %>">
+							<i class="icon-folder-close cur icon-light"></i> Make cover
+						</a>
+					<% } %>
+				</div>
+				<% } %>
 		</div>
 	</div>
 <% } %>

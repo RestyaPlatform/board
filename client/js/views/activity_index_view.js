@@ -30,7 +30,7 @@ App.ActivityIndexView = Backbone.View.extend({
     },
     template: JST['templates/activity_index'],
     converter: new showdown.Converter({
-        extensions: ['targetblank', 'xssfilter', 'codehighlight']
+        extensions: window.extensionslist
     }),
     /** 
      * getListing()
