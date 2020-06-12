@@ -9,7 +9,7 @@
             "name": "Dual License (OSL 3.0 & Commercial License)",
             "url": "https://github.com/RestyaPlatform/board/blob/master/LICENSE.txt"
         },
-        "version": "0.6.8"
+        "version": "0.6.9"
     },
     "basePath": "/v1",
     "consumes": [
