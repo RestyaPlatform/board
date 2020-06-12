@@ -26,7 +26,7 @@ function filter_getFilterObject(current_param, cardModels) {
     $('li.selected > div.media > span.navbar-btn > span.js-user', $('ul.js-board-users')).each(function() {
         filter_user_arr.push($(this).parent().data('user'));
         filter_query += '@' + $(this).parent().data('user') + ',';
-        if ($(this).next('i').length === 0) {
+        if ($(this).parent().parent().find('.js-filter-icon').length === 0) {
             $(this).parent().parent().append('<i class="icon-ok js-filter-icon cur pull-right"></i>');
         }
     });
@@ -34,7 +34,7 @@ function filter_getFilterObject(current_param, cardModels) {
     $('li.selected', $('ul.js-board-colors')).each(function() {
         filter_color_arr.push($(this).data('color'));
         filter_query += 'color:' + $(this).data('color') + ',';
-        if ($(this).next('i').length === 0) {
+        if ($(this).find('i').length === 0) {
             $(this).prepend('<i class="icon-ok js-filter-icon cur pull-right card-color"></i>');
         }
     });
