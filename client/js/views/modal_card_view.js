@@ -2960,7 +2960,7 @@ App.ModalCardView = Backbone.View.extend({
         var self = this;
         var is_edit_labels;
         if (!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(this.model.list.collection.board.acl_links.where({
-                slug: "delete_labels",
+                slug: "add_labels",
                 board_user_role_id: parseInt(this.model.list.board_user_role_id)
             })))) {
             is_edit_labels = true;
