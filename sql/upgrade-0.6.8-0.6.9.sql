@@ -188,3 +188,7 @@ SELECT lists.id,
     lists.custom_fields,
     lists.color
    FROM lists lists;
+
+UPDATE "acl_board_links" SET "is_hide" = '0' WHERE "slug" = 'add_labels';
+
+UPDATE "acl_board_links" SET "name" = 'Delete Labels' WHERE "slug" = 'delete_labels';
