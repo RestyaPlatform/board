@@ -3905,7 +3905,7 @@ COPY public.acl_board_links (id, created, modified, name, url, method, slug, gro
 58	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	View board activities	/boards/?/activities	GET	view_board_activities	2	0
 59	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	View card labels	/boards/?/lists/?/cards/?/labels	GET	view_card_labels	4	0
 61	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Vote card	/boards/?/lists/?/cards/?/card_voters	POST	vote_card	4	0
-29	2016-02-16 16:57:48.45	2016-02-16 16:57:48.45	Add / Delete Labels	/boards/?/labels/?	DELETE	delete_labels	2	0
+29	2016-02-16 16:57:48.45	2016-02-16 16:57:48.45	Delete Labels	/boards/?/labels/?	DELETE	delete_labels	2	0
 44	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Search card to add in comment	/boards/?/cards/search	GET	view_card_search	4	0
 11	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Assign labels to card	/boards/?/lists/?/cards/?/labels	POST	add_labels	4	0
 41	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Remove board member	/boards/?/boards_users/?	DELETE	remove_board_user	2	0
