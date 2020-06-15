@@ -4,6 +4,8 @@ INSERT INTO "acl_links_roles" ("created", "modified", "acl_link_id", "role_id") 
 (now(), now(), (select id from acl_links where slug='view_card_search_custom_field'), '1'),
 (now(), now(), (select id from acl_links where slug='view_card_search_custom_field'), '2');
 
+UPDATE "users" SET "is_intro_video_skipped" = '0';
+
 DO $$ 
    BEGIN
         BEGIN
