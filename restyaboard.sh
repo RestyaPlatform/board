@@ -334,11 +334,21 @@
 					else 
 						if ([ "$pkg_name" = "yum" ])
 						then
-							echo "Note: For the latest version of PHP, we're going to download https://mirror.webtatic.com/yum/el${OS_VERSION}/webtatic-release.rpm."
-							echo "Installing PHP..."
-							rpm -Uvh "https://dl.fedoraproject.org/pub/epel/epel-release-latest-${OS_VERSION}.noarch.rpm"
-							rpm -Uvh "https://mirror.webtatic.com/yum/el${OS_VERSION}/webtatic-release.rpm"
-							yum install -y php72w
+							if ([ "$OS_REQUIREMENT" = "CentOS" ] && [ "$OS_VERSION" = "8" ])
+        					then
+								echo "Note: For the latest version of PHP, we're going to download https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm and https://rpms.remirepo.net/enterprise/remi-release-8.rpm."
+								echo "Installing PHP..."
+								dnf install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
+								dnf install https://rpms.remirepo.net/enterprise/remi-release-8.rpm
+								dnf module enable php:remi-7.4
+								dnf install php php-cli php-common
+							else
+								echo "Note: For the latest version of PHP, we're going to download https://mirror.webtatic.com/yum/el${OS_VERSION}/webtatic-release.rpm."
+								echo "Installing PHP..."
+								rpm -Uvh "https://dl.fedoraproject.org/pub/epel/epel-release-latest-${OS_VERSION}.noarch.rpm"
+								rpm -Uvh "https://mirror.webtatic.com/yum/el${OS_VERSION}/webtatic-release.rpm"
+								yum install -y php72w
+							fi
 							error_code=$?
 							if [ ${error_code} != 0 ]
 							then
@@ -363,13 +373,18 @@
 			else 
 				if ([ "$pkg_name" = "yum" ])
 				then
-					yum install -y php72w-fpm php72w-devel php72w-cli php72w-opcache
+					if ([ "$OS_REQUIREMENT" = "CentOS" ] && [ "$OS_VERSION" = "8" ])
+        			then
+						dnf install php-fpm php-devel php-opcache
+					else
+						yum install -y php72w-fpm php72w-devel php72w-cli php72w-opcache
+					fi
 					error_code=$?
 					if [ ${error_code} != 0 ]
 					then
 						echo "php-devel installation failed with error code ${error_code} (php-devel installation failed with error code 21)"
 						return 21
-					fi
+					fi					
 					service php-fpm start
 				fi
 			fi
@@ -396,7 +411,12 @@
 				else 
 					if ([ "$pkg_name" = "yum" ])
 					then
-						yum install -y php72w-curl
+						if ([ "$OS_REQUIREMENT" = "CentOS" ] && [ "$OS_VERSION" = "8" ])
+						then
+							dnf install php-curl
+						else
+							yum install -y php72w-curl
+						fi
 						error_code=$?
 						if [ ${error_code} != 0 ]
 						then
@@ -424,7 +444,12 @@
 				else 
 					if ([ "$pkg_name" = "yum" ])
 					then
-						yum install -y php72w-pgsql
+						if ([ "$OS_REQUIREMENT" = "CentOS" ] && [ "$OS_VERSION" = "8" ])
+						then
+							dnf install php-pgsql
+						else
+							yum install -y php72w-pgsql
+						fi
 						error_code=$?
 						if [ ${error_code} != 0 ]
 						then
@@ -451,7 +476,12 @@
 				else 
 					if ([ "$pkg_name" = "yum" ])
 					then
-						yum install -y php72w-mbstring
+						if ([ "$OS_REQUIREMENT" = "CentOS" ] && [ "$OS_VERSION" = "8" ])
+						then
+							dnf install php-mbstring
+						else
+							yum install -y php72w-mbstring
+						fi
 						error_code=$?
 						if [ ${error_code} != 0 ]
 						then
@@ -478,7 +508,12 @@
 				else 
 					if ([ "$pkg_name" = "yum" ])
 					then
-						yum install -y php72w-ldap
+						if ([ "$OS_REQUIREMENT" = "CentOS" ] && [ "$OS_VERSION" = "8" ])
+						then
+							dnf install php-ldap
+						else
+							yum install -y php72w-ldap
+						fi
 						error_code=$?
 						if [ ${error_code} != 0 ]
 						then
@@ -520,8 +555,14 @@
 					if ([ "$pkg_name" = "yum" ])
 					then
 						yum install -y ImageM* netpbm gd gd-* libjpeg libexif gcc coreutils make
-						yum install -y php72w-pear
-						yum install -y php72w-gd
+						if ([ "$OS_REQUIREMENT" = "CentOS" ] && [ "$OS_VERSION" = "8" ])
+						then
+							dnf install php-pear
+							dnf install php-gd
+						else
+							yum install -y php72w-pear
+							yum install -y php72w-gd
+						fi
 						error_code=$?
 						if [ ${error_code} != 0 ]
 						then
@@ -559,7 +600,12 @@
 				else
 					if ([ "$pkg_name" = "yum" ])
 					then
-						yum install -y php72w-imap
+						if ([ "$OS_REQUIREMENT" = "CentOS" ] && [ "$OS_VERSION" = "8" ])
+						then
+							dnf install php-imap
+						else
+							yum install -y php72w-imap
+						fi
 						error_code=$?
 						if [ ${error_code} != 0 ]
 						then
@@ -586,7 +632,12 @@
 				else
 					if ([ "$pkg_name" = "yum" ])
 					then
-						yum install -y php72w-xml
+						if ([ "$OS_REQUIREMENT" = "CentOS" ] && [ "$OS_VERSION" = "8" ])
+						then
+							dnf install php-xml
+						else
+							yum install -y php72w-xml
+						fi
 						error_code=$?
 						if [ ${error_code} != 0 ]
 						then
@@ -725,8 +776,13 @@
 								rpm -Uvh "https://download.postgresql.org/pub/repos/yum/9.6/redhat/rhel-${OS_VERSION}-x86_64/pgdg-redhat-repo-latest.noarch.rpm"
 							fi
 						fi
-
-						yum install -y postgresql96 postgresql96-server postgresql96-contrib postgresql96-libs
+						if ([ "$OS_REQUIREMENT" = "CentOS" ] && [ "$OS_VERSION" = "8" ])
+						then
+							dnf module enable postgresql:9.6
+							dnf install postgresql-server postgresql-contrib postgresql-libs
+						else
+							yum install -y postgresql96 postgresql96-server postgresql96-contrib postgresql96-libs	
+						fi
 						error_code=$?
 						if [ ${error_code} != 0 ]
 						then
@@ -752,8 +808,13 @@
 								rpm -Uvh "https://download.postgresql.org/pub/repos/yum/9.6/redhat/rhel-${OS_VERSION}-x86_64/pgdg-redhat-repo-latest.noarch.rpm"
 							fi
 						fi
-
-						yum install -y postgresql96 postgresql96-server postgresql96-contrib postgresql96-libs
+						if ([ "$OS_REQUIREMENT" = "CentOS" ] && [ "$OS_VERSION" = "8" ])
+						then
+							dnf module enable postgresql:9.6
+							dnf install postgresql-server postgresql-contrib postgresql-libs
+						else
+							yum install -y postgresql96 postgresql96-server postgresql96-contrib postgresql96-libs
+						fi
 						error_code=$?
 						if [ ${error_code} != 0 ]
 						then
@@ -764,25 +825,48 @@
 				fi
 				PSQL_VERSION=$(psql --version | egrep -o '[0-9]{1,}\.[0-9]{1,}')
 				PSQL_FOLDER=$(echo ${PSQL_VERSION} | sed 's/\.//')
-				if [ -f "/usr/pgsql-${PSQL_VERSION}/bin/postgresql${PSQL_FOLDER}-setup" ]; then
-					"/usr/pgsql-${PSQL_VERSION}/bin/postgresql${PSQL_FOLDER}-setup" initdb
-				fi
-				if [ -f "/bin/systemctl" ]; then
-					systemctl start "postgresql-${PSQL_VERSION}.service"
-					systemctl enable "postgresql-${PSQL_VERSION}.service"
+				if ([ "$OS_REQUIREMENT" = "CentOS" ] && [ "$OS_VERSION" = "8" ])
+				then
+					postgresql-setup --initdb
 				else
-					"/etc/init.d/postgresql-${PSQL_VERSION}" start
-					chkconfig --levels 35 "postgresql-${PSQL_VERSION}" on
+					if [ -f "/usr/pgsql-${PSQL_VERSION}/bin/postgresql${PSQL_FOLDER}-setup" ]; then
+						"/usr/pgsql-${PSQL_VERSION}/bin/postgresql${PSQL_FOLDER}-setup" initdb
+					fi
 				fi
-				sed -e 's/peer/trust/g' -e 's/ident/trust/g' < "/var/lib/pgsql/${PSQL_VERSION}/data/pg_hba.conf" > "/var/lib/pgsql/${PSQL_VERSION}/data/pg_hba.conf.1"
-				cd "/var/lib/pgsql/${PSQL_VERSION}/data" || exit
-				mv pg_hba.conf pg_hba.conf_old
-				mv pg_hba.conf.1 pg_hba.conf
-				
-				if [ -f "/bin/systemctl" ]; then
-					systemctl restart "postgresql-${PSQL_VERSION}.service"
+				if ([ "$OS_REQUIREMENT" = "CentOS" ] && [ "$OS_VERSION" = "8" ])
+				then
+					systemctl start postgresql
+					systemctl enable postgresql
 				else
-					"/etc/init.d/postgresql-${PSQL_VERSION}" restart
+					if [ -f "/bin/systemctl" ]; then
+						systemctl start "postgresql-${PSQL_VERSION}.service"
+						systemctl enable "postgresql-${PSQL_VERSION}.service"
+					else
+						"/etc/init.d/postgresql-${PSQL_VERSION}" start
+						chkconfig --levels 35 "postgresql-${PSQL_VERSION}" on
+					fi
+				fi
+				if ([ "$OS_REQUIREMENT" = "CentOS" ] && [ "$OS_VERSION" = "8" ])
+				then
+					sed -e 's/peer/trust/g' -e 's/ident/trust/g' < "/var/lib/pgsql/data/pg_hba.conf" > "/var/lib/pgsql/data/pg_hba.conf.1"
+					cd "/var/lib/pgsql/data" || exit
+					mv pg_hba.conf pg_hba.conf_old
+					mv pg_hba.conf.1 pg_hba.conf
+				else
+					sed -e 's/peer/trust/g' -e 's/ident/trust/g' < "/var/lib/pgsql/${PSQL_VERSION}/data/pg_hba.conf" > "/var/lib/pgsql/${PSQL_VERSION}/data/pg_hba.conf.1"
+					cd "/var/lib/pgsql/${PSQL_VERSION}/data" || exit
+					mv pg_hba.conf pg_hba.conf_old
+					mv pg_hba.conf.1 pg_hba.conf
+				fi
+				if ([ "$OS_REQUIREMENT" = "CentOS" ] && [ "$OS_VERSION" = "8" ])
+				then
+					systemctl restart postgresql
+				else
+					if [ -f "/bin/systemctl" ]; then
+						systemctl restart "postgresql-${PSQL_VERSION}.service"
+					else
+						"/etc/init.d/postgresql-${PSQL_VERSION}" restart
+					fi
 				fi
 			fi
 		}
@@ -830,8 +914,6 @@
 						return 47
 					fi
 				fi
-
-				yum install -y php72w-xml
 			fi
 		}
 		configure_restyaboard()
@@ -1104,6 +1186,9 @@
 				echo "Reset php-fpm (use unix socket mode)..."
 				if [ -f "/run/php/php7.2-fpm.sock" ]; then
 					sed -i "s/listen = 127.0.0.1:9000/listen = \/run\/php\/php7.2-fpm.sock/g" /etc/php-fpm.d/www.conf
+				elif [ -f "/run/php-fpm/www.sock" ]; then
+					sed -i "s/listen = 127.0.0.1:9000/listen = \/run\/php-fpm\/www.sock/g" /etc/php-fpm.d/www.conf
+					sed -i "s/unix:\/run\/php\/php7.2-fpm.sock/unix:\/run\/php-fpm\/www.sock/g" /etc/nginx/conf.d/restyaboard.conf
 				else
 					sed -i "s/unix:\/run\/php\/php7.2-fpm.sock/127.0.0.1:9000/g" /etc/nginx/conf.d/restyaboard.conf
 				fi
