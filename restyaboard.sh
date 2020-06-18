@@ -324,7 +324,7 @@
 					if ([ "$pkg_name" = "apt-get" ])
 					then							
 						echo "Installing PHP..."
-						apt install -y php7.2 php7.2-common --allow-unauthenticated
+						apt install -y php7.4 php7.4-common --allow-unauthenticated
 						error_code=$?
 						if [ ${error_code} != 0 ]
 						then
@@ -343,11 +343,11 @@
 								dnf module enable php:remi-7.4
 								dnf install php php-cli php-common
 							else
-								echo "Note: For the latest version of PHP, we're going to download https://mirror.webtatic.com/yum/el${OS_VERSION}/webtatic-release.rpm."
+								yum install -y epel-release
+								echo "Note: For the latest version of PHP, we're going to download http://rpms.famillecollet.com/enterprise/remi-release-${OS_VERSION}.rpm."
 								echo "Installing PHP..."
-								rpm -Uvh "https://dl.fedoraproject.org/pub/epel/epel-release-latest-${OS_VERSION}.noarch.rpm"
-								rpm -Uvh "https://mirror.webtatic.com/yum/el${OS_VERSION}/webtatic-release.rpm"
-								yum install -y php72w
+								rpm -Uvh "http://rpms.famillecollet.com/enterprise/remi-release-${OS_VERSION}.rpm"
+								yum --enablerepo=remi-php74 install -y php
 							fi
 							error_code=$?
 							if [ ${error_code} != 0 ]
@@ -363,13 +363,13 @@
 			echo "Installing PHP fpm and cli extension..."
 			if ([ "$pkg_name" = "apt-get" ])
 			then
-				apt install -y php7.2-fpm php7.2-cli --allow-unauthenticated
+				apt install -y php7.4-fpm php7.4-cli --allow-unauthenticated
 				error_code=$?
 				if [ ${error_code} != 0 ]
 				then
-					echo "php7.2-cli installation failed with error code ${error_code} (php7.2-cli installation failed with error code 4)"
+					echo "php7.4-cli installation failed with error code ${error_code} (php7.4-cli installation failed with error code 4)"
 				fi
-				service php7.2-fpm start
+				service php7.4-fpm start
 			else 
 				if ([ "$pkg_name" = "yum" ])
 				then
@@ -377,7 +377,7 @@
         			then
 						dnf install php-fpm php-devel php-opcache
 					else
-						yum install -y php72w-fpm php72w-devel php72w-cli php72w-opcache
+						yum --enablerepo=remi-php74 install -y php-fpm php-devel php-cli php-opcache
 					fi
 					error_code=$?
 					if [ ${error_code} != 0 ]
@@ -401,11 +401,11 @@
 				echo "Installing php-curl..."
 				if ([ "$pkg_name" = "apt-get" ])
 				then
-					apt install -y php7.2-curl --allow-unauthenticated
+					apt install -y php7.4-curl --allow-unauthenticated
 					error_code=$?
 					if [ ${error_code} != 0 ]
 					then
-						echo "php7.2-curl installation failed with error code ${error_code} (php7.2-curl installation failed with error code 5)"
+						echo "php7.4-curl installation failed with error code ${error_code} (php7.4-curl installation failed with error code 5)"
 						return 5
 					fi
 				else 
@@ -415,7 +415,7 @@
 						then
 							dnf install php-curl
 						else
-							yum install -y php72w-curl
+							yum --enablerepo=remi-php74 install -y php-curl
 						fi
 						error_code=$?
 						if [ ${error_code} != 0 ]
@@ -434,11 +434,11 @@
 				if ([ "$pkg_name" = "apt-get" ])
 				then
 					apt install libpq5
-					apt install -y php7.2-pgsql --allow-unauthenticated
+					apt install -y php7.4-pgsql --allow-unauthenticated
 					error_code=$?
 					if [ ${error_code} != 0 ]
 					then
-						echo "php7.2-pgsql installation failed with error code ${error_code} (php7.2-pgsql installation failed with error code 6)"
+						echo "php7.4-pgsql installation failed with error code ${error_code} (php7.4-pgsql installation failed with error code 6)"
 						return 6
 					fi
 				else 
@@ -448,7 +448,7 @@
 						then
 							dnf install php-pgsql
 						else
-							yum install -y php72w-pgsql
+							yum --enablerepo=remi-php74 install -y php-pgsql
 						fi
 						error_code=$?
 						if [ ${error_code} != 0 ]
@@ -466,11 +466,11 @@
 				echo "Installing php-mbstring..."
 				if ([ "$pkg_name" = "apt-get" ])
 				then
-					apt install -y php7.2-mbstring --allow-unauthenticated
+					apt install -y php7.4-mbstring --allow-unauthenticated
 					error_code=$?
 					if [ ${error_code} != 0 ]
 					then
-						echo "php7.2-mbstring installation failed with error code ${error_code} (php7.2-mbstring installation failed with error code 7)"
+						echo "php7.4-mbstring installation failed with error code ${error_code} (php7.4-mbstring installation failed with error code 7)"
 						return 7
 					fi
 				else 
@@ -480,7 +480,7 @@
 						then
 							dnf install php-mbstring
 						else
-							yum install -y php72w-mbstring
+							yum --enablerepo=remi-php74 install -y php-mbstring
 						fi
 						error_code=$?
 						if [ ${error_code} != 0 ]
@@ -498,11 +498,11 @@
 				echo "Installing php-ldap..."
 				if ([ "$pkg_name" = "apt-get" ])
 				then
-					apt install -y php7.2-ldap --allow-unauthenticated
+					apt install -y php7.4-ldap --allow-unauthenticated
 					error_code=$?
 					if [ ${error_code} != 0 ]
 					then
-						echo "php7.2-ldap installation failed with error code ${error_code} (php7.2-ldap installation failed with error code 8)"
+						echo "php7.4-ldap installation failed with error code ${error_code} (php7.4-ldap installation failed with error code 8)"
 						return 8
 					fi
 				else 
@@ -512,7 +512,7 @@
 						then
 							dnf install php-ldap
 						else
-							yum install -y php72w-ldap
+							yum --enablerepo=remi-php74 install -y php-ldap
 						fi
 						error_code=$?
 						if [ ${error_code} != 0 ]
@@ -544,11 +544,11 @@
 						echo "imagemagick installation failed with error code ${error_code} (imagemagick installation failed with error code 9)"
 						return 9
 					fi
-					apt install -y php7.2-imagick --allow-unauthenticated
+					apt install -y php7.4-imagick --allow-unauthenticated
 					error_code=$?
 					if [ ${error_code} != 0 ]
 					then
-						echo "php7.2-imagick installation failed with error code ${error_code} (php7.2-imagick installation failed with error code 10)"
+						echo "php7.4-imagick installation failed with error code ${error_code} (php7.4-imagick installation failed with error code 10)"
 						return 10
 					fi
 				else 
@@ -560,8 +560,8 @@
 							dnf install php-pear
 							dnf install php-gd
 						else
-							yum install -y php72w-pear
-							yum install -y php72w-gd
+							yum --enablerepo=remi-php74 install -y php-pear
+							yum --enablerepo=remi-php74 install -y php-gd
 						fi
 						error_code=$?
 						if [ ${error_code} != 0 ]
@@ -587,14 +587,14 @@
 			echo "Checking PHP imap extension..."
 			php -m | grep imap
 			if [ "$?" -gt 0 ]; then
-				echo "Installing php7.2-imap..."
+				echo "Installing php7.4-imap..."
 				if ([ "$pkg_name" = "apt-get" ])
 				then
-					apt install -y php7.2-imap --allow-unauthenticated
+					apt install -y php7.4-imap --allow-unauthenticated
 					error_code=$?
 					if [ ${error_code} != 0 ]
 					then
-						echo "php7.2-imap installation failed with error code ${error_code} (php7.2-imap installation failed with error code 11)"
+						echo "php7.4-imap installation failed with error code ${error_code} (php7.4-imap installation failed with error code 11)"
 						return 11
 					fi
 				else
@@ -604,7 +604,7 @@
 						then
 							dnf install php-imap
 						else
-							yum install -y php72w-imap
+							yum --enablerepo=remi-php74 install -y php-imap
 						fi
 						error_code=$?
 						if [ ${error_code} != 0 ]
@@ -622,7 +622,7 @@
 				echo "Installing xml..."
 				if ([ "$pkg_name" = "apt-get" ])
 				then
-					apt install php7.2-xml --allow-unauthenticated
+					apt install php7.4-xml --allow-unauthenticated
 					error_code=$?
 					if [ ${error_code} != 0 ]
 					then
@@ -636,7 +636,7 @@
 						then
 							dnf install php-xml
 						else
-							yum install -y php72w-xml
+							yum --enablerepo=remi-php74 install -y php-xml
 						fi
 						error_code=$?
 						if [ ${error_code} != 0 ]
@@ -653,8 +653,8 @@
 			if ([ "$OS_REQUIREMENT" = "Ubuntu" ] || [ "$OS_REQUIREMENT" = "Debian" ] || [ "$OS_REQUIREMENT" = "LinuxMint" ] || [ "$OS_REQUIREMENT" = "Raspbian" ])
 			then
 				timezone=$(cat /etc/timezone)
-				sed -i -e 's/date.timezone/;date.timezone/g' /etc/php/7.2/fpm/php.ini
-				echo "date.timezone = $timezone" >> /etc/php/7.2/fpm/php.ini
+				sed -i -e 's/date.timezone/;date.timezone/g' /etc/php/7.4/fpm/php.ini
+				echo "date.timezone = $timezone" >> /etc/php/7.4/fpm/php.ini
 			else 
 				PHP_VERSION=$(php -v | grep "PHP 5" | sed 's/.*PHP \([^-]*\).*/\1/' | cut -c 1-3)
 				echo "Installed PHP version: '$PHP_VERSION'"
@@ -876,11 +876,11 @@
 			then
 				if ! hash GeoIP-devel 2>&-;
 				then
-					apt install -y php7.2-geoip php7.2-dev libgeoip-dev
+					apt install -y php7.4-geoip php7.4-dev libgeoip-dev
 					error_code=$?
 					if [ ${error_code} != 0 ]
 					then
-						echo "php7.2-geoip php7.2-dev libgeoip-dev installation failed with error code ${error_code} (php7.2-geoip php7.2-dev libgeoip-dev installation failed with error code 50)"
+						echo "php7.4-geoip php7.4-dev libgeoip-dev installation failed with error code ${error_code} (php7.4-geoip php7.4-dev libgeoip-dev installation failed with error code 50)"
 					fi
 				fi
 
@@ -1184,13 +1184,13 @@
 				echo "........."
 			else
 				echo "Reset php-fpm (use unix socket mode)..."
-				if [ -f "/run/php/php7.2-fpm.sock" ]; then
-					sed -i "s/listen = 127.0.0.1:9000/listen = \/run\/php\/php7.2-fpm.sock/g" /etc/php-fpm.d/www.conf
+				if [ -f "/run/php/php7.4-fpm.sock" ]; then
+					sed -i "s/listen = 127.0.0.1:9000/listen = \/run\/php\/php7.4-fpm.sock/g" /etc/php-fpm.d/www.conf
 				elif [ -f "/run/php-fpm/www.sock" ]; then
 					sed -i "s/listen = 127.0.0.1:9000/listen = \/run\/php-fpm\/www.sock/g" /etc/php-fpm.d/www.conf
-					sed -i "s/unix:\/run\/php\/php7.2-fpm.sock/unix:\/run\/php-fpm\/www.sock/g" /etc/nginx/conf.d/restyaboard.conf
+					sed -i "s/unix:\/run\/php\/php7.4-fpm.sock/unix:\/run\/php-fpm\/www.sock/g" /etc/nginx/conf.d/restyaboard.conf
 				else
-					sed -i "s/unix:\/run\/php\/php7.2-fpm.sock/127.0.0.1:9000/g" /etc/nginx/conf.d/restyaboard.conf
+					sed -i "s/unix:\/run\/php\/php7.4-fpm.sock/127.0.0.1:9000/g" /etc/nginx/conf.d/restyaboard.conf
 				fi
 			fi
 		}
@@ -1220,7 +1220,7 @@
 			then
 				echo "Starting services..."
 				service cron restart
-				service php7.2-fpm restart
+				service php7.4-fpm restart
 				if [ ${APACHE_ENABLED} -eq 1 ] 
 				then
 					a2ensite restyaboard.conf
@@ -1284,7 +1284,7 @@
 					if ([ "$OS_REQUIREMENT" = "Ubuntu" ] || [ "$OS_REQUIREMENT" = "Debian" ] || [ "$OS_REQUIREMENT" = "LinuxMint" ] || [ "$OS_REQUIREMENT" = "Raspbian" ])
 					then
 						service nginx restart
-						service php7.2-fpm restart
+						service php7.4-fpm restart
 					else
 						if [ -f "/bin/systemctl" ]; then
 							echo "Starting services with systemd..."
