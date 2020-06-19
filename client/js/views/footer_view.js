@@ -1288,7 +1288,7 @@ App.FooterView = Backbone.View.extend({
                                                 card.set('due_date', null);
                                                 self.FilterCards(Backbone.history.fragment.split('?'), card);
                                             }
-                                            if (!_.isEmpty(activity.attributes.revisions) && activity.attributes.type !== 'update_card_checklist' && activity.attributes.type !== 'move_card') {
+                                            if (!_.isEmpty(activity.attributes.revisions) && activity.attributes.type !== 'update_card_checklist' && activity.attributes.type !== 'move_card' && activity.attributes.type !== 'update_card_checklist_item') {
                                                 if (!_.isUndefined(activity.attributes.revisions.new_value) && activity.attributes.revisions.new_value !== null) {
                                                     if (activity.attributes.revisions.new_value.card_id) {
                                                         activity.attributes.revisions.new_value.id = parseInt(activity.attributes.revisions.new_value.card_id);
