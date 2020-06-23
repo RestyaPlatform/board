@@ -2904,6 +2904,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             );
             $filename = $_FILES['attachment']['name'];
             $file_ext = pathinfo($filename, PATHINFO_EXTENSION);
+            $file_ext = strtolower($file_ext);
             if (in_array($file_ext, $allowed_ext)) {
                 $mediadir = MEDIA_PATH . DS . 'User' . DS . $r_resource_vars['users'];
                 $save_path = 'User' . DS . $r_resource_vars['users'];
@@ -4144,6 +4145,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             );
             $filename = $_FILES['attachment']['name'];
             $file_ext = pathinfo($filename, PATHINFO_EXTENSION);
+            $file_ext = strtolower($file_ext);
             if (in_array($file_ext, $allowed_ext)) {
                 $mediadir = MEDIA_PATH . DS . 'Board' . DS . $r_resource_vars['boards'];
                 $save_path = 'Board' . DS . $r_resource_vars['boards'];
@@ -6011,6 +6013,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             );
             $filename = $_FILES['attachment']['name'];
             $file_ext = pathinfo($filename, PATHINFO_EXTENSION);
+            $file_ext = strtolower($file_ext);
             if (in_array($file_ext, $allowed_ext)) {
                 $mediadir = MEDIA_PATH . DS . 'Organization' . DS . $r_resource_vars['organizations'];
                 $save_path = 'Organization' . DS . $r_resource_vars['organizations'];
