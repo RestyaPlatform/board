@@ -1,6 +1,9 @@
 version: "2"
 services:
   restyaboard:
+    image: restyaplatform/restyaboard:dev
+    ports:
+      - 1234:80
     volumes:
       - /var/opt/restya/media:/usr/share/nginx/html/media
     environment:
@@ -23,7 +26,7 @@ services:
   smtp_relay:
     image: boky/postfix
     environment:
-      - RELAYHOST=CONFIGURE_ME
+      - RELAYHOST=<Replace_Public_Instance_IP>:1587
       - ALLOW_EMPTY_SENDER_DOMAINS=true
 
   postgres:
