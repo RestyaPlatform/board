@@ -46,7 +46,7 @@ EOF
   fi
 
   # cron shell
-  echo "*/5 * * * * ${ROOT_DIR}/server/php/shell/main.sh" >> /var/spool/cron/crontabs/root
+  echo "*/5 * * * * ${ROOT_DIR}/server/php/shell/main.sh > /dev/null 2> /dev/null" >> /var/spool/cron/crontabs/root
 
   mkdir -p /run/nginx
 
