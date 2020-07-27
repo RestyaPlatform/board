@@ -139,14 +139,16 @@
 								if (custom_field.type === 'time') {
 									var field_time = card_customfield_value.split(':');
 									var time_noon = '';
-									if (field_time[0] <= 12) {
+									if (field_time[0] < 12) {
 										if (field_time[0] < 10 && field_time[0].indexOf('0') == -1) {
 											field_time[0] = '0' + field_time[0];
 										}
 										time_noon = 'AM';
 									} else {
 										time_noon = 'PM';
-										field_time[0] = field_time[0] - 12;
+										if (field_time[0] != 12) {
+											field_time[0] = field_time[0] - 12;
+										}
 										if (field_time[0] < 10) {
 											field_time[0] = '0' + field_time[0];
 										}
@@ -162,14 +164,16 @@
 										if (!_.isEmpty(date[1])) {
 											hours_mins = date[1].split(':');
 											var noon = '';
-											if (hours_mins[0] <= 12) {
+											if (hours_mins[0] < 12) {
 												if (hours_mins[0] < 10 && hours_mins[0].indexOf('0') == -1) {
 													hours_mins[0] = '0' + hours_mins[0];
 												}
 												noon = 'AM';
 											} else {
 												noon = 'PM';
-												hours_mins[0] = hours_mins[0] - 12;
+												if (hours_mins[0] != 12) {
+													hours_mins[0] = hours_mins[0] - 12;
+												}
 												if (hours_mins[0] < 10) {
 													hours_mins[0] = '0' + hours_mins[0];
 												}
@@ -215,11 +219,13 @@
 		if (!_.isEmpty(date_times[1])) {
 			hours_mins = date_times[1].split(':');
 			var noon = '';
-			if (hours_mins[0] <= 12) {
+			if (hours_mins[0] < 12) {
 					noon = 'AM';
 			} else {
 					noon = 'PM';
-					hours_mins[0] = hours_mins[0] - 12;
+					if (hours_mins[0] != 12) {
+						hours_mins[0] = hours_mins[0] - 12;
+					}
 					if (hours_mins[0] < 10) {
 						hours_mins[0] = '0' + hours_mins[0];
 					}
