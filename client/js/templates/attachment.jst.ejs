@@ -1,10 +1,14 @@
-<% if(attachment != null){ %>
-	<% if(_.isEmpty(attachment.attributes.link) && !_.isEmpty(attachment.attributes.name)){ 
+<% if(attachment != null){ 
+	var attachment_name;
+	if(_.isEmpty(attachment.attributes.link) && !_.isEmpty(attachment.attributes.name)){
+		attachment_name = encodeURI(attachment.attributes.name); 
+	}
+	if(_.isEmpty(attachment.attributes.link) && !_.isEmpty(attachment.attributes.name)){
 		if(attachment.attributes.name.toLowerCase().match(/\.(jpg|jpeg|png|gif|webp|bmp|ico)$/)){ 
 			var picture_path = attachment.showImage('CardAttachment', attachment.attributes.id, 'original' );
 			var picture_thumb = attachment.showImage('CardAttachment', attachment.attributes.id, 'large_thumb' );
 		%>
-		<a data-fancybox="images" data-caption="<%= decodeURI(attachment.attributes.name) %>" href="<%= picture_path %>" class="pull-left navbar-btn img-thumbnail thumb-img js-attachment-<%- id %>">
+		<a data-fancybox="images" data-caption="<%= decodeURI(attachment_name) %>" href="<%= picture_path %>" class="pull-left navbar-btn img-thumbnail thumb-img js-attachment-<%- id %>">
 			<% if(attachment.attributes.name.toLowerCase().match(/\.(jpg|jpeg|png|gif|bmp|ico)$/)){ %>
 				<img class="img-responsive" src="<%= picture_thumb %>">
 			<% } else if(attachment.attributes.name.toLowerCase().match(/\.(webp)$/)){ %>
@@ -14,14 +18,14 @@
 			
 		<% } else if (attachment.attributes.name.toLowerCase().match(/\.(pdf)$/) && !_.isUndefined(attachment.attributes.doc_image_path) && !_.isEmpty(attachment.attributes.doc_image_path) && attachment.attributes.doc_image_path !== null) { 
 			var document_path = attachment.documentLink('Card', attachment.attributes); %>
-			<a data-fancybox="images" data-caption="<%= decodeURI(attachment.attributes.name) %>" href="<%= document_path %>" class="pull-left navbar-btn img-thumbnail js-card-attachment-<%- id %>">
+			<a data-fancybox="images" data-caption="<%= decodeURI(attachment_name) %>" href="<%= document_path %>" class="pull-left navbar-btn img-thumbnail js-card-attachment-<%- id %>">
 				<img src="/img/<%= attachment.attributes.doc_image_path %>">
 			</a>
 		<% } else {
 			var document_path = attachment.documentLink('Card', attachment.attributes);
 			var extension = attachment.attributes.name.split('.');
 		%>
-			<a data-fancybox="images" data-caption="<%= decodeURI(attachment.attributes.name) %>" href="<%= document_path %>" class="pull-left navbar-btn img-thumbnail thumb-img js-attachment-<%- id %>"><p class="thumb-img"><%- extension[extension.length - 1].toUpperCase() %></p></a>
+			<a data-fancybox="images" data-caption="<%= decodeURI(attachment_name) %>" href="<%= document_path %>" class="pull-left navbar-btn img-thumbnail thumb-img js-attachment-<%- id %>"><p class="thumb-img"><%- extension[extension.length - 1].toUpperCase() %></p></a>
 		<% } %>
 	<% } else if(!_.isEmpty(attachment.attributes.link)){ %>
 	<%   
@@ -48,11 +52,11 @@
 		<%   
 			if (navigator.userAgent.toLowerCase().indexOf('uiwebview') > -1) {
 		%>
-			<a target="_self" href="<%= attachment.downloadLink('download', attachment.attributes.id) %>" title="<%- decodeURI(attachment.attributes.name) %>">
+			<a target="_self" href="<%= attachment.downloadLink('download', attachment.attributes.id) %>" title="<%- decodeURI(attachment_name) %>">
 		<% } else { %>
-			<a target="_blank" href="<%= attachment.downloadLink('download', attachment.attributes.id) %>" title="<%- decodeURI(attachment.attributes.name) %>">
+			<a target="_blank" href="<%= attachment.downloadLink('download', attachment.attributes.id) %>" title="<%- decodeURI(attachment_name) %>">
 		<% } %>
-			<span class="htruncate col-xs-12 btn-block"><%- decodeURI(attachment.attributes.name) %></span><span class="show btn-block col-xs-12"><%- i18next.t('Added') %> <small class="text-muted">
+			<span class="htruncate col-xs-12 btn-block"><%- decodeURI(attachment_name) %></span><span class="show btn-block col-xs-12"><%- i18next.t('Added') %> <small class="text-muted">
 			<% setInterval(function() {%>
 				<% parse_date(attachment.attributes.created, authuser, 'js-timeago-attachment1-'+attachment.attributes.id); %>
 			<% }, 10000); %>
