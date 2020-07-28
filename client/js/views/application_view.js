@@ -1397,12 +1397,10 @@ App.ApplicationView = Backbone.View.extend({
             }
         } else {
             if (Backbone.history.fragment.indexOf('board/') != -1 || Backbone.history.fragment.indexOf('organization/') != -1 || Backbone.history.fragment.indexOf('boards') != -1) {
-                if (Backbone.history.fragment.indexOf('organization/') != -1 || Backbone.history.fragment.indexOf('boards') != -1) {
-                    this.footerView = new App.FooterView({
-                        model: authuser,
-                    }).render();
-                    $('#footer').html(this.footerView.el);
-                }
+                this.footerView = new App.FooterView({
+                    model: authuser,
+                }).render();
+                $('#footer').html(this.footerView.el);
             } else {
                 $('#footer').html('');
             }
