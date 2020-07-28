@@ -1257,7 +1257,7 @@ jQuery.support = (function() {
 
   // Setup
   div.setAttribute( "className", "t" );
-  div.innerHTML = "  <link/><table></table><a href='/a'>a</a><input type='checkbox'/>";
+  div.innerHTML = DOMPurify.sanitize("  <link/><table></table><a href='/a'>a</a><input type='checkbox'/>", {RETURN_TRUSTED_TYPE: true});
 
   // Support tests won't run in some limited or non-browser environments
   all = div.getElementsByTagName("*");
@@ -1437,7 +1437,7 @@ jQuery.support = (function() {
     // display:none (it is still safe to use offsets if a parent element is
     // hidden; don safety goggles and see bug #4512 for more information).
     // (only IE 8 fails this test)
-    div.innerHTML = "<table><tr><td></td><td>t</td></tr></table>";
+    div.innerHTML = DOMPurify.sanitize("<table><tr><td></td><td>t</td></tr></table>", {RETURN_TRUSTED_TYPE: true});
     tds = div.getElementsByTagName("td");
     tds[ 0 ].style.cssText = "padding:0;margin:0;border:0;display:none";
     isSupported = ( tds[ 0 ].offsetHeight === 0 );
@@ -1450,7 +1450,7 @@ jQuery.support = (function() {
     support.reliableHiddenOffsets = isSupported && ( tds[ 0 ].offsetHeight === 0 );
 
     // Check box-sizing and margin behavior
-    div.innerHTML = "";
+    div.innerHTML = DOMPurify.sanitize("", {RETURN_TRUSTED_TYPE: true});
     div.style.cssText = "box-sizing:border-box;-moz-box-sizing:border-box;-webkit-box-sizing:border-box;padding:1px;border:1px;display:block;width:4px;margin-top:1%;position:absolute;top:1%;";
     support.boxSizing = ( div.offsetWidth === 4 );
     support.doesNotIncludeMarginInBodyOffset = ( body.offsetTop !== 1 );
@@ -1480,7 +1480,7 @@ jQuery.support = (function() {
       // elements when setting their display to 'inline' and giving
       // them layout
       // (IE < 8 does this)
-      div.innerHTML = "";
+      div.innerHTML = DOMPurify.sanitize("", {RETURN_TRUSTED_TYPE: true});
       div.style.cssText = divReset + "width:1px;padding:1px;display:inline;zoom:1";
       support.inlineBlockNeedsLayout = ( div.offsetWidth === 3 );
 
@@ -1488,7 +1488,7 @@ jQuery.support = (function() {
       // (IE 6 does this)
       div.style.display = "block";
       div.style.overflow = "visible";
-      div.innerHTML = "<div></div>";
+      div.innerHTML = DOMPurify.sanitize("<div></div>", {RETURN_TRUSTED_TYPE: true});
       div.firstChild.style.width = "5px";
       support.shrinkWrapBlocks = ( div.offsetWidth !== 3 );
 
@@ -3815,14 +3815,14 @@ var cachedruns,
 
   // Check if getAttribute returns normalized href attributes
   assertHrefNotNormalized = assert(function( div ) {
-    div.innerHTML = "<a href='#'></a>";
+    div.innerHTML = DOMPurify.sanitize("<a href='#'></a>", {RETURN_TRUSTED_TYPE: true});
     return div.firstChild && typeof div.firstChild.getAttribute !== strundefined &&
       div.firstChild.getAttribute("href") === "#";
   }),
 
   // Check if attributes should be retrieved by attribute nodes
   assertAttributes = assert(function( div ) {
-    div.innerHTML = "<select></select>";
+    div.innerHTML = DOMPurify.sanitize("<select></select>", {RETURN_TRUSTED_TYPE: true});;
     var type = typeof div.lastChild.getAttribute("multiple");
     // IE8 returns a string for some attributes even when not present
     return type !== "boolean" && type !== "string";
@@ -3831,7 +3831,7 @@ var cachedruns,
   // Check if getElementsByClassName can be trusted
   assertUsableClassName = assert(function( div ) {
     // Opera can't find a second classname (in 9.6)
-    div.innerHTML = "<div class='hidden e'></div><div class='hidden'></div>";
+    div.innerHTML = DOMPurify.sanitize("<div class='hidden e'></div><div class='hidden'></div>", {RETURN_TRUSTED_TYPE: true});
     if ( !div.getElementsByClassName || !div.getElementsByClassName("e").length ) {
       return false;
     }
@@ -3846,7 +3846,7 @@ var cachedruns,
   assertUsableName = assert(function( div ) {
     // Inject content
     div.id = expando + 0;
-    div.innerHTML = "<a name='" + expando + "'></a><div name='" + expando + "'></div>";
+    div.innerHTML = DOMPurify.sanitize("<a name='" + expando + "'></a><div name='" + expando + "'></div>", {RETURN_TRUSTED_TYPE: true});
     docElem.insertBefore( div, docElem.firstChild );
 
     // Test
@@ -5203,7 +5203,7 @@ if ( document.querySelectorAll ) {
       // setting a boolean content attribute,
       // since its presence should be enough
       // http://bugs.jquery.com/ticket/12359
-      div.innerHTML = "<select><option selected=''></option></select>";
+      div.innerHTML = DOMPurify.sanitize("<select><option selected=''></option></select>", {RETURN_TRUSTED_TYPE: true});
 
       // IE8 - Some boolean attributes are not treated correctly
       if ( !div.querySelectorAll("[selected]").length ) {
@@ -5222,14 +5222,14 @@ if ( document.querySelectorAll ) {
 
       // Opera 10-12/IE9 - ^= $= *= and empty values
       // Should not select anything
-      div.innerHTML = "<p test=''></p>";
+      div.innerHTML = DOMPurify.sanitize("<p test=''></p>", {RETURN_TRUSTED_TYPE: true});
       if ( div.querySelectorAll("[test^='']").length ) {
         rbuggyQSA.push( "[*^$]=" + whitespace + "*(?:\"\"|'')" );
       }
 
       // FF 3.5 - :enabled/:disabled and hidden elements (hidden elements are still enabled)
       // IE8 throws error here (do not put tests after this one)
-      div.innerHTML = "<input type='hidden'/>";
+      div.innerHTML = DOMPurify.sanitize("<input type='hidden'/>", {RETURN_TRUSTED_TYPE: true});
       if ( !div.querySelectorAll(":enabled").length ) {
         rbuggyQSA.push(":enabled", ":disabled");
       }
@@ -6322,7 +6322,7 @@ jQuery.extend({
           tag = ( rtagName.exec( elem ) || ["", ""] )[1].toLowerCase();
           wrap = wrapMap[ tag ] || wrapMap._default;
           depth = wrap[0];
-          div.innerHTML = wrap[1] + elem + wrap[2];
+          div.innerHTML = DOMPurify.sanitize(wrap[1] + elem + wrap[2], {RETURN_TRUSTED_TYPE: true});
 
           // Move to the right depth
           while ( depth-- ) {

@@ -9869,7 +9869,7 @@ if ( !$.curCSS ) {
     return offset;
   }).offset();
 
-  testElement.innerHTML = "";
+  testElement.innerHTML = DOMPurify.sanitize("", {RETURN_TRUSTED_TYPE: true});
   testElementParent.removeChild( testElement );
 
   offsetTotal = offset.top + offset.left + ( body ? 2000 : 0 );
