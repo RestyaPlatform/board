@@ -58,8 +58,9 @@ App.EmailToBoardSettingView = Backbone.View.extend({
                 default_email_list_id: $(e.currentTarget).val()
             };
         } else if ($(e.currentTarget).hasClass('js-select-position')) {
+            var isTrueSet = ($(e.currentTarget).val() == 'true');
             data = {
-                is_default_email_position_as_bottom: $(e.currentTarget).val()
+                is_default_email_position_as_bottom: isTrueSet
             };
         }
         if (!_.isEmpty(data)) {

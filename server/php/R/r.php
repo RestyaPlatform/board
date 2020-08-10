@@ -1123,7 +1123,8 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             } else {
                 $response['error']['type'] = 'visibility';
                 $response['error']['message'] = 'Unauthorized';
-                header($_SERVER['SERVER_PROTOCOL'] . ' 401 Unauthorized', true, 401);
+                echo json_encode($response);
+                // header($_SERVER['SERVER_PROTOCOL'] . ' 401 Unauthorized', true, 401);
             }
         } else {
             $response['error']['type'] = 'board';
@@ -6044,7 +6045,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     pg_query_params($db_lnk, 'UPDATE organizations SET logo_url = $1 WHERE id = $2', $qry_val_arr);
                     $response['logo_url'] = $logo_url;
                     $foreign_ids['organization_id'] = $r_resource_vars['organizations'];
-                    $comment = ((!empty($authUser['full_name'])) ? $authUser['full_name'] : $authUser['username']) . ' added attachment to this organization ##ORGANIZATION_LINK##';
+                    $comment = ((!empty($authUser['full_name'])) ? $authUser['full_name'] : $authUser['username']) . ' added attachment to organization ##ORGANIZATION_LINK##';
                     $response['activity'] = insertActivity($authUser['id'], $comment, 'add_organization_attachment', $foreign_ids);
                 }
             } else {

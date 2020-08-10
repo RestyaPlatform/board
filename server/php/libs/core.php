@@ -2108,11 +2108,13 @@ function importTaigaBoard($board = array())
                 $i+= 1;
                 $is_closed = !empty($card['is_closed']) ? 'true' : 'false';
                 $date = (!empty($card['due'])) ? $card['due_date'] : null;
+                $card['subject'] = preg_replace ('~\x{00a0}~siu', ' ', utf8_decode($card['subject']));
+                $card['description'] = preg_replace ('~\x{00a0}~siu', ' ', utf8_decode($card['description']));
                 $qry_val_arr = array(
                     $new_board['id'],
                     $lists[$card['status']],
-                    utf8_decode($card['subject']) ,
-                    utf8_decode($card['description']) ,
+                    $card['subject'],
+                    $card['description'],
                     $is_closed,
                     $i,
                     $date,
