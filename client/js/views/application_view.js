@@ -665,6 +665,12 @@ App.ApplicationView = Backbone.View.extend({
                             this.footerView = new App.FooterView({
                                 model: authuser,
                                 board_id: self.id,
+                                board: board
+                            }).render();
+                        } else {
+                            this.footerView = new App.FooterView({
+                                model: authuser,
+                                board_id: self.id,
                                 board: Board
                             }).render();
                         }
