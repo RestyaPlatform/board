@@ -194,3 +194,10 @@ SELECT lists.id,
 UPDATE "acl_board_links" SET "is_hide" = '0' WHERE "slug" = 'add_labels';
 
 UPDATE "acl_board_links" SET "name" = 'Delete Labels' WHERE "slug" = 'delete_labels';
+
+DELETE FROM "acl_board_links" WHERE slug = 'show_pending_checklist_item';
+
+SELECT pg_catalog.setval('acl_board_links_seq', (SELECT MAX(id) FROM acl_board_links), true);
+
+INSERT INTO "acl_board_links" ("created", "modified", "name", "url", "method", "slug", "group_id", "is_hide")
+VALUES (now(), now(), 'Show only pending item in Checklist', '/boards/?/lists/?/cards/?/checklists/?/items/?', 'GET', 'show_pending_checklist_item', '3', '0');
