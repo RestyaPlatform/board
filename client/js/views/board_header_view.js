@@ -145,6 +145,7 @@ App.BoardHeaderView = Backbone.View.extend({
         'click .js-change-background-pattern': 'changeBackgroundPattern',
         'click .js-change-custom-background': 'changeCustomBackground',
         'click .js-modal-fliker-trigger': 'modalFlickrTtrigger',
+        'click .js-modal-unsplash-trigger': 'modalUnsplashTrigger',
         'click .js-delete-background-img': 'ClearBackground',
         'click .js-modal-music-trigger': 'modalMusicTtrigger',
         'click .js-music-clear': 'ClearMusic',
@@ -836,6 +837,22 @@ App.BoardHeaderView = Backbone.View.extend({
         var modalView = new App.ModalFlickrPhotoView({
             model: this.model,
             type: type
+        });
+        modalView.show();
+        return false;
+    },
+    /**
+     * modalUnsplashTrigger()
+     * display the attachment in the list
+     * @param e
+     * @type Object(DOM event)
+     * @return false
+     *
+     */
+    modalUnsplashTrigger: function(e) {
+        $('#flickr-modal').remove();
+        var modalView = new App.ModalUnsplashPhotoView({
+            model: this.model
         });
         modalView.show();
         return false;
