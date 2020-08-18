@@ -1125,6 +1125,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 $response['error']['message'] = 'Unauthorized';
                 echo json_encode($response);
                 // header($_SERVER['SERVER_PROTOCOL'] . ' 401 Unauthorized', true, 401);
+                
             }
         } else {
             $response['error']['type'] = 'board';
@@ -6703,6 +6704,13 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
                 $comment = '##USER_NAME## disabled card cover image on ##BOARD_NAME## board.';
             }
             $activity_type = 'is_show_image_front_of_card';
+        } else if (isset($r_put['show_pending_checklist_item'])) {
+            if ($r_put['show_pending_checklist_item']) {
+                $comment = '##USER_NAME## enabled show only pending item in checklist on ##BOARD_NAME## board.';
+            } else {
+                $comment = '##USER_NAME## disabled show only pending item in checklist on ##BOARD_NAME## board.';
+            }
+            $activity_type = 'show_pending_checklist_item';
         }
         if (!empty($r_put['organization_id'])) {
             $qry_val_arr = array(

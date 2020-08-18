@@ -172,14 +172,7 @@ App.CardCheckListItemView = Backbone.View.extend({
      */
     renderChecklistitemsCollection: function() {
         var self = this;
-        var show_item_permission = false;
-        if (!_.isUndefined(authuser.user) && !_.isEmpty(self.model.board_users.board.acl_links.where({
-                slug: 'show_pending_checklist_item',
-                board_user_role_id: parseInt(self.model.board_user_role_id)
-            }))) {
-            show_item_permission = true;
-        }
-        if (show_item_permission) {
+        if (!_.isEmpty(self.model.card.collection) && self.model.card.list.collection.board.attributes.show_pending_checklist_item) {
             if (self.model.get('is_completed') === 1) {
                 self.$el.remove();
             }
