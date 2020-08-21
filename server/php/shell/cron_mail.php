@@ -27,7 +27,7 @@ if (!empty($argv) && !empty($argv[1])) {
     if ($db_lnk) {
         $to_email = DEFAULT_REPLY_TO_EMAIL_ADDRESS;
         $from_email = DEFAULT_FROM_EMAIL_ADDRESS;
-        if (!empty($to_email) && !empty($from_email)) {
+        if (!empty($to_email) && !empty($from_email) && $to_email != 'board@restya.com') {
             $email = pg_fetch_assoc($result);
             $subject = 'Restyaboard / From cron (' . $argv[1] . ')';
             $from_email = DEFAULT_FROM_EMAIL_ADDRESS;
