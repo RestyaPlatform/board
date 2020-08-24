@@ -3433,6 +3433,19 @@ function update_query($table_name, $id, $r_resource_cmd, $r_put, $comment = '', 
                 $foreign_id = $r_put['list_id'];
             }
             $response['activity'] = insertActivity($authUser['id'], $comment, $activity_type, $foreign_ids, $revision, $foreign_id);
+            if ($activity_type == 'move_list') {
+                $qry_val_arr = array(
+                    $foreign_id
+                );
+                $result = pg_query_params($db_lnk, 'SELECT board_id,list_id,id FROM cards_listing WHERE list_id = $1 ORDER BY name ASC', $qry_val_arr);
+                while ($row = pg_fetch_assoc($result)) {
+                    $foreign_ids['board_id'] = $row['board_id'];
+                    $foreign_ids['list_id'] = $row['list_id'];
+                    $foreign_ids['card_id'] = $row['id'];
+                    $comment = '##USER_NAME## moved the card ##CARD_LINK## to different board';
+                    insertActivity($authUser['id'], $comment, 'moved_board_list_card', $foreign_ids, null, $foreign_id);
+                }
+            }
             if (!empty($response['activity']['revisions']) && trim($response['activity']['revisions']) != '') {
                 $revisions = unserialize($response['activity']['revisions']);
             }
