@@ -850,7 +850,7 @@ App.BoardHeaderView = Backbone.View.extend({
      *
      */
     modalUnsplashTrigger: function(e) {
-        $('#flickr-modal').remove();
+        $('#unsplash-modal').remove();
         var modalView = new App.ModalUnsplashPhotoView({
             model: this.model
         });
