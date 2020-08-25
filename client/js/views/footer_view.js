@@ -1061,12 +1061,31 @@ App.FooterView = Backbone.View.extend({
                                 }
                             }
                             if (mode == 1 && activity.attributes.token !== authuser.access_token) {
+                                var user_avatar;
+                                var fullname;
+                                var cardlink;
+                                if (activity.attributes.card_name !== null) {
+                                    cardlink = window.location.origin + '/#/board/' + activity.attributes.board_id + '/card/' + activity.attributes.card_id;
+                                } else {
+                                    cardlink = window.location.origin + '/#/board/' + activity.attributes.board_id;
+                                }
+                                if (!_.isUndefined(activity.attributes.full_name) && !_.isEmpty(activity.attributes.full_name)) {
+                                    fullname = activity.attributes.full_name;
+                                } else {
+                                    fullname = 'deleted account';
+                                }
+                                if (!_.isEmpty(activity.attributes.profile_picture_path)) {
+                                    user_avatar = window.location.origin + self.model.showImage('User', activity.attributes.user_id, 'small_thumb');
+                                } else {
+                                    user_avatar = 'https://ui-avatars.com/api/?name=' + fullname + '@&size=32';
+                                }
                                 var json_str = JSON.stringify({
                                     "largeIcon": "ic_launcher",
-                                    "largeIconUrl": window.location.pathname + "img/logo-192x192.png",
+                                    "largeIconUrl": user_avatar,
                                     "smallIcon": "ic_notification",
-                                    "title": activity.attributes.comment,
-                                    "message": activity.attributes.comment
+                                    "title": fullname,
+                                    "message": activity.attributes.comment,
+                                    "url": cardlink
                                 });
                                 try {
                                     window.Android.jsLocalNotification(json_str);
