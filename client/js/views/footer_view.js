@@ -1063,11 +1063,11 @@ App.FooterView = Backbone.View.extend({
                             if (mode == 1 && activity.attributes.token !== authuser.access_token) {
                                 var user_avatar;
                                 var fullname;
-                                var cardlink;
+                                var notification_link;
                                 if (activity.attributes.card_name !== null) {
-                                    cardlink = window.location.origin + '/#/board/' + activity.attributes.board_id + '/card/' + activity.attributes.card_id;
+                                    notification_link = window.location.origin + '/#/board/' + activity.attributes.board_id + '/card/' + activity.attributes.card_id;
                                 } else {
-                                    cardlink = window.location.origin + '/#/board/' + activity.attributes.board_id;
+                                    notification_link = window.location.origin + '/#/board/' + activity.attributes.board_id;
                                 }
                                 if (!_.isUndefined(activity.attributes.full_name) && !_.isEmpty(activity.attributes.full_name)) {
                                     fullname = activity.attributes.full_name;
@@ -1085,7 +1085,7 @@ App.FooterView = Backbone.View.extend({
                                     "smallIcon": "ic_notification",
                                     "title": fullname,
                                     "message": activity.attributes.comment,
-                                    "url": cardlink
+                                    "url": notification_link
                                 });
                                 try {
                                     window.Android.jsLocalNotification(json_str);
