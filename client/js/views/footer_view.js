@@ -1032,36 +1032,48 @@ App.FooterView = Backbone.View.extend({
                             }
                             activity.from_footer = true;
                             activity.attributes.original_comment = activity.attributes.comment;
+                            var icon = window.location.pathname + 'img/logo-icon.png';
+                            if (activity.attributes.type != 'add_comment' && activity.attributes.type != 'edit_comment') {
+                                var cardLink = activity.attributes.card_name;
+                                activity.attributes.comment = activity.attributes.comment.replace('##CARD_LINK##', cardLink);
+                                activity.attributes.comment = activity.attributes.comment.replace('##ORGANIZATION_LINK##', _.escape(activity.attributes.organization_name));
+                                activity.attributes.comment = activity.attributes.comment.replace('##USER_NAME##', _.escape(activity.attributes.full_name));
+                                activity.attributes.comment = activity.attributes.comment.replace('##LABEL_NAME##', activity.attributes.label_name);
+                                activity.attributes.comment = activity.attributes.comment.replace('##CARD_NAME##', activity.attributes.card_name);
+                                activity.attributes.comment = activity.attributes.comment.replace('##DESCRIPTION##', activity.attributes.card_description);
+                                activity.attributes.comment = activity.attributes.comment.replace('##LIST_NAME##', activity.attributes.list_name);
+                                activity.attributes.comment = activity.attributes.comment.replace('##BOARD_NAME##', activity.attributes.board_name);
+                                if (!_.isUndefined(activity.attributes.checklist_name)) {
+                                    activity.attributes.comment = activity.attributes.comment.replace('##CHECKLIST_NAME##', activity.attributes.checklist_name);
+                                }
+                                if (!_.isUndefined(activity.attributes.checklist_item_name)) {
+                                    activity.attributes.comment = activity.attributes.comment.replace('##CHECKLIST_ITEM_NAME##', activity.attributes.checklist_item_name);
+                                }
+                                if (!_.isUndefined(activity.attributes.checklist_item_parent_name)) {
+                                    activity.attributes.comment = activity.attributes.comment.replace('##CHECKLIST_ITEM_PARENT_NAME##', activity.attributes.checklist_item_parent_name);
+                                }
+                            } else if (activity.attributes.type === 'add_comment') {
+                                activity.set('originial_activity_comment', activity.attributes.comment);
+                                activity.attributes.comment = _.escape(activity.attributes.full_name) + ' commented in card ' + activity.attributes.card_name + ' ' + activity.attributes.comment;
+                                var patt = /@\w+/g;
+                                if (patt.test(activity.attributes.comment)) {
+                                    activity.attributes.comment = _.escape(activity.attributes.full_name) + ' has mentioned you in card ' + activity.attributes.card_name + ' ' + activity.attributes.comment;
+                                }
+                            }
+                            if (mode == 1 && activity.attributes.token !== authuser.access_token) {
+                                var json_str = JSON.stringify({
+                                    "largeIcon": "ic_launcher",
+                                    "largeIconUrl": window.location.pathname + "img/logo-192x192.png",
+                                    "smallIcon": "ic_notification",
+                                    "title": activity.attributes.comment,
+                                    "message": activity.attributes.comment
+                                });
+                                try {
+                                    window.Android.jsLocalNotification(json_str);
+                                } catch (err) {}
+                            }
                             if (typeof Notification != 'undefined') {
                                 if (mode == 1 && activity.attributes.token !== authuser.access_token && Notification.permission === 'granted') {
-                                    var icon = window.location.pathname + 'img/logo-icon.png';
-                                    if (activity.attributes.type != 'add_comment' && activity.attributes.type != 'edit_comment') {
-                                        var cardLink = activity.attributes.card_name;
-                                        activity.attributes.comment = activity.attributes.comment.replace('##CARD_LINK##', cardLink);
-                                        activity.attributes.comment = activity.attributes.comment.replace('##ORGANIZATION_LINK##', _.escape(activity.attributes.organization_name));
-                                        activity.attributes.comment = activity.attributes.comment.replace('##USER_NAME##', _.escape(activity.attributes.full_name));
-                                        activity.attributes.comment = activity.attributes.comment.replace('##LABEL_NAME##', activity.attributes.label_name);
-                                        activity.attributes.comment = activity.attributes.comment.replace('##CARD_NAME##', activity.attributes.card_name);
-                                        activity.attributes.comment = activity.attributes.comment.replace('##DESCRIPTION##', activity.attributes.card_description);
-                                        activity.attributes.comment = activity.attributes.comment.replace('##LIST_NAME##', activity.attributes.list_name);
-                                        activity.attributes.comment = activity.attributes.comment.replace('##BOARD_NAME##', activity.attributes.board_name);
-                                        if (!_.isUndefined(activity.attributes.checklist_name)) {
-                                            activity.attributes.comment = activity.attributes.comment.replace('##CHECKLIST_NAME##', activity.attributes.checklist_name);
-                                        }
-                                        if (!_.isUndefined(activity.attributes.checklist_item_name)) {
-                                            activity.attributes.comment = activity.attributes.comment.replace('##CHECKLIST_ITEM_NAME##', activity.attributes.checklist_item_name);
-                                        }
-                                        if (!_.isUndefined(activity.attributes.checklist_item_parent_name)) {
-                                            activity.attributes.comment = activity.attributes.comment.replace('##CHECKLIST_ITEM_PARENT_NAME##', activity.attributes.checklist_item_parent_name);
-                                        }
-                                    } else if (activity.attributes.type === 'add_comment') {
-                                        activity.set('originial_activity_comment', activity.attributes.comment);
-                                        activity.attributes.comment = _.escape(activity.attributes.full_name) + ' commented in card ' + activity.attributes.card_name + ' ' + activity.attributes.comment;
-                                        var patt = /@\w+/g;
-                                        if (patt.test(activity.attributes.comment)) {
-                                            activity.attributes.comment = _.escape(activity.attributes.full_name) + ' has mentioned you in card ' + activity.attributes.card_name + ' ' + activity.attributes.comment;
-                                        }
-                                    }
                                     if (!_.isUndefined(authuser) && !_.isUndefined(authuser.user) && authuser.user.default_desktop_notification === true || authuser.user.default_desktop_notification === 'true' || authuser.user.default_desktop_notification === 't') {
                                         var patt_match = activity.attributes.comment.match(/@\w+/g);
                                         if ((authuser.user.is_list_notifications_enabled === true || authuser.user.is_list_notifications_enabled === 'true' || authuser.user.is_list_notifications_enabled === 't') && (jQuery.inArray(activity.attributes.type, list_notifications_array) !== -1)) {
