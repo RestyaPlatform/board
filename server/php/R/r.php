@@ -1125,6 +1125,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 $response['error']['message'] = 'Unauthorized';
                 echo json_encode($response);
                 // header($_SERVER['SERVER_PROTOCOL'] . ' 401 Unauthorized', true, 401);
+                
             }
         } else {
             $response['error']['type'] = 'board';

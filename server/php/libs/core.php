@@ -610,7 +610,7 @@ function sendMail($template, $replace_content, $to, $reply_to_mail = '')
         }
         $headers.= "MIME-Version: 1.0" . PHP_EOL;
         $headers.= "Content-Type: text/html; charset=UTF-8" . PHP_EOL;
-        $headers.= "X-Mailer: Restyaboard (0.6.8; +http://restya.com/board)" . PHP_EOL;
+        $headers.= "X-Mailer: Restyaboard (0.6.9; +http://restya.com/board)" . PHP_EOL;
         $headers.= "X-Auto-Response-Suppress: All" . PHP_EOL;
         if (is_plugin_enabled('r_sparkpost')) {
             require_once PLUGIN_PATH . DS . 'SparkPost' . DS . 'functions.php';
@@ -2108,8 +2108,8 @@ function importTaigaBoard($board = array())
                 $i+= 1;
                 $is_closed = !empty($card['is_closed']) ? 'true' : 'false';
                 $date = (!empty($card['due'])) ? $card['due_date'] : null;
-                $card['subject'] = preg_replace ('~\x{00a0}~siu', ' ', utf8_decode($card['subject']));
-                $card['description'] = preg_replace ('~\x{00a0}~siu', ' ', utf8_decode($card['description']));
+                $card['subject'] = preg_replace('~\x{00a0}~siu', ' ', utf8_decode($card['subject']));
+                $card['description'] = preg_replace('~\x{00a0}~siu', ' ', utf8_decode($card['description']));
                 $qry_val_arr = array(
                     $new_board['id'],
                     $lists[$card['status']],

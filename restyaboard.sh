@@ -1473,6 +1473,21 @@
             chmod 0777 $dir/client/apps/**/*.json
 		}
 
+		upgrade-0.6.8-0.6.9(){
+			if [ -d "$dir/client/apps" ]; then
+				chmod -R go+w "$dir/client/apps"
+			else 
+				mkdir "$dir/client/apps"
+				chmod -R go+w "$dir/client/apps"
+			fi
+			curl -v -L -G -o /tmp/r_codenames-v0.1.4.zip  https://github.com/RestyaPlatform/board-apps/releases/download/v1/r_codenames-v0.1.4.zip
+			unzip /tmp/r_codenames-v0.1.4.zip -d "$dir/client/apps"
+
+            find "$dir/client/apps" -type d -exec chmod 755 {} \;
+            find "$dir/client/apps" -type f -exec chmod 644 {} \;
+            chmod 0777 $dir/client/apps/**/*.json
+		}
+
 		update_version()
 		{
 			set +x
@@ -1586,7 +1601,11 @@
 				if [[ $version < "v0.6.8" ]];
 				then
 					upgrade+=("upgrade-0.6.7-0.6.8")
-				fi			
+				fi		 
+				if [[ $version < "v0.6.9" ]];
+				then
+					upgrade+=("upgrade-0.6.8-0.6.9")
+				fi	
 				# use for loop to read all values and indexes
 				for i in "${upgrade[@]}"
 				do

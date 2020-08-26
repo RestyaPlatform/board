@@ -126,9 +126,11 @@
 						<% if(activity.attributes.type == 'add_comment') { 
 							var originalComment;
 							if (!_.isUndefined(activity.attributes.revisions) && !_.isEmpty(activity.attributes.revisions) && activity.attributes.revisions !== null) { 
-								originalComment = activity.attributes.revisions.old_value.comment;
+								activity.attributes.comment = filterXSS(activity.attributes.revisions.old_value.comment);
+								originalComment = filterXSS(activity.attributes.revisions.old_value.comment);
 							} else { 
-								originalComment = activity.attributes.comment;
+								activity.attributes.comment = filterXSS(activity.attributes.comment);
+								originalComment = filterXSS(activity.attributes.comment);
 							}
 							if(!_.isUndefined(activity.from_footer)) { %>
 								<span><%= comment %></span>
