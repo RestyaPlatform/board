@@ -1077,7 +1077,7 @@ App.FooterView = Backbone.View.extend({
                                 if (!_.isEmpty(activity.attributes.profile_picture_path)) {
                                     user_avatar = window.location.origin + self.model.showImage('User', activity.attributes.user_id, 'small_thumb');
                                 } else {
-                                    user_avatar = 'https://ui-avatars.com/api/?name=' + fullname + '@&size=32';
+                                    user_avatar = 'https://ui-avatars.com/api/?background=fff&color=f47564&name=' + activity.attributes.initials + '@&size=32';
                                 }
                                 var json_str = JSON.stringify({
                                     "largeIcon": "ic_launcher",
