@@ -61,7 +61,6 @@
     </script>
   <!-- build:js js/default.cache.js -->
   <script src="./js/libs/pwabuilder-sw.js"></script>
-  <script type="module" src="./js/libs/pwabuilder-execute.js"></script>
   <script src="./js/libs/snuggsi.min.js"></script>
   <script src="./js/libs/jquery-1.8.3.js"></script>
   <script src="./js/libs/jquery.placeholder.js"></script>
@@ -396,5 +395,10 @@
   <script src="./js/filterUtility.js"></script>
   <script src="./js/application.js"></script>
   <!-- endbuild -->
+  <script type="module">
+    import 'https://cdn.jsdelivr.net/npm/@pwabuilder/pwaupdate';
+    const el = document.createElement('pwa-update');
+    document.body.appendChild(el);
+  </script>
  </body>
 </html>
