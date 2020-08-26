@@ -324,7 +324,7 @@
 					if ([ "$pkg_name" = "apt-get" ])
 					then							
 						echo "Installing PHP..."
-						apt install -y php7.2 php7.2-common --allow-unauthenticated
+						apt install -y php7.4 php7.4-common --allow-unauthenticated
 						error_code=$?
 						if [ ${error_code} != 0 ]
 						then
@@ -334,11 +334,21 @@
 					else 
 						if ([ "$pkg_name" = "yum" ])
 						then
-							echo "Note: For the latest version of PHP, we're going to download https://mirror.webtatic.com/yum/el${OS_VERSION}/webtatic-release.rpm."
-							echo "Installing PHP..."
-							rpm -Uvh "https://dl.fedoraproject.org/pub/epel/epel-release-latest-${OS_VERSION}.noarch.rpm"
-							rpm -Uvh "https://mirror.webtatic.com/yum/el${OS_VERSION}/webtatic-release.rpm"
-							yum install -y php72w
+							if ([ "$OS_REQUIREMENT" = "CentOS" ] && [ "$OS_VERSION" = "8" ])
+        					then
+								echo "Note: For the latest version of PHP, we're going to download https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm and https://rpms.remirepo.net/enterprise/remi-release-8.rpm."
+								echo "Installing PHP..."
+								dnf install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
+								dnf install https://rpms.remirepo.net/enterprise/remi-release-8.rpm
+								dnf module enable php:remi-7.4
+								dnf install php php-cli php-common
+							else
+								yum install -y epel-release
+								echo "Note: For the latest version of PHP, we're going to download http://rpms.famillecollet.com/enterprise/remi-release-${OS_VERSION}.rpm."
+								echo "Installing PHP..."
+								rpm -Uvh "http://rpms.famillecollet.com/enterprise/remi-release-${OS_VERSION}.rpm"
+								yum --enablerepo=remi-php74 install -y php
+							fi
 							error_code=$?
 							if [ ${error_code} != 0 ]
 							then
@@ -353,23 +363,28 @@
 			echo "Installing PHP fpm and cli extension..."
 			if ([ "$pkg_name" = "apt-get" ])
 			then
-				apt install -y php7.2-fpm php7.2-cli --allow-unauthenticated
+				apt install -y php7.4-fpm php7.4-cli --allow-unauthenticated
 				error_code=$?
 				if [ ${error_code} != 0 ]
 				then
-					echo "php7.2-cli installation failed with error code ${error_code} (php7.2-cli installation failed with error code 4)"
+					echo "php7.4-cli installation failed with error code ${error_code} (php7.4-cli installation failed with error code 4)"
 				fi
-				service php7.2-fpm start
+				service php7.4-fpm start
 			else 
 				if ([ "$pkg_name" = "yum" ])
 				then
-					yum install -y php72w-fpm php72w-devel php72w-cli php72w-opcache
+					if ([ "$OS_REQUIREMENT" = "CentOS" ] && [ "$OS_VERSION" = "8" ])
+        			then
+						dnf install php-fpm php-devel php-opcache
+					else
+						yum --enablerepo=remi-php74 install -y php-fpm php-devel php-cli php-opcache
+					fi
 					error_code=$?
 					if [ ${error_code} != 0 ]
 					then
 						echo "php-devel installation failed with error code ${error_code} (php-devel installation failed with error code 21)"
 						return 21
-					fi
+					fi					
 					service php-fpm start
 				fi
 			fi
@@ -386,17 +401,22 @@
 				echo "Installing php-curl..."
 				if ([ "$pkg_name" = "apt-get" ])
 				then
-					apt install -y php7.2-curl --allow-unauthenticated
+					apt install -y php7.4-curl --allow-unauthenticated
 					error_code=$?
 					if [ ${error_code} != 0 ]
 					then
-						echo "php7.2-curl installation failed with error code ${error_code} (php7.2-curl installation failed with error code 5)"
+						echo "php7.4-curl installation failed with error code ${error_code} (php7.4-curl installation failed with error code 5)"
 						return 5
 					fi
 				else 
 					if ([ "$pkg_name" = "yum" ])
 					then
-						yum install -y php72w-curl
+						if ([ "$OS_REQUIREMENT" = "CentOS" ] && [ "$OS_VERSION" = "8" ])
+						then
+							dnf install php-curl
+						else
+							yum --enablerepo=remi-php74 install -y php-curl
+						fi
 						error_code=$?
 						if [ ${error_code} != 0 ]
 						then
@@ -414,17 +434,22 @@
 				if ([ "$pkg_name" = "apt-get" ])
 				then
 					apt install libpq5
-					apt install -y php7.2-pgsql --allow-unauthenticated
+					apt install -y php7.4-pgsql --allow-unauthenticated
 					error_code=$?
 					if [ ${error_code} != 0 ]
 					then
-						echo "php7.2-pgsql installation failed with error code ${error_code} (php7.2-pgsql installation failed with error code 6)"
+						echo "php7.4-pgsql installation failed with error code ${error_code} (php7.4-pgsql installation failed with error code 6)"
 						return 6
 					fi
 				else 
 					if ([ "$pkg_name" = "yum" ])
 					then
-						yum install -y php72w-pgsql
+						if ([ "$OS_REQUIREMENT" = "CentOS" ] && [ "$OS_VERSION" = "8" ])
+						then
+							dnf install php-pgsql
+						else
+							yum --enablerepo=remi-php74 install -y php-pgsql
+						fi
 						error_code=$?
 						if [ ${error_code} != 0 ]
 						then
@@ -441,17 +466,22 @@
 				echo "Installing php-mbstring..."
 				if ([ "$pkg_name" = "apt-get" ])
 				then
-					apt install -y php7.2-mbstring --allow-unauthenticated
+					apt install -y php7.4-mbstring --allow-unauthenticated
 					error_code=$?
 					if [ ${error_code} != 0 ]
 					then
-						echo "php7.2-mbstring installation failed with error code ${error_code} (php7.2-mbstring installation failed with error code 7)"
+						echo "php7.4-mbstring installation failed with error code ${error_code} (php7.4-mbstring installation failed with error code 7)"
 						return 7
 					fi
 				else 
 					if ([ "$pkg_name" = "yum" ])
 					then
-						yum install -y php72w-mbstring
+						if ([ "$OS_REQUIREMENT" = "CentOS" ] && [ "$OS_VERSION" = "8" ])
+						then
+							dnf install php-mbstring
+						else
+							yum --enablerepo=remi-php74 install -y php-mbstring
+						fi
 						error_code=$?
 						if [ ${error_code} != 0 ]
 						then
@@ -468,17 +498,22 @@
 				echo "Installing php-ldap..."
 				if ([ "$pkg_name" = "apt-get" ])
 				then
-					apt install -y php7.2-ldap --allow-unauthenticated
+					apt install -y php7.4-ldap --allow-unauthenticated
 					error_code=$?
 					if [ ${error_code} != 0 ]
 					then
-						echo "php7.2-ldap installation failed with error code ${error_code} (php7.2-ldap installation failed with error code 8)"
+						echo "php7.4-ldap installation failed with error code ${error_code} (php7.4-ldap installation failed with error code 8)"
 						return 8
 					fi
 				else 
 					if ([ "$pkg_name" = "yum" ])
 					then
-						yum install -y php72w-ldap
+						if ([ "$OS_REQUIREMENT" = "CentOS" ] && [ "$OS_VERSION" = "8" ])
+						then
+							dnf install php-ldap
+						else
+							yum --enablerepo=remi-php74 install -y php-ldap
+						fi
 						error_code=$?
 						if [ ${error_code} != 0 ]
 						then
@@ -509,19 +544,25 @@
 						echo "imagemagick installation failed with error code ${error_code} (imagemagick installation failed with error code 9)"
 						return 9
 					fi
-					apt install -y php7.2-imagick --allow-unauthenticated
+					apt install -y php7.4-imagick --allow-unauthenticated
 					error_code=$?
 					if [ ${error_code} != 0 ]
 					then
-						echo "php7.2-imagick installation failed with error code ${error_code} (php7.2-imagick installation failed with error code 10)"
+						echo "php7.4-imagick installation failed with error code ${error_code} (php7.4-imagick installation failed with error code 10)"
 						return 10
 					fi
 				else 
 					if ([ "$pkg_name" = "yum" ])
 					then
 						yum install -y ImageM* netpbm gd gd-* libjpeg libexif gcc coreutils make
-						yum install -y php72w-pear
-						yum install -y php72w-gd
+						if ([ "$OS_REQUIREMENT" = "CentOS" ] && [ "$OS_VERSION" = "8" ])
+						then
+							dnf install php-pear
+							dnf install php-gd
+						else
+							yum --enablerepo=remi-php74 install -y php-pear
+							yum --enablerepo=remi-php74 install -y php-gd
+						fi
 						error_code=$?
 						if [ ${error_code} != 0 ]
 						then
@@ -546,20 +587,25 @@
 			echo "Checking PHP imap extension..."
 			php -m | grep imap
 			if [ "$?" -gt 0 ]; then
-				echo "Installing php7.2-imap..."
+				echo "Installing php7.4-imap..."
 				if ([ "$pkg_name" = "apt-get" ])
 				then
-					apt install -y php7.2-imap --allow-unauthenticated
+					apt install -y php7.4-imap --allow-unauthenticated
 					error_code=$?
 					if [ ${error_code} != 0 ]
 					then
-						echo "php7.2-imap installation failed with error code ${error_code} (php7.2-imap installation failed with error code 11)"
+						echo "php7.4-imap installation failed with error code ${error_code} (php7.4-imap installation failed with error code 11)"
 						return 11
 					fi
 				else
 					if ([ "$pkg_name" = "yum" ])
 					then
-						yum install -y php72w-imap
+						if ([ "$OS_REQUIREMENT" = "CentOS" ] && [ "$OS_VERSION" = "8" ])
+						then
+							dnf install php-imap
+						else
+							yum --enablerepo=remi-php74 install -y php-imap
+						fi
 						error_code=$?
 						if [ ${error_code} != 0 ]
 						then
@@ -576,7 +622,7 @@
 				echo "Installing xml..."
 				if ([ "$pkg_name" = "apt-get" ])
 				then
-					apt install php7.2-xml --allow-unauthenticated
+					apt install php7.4-xml --allow-unauthenticated
 					error_code=$?
 					if [ ${error_code} != 0 ]
 					then
@@ -586,7 +632,12 @@
 				else
 					if ([ "$pkg_name" = "yum" ])
 					then
-						yum install -y php72w-xml
+						if ([ "$OS_REQUIREMENT" = "CentOS" ] && [ "$OS_VERSION" = "8" ])
+						then
+							dnf install php-xml
+						else
+							yum --enablerepo=remi-php74 install -y php-xml
+						fi
 						error_code=$?
 						if [ ${error_code} != 0 ]
 						then
@@ -602,8 +653,8 @@
 			if ([ "$OS_REQUIREMENT" = "Ubuntu" ] || [ "$OS_REQUIREMENT" = "Debian" ] || [ "$OS_REQUIREMENT" = "LinuxMint" ] || [ "$OS_REQUIREMENT" = "Raspbian" ])
 			then
 				timezone=$(cat /etc/timezone)
-				sed -i -e 's/date.timezone/;date.timezone/g' /etc/php/7.2/fpm/php.ini
-				echo "date.timezone = $timezone" >> /etc/php/7.2/fpm/php.ini
+				sed -i -e 's/date.timezone/;date.timezone/g' /etc/php/7.4/fpm/php.ini
+				echo "date.timezone = $timezone" >> /etc/php/7.4/fpm/php.ini
 			else 
 				PHP_VERSION=$(php -v | grep "PHP 5" | sed 's/.*PHP \([^-]*\).*/\1/' | cut -c 1-3)
 				echo "Installed PHP version: '$PHP_VERSION'"
@@ -713,20 +764,25 @@
 						echo "Installing PostgreSQL..."
 						if [ $(getconf LONG_BIT) = "32" ]; then
 							if [[ $OS_REQUIREMENT = "Fedora" ]]; then
-								rpm -Uvh "https://download.postgresql.org/pub/repos/yum/9.6/fedora/fedora-${OS_VERSION}-i386/pgdg-fedora96-9.6-3.noarch.rpm"
+								rpm -Uvh "https://download.postgresql.org/pub/repos/yum/9.6/fedora/fedora-${OS_VERSION}-i386/pgdg-fedora-repo-latest.noarch.rpm"
 							else
-								rpm -Uvh "https://download.postgresql.org/pub/repos/yum/9.6/redhat/rhel-${OS_VERSION}-i386/pgdg-redhat96-9.6-3.noarch.rpm"
+								rpm -Uvh "https://download.postgresql.org/pub/repos/yum/9.6/redhat/rhel-${OS_VERSION}-i386/pgdg-redhat-repo-latest.noarch.rpm"
 							fi
 						fi
 						if [ $(getconf LONG_BIT) = "64" ]; then
 							if [[ $OS_REQUIREMENT = "Fedora" ]]; then
-								rpm -Uvh "https://download.postgresql.org/pub/repos/yum/9.6/fedora/fedora-${OS_VERSION}-x86_64/pgdg-fedora96-9.6-3.noarch.rpm"
+								rpm -Uvh "https://download.postgresql.org/pub/repos/yum/9.6/fedora/fedora-${OS_VERSION}-x86_64/pgdg-fedora-repo-latest.noarch.rpm"
 							else
-								rpm -Uvh "https://download.postgresql.org/pub/repos/yum/9.6/redhat/rhel-${OS_VERSION}-x86_64/pgdg-redhat96-9.6-3.noarch.rpm"
+								rpm -Uvh "https://download.postgresql.org/pub/repos/yum/9.6/redhat/rhel-${OS_VERSION}-x86_64/pgdg-redhat-repo-latest.noarch.rpm"
 							fi
 						fi
-
-						yum install -y postgresql96 postgresql96-server postgresql96-contrib postgresql96-libs
+						if ([ "$OS_REQUIREMENT" = "CentOS" ] && [ "$OS_VERSION" = "8" ])
+						then
+							dnf module enable postgresql:9.6
+							dnf install postgresql-server postgresql-contrib postgresql-libs
+						else
+							yum install -y postgresql96 postgresql96-server postgresql96-contrib postgresql96-libs	
+						fi
 						error_code=$?
 						if [ ${error_code} != 0 ]
 						then
@@ -741,19 +797,24 @@
 						echo "Restyaboard will not work in your PostgreSQL version (i.e. less than 9.3). So script going to update PostgreSQL version 9.6"
 						if [ $(getconf LONG_BIT) = "32" ]; then
 							if [[ $OS_REQUIREMENT = "Fedora" ]]; then
-								rpm -Uvh "https://download.postgresql.org/pub/repos/yum/9.6/fedora/fedora-${OS_VERSION}-i386/pgdg-fedora96-9.6-3.noarch.rpm"
+								rpm -Uvh "https://download.postgresql.org/pub/repos/yum/9.6/fedora/fedora-${OS_VERSION}-i386/pgdg-fedora-repo-latest.noarch.rpm"
 							else
-								rpm -Uvh "https://download.postgresql.org/pub/repos/yum/9.6/redhat/rhel-${OS_VERSION}-i386/pgdg-redhat96-9.6-3.noarch.rpm"
+								rpm -Uvh "https://download.postgresql.org/pub/repos/yum/9.6/redhat/rhel-${OS_VERSION}-i386/pgdg-redhat-repo-latest.noarch.rpm"
 							fi
 						else
 							if [[ $OS_REQUIREMENT = "Fedora" ]]; then
-								rpm -Uvh "https://download.postgresql.org/pub/repos/yum/9.6/fedora/fedora-${OS_VERSION}-x86_64/pgdg-fedora96-9.6-3.noarch.rpm"
+								rpm -Uvh "https://download.postgresql.org/pub/repos/yum/9.6/fedora/fedora-${OS_VERSION}-x86_64/pgdg-fedora-repo-latest.noarch.rpm"
 							else
-								rpm -Uvh "https://download.postgresql.org/pub/repos/yum/9.6/redhat/rhel-${OS_VERSION}-x86_64/pgdg-redhat96-9.6-3.noarch.rpm"
+								rpm -Uvh "https://download.postgresql.org/pub/repos/yum/9.6/redhat/rhel-${OS_VERSION}-x86_64/pgdg-redhat-repo-latest.noarch.rpm"
 							fi
 						fi
-
-						yum install -y postgresql96 postgresql96-server postgresql96-contrib postgresql96-libs
+						if ([ "$OS_REQUIREMENT" = "CentOS" ] && [ "$OS_VERSION" = "8" ])
+						then
+							dnf module enable postgresql:9.6
+							dnf install postgresql-server postgresql-contrib postgresql-libs
+						else
+							yum install -y postgresql96 postgresql96-server postgresql96-contrib postgresql96-libs
+						fi
 						error_code=$?
 						if [ ${error_code} != 0 ]
 						then
@@ -764,25 +825,48 @@
 				fi
 				PSQL_VERSION=$(psql --version | egrep -o '[0-9]{1,}\.[0-9]{1,}')
 				PSQL_FOLDER=$(echo ${PSQL_VERSION} | sed 's/\.//')
-				if [ -f "/usr/pgsql-${PSQL_VERSION}/bin/postgresql${PSQL_FOLDER}-setup" ]; then
-					"/usr/pgsql-${PSQL_VERSION}/bin/postgresql${PSQL_FOLDER}-setup" initdb
-				fi
-				if [ -f "/bin/systemctl" ]; then
-					systemctl start "postgresql-${PSQL_VERSION}.service"
-					systemctl enable "postgresql-${PSQL_VERSION}.service"
+				if ([ "$OS_REQUIREMENT" = "CentOS" ] && [ "$OS_VERSION" = "8" ])
+				then
+					postgresql-setup --initdb
 				else
-					"/etc/init.d/postgresql-${PSQL_VERSION}" start
-					chkconfig --levels 35 "postgresql-${PSQL_VERSION}" on
+					if [ -f "/usr/pgsql-${PSQL_VERSION}/bin/postgresql${PSQL_FOLDER}-setup" ]; then
+						"/usr/pgsql-${PSQL_VERSION}/bin/postgresql${PSQL_FOLDER}-setup" initdb
+					fi
 				fi
-				sed -e 's/peer/trust/g' -e 's/ident/trust/g' < "/var/lib/pgsql/${PSQL_VERSION}/data/pg_hba.conf" > "/var/lib/pgsql/${PSQL_VERSION}/data/pg_hba.conf.1"
-				cd "/var/lib/pgsql/${PSQL_VERSION}/data" || exit
-				mv pg_hba.conf pg_hba.conf_old
-				mv pg_hba.conf.1 pg_hba.conf
-				
-				if [ -f "/bin/systemctl" ]; then
-					systemctl restart "postgresql-${PSQL_VERSION}.service"
+				if ([ "$OS_REQUIREMENT" = "CentOS" ] && [ "$OS_VERSION" = "8" ])
+				then
+					systemctl start postgresql
+					systemctl enable postgresql
 				else
-					"/etc/init.d/postgresql-${PSQL_VERSION}" restart
+					if [ -f "/bin/systemctl" ]; then
+						systemctl start "postgresql-${PSQL_VERSION}.service"
+						systemctl enable "postgresql-${PSQL_VERSION}.service"
+					else
+						"/etc/init.d/postgresql-${PSQL_VERSION}" start
+						chkconfig --levels 35 "postgresql-${PSQL_VERSION}" on
+					fi
+				fi
+				if ([ "$OS_REQUIREMENT" = "CentOS" ] && [ "$OS_VERSION" = "8" ])
+				then
+					sed -e 's/peer/trust/g' -e 's/ident/trust/g' < "/var/lib/pgsql/data/pg_hba.conf" > "/var/lib/pgsql/data/pg_hba.conf.1"
+					cd "/var/lib/pgsql/data" || exit
+					mv pg_hba.conf pg_hba.conf_old
+					mv pg_hba.conf.1 pg_hba.conf
+				else
+					sed -e 's/peer/trust/g' -e 's/ident/trust/g' < "/var/lib/pgsql/${PSQL_VERSION}/data/pg_hba.conf" > "/var/lib/pgsql/${PSQL_VERSION}/data/pg_hba.conf.1"
+					cd "/var/lib/pgsql/${PSQL_VERSION}/data" || exit
+					mv pg_hba.conf pg_hba.conf_old
+					mv pg_hba.conf.1 pg_hba.conf
+				fi
+				if ([ "$OS_REQUIREMENT" = "CentOS" ] && [ "$OS_VERSION" = "8" ])
+				then
+					systemctl restart postgresql
+				else
+					if [ -f "/bin/systemctl" ]; then
+						systemctl restart "postgresql-${PSQL_VERSION}.service"
+					else
+						"/etc/init.d/postgresql-${PSQL_VERSION}" restart
+					fi
 				fi
 			fi
 		}
@@ -792,11 +876,11 @@
 			then
 				if ! hash GeoIP-devel 2>&-;
 				then
-					apt install -y php7.2-geoip php7.2-dev libgeoip-dev
+					apt install -y php7.4-geoip php7.4-dev libgeoip-dev
 					error_code=$?
 					if [ ${error_code} != 0 ]
 					then
-						echo "php7.2-geoip php7.2-dev libgeoip-dev installation failed with error code ${error_code} (php7.2-geoip php7.2-dev libgeoip-dev installation failed with error code 50)"
+						echo "php7.4-geoip php7.4-dev libgeoip-dev installation failed with error code ${error_code} (php7.4-geoip php7.4-dev libgeoip-dev installation failed with error code 50)"
 					fi
 				fi
 
@@ -830,8 +914,6 @@
 						return 47
 					fi
 				fi
-
-				yum install -y php72w-xml
 			fi
 		}
 		configure_restyaboard()
@@ -1102,10 +1184,13 @@
 				echo "........."
 			else
 				echo "Reset php-fpm (use unix socket mode)..."
-				if [ -f "/run/php/php7.2-fpm.sock" ]; then
-					sed -i "s/listen = 127.0.0.1:9000/listen = \/run\/php\/php7.2-fpm.sock/g" /etc/php-fpm.d/www.conf
+				if [ -f "/run/php/php7.4-fpm.sock" ]; then
+					sed -i "s/listen = 127.0.0.1:9000/listen = \/run\/php\/php7.4-fpm.sock/g" /etc/php-fpm.d/www.conf
+				elif [ -f "/run/php-fpm/www.sock" ]; then
+					sed -i "s/listen = 127.0.0.1:9000/listen = \/run\/php-fpm\/www.sock/g" /etc/php-fpm.d/www.conf
+					sed -i "s/unix:\/run\/php\/php7.4-fpm.sock/unix:\/run\/php-fpm\/www.sock/g" /etc/nginx/conf.d/restyaboard.conf
 				else
-					sed -i "s/unix:\/run\/php\/php7.2-fpm.sock/127.0.0.1:9000/g" /etc/nginx/conf.d/restyaboard.conf
+					sed -i "s/unix:\/run\/php\/php7.4-fpm.sock/127.0.0.1:9000/g" /etc/nginx/conf.d/restyaboard.conf
 				fi
 			fi
 		}
@@ -1135,7 +1220,7 @@
 			then
 				echo "Starting services..."
 				service cron restart
-				service php7.2-fpm restart
+				service php7.4-fpm restart
 				if [ ${APACHE_ENABLED} -eq 1 ] 
 				then
 					a2ensite restyaboard.conf
@@ -1199,7 +1284,7 @@
 					if ([ "$OS_REQUIREMENT" = "Ubuntu" ] || [ "$OS_REQUIREMENT" = "Debian" ] || [ "$OS_REQUIREMENT" = "LinuxMint" ] || [ "$OS_REQUIREMENT" = "Raspbian" ])
 					then
 						service nginx restart
-						service php7.2-fpm restart
+						service php7.4-fpm restart
 					else
 						if [ -f "/bin/systemctl" ]; then
 							echo "Starting services with systemd..."
@@ -1236,22 +1321,22 @@
 		
 		get_geoip_data () 
 		{
-			wget http://geolite.maxmind.com/download/geoip/database/GeoLiteCountry/GeoIP.dat.gz
+			wget https://mirrors-cdn.liferay.com/geolite.maxmind.com/download/geoip/database/GeoIP.dat.gz
 			gunzip GeoIP.dat.gz
 			mv GeoIP.dat /usr/share/GeoIP/GeoIP.dat
-			wget http://geolite.maxmind.com/download/geoip/database/GeoIPv6.dat.gz
+			wget https://mirrors-cdn.liferay.com/geolite.maxmind.com/download/geoip/database/GeoIPv6.dat.gz
 			gunzip GeoIPv6.dat.gz
 			mv GeoIPv6.dat /usr/share/GeoIP/GeoIPv6.dat
-			wget http://geolite.maxmind.com/download/geoip/database/GeoLiteCity.dat.gz
-			gunzip GeoLiteCity.dat.gz
+			wget https://mirrors-cdn.liferay.com/geolite.maxmind.com/download/geoip/database/GeoLiteCity.dat.xz
+			unxz GeoLiteCity.dat.xz
 			mv GeoLiteCity.dat /usr/share/GeoIP/GeoIPCity.dat
-			wget http://geolite.maxmind.com/download/geoip/database/GeoLiteCityv6-beta/GeoLiteCityv6.dat.gz
+			wget https://mirrors-cdn.liferay.com/geolite.maxmind.com/download/geoip/database/GeoLiteCityv6.dat.gz
 			gunzip GeoLiteCityv6.dat.gz
 			mv GeoLiteCityv6.dat /usr/share/GeoIP/GeoLiteCityv6.dat
-			wget http://download.maxmind.com/download/geoip/database/asnum/GeoIPASNum.dat.gz
+			wget https://mirrors-cdn.liferay.com/geolite.maxmind.com/download/geoip/database/GeoIPASNum.dat.gz
 			gunzip GeoIPASNum.dat.gz
 			mv GeoIPASNum.dat /usr/share/GeoIP/GeoIPASNum.dat
-			wget http://download.maxmind.com/download/geoip/database/asnum/GeoIPASNumv6.dat.gz
+			wget https://mirrors-cdn.liferay.com/geolite.maxmind.com/download/geoip/database/GeoIPASNumv6.dat.gz
 			gunzip GeoIPASNumv6.dat.gz
 			mv GeoIPASNumv6.dat /usr/share/GeoIP/GeoIPASNumv6.dat
 		}
@@ -1388,6 +1473,21 @@
             chmod 0777 $dir/client/apps/**/*.json
 		}
 
+		upgrade-0.6.8-0.6.9(){
+			if [ -d "$dir/client/apps" ]; then
+				chmod -R go+w "$dir/client/apps"
+			else 
+				mkdir "$dir/client/apps"
+				chmod -R go+w "$dir/client/apps"
+			fi
+			curl -v -L -G -o /tmp/r_codenames-v0.1.4.zip  https://github.com/RestyaPlatform/board-apps/releases/download/v1/r_codenames-v0.1.4.zip
+			unzip /tmp/r_codenames-v0.1.4.zip -d "$dir/client/apps"
+
+            find "$dir/client/apps" -type d -exec chmod 755 {} \;
+            find "$dir/client/apps" -type f -exec chmod 644 {} \;
+            chmod 0777 $dir/client/apps/**/*.json
+		}
+
 		update_version()
 		{
 			set +x
@@ -1501,7 +1601,11 @@
 				if [[ $version < "v0.6.8" ]];
 				then
 					upgrade+=("upgrade-0.6.7-0.6.8")
-				fi			
+				fi		 
+				if [[ $version < "v0.6.9" ]];
+				then
+					upgrade+=("upgrade-0.6.8-0.6.9")
+				fi	
 				# use for loop to read all values and indexes
 				for i in "${upgrade[@]}"
 				do
@@ -1600,16 +1704,18 @@
 				apt upgrade -y
 				apt install python-software-properties -y
 				apt install software-properties-common -y
-				set +x
-				echo "To install latest version of PHP, script will add 'ppa:ondrej/php' repository in sources.list.d directory. Do you want to continue (y/n)?"
-				read -r answer
-				set -x
-				case "${answer}" in
-					[Yy])
-					add-apt-repository ppa:ondrej/php
-				esac
-				apt update -y
-				apt install libjpeg8 -y --allow-unauthenticated
+				if ! hash php 2>&-; then
+					set +x
+					echo "To install latest version of PHP, script will add 'ppa:ondrej/php' repository in sources.list.d directory. Do you want to continue (y/n)?"
+					read -r answer
+					set -x
+					case "${answer}" in
+						[Yy])
+						add-apt-repository ppa:ondrej/php
+					esac
+					apt update -y
+					apt install libjpeg8 -y --allow-unauthenticated
+				fi
 			fi
 			install_nginx
 			

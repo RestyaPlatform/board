@@ -54,36 +54,37 @@
 	</div>
 </div>
 <div class="well-sm"></div>
-<table class="table">
-<thead>
-	<tr id="list_view_configuration_label">
-		<th class="card-id" id="list_view_config_label-id" data-field-name="id"><a class="js-sort-by show" title="<%- i18next.t('ID') %>" href="#" data-sort-by="id"><span class="<% if (listviewsortby === 'id' && listviewsortdirection === 'asc') { %> icon-caret-up <% } else { %> icon-caret-down <% } %><% if(listviewsortby !== 'id') { %> hide <% } %>"></span><%- i18next.t("ID") %></a></th>
-		<th id="list_view_config_label-labels" data-field-name="labels"><a class="js-sort-by show" title="<%- i18next.t('Labels') %>" href="javascript:void(0);" data-sort-by="sort_group_label"><span class="<% if ( listviewsortby === 'sort_group_label' && listviewsortdirection === 'asc') { %> icon-caret-up <% } else { %> icon-caret-down <% } %><% if(listviewsortby !== 'sort_group_label') { %> hide <% } %>"></span><%- i18next.t("Labels") %></a></th>
-		<th id="list_view_config_label-name" data-field-name="name"><a class="js-sort-by show" title="<%- i18next.t('Card Name') %>" href="#" data-sort-by="name"><span class="<% if ( listviewsortby === 'name' && listviewsortdirection === 'asc') { %> icon-caret-up <% } else { %> icon-caret-down <% } %><% if(listviewsortby !== 'name') { %> hide <% } %>"></span><%- i18next.t("Card Name") %></a></th>
-		<th id="list_view_config_label-list_name" data-field-name="list_name"><a class="js-sort-by show" title="<%- i18next.t('List Name') %>" href="#" data-sort-by="list_name"><span class="<% if ( listviewsortby === 'list_name' && listviewsortdirection === 'asc') { %> icon-caret-up <% } else { %> icon-caret-down <% } %><% if(listviewsortby !== 'list_name') { %> hide <% } %>"></span><%- i18next.t("List Name") %></a></th>
-		<th id="list_view_config_label-cards_users" data-field-name="cards_users"><a class="js-sort-by show" title="<%- i18next.t('Members') %>" href="javascript:void(0);" data-sort-by="sort_group_user"><span class="<% if ( listviewsortby === 'sort_group_user' && listviewsortdirection === 'asc') { %> icon-caret-up <% } else { %> icon-caret-down <% } %><% if(listviewsortby !== 'sort_group_user') { %> hide <% } %>"></span><%- i18next.t("Members") %></a></th>
-		<th id="list_view_config_label-start_date" data-field-name="start_date" class="js-list-start-date hide field_heading"></th>
-		<th id="list_view_config_label-due_date" data-field-name="due_date"><a class="show" href="javascript:void(0);" title="<%- i18next.t('End Date') %>" ><span class="<% if ( listviewsortby === 'due_date' && listviewsortdirection === 'asc') { %> icon-caret-up <% } else { %> icon-caret-down <% } %><% if(listviewsortby !== 'due_date') { %> hide <% } %>"></span><i data-sort-by="due_date" class="js-sort-by icon-calendar h3"></i></a></th>
-		<th id="list_view_config_label-estimated_time" class="js-list-estimated-time hide" data-field-name="estimated_time"></th>
-		<th id="list_view_config_label-spent_time" class="js-list-spent-time hide" data-field-name="spent_time"></th>
-		<th id="list_view_config_label-subscribe" data-field-name="subscribe"><a class="show" title="<%- i18next.t('Subscribe') %>" ><i class="icon-eye-open"></i></a></th>
-		<th id="list_view_config_label-card_voter_count" data-field-name="card_voter_count"><a class="show" href="javascript:void(0);" title="<%- i18next.t('Votes') %>" ><span class="<% if ( listviewsortby === 'card_voter_count' && listviewsortdirection === 'asc') { %> icon-caret-up <% } else { %> icon-caret-down <% } %><% if(listviewsortby !== 'card_voter_count') { %> hide <% } %>"></span><i  data-sort-by="card_voter_count" class="js-sort-by icon-thumbs-up h3"></i></a></th>
-		<th id="list_view_config_label-attachment_count" data-field-name="attachment_count"><a class="show" href="javascript:void(0);" title="<%- i18next.t('Attachments') %>" ><span class="<% if ( listviewsortby === 'attachment_count' && listviewsortdirection === 'asc') { %> icon-caret-up <% } else { %> icon-caret-down <% } %><% if(listviewsortby !== 'attachment_count') { %> hide <% } %>"></span><i data-sort-by="attachment_count" class="js-sort-by icon-paper-clip h3"></i></a></th>
-		<th id="list_view_config_label-comment_count" data-field-name="comment_count"><a class="show" href="javascript:void(0);" title="<%- i18next.t('Comments') %>"><span class="<% if ( listviewsortby === 'comment_count' && listviewsortdirection === 'asc') { %> icon-caret-up <% } else { %> icon-caret-down <% } %><% if(listviewsortby !== 'comment_count') { %> hide <% } %>"></span><i data-sort-by="comment_count" class="js-sort-by icon-comment h3"></i></a></th>
-		<th id="list_view_config_label-checklist_item_completed_count" data-field-name="checklist_item_completed_count"><a class="show" href="javascript:void(0);" title="<%- i18next.t('Checklist') %>" ><span class="<% if ( listviewsortby === 'checklist_item_completed_count' && listviewsortdirection === 'asc') { %> icon-caret-up <% } else { %> icon-caret-down <% } %><% if(listviewsortby !== 'checklist_item_completed_count') { %> hide <% } %>"></span><i  data-sort-by="checklist_item_completed_count" class="js-sort-by icon-list-ul h3"></i></a></th>
-		<% if (!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && $.inArray('r_custom_fields',APPS.enabled_apps) !== -1) {
-			if (!_.isUndefined(board) && !_.isEmpty(board) && !_.isUndefined(board.attributes.custom_fields) && board.attributes.custom_fields !== null) {
-				_.each(board.attributes.custom_fields, function(customfield){ %>
-					<th class="js-list-customField-<%- customfield.id %>" id="list_view_config_label-<%- customfield.name %>" data-field-name="<%- customfield.name %>"><a class="show" href="javascript:void(0);" title="<%- customfield.label %>" ><%- customfield.label %></a></th>
-			  <% });
-			} else { %>
-				<th class="hide js-custom-fields-list_view-header"></th>
-			<% } 
-		} %>
-	<tr>
-</thead>
-<tbody class="js-card-list-view-<%- board.id%>"></tbody>
-</table>
-<div class="">
+<div class="table-responsive js-boardList-view">
+	<table class="table">
+	<thead>
+		<tr id="list_view_configuration_label">
+			<th class="card-id" id="list_view_config_label-id" data-field-name="id"><a class="js-sort-by show" title="<%- i18next.t('ID') %>" href="#" data-sort-by="id"><span class="<% if (listviewsortby === 'id' && listviewsortdirection === 'asc') { %> icon-caret-up <% } else { %> icon-caret-down <% } %><% if(listviewsortby !== 'id') { %> hide <% } %>"></span><%- i18next.t("ID") %></a></th>
+			<th id="list_view_config_label-labels" data-field-name="labels"><a class="js-sort-by show" title="<%- i18next.t('Labels') %>" href="javascript:void(0);" data-sort-by="sort_group_label"><span class="<% if ( listviewsortby === 'sort_group_label' && listviewsortdirection === 'asc') { %> icon-caret-up <% } else { %> icon-caret-down <% } %><% if(listviewsortby !== 'sort_group_label') { %> hide <% } %>"></span><%- i18next.t("Labels") %></a></th>
+			<th id="list_view_config_label-name" data-field-name="name"><a class="js-sort-by show" title="<%- i18next.t('Card Name') %>" href="#" data-sort-by="name"><span class="<% if ( listviewsortby === 'name' && listviewsortdirection === 'asc') { %> icon-caret-up <% } else { %> icon-caret-down <% } %><% if(listviewsortby !== 'name') { %> hide <% } %>"></span><%- i18next.t("Card Name") %></a></th>
+			<th id="list_view_config_label-list_name" data-field-name="list_name"><a class="js-sort-by show" title="<%- i18next.t('List Name') %>" href="#" data-sort-by="list_name"><span class="<% if ( listviewsortby === 'list_name' && listviewsortdirection === 'asc') { %> icon-caret-up <% } else { %> icon-caret-down <% } %><% if(listviewsortby !== 'list_name') { %> hide <% } %>"></span><%- i18next.t("List Name") %></a></th>
+			<th id="list_view_config_label-cards_users" data-field-name="cards_users"><a class="js-sort-by show" title="<%- i18next.t('Members') %>" href="javascript:void(0);" data-sort-by="sort_group_user"><span class="<% if ( listviewsortby === 'sort_group_user' && listviewsortdirection === 'asc') { %> icon-caret-up <% } else { %> icon-caret-down <% } %><% if(listviewsortby !== 'sort_group_user') { %> hide <% } %>"></span><%- i18next.t("Members") %></a></th>
+			<th id="list_view_config_label-start_date" data-field-name="start_date" class="js-list-start-date hide field_heading"></th>
+			<th id="list_view_config_label-due_date" data-field-name="due_date"><a class="show" href="javascript:void(0);" title="<%- i18next.t('End Date') %>" ><span class="<% if ( listviewsortby === 'due_date' && listviewsortdirection === 'asc') { %> icon-caret-up <% } else { %> icon-caret-down <% } %><% if(listviewsortby !== 'due_date') { %> hide <% } %>"></span><i data-sort-by="due_date" class="js-sort-by icon-calendar h3"></i></a></th>
+			<th id="list_view_config_label-estimated_time" class="js-list-estimated-time hide" data-field-name="estimated_time"></th>
+			<th id="list_view_config_label-spent_time" class="js-list-spent-time hide" data-field-name="spent_time"></th>
+			<th id="list_view_config_label-subscribe" data-field-name="subscribe"><a class="show" title="<%- i18next.t('Subscribe') %>" ><i class="icon-eye-open"></i></a></th>
+			<th id="list_view_config_label-card_voter_count" data-field-name="card_voter_count"><a class="show" href="javascript:void(0);" title="<%- i18next.t('Votes') %>" ><span class="<% if ( listviewsortby === 'card_voter_count' && listviewsortdirection === 'asc') { %> icon-caret-up <% } else { %> icon-caret-down <% } %><% if(listviewsortby !== 'card_voter_count') { %> hide <% } %>"></span><i  data-sort-by="card_voter_count" class="js-sort-by icon-thumbs-up h3"></i></a></th>
+			<th id="list_view_config_label-attachment_count" data-field-name="attachment_count"><a class="show" href="javascript:void(0);" title="<%- i18next.t('Attachments') %>" ><span class="<% if ( listviewsortby === 'attachment_count' && listviewsortdirection === 'asc') { %> icon-caret-up <% } else { %> icon-caret-down <% } %><% if(listviewsortby !== 'attachment_count') { %> hide <% } %>"></span><i data-sort-by="attachment_count" class="js-sort-by icon-paper-clip h3"></i></a></th>
+			<th id="list_view_config_label-comment_count" data-field-name="comment_count"><a class="show" href="javascript:void(0);" title="<%- i18next.t('Comments') %>"><span class="<% if ( listviewsortby === 'comment_count' && listviewsortdirection === 'asc') { %> icon-caret-up <% } else { %> icon-caret-down <% } %><% if(listviewsortby !== 'comment_count') { %> hide <% } %>"></span><i data-sort-by="comment_count" class="js-sort-by icon-comment h3"></i></a></th>
+			<th id="list_view_config_label-checklist_item_completed_count" data-field-name="checklist_item_completed_count"><a class="show" href="javascript:void(0);" title="<%- i18next.t('Checklist') %>" ><span class="<% if ( listviewsortby === 'checklist_item_completed_count' && listviewsortdirection === 'asc') { %> icon-caret-up <% } else { %> icon-caret-down <% } %><% if(listviewsortby !== 'checklist_item_completed_count') { %> hide <% } %>"></span><i  data-sort-by="checklist_item_completed_count" class="js-sort-by icon-list-ul h3"></i></a></th>
+			<% if (!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && $.inArray('r_custom_fields',APPS.enabled_apps) !== -1) {
+				if (!_.isUndefined(board) && !_.isEmpty(board) && !_.isUndefined(board.attributes.custom_fields) && board.attributes.custom_fields !== null) {
+					_.each(board.attributes.custom_fields, function(customfield){ %>
+						<th class="js-list-customField-<%- customfield.id %>" id="list_view_config_label-<%- customfield.name %>" data-field-name="<%- customfield.name %>"><a class="show" href="javascript:void(0);" title="<%- customfield.label %>" ><%- customfield.label %></a></th>
+				<% });
+				} else { %>
+					<th class="hide js-custom-fields-list_view-header"></th>
+				<% } 
+			} %>
+		<tr>
+	</thead>
+	<tbody class="js-card-list-view-<%- board.id%>"></tbody>
+	</table>
+</div>
 <div id="js-empty-filter-cards" class="col-xs-12 text-center alert alert-info hide" style="margin-top: -20px;"><%- i18next.t('No %s available.', { postProcess: 'sprintf', sprintf: [i18next.t('cards')] }) %></div>
 </div>

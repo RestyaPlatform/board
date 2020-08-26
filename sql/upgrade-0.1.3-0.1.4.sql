@@ -3,7 +3,7 @@ UPDATE "email_templates" SET
 "subject" = 'Restyaboard / ##SITE_NAME## Account confirmation',
 "email_text_content" = 'Hi ##NAME##,
 
-You are one step ahead. Please click the below URL to activate your account.
+You are about to enter an exclusive Task Management platform for Collaborators and Teams! Please click the below URL to activate your account.
 ##ACTIVATION_URL##
 If you didn''t create a ##SITE_NAME## account and feel this is an error, please contact us at ##CONTACT_MAIL##.
 

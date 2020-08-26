@@ -5,16 +5,22 @@
 		<ul class="nav nav-tabs no-bor h3">
 		<%
 			var timezones; 
+			var languages;
 			var i = 0;
 			if (list.models.length > 0 ) { 
 				_.each(list.models, function(settingCategory) {				
 					var settings = settingCategory.get('settings');
-					if(timezones !== '') {
+					if(timezones !== '' && !_.isUndefined(settingCategory.get('timezones')) && !_.isEmpty(settingCategory.get('timezones')) && settingCategory.get('timezones') != null) {
 						timezones = settingCategory.get('timezones');
 					}
+					if(languages !== '' && !_.isUndefined(settingCategory.get('languages')) && !_.isEmpty(settingCategory.get('languages')) && settingCategory.get('languages') != null) {
+						languages = JSON.parse(settingCategory.get('languages'));
+					}
+					if (!_.isUndefined(settingCategory.get('id')) && !_.isEmpty(settingCategory.get('id')) && (settingCategory.get('id')) !== null) {
 		%>
-				<li <% if (!_.isUndefined(id) && id == settingCategory.get('id')) { %>class="active" <%} else if (_.isUndefined(id) && settingCategory.get('id') == 3) { %>class="active" <%}%> ><a href="#/settings/<%-settingCategory.get('id')%>" data-setting_category_id="<%-settingCategory.get('id')%>" id="js-setting_trigger"><%- i18next.t(settingCategory.get('name')) %></a></li>
-		<% 
+						<li <% if (!_.isUndefined(id) && id == settingCategory.get('id')) { %>class="active" <%} else if (_.isUndefined(id) && settingCategory.get('id') == 3) { %>class="active" <%}%> ><a href="#/settings/<%-settingCategory.get('id')%>" data-setting_category_id="<%-settingCategory.get('id')%>" id="js-setting_trigger"><%- i18next.t(settingCategory.get('name')) %></a></li>
+		<% 			
+					}
 					i++;
 				});
 			}
@@ -27,9 +33,10 @@
 				var j = 0;
 				_.each(list.models, function(settingCategory) {				
 					var settings = settingCategory.get('settings');
+					if (!_.isUndefined(settingCategory.get('id')) && !_.isEmpty(settingCategory.get('id')) && (settingCategory.get('id')) !== null) {
 		%>		
 				<div class="modal-body tab-pane clearfix <% if (!_.isUndefined(id) && id == settingCategory.get('id')) { %> active <%} else if (_.isUndefined(id) && settingCategory.get('id') == 3) { %> active <%} else { %> hide <% } %>" id="settingTab<%- settingCategory.get('id') %>">
-					<% if(!_.isEmpty(settings)){ %>
+					<% if(!_.isUndefined(settings) && !_.isEmpty(settings) && settings !== null){ %>
 					<% if(settingCategory.get('id') == 10){ %>
 					<p class="alert alert-info "><%- i18next.t('To add/reply cards via email you must set up a secret email account with IMAP access. This should support plus addressing and has to be dedicated to handle replying through email feature. Suggested email address is rbreply@yourdomain.tld') %></p>
 					<% } %>
@@ -192,14 +199,16 @@
 								  <div class="<% if(settingCategory.get('id') == 2){ %>col-sm-9 <% } else { %> col-sm-8 <% } %> col-xs-12">
 									<select name="<%- i18next.t(setting.name) %>" id="inputSetting<%- setting.id %>" class="form-control">
 									 <%
-									 _.each(JSON.parse($.cookie('languages')), function(v, k) { %>
-										<option <% if(k === setting.value) { %>selected <% }%> value="<%- k %>"><%- v %></option>
-									<% }); %>
+										if (!_.isUndefined(languages) && !_.isEmpty(languages) && languages !== null) {
+									 		_.each(languages, function(v, k) { %>
+												<option <% if(k === setting.value) { %>selected <% }%> value="<%- k %>"><%- v %></option>
+									<% 		});
+										} %>
 									</select>
 									<div><span class="help-block"><%= i18next.t(setting.description) %></span></div>
 								  </div>
 								</div>
-							<% } else {%>
+							<% } else { %>
 								  <% if(setting.name == 'TODO' || setting.name == 'DOING' || setting.name == 'DONE') { %> 
 								  <div class="clearfix">
 								  <label for="inputSetting<%- setting.id %>" class="col-sm-2 control-label text-right"><%- i18next.t(setting.label) %></label>
@@ -277,7 +286,7 @@
 									<% } else {%>
 									<input type="<%- setting.type %>" id="inputSetting<%- setting.id %>" name="<%- i18next.t(setting.name) %>" class="form-control" value="<%- setting.value %>" />
 									<% } %>
-									<div><span class="help-block"><%= i18next.t(setting.description) %></span></div>
+									<div><span class="help-block text-wrap"><%= i18next.t(setting.description) %></span></div>
 								  </div>
 								</div>
 							<% } %>
@@ -310,8 +319,9 @@
 					</form>
 					<% } %>
 				</div>
-		<% j++; %>
-		<% });
+		<%  			j++; 
+					}
+				});
 			} 
 		%>	
 		</div>

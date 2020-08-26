@@ -37,7 +37,9 @@ App.CardAttachmentView = Backbone.View.extend({
         'click a.js-show-confirm-delete-attachment': 'showConfirmAttachmentDelete',
         'click .js-close-popup': 'closePopup',
         'click .js-span-close-popup': 'closeSpanPopup',
-        'click .js-delete-attachment': 'deleteAttachment'
+        'click .js-delete-attachment': 'deleteAttachment',
+        'click .js-attachment-make-cover': 'changeCover',
+        'click .js-attachment-remove-cover': 'removeCover'
     },
     /**
      * render()
@@ -83,6 +85,75 @@ App.CardAttachmentView = Backbone.View.extend({
             }
         });
         return false;
+    },
+    changeCover: function(e) {
+        var card = this.card;
+        var data = {};
+        data.cover_image_id = this.model.id;
+        var cardId = this.model.attributes.card_id;
+        this.model.url = api_url + 'boards/' + this.model.attributes.board_id + '/lists/' + this.model.attributes.list_id + '/cards/' + this.model.attributes.card_id + '.json';
+        this.model.save(data, {
+            patch: true,
+            success: function(model, response, options) {
+                if (!_.isUndefined(response)) {
+                    card.set('cover_image_id', data.cover_image_id);
+                    var attachmentsList = $('#js-card-modal-' + cardId).find('#js-card-attachments-list');
+                    $.each(attachmentsList.find('.js-cover-img-option'), function(i, attachment) {
+                        if ($(attachment).attr('data-id') == data.cover_image_id) {
+                            $(attachment).removeClass('js-attachment-make-cover').addClass('js-attachment-remove-cover');
+                            $(attachment).html('<i class="icon-folder-close cur icon-light"></i>' + i18next.t('Remove Cover'));
+                        } else if ($(attachment).hasClass('js-attachment-remove-cover')) {
+                            $(attachment).removeClass('js-attachment-remove-cover').addClass('js-attachment-make-cover');
+                            $(attachment).html('<i class="icon-folder-close cur icon-light"></i>' + i18next.t('Make Cover'));
+                        }
+                    });
+                    if (!_.isUndefined(response.activity)) {
+                        response.activity = activityCommentReplace(response.activity);
+                        var activity = new App.Activity();
+                        activity.set(response.activity);
+                        var view_act = new App.ActivityView({
+                            model: activity
+                        });
+                        self.model.activities.unshift(activity);
+                        var view_activity = $('#js-card-activities-' + parseInt(response.activity.card_id));
+                        view_activity.prepend(view_act.render().el);
+                    }
+                }
+            }
+        });
+    },
+    removeCover: function(e) {
+        var card = this.card;
+        var data = {};
+        data.cover_image_id = 0;
+        var cardId = this.model.attributes.card_id;
+        this.model.url = api_url + 'boards/' + this.model.attributes.board_id + '/lists/' + this.model.attributes.list_id + '/cards/' + this.model.attributes.card_id + '.json';
+        this.model.save(data, {
+            patch: true,
+            success: function(model, response, options) {
+                if (!_.isUndefined(response)) {
+                    card.set('cover_image_id', 0);
+                    var attachmentsList = $('#js-card-modal-' + cardId).find('#js-card-attachments-list');
+                    $.each(attachmentsList.find('.js-cover-img-option'), function(i, attachment) {
+                        if ($(attachment).hasClass('js-attachment-remove-cover')) {
+                            $(attachment).removeClass('js-attachment-remove-cover').addClass('js-attachment-make-cover');
+                            $(attachment).html('<i class="icon-folder-close cur icon-light"></i>' + i18next.t('Make Cover'));
+                        }
+                    });
+                    if (!_.isUndefined(response.activity)) {
+                        response.activity = activityCommentReplace(response.activity);
+                        var activity = new App.Activity();
+                        activity.set(response.activity);
+                        var view_act = new App.ActivityView({
+                            model: activity
+                        });
+                        self.model.activities.unshift(activity);
+                        var view_activity = $('#js-card-activities-' + parseInt(response.activity.card_id));
+                        view_activity.prepend(view_act.render().el);
+                    }
+                }
+            }
+        });
     },
     /**
      * showConfirmAttachmentDelete()

@@ -100,7 +100,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             );
             $role_links = executeQuery('SELECT * FROM role_links_listing WHERE id = $1', $qry_val_arr);
             $response = array_merge($response, $role_links);
-            $files = glob(APP_PATH . '/client/locales/*/translation.json', GLOB_BRACE);
+            $files = glob(APP_PATH . '/client/locales/*/translation.json');
             $lang_iso2_codes = array();
             foreach ($files as $file) {
                 $folder = explode(DS, $file);
@@ -116,7 +116,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 $languages[$row['iso2']] = $row['name'];
             }
             $response['languages'] = json_encode($languages);
-            $files = glob(APP_PATH . DS . 'client' . DS . 'apps' . DS . '*' . DS . 'app.json', GLOB_BRACE);
+            $files = glob(APP_PATH . DS . 'client' . DS . 'apps' . DS . '*' . DS . 'app.json');
             if (!empty($files)) {
                 foreach ($files as $file) {
                     $content = file_get_contents($file);
@@ -359,23 +359,6 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM activities_listing al ' . $condition . ' ORDER BY id ' . $direction . ' LIMIT ' . PAGING_COUNT . ') as d';
             $c_sql = 'SELECT COUNT(*) FROM activities_listing al' . $condition;
         } else {
-            if (isset($r_resource_filters['last_activity_id']) && !empty($r_resource_filters['last_activity_id'])) {
-                $val_array = array(
-                    $r_resource_filters['last_activity_id'],
-                    'delete_board_user'
-                );
-                $responsedata = executeQuery('SELECT * FROM activities_listing WHERE id > $1 AND type = $2', $val_array);
-                if (isset($responsedata['board_id'])) {
-                    $val_array = array(
-                        $responsedata['board_id'],
-                        $authUser['id']
-                    );
-                    $boardUser = executeQuery('SELECT * FROM boards_users WHERE board_id = $1 AND user_id = $2', $val_array);
-                    if (!isset($boardUser['id'])) {
-                        $flag = 1;
-                    }
-                }
-            }
             if (!empty($authUser) && $authUser['id'] != $r_resource_vars['users'] && $authUser['role_id'] != 1) {
                 $val_array = array(
                     $authUser['id']
@@ -432,15 +415,15 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 $c_sql = 'SELECT COUNT(*) FROM activities_listing al WHERE ' . $str;
             } else if (!empty($r_resource_filters['type']) && $r_resource_filters['type'] == 'all') {
                 if (!empty($r_resource_filters['last_activity_id'])) {
-                    $condition = ' AND al.id > $3';
+                    $condition = ' AND al.id > $4';
                 }
                 $direction = 'DESC';
                 if (!empty($r_resource_filters['direction']) && isset($r_resource_filters['direction'])) {
                     $direction = $r_resource_filters['direction'];
                 }
-                $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM activities_listing al WHERE (board_id = ANY ( $1 ) OR organization_id  = ANY ( $2 ))' . $condition . ' ORDER BY id ' . $direction . ' LIMIT ' . PAGING_COUNT . ') as d';
-                $c_sql = 'SELECT COUNT(*) FROM activities_listing al WHERE (board_id = ANY ( $1 ) OR organization_id  = ANY ( $2 ))' . $condition;
-                array_push($pg_params, '{' . implode(',', $board_ids) . '}', '{' . implode(',', $org_ids) . '}');
+                $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM activities_listing al WHERE (board_id = ANY ( $1 ) OR organization_id  = ANY ( $2 ) OR revisions = $3)' . $condition . ' ORDER BY id ' . $direction . ' LIMIT ' . PAGING_COUNT . ') as d';
+                $c_sql = 'SELECT COUNT(*) FROM activities_listing al WHERE (board_id = ANY ( $1 ) OR organization_id  = ANY ( $2 ) OR revisions = $3)' . $condition;
+                array_push($pg_params, '{' . implode(',', $board_ids) . '}', '{' . implode(',', $org_ids) . '}', $authUser['id']);
             } else if (!empty($r_resource_filters['board_id']) && $r_resource_filters['board_id'] && $r_resource_filters['type'] == 'board_user_activity') {
                 if (!empty($r_resource_filters['last_activity_id'])) {
                     $condition = ' AND al.id < $3';
@@ -463,14 +446,8 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 $c_sql = 'SELECT COUNT(*) FROM activities_listing al WHERE ( board_id = ANY( $1 ) OR organization_id  = ANY ( $2 ) )' . $condition;
                 array_push($pg_params, '{' . implode(',', $board_ids) . '}', '{' . implode(',', $org_ids) . '}');
             }
-            if ($flag == 1) {
-                unset($pg_params);
-                $pg_params[0] = $r_resource_filters['last_activity_id'];
-                $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM activities_listing al WHERE id > $1 ORDER BY id DESC LIMIT ' . PAGING_COUNT . ') as d';
-                $c_sql = "";
-            }
         }
-        if (!empty($r_resource_filters['last_activity_id']) && $flag == 0) {
+        if (!empty($r_resource_filters['last_activity_id'])) {
             array_push($pg_params, $r_resource_filters['last_activity_id']);
         }
         if (!empty($c_sql)) {
@@ -1030,6 +1007,22 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             $timezones[] = $timezones_row;
         }
         $response[]['timezones'] = $timezones;
+        $files = glob(APP_PATH . '/client/locales/*/translation.json');
+        $lang_iso2_codes = array();
+        foreach ($files as $file) {
+            $folder = explode(DS, $file);
+            $folder_iso2_code = $folder[count($folder) - 2];
+            array_push($lang_iso2_codes, $folder_iso2_code);
+        }
+        $languages = array();
+        $qry_val_arr = array(
+            '{' . implode($lang_iso2_codes, ',') . '}'
+        );
+        $result = pg_query_params($db_lnk, 'SELECT name, iso2 FROM languages WHERE iso2 = ANY ( $1 ) ORDER BY name ASC', $qry_val_arr);
+        while ($row = pg_fetch_assoc($result)) {
+            $languages[$row['iso2']] = $row['name'];
+        }
+        $response[]['languages'] = json_encode($languages);
         echo json_encode($response);
         break;
 
@@ -1130,7 +1123,9 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             } else {
                 $response['error']['type'] = 'visibility';
                 $response['error']['message'] = 'Unauthorized';
-                header($_SERVER['SERVER_PROTOCOL'] . ' 401 Unauthorized', true, 401);
+                echo json_encode($response);
+                // header($_SERVER['SERVER_PROTOCOL'] . ' 401 Unauthorized', true, 401);
+                
             }
         } else {
             $response['error']['type'] = 'board';
@@ -1655,6 +1650,30 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         }
         break;
 
+    case '/cards/search':
+        $_metadata = array();
+        $data = array();
+        $fields = !empty($r_resource_filters['fields']) ? $r_resource_filters['fields'] : '*';
+        $sql = "SELECT row_to_json(d) FROM (SELECT " . $fields . " FROM cards_listing cll WHERE custom_fields LIKE '%" . $r_resource_filters['custom_field'] . "%' ORDER BY position asc) as d ";
+        if ($result = pg_query_params($db_lnk, $sql, array())) {
+            $board_lists = array();
+            while ($row = pg_fetch_row($result)) {
+                $obj = json_decode($row[0], true);
+                if (!empty($_metadata)) {
+                    $data['data'][] = $obj;
+                } else {
+                    $data[] = $obj;
+                }
+            }
+            if (!empty($_metadata)) {
+                $data['_metadata'] = $_metadata;
+            }
+            echo json_encode($data);
+        } else {
+            $r_debug.= __LINE__ . ': ' . pg_last_error($db_lnk) . '\n';
+        }
+        break;
+
     case '/activities':
         $condition = '';
         $i = 1;
@@ -1774,7 +1793,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         break;
 
     case '/workflow_templates':
-        $files = glob(APP_PATH . DS . 'client' . DS . 'js' . DS . 'workflow_templates' . DS . '*.json', GLOB_BRACE);
+        $files = glob(APP_PATH . DS . 'client' . DS . 'js' . DS . 'workflow_templates' . DS . '*.json');
         foreach ($files as $file) {
             $data = file_get_contents($file);
             $json = json_decode($data, true);
@@ -1890,7 +1909,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         while ($row = pg_fetch_assoc($s_sql)) {
             $response[$row['name']] = $row['value'];
         }
-        $files = glob(APP_PATH . DS . 'client' . DS . 'apps' . DS . '*' . DS . 'app.json', GLOB_BRACE);
+        $files = glob(APP_PATH . DS . 'client' . DS . 'apps' . DS . '*' . DS . 'app.json');
         if (!empty($files)) {
             foreach ($files as $file) {
                 $content = file_get_contents($file);
@@ -1946,7 +1965,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         break;
 
     case '/apps':
-        $files = glob(APP_PATH . DS . 'client' . DS . 'apps' . DS . '*' . DS . 'app.json', GLOB_BRACE);
+        $files = glob(APP_PATH . DS . 'client' . DS . 'apps' . DS . '*' . DS . 'app.json');
         if (!empty($files)) {
             foreach ($files as $file) {
                 $folder = explode(DS, $file);
@@ -2037,9 +2056,9 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
     case '/oauth/applications':
         $response['applications'] = array();
         $_metadata = array();
-        $sql = 'SELECT row_to_json(d) FROM (SELECT DISTINCT ON (ort.client_id) ort.client_id, oc.client_name FROM oauth_refresh_tokens ort LEFT JOIN oauth_clients oc ON ort.client_id = oc.client_id WHERE ort.user_id = $1 AND ort.client_id != $2) as d ';
+        $sql = 'SELECT row_to_json(d) FROM (SELECT DISTINCT ON (ort.client_id) ort.client_id, oc.client_name FROM oauth_access_tokens ort LEFT JOIN oauth_clients oc ON ort.client_id = oc.client_id WHERE ort.user_id = $1 AND ort.client_id != $2) as d ';
         array_push($pg_params, $authUser['username'], '7742632501382313');
-        $c_sql = 'SELECT COUNT(*) FROM (SELECT DISTINCT ON (ort.client_id) ort.client_id, oc.client_name FROM oauth_refresh_tokens ort LEFT JOIN oauth_clients oc ON ort.client_id = oc.client_id WHERE ort.user_id = $1 AND ort.client_id != $2) As oc';
+        $c_sql = 'SELECT COUNT(*) FROM (SELECT DISTINCT ON (ort.client_id) ort.client_id, oc.client_name FROM oauth_access_tokens ort LEFT JOIN oauth_clients oc ON ort.client_id = oc.client_id WHERE ort.user_id = $1 AND ort.client_id != $2) As oc';
         if (!empty($c_sql)) {
             $paging_data = paginate_data($c_sql, $db_lnk, $pg_params, $r_resource_filters);
             $sql.= $paging_data['sql'];
@@ -2049,7 +2068,11 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             $data = array();
             while ($row = pg_fetch_row($result)) {
                 $obj = json_decode($row[0], true);
-                $data[] = $obj;
+                if (!empty($_metadata)) {
+                    $data['data'][] = $obj;
+                } else {
+                    $data[] = $obj;
+                }
             }
             if (!empty($_metadata)) {
                 $data['_metadata'] = $_metadata;
@@ -2733,7 +2756,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 pg_query_params($db_lnk, 'INSERT INTO user_logins (created, modified, user_id, ip_id, user_agent, is_login_failed) VALUES (now(), now(), $1, $2, $3, $4)', $val_arr);
             }
             // login failed error logged
-            $login_fail_string = date('Y-m-d H:i:s') . '|' . $last_login_ip_id . '|' . $r_post['email'] . '|' . $user_agent;
+            $login_fail_string = date('Y-m-d H:i:s') . '|' . $_SERVER['REMOTE_ADDR'] . '|' . $r_post['email'] . '|' . $user_agent;
             error_log($login_fail_string . PHP_EOL, 3, CACHE_PATH . DS . 'user_logins_failed.log');
             if (!empty($ldap_error)) {
                 $response = array(
@@ -2883,6 +2906,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             );
             $filename = $_FILES['attachment']['name'];
             $file_ext = pathinfo($filename, PATHINFO_EXTENSION);
+            $file_ext = strtolower($file_ext);
             if (in_array($file_ext, $allowed_ext)) {
                 $mediadir = MEDIA_PATH . DS . 'User' . DS . $r_resource_vars['users'];
                 $save_path = 'User' . DS . $r_resource_vars['users'];
@@ -4123,6 +4147,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             );
             $filename = $_FILES['attachment']['name'];
             $file_ext = pathinfo($filename, PATHINFO_EXTENSION);
+            $file_ext = strtolower($file_ext);
             if (in_array($file_ext, $allowed_ext)) {
                 $mediadir = MEDIA_PATH . DS . 'Board' . DS . $r_resource_vars['boards'];
                 $save_path = 'Board' . DS . $r_resource_vars['boards'];
@@ -4141,9 +4166,8 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                         }
                     }
                     $hash = md5(SECURITYSALT . 'Board' . $r_resource_vars['boards'] . 'jpg' . 'extra_large_thumb');
-                    $background_picture_url = $_server_domain_url . '/img/extra_large_thumb/Board/' . $r_resource_vars['boards'] . '.' . $hash . '.jpg';
+                    $background_picture_url = '/img/extra_large_thumb/Board/' . $r_resource_vars['boards'] . '.' . $hash . '.jpg';
                     $r_post['background_picture_path'] = $save_path . DS . $file['name'];
-                    $background_picture_url = preg_replace('/(http|https):/', '', $background_picture_url);
                     $r_post['path'] = $background_picture_url;
                     $r_post['background_picture_url'] = $background_picture_url;
                     $response['background_picture_url'] = $background_picture_url;
@@ -5176,14 +5200,26 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 $i = 0;
                 foreach ($r_post['image_link'] as $image_link) {
                     $r_post['name'] = $r_post['link'] = $image_link;
+                    $mediadir = MEDIA_PATH . DS . 'Card' . DS . $r_post['card_id'];
+                    $save_path = 'Card' . DS . $r_post['card_id'];
+                    $save_path = str_replace('\\', '/', $save_path);
+                    $filename = curlExecute($image_link, 'get', $mediadir, 'image');
+                    $path = $save_path . DS . $filename['file_name'];
+                    $mimetype = explode('.', $r_post['name']);
+                    $mimetypeStore = "";
+                    if ($mimetype[count($mimetype) - 1] == "jpg" || $mimetype[count($mimetype) - 1] == "gif" || $mimetype[count($mimetype) - 1] == "jpeg" || $mimetype[count($mimetype) - 1] == "png") {
+                        $mimetypeStore = "image/" + $mimetype[count($mimetype) - 1];
+                    } else {
+                        $mimetypeStore = "application/" + $mimetype[count($mimetype) - 1];
+                    }
                     $qry_val_arr = array(
                         $r_post['card_id'],
-                        $r_post['name'],
-                        'NULL',
+                        $filename['file_name'],
+                        $path,
                         $r_post['list_id'],
                         $r_post['board_id'],
-                        'NULL',
-                        $r_post['link']
+                        $mimetypeStore,
+                        'NULL'
                     );
                     $s_result = pg_query_params($db_lnk, 'INSERT INTO card_attachments (created, modified, card_id, name, path, list_id, board_id, mimetype, link) VALUES (now(), now(), $1, $2, $3, $4, $5, $6, $7) RETURNING *', $qry_val_arr);
                     $response['card_attachments'][] = pg_fetch_assoc($s_result);
@@ -5197,28 +5233,37 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             } else {
                 $sql = true;
                 $r_post['name'] = $r_post['link'] = $r_post['image_link'];
-                $r_post['path'] = '';
-                unset($r_post['image_link']);
-                if (!empty($sql)) {
-                    $post = getbindValues($table_name, $r_post);
-                    $result = pg_execute_insert($table_name, $post);
-                    if ($result) {
-                        $row = pg_fetch_assoc($result);
-                        $response['card_attachments'] = $row;
-                        $foreign_ids['board_id'] = $r_post['board_id'];
-                        $foreign_ids['list_id'] = $r_post['list_id'];
-                        $foreign_ids['card_id'] = $r_post['card_id'];
-                        $comment = '##USER_NAME## added attachment to the card ##CARD_LINK##';
-                        $response['activity'] = insertActivity($authUser['id'], $comment, 'add_card_attachment', $foreign_ids, null, $row['id']);
-                        foreach ($thumbsizes['CardAttachment'] as $key => $value) {
-                            $mediadir = IMG_PATH . DS . $key . DS . 'CardAttachment' . DS . $row['id'];
-                            $list = glob($mediadir . '.*');
-                            if (!empty($list) && isset($list[0]) && file_exists($list[0])) {
-                                unlink($list[0]);
-                            }
-                        }
-                    }
+                $mediadir = MEDIA_PATH . DS . 'Card' . DS . $r_post['card_id'];
+                if (!file_exists($mediadir)) {
+                    mkdir($mediadir, 0777, true);
                 }
+                $save_path = 'Card' . DS . $r_post['card_id'];
+                $save_path = str_replace('\\', '/', $save_path);
+                $filename = curlExecute($r_post['image_link'], 'get', $mediadir, 'image');
+                $path = $save_path . DS . $filename['file_name'];
+                $mimetype = array();
+                $mimetype = explode('.', $r_post['name']);
+                $mimetypeStore = "";
+                if ($mimetype[count($mimetype) - 1] == "jpg" || $mimetype[count($mimetype) - 1] == "gif" || $mimetype[count($mimetype) - 1] == "jpeg" || $mimetype[count($mimetype) - 1] == "png") {
+                    $mimetypeStore = "image/" . $mimetype[count($mimetype) - 1];
+                } else {
+                    $mimetypeStore = "application/" . $mimetype[count($mimetype) - 1];
+                }
+                $qry_val_arr = array(
+                    $r_post['card_id'],
+                    $filename['file_name'],
+                    $path,
+                    $r_post['list_id'],
+                    $r_post['board_id'],
+                    $mimetypeStore
+                );
+                $s_result = pg_query_params($db_lnk, 'INSERT INTO card_attachments (created, modified, card_id, name, path, list_id, board_id, mimetype) VALUES (now(), now(), $1, $2, $3, $4, $5, $6) RETURNING *', $qry_val_arr);
+                $response['card_attachments'][0] = pg_fetch_assoc($s_result);
+                $foreign_ids['board_id'] = $r_resource_vars['boards'];
+                $foreign_ids['list_id'] = $r_resource_vars['lists'];
+                $foreign_ids['card_id'] = $r_resource_vars['cards'];
+                $comment = '##USER_NAME## added attachment to the card ##CARD_LINK##';
+                $response['activity'] = insertActivity($authUser['id'], $comment, 'add_card_attachment', $foreign_ids, null, $response['card_attachments'][0]['id']);
             }
         }
         echo json_encode($response);
@@ -5283,18 +5328,18 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             $response['cards_labels'] = $cards_labels;
             if (count($newlabel) && !count(array_diff($previous_cards_labels, $oldlabel))) {
                 $names = implode(",", $newlabel);
-                $names = preg_replace('/[ ,]+/', ', ', $names);
+                $names = preg_replace('/[,]+/', ', ', $names);
                 $comment = '##USER_NAME## added label(s) to the card ##CARD_LINK## - ' . $names;
                 $type = 'add_card_label';
             } else if (!count($newlabel) && count(array_diff($previous_cards_labels, $oldlabel))) {
                 $names = implode(",", array_diff($previous_cards_labels, $oldlabel));
-                $names = preg_replace('/[ ,]+/', ', ', $names);
+                $names = preg_replace('/[,]+/', ', ', $names);
                 $comment = '##USER_NAME## removed label(s) to the card ##CARD_LINK## - ' . $names;
                 $type = 'update_card_label';
             } else if (count($newlabel) && count(array_diff($previous_cards_labels, $oldlabel))) {
                 $deletenames = implode(",", array_diff($previous_cards_labels, $oldlabel));
                 $names = implode(",", $newlabel);
-                $names = preg_replace('/[ ,]+/', ', ', $names);
+                $names = preg_replace('/[,]+/', ', ', $names);
                 $comment = '##USER_NAME## removed the label(s) ' . ' - ' . $deletenames . ' and added the label(s) ' . ' - ' . $names . ' to the card ##CARD_LINK##';
                 $type = 'update_card_label';
             } else {
@@ -5970,6 +6015,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             );
             $filename = $_FILES['attachment']['name'];
             $file_ext = pathinfo($filename, PATHINFO_EXTENSION);
+            $file_ext = strtolower($file_ext);
             if (in_array($file_ext, $allowed_ext)) {
                 $mediadir = MEDIA_PATH . DS . 'Organization' . DS . $r_resource_vars['organizations'];
                 $save_path = 'Organization' . DS . $r_resource_vars['organizations'];
@@ -6000,7 +6046,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     pg_query_params($db_lnk, 'UPDATE organizations SET logo_url = $1 WHERE id = $2', $qry_val_arr);
                     $response['logo_url'] = $logo_url;
                     $foreign_ids['organization_id'] = $r_resource_vars['organizations'];
-                    $comment = ((!empty($authUser['full_name'])) ? $authUser['full_name'] : $authUser['username']) . ' added attachment to this organization ##ORGANIZATION_LINK##';
+                    $comment = ((!empty($authUser['full_name'])) ? $authUser['full_name'] : $authUser['username']) . ' added attachment to organization ##ORGANIZATION_LINK##';
                     $response['activity'] = insertActivity($authUser['id'], $comment, 'add_organization_attachment', $foreign_ids);
                 }
             } else {
@@ -6878,9 +6924,10 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
                         $comment = '##USER_NAME## updated Agile WIP limit - ' . $custom_fields['wip_limit'] . ' on list "##LIST_NAME##"';
                         $activity_type = 'edit_list_agile_wip_limit';
                     }
-                    if (empty($custom_fields['hard_wip_limit']) && isset($custom_fields['hard_wip_limit'])) {
+                    if (empty($custom_fields['hard_wip_limit']) && isset($custom_fields['hard_wip_limit']) && $previous_custom_fields_value['hard_wip_limit'] !== $custom_fields['hard_wip_limit']) {
                         $comment.= " and removed hard limit";
-                    } else {
+                    }
+                    if (isset($custom_fields['hard_wip_limit']) && !empty($custom_fields['hard_wip_limit']) && $previous_custom_fields_value['hard_wip_limit'] !== $custom_fields['hard_wip_limit']) {
                         $comment.= " and set as hard limit";
                     }
                 }
@@ -7629,7 +7676,7 @@ function r_delete($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         $previous_value = pg_fetch_assoc($s_result);
         $foreign_ids['board_id'] = $previous_value['board_id'];
         $comment = '##USER_NAME## removed member "' . $previous_value['username'] . '" from board';
-        $response['activity'] = insertActivity($authUser['id'], $comment, 'delete_board_user', $foreign_ids, '', $r_resource_vars['boards_users']);
+        $response['activity'] = insertActivity($authUser['id'], $comment, 'delete_board_user', $foreign_ids, $previous_value['user_id'], $r_resource_vars['boards_users']);
         $sql = 'DELETE FROM boards_users WHERE id= $1';
         $conditions = array(
             $previous_value['board_id']
@@ -7856,17 +7903,23 @@ function r_delete($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         );
         $attachment = executeQuery('SELECT name, path FROM card_attachments WHERE id =  $1', $qry_val_arr);
         if (!empty($attachment)) {
-            $file = APP_PATH . DS . $attachment['path'];
+            $file = MEDIA_PATH . DS . $attachment['path'];
             if (file_exists($file)) {
                 unlink($file);
             }
             foreach ($thumbsizes['CardAttachment'] as $key => $value) {
                 $file_ext = explode('.', $attachment['name']);
                 $hash = md5(SECURITYSALT . 'CardAttachment' . $r_resource_vars['attachments'] . $file_ext[1] . $key);
-                $thumb_file = IMG_PATH . DS . $key . DS . 'Organization' . DS . $r_resource_vars['attachments'] . '.' . $hash . '.' . $file_ext[1];
+                $thumb_file = IMG_PATH . DS . $key . DS . 'CardAttachment' . DS . $r_resource_vars['attachments'] . '.' . $hash . '.' . $file_ext[1];
                 if (file_exists($thumb_file)) {
                     unlink($thumb_file);
                 }
+            }
+            $file_ext = explode('.', $attachment['name']);
+            $hash = md5(SECURITYSALT . 'CardAttachment' . $r_resource_vars['attachments'] . $file_ext[1] . $key);
+            $thumb_file = IMG_PATH . DS . 'original' . DS . 'CardAttachment' . DS . $r_resource_vars['attachments'] . '.' . $hash . '.' . $file_ext[1];
+            if (file_exists($thumb_file)) {
+                unlink($thumb_file);
             }
         }
         break;

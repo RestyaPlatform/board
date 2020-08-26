@@ -18,15 +18,15 @@
 			  <% _.each(board.lists.models, function(list) { 
 				  if(parseInt(list.attributes.is_archived) === 0){
 			  %>
-				<option <% if(board.attributes.default_email_list_id === list.attributes.id){ %>selected<% } %> value="<%- list.attributes.id %>"><%- list.attributes.name %></option>
+				<option <% if(parseInt(board.attributes.default_email_list_id) === parseInt(list.attributes.id)){ %>selected<% } %> value="<%- list.attributes.id %>"><%- list.attributes.name %></option>
 			  <% } 
 			  });
 			  %>
 			  </select>
 			  <label><%- i18next.t("Position") %></label>
 			  <select class="js-select-position form-control input-sm cur">
-				<option <% if(parseInt(board.attributes.is_default_email_position_as_bottom) === 0){ %>selected<% } %> value="false"><%- i18next.t('Top') %></option>
-				<option <% if(parseInt(board.attributes.is_default_email_position_as_bottom) === 1){ %>selected<% } %> value="true"><%- i18next.t('Bottom') %></option>
+				<option <% if(!board.attributes.is_default_email_position_as_bottom){ %>selected<% } %> value="false"><%- i18next.t('Top') %></option>
+				<option <% if(board.attributes.is_default_email_position_as_bottom){ %>selected<% } %> value="true"><%- i18next.t('Bottom') %></option>
 			  </select>
 			</div>
 		</div>

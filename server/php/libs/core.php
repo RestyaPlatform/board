@@ -610,7 +610,7 @@ function sendMail($template, $replace_content, $to, $reply_to_mail = '')
         }
         $headers.= "MIME-Version: 1.0" . PHP_EOL;
         $headers.= "Content-Type: text/html; charset=UTF-8" . PHP_EOL;
-        $headers.= "X-Mailer: Restyaboard (0.6.8; +http://restya.com/board)" . PHP_EOL;
+        $headers.= "X-Mailer: Restyaboard (0.6.9; +http://restya.com/board)" . PHP_EOL;
         $headers.= "X-Auto-Response-Suppress: All" . PHP_EOL;
         if (is_plugin_enabled('r_sparkpost')) {
             require_once PLUGIN_PATH . DS . 'SparkPost' . DS . 'functions.php';
@@ -847,24 +847,26 @@ function copyCards($cards, $new_list_id, $name, $new_board_id = '')
                 }
             }
             // Copy card custom fields
-            $cards_custom_fields = 'list_id, card_id, board_id, custom_field_id';
-            if (!empty($new_board_id)) {
-                $cards_custom_fields = 'board_id, list_id, card_id, custom_field_id';
-            }
-            $qry_val_arr = array(
-                $card_id
-            );
-            $cards_custom_field = pg_query_params($db_lnk, 'SELECT id, ' . $cards_custom_fields . ',value,is_active,value FROM cards_custom_fields WHERE card_id = $1 ORDER BY id', $qry_val_arr);
-            if ($cards_custom_field && pg_num_rows($cards_custom_field)) {
-                while ($cards_field = pg_fetch_object($cards_custom_field)) {
-                    if (!empty($new_board_id)) {
-                        $cards_field->board_id = $new_board_id;
-                        $cards_field->list_id = $new_list_id;
-                        $cards_field->card_id = $new_card_id;
+            if (is_plugin_enabled('r_custom_fields')) {
+                $cards_custom_fields = 'list_id, card_id, board_id, custom_field_id';
+                if (!empty($new_board_id)) {
+                    $cards_custom_fields = 'board_id, list_id, card_id, custom_field_id';
+                }
+                $qry_val_arr = array(
+                    $card_id
+                );
+                $cards_custom_field = pg_query_params($db_lnk, 'SELECT id, ' . $cards_custom_fields . ',value,is_active,value FROM cards_custom_fields WHERE card_id = $1 ORDER BY id', $qry_val_arr);
+                if ($cards_custom_field && pg_num_rows($cards_custom_field)) {
+                    while ($cards_field = pg_fetch_object($cards_custom_field)) {
+                        if (!empty($new_board_id)) {
+                            $cards_field->board_id = $new_board_id;
+                            $cards_field->list_id = $new_list_id;
+                            $cards_field->card_id = $new_card_id;
+                        }
+                        pg_execute_insert('cards_custom_fields', $cards_field);
+                        $comment = __l('##USER_NAME## added card custom field(s) to the card ##CARD_LINK## ');
+                        insertActivity($authUser['id'], $comment, 'add_card_custom_field', $foreign_ids);
                     }
-                    pg_execute_insert('cards_custom_fields', $cards_field);
-                    $comment = __l('##USER_NAME## added card custom field(s) to the card ##CARD_LINK## ');
-                    insertActivity($authUser['id'], $comment, 'add_card_custom_field', $foreign_ids);
                 }
             }
         }
@@ -2106,11 +2108,13 @@ function importTaigaBoard($board = array())
                 $i+= 1;
                 $is_closed = !empty($card['is_closed']) ? 'true' : 'false';
                 $date = (!empty($card['due'])) ? $card['due_date'] : null;
+                $card['subject'] = preg_replace('~\x{00a0}~siu', ' ', utf8_decode($card['subject']));
+                $card['description'] = preg_replace('~\x{00a0}~siu', ' ', utf8_decode($card['description']));
                 $qry_val_arr = array(
                     $new_board['id'],
                     $lists[$card['status']],
-                    utf8_decode($card['subject']) ,
-                    utf8_decode($card['description']) ,
+                    $card['subject'],
+                    $card['description'],
                     $is_closed,
                     $i,
                     $date,
@@ -3429,6 +3433,19 @@ function update_query($table_name, $id, $r_resource_cmd, $r_put, $comment = '', 
                 $foreign_id = $r_put['list_id'];
             }
             $response['activity'] = insertActivity($authUser['id'], $comment, $activity_type, $foreign_ids, $revision, $foreign_id);
+            if ($activity_type == 'move_list') {
+                $qry_val_arr = array(
+                    $foreign_id
+                );
+                $result = pg_query_params($db_lnk, 'SELECT board_id,list_id,id FROM cards_listing WHERE list_id = $1 ORDER BY name ASC', $qry_val_arr);
+                while ($row = pg_fetch_assoc($result)) {
+                    $foreign_ids['board_id'] = $row['board_id'];
+                    $foreign_ids['list_id'] = $row['list_id'];
+                    $foreign_ids['card_id'] = $row['id'];
+                    $comment = '##USER_NAME## moved the card ##CARD_LINK## to different board';
+                    insertActivity($authUser['id'], $comment, 'moved_board_list_card', $foreign_ids, null, $foreign_id);
+                }
+            }
             if (!empty($response['activity']['revisions']) && trim($response['activity']['revisions']) != '') {
                 $revisions = unserialize($response['activity']['revisions']);
             }
@@ -3439,7 +3456,13 @@ function update_query($table_name, $id, $r_resource_cmd, $r_put, $comment = '', 
                         if ($key != 'is_archived' && $key != 'is_deleted' && $key != 'created' && $key != 'modified' && $key != 'is_offline' && $key != 'uuid' && $key != 'to_date' && $key != 'temp_id' && $activity_type != 'moved_card_checklist_item' && $activity_type != 'add_card_desc' && $activity_type != 'add_card_duedate' && $activity_type != 'delete_card_duedate' && $activity_type != 'add_background' && $activity_type != 'change_background' && $activity_type != 'change_visibility') {
                             $old_val = (isset($revisions['old_value'][$key])) ? $revisions['old_value'][$key] : '';
                             $new_val = (isset($revisions['new_value'][$key])) ? $revisions['new_value'][$key] : '';
-                            $diff[] = nl2br(getRevisiondifference($old_val, $new_val));
+                            if ($activity_type == 'edit_comment') {
+                                if (getRevisiondifference($old_val, $new_val) !== false) {
+                                    $diff[] = getRevisiondifference($old_val, $new_val);
+                                }
+                            } else {
+                                $diff[] = nl2br(getRevisiondifference($old_val, $new_val));
+                            }
                         }
                         if ($activity_type == 'add_card_desc' || $activity_type == 'edit_card_duedate' || $activity_type == 'add_background' || $activity_type == 'change_background' || $activity_type == 'change_visibility') {
                             $diff[] = $revisions['new_value'][$key];
