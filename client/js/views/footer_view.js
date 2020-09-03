@@ -88,12 +88,14 @@ App.FooterView = Backbone.View.extend({
         'change .js-board-import-file': 'importBoard',
         'click .js-show-board-import-wekan-form': 'showBoardImportWekanForm',
         'click .js-show-board-import-kantree-form': 'showBoardImportKantreeForm',
+        'click .js-show-board-import-monday-form': 'showBoardImportMondayForm',
         'click .js-show-board-import-taiga-form': 'showBoardImportTaigaForm',
         'click .js-show-board-import-pipefy-form': 'showBoardImportpipefyForm',
         'click .js-show-board-import-asana-form': 'showBoardImportAsanaForm',
         'click .js-show-board-import-taskwarrior-form': 'showBoardImportTaskwarriorForm',
         'change .js-board-import-wekan-file': 'importWekanBoard',
         'change .js-board-import-kantree-file': 'importKantreeBoard',
+        'change .js-board-import-monday-file': 'importMondayBoard',
         'change .js-board-import-taiga-file': 'importTaigaBoard',
         'change .js-board-import-pipefy-file': 'importpipefyBoard',
         'change .js-board-import-asana-file': 'importAsanaBoard',
@@ -3310,6 +3312,19 @@ App.FooterView = Backbone.View.extend({
         return false;
     },
     /**
+     * showBoardImportMondayForm()
+     * show Board Import Form
+     * @param e
+     * @type Object(DOM event)
+     *
+     */
+    showBoardImportMondayForm: function(e) {
+        e.preventDefault();
+        var form = $('#js-board-import-monday');
+        $('.js-board-import-monday-file', form).trigger('click');
+        return false;
+    },
+    /**
      * showBoardImportTaigaForm()
      * show Board Import Form
      * @param e
@@ -3490,6 +3505,49 @@ App.FooterView = Backbone.View.extend({
             },
             success: function(model, response) {
                 $('#js-board-import-kantree-loader', '.js-show-board-import-kantree-form').addClass('hide');
+                if (!_.isUndefined(response.id)) {
+                    app.navigate('#/board/' + response.id, {
+                        trigger: true,
+                        replace: true
+                    });
+                    self.flash('info', i18next.t('Board is been currently imported. Based on the size of file, it may take few seconds to minutes. Please refresh or check after some time..'), 1800000);
+                } else {
+                    if (response.error) {
+                        self.flash('danger', i18next.t(response.error));
+                    } else {
+                        self.flash('danger', i18next.t('Unable to import. please try again.'));
+                    }
+
+                }
+            }
+        });
+    },
+    /**
+     * importMondayBoard()
+     * import Board
+     * @param e
+     * @type Object(DOM event)
+     *
+     */
+    importMondayBoard: function(e) {
+        e.preventDefault();
+        $('#js-board-import-monday-loader').removeClass('hide');
+        var self = this;
+        var form = $('form#js-board-import-monday');
+        var fileData = new FormData(form[0]);
+        var board = new App.Board();
+        board.url = api_url + 'boards.json';
+        board.save(fileData, {
+            type: 'POST',
+            data: fileData,
+            processData: false,
+            cache: false,
+            contentType: false,
+            error: function(e, s) {
+                $('#js-board-import-monday-loader', '.js-show-board-import-monday-form').addClass('hide');
+            },
+            success: function(model, response) {
+                $('#js-board-import-monday-loader', '.js-show-board-import-monday-form').addClass('hide');
                 if (!_.isUndefined(response.id)) {
                     app.navigate('#/board/' + response.id, {
                         trigger: true,
