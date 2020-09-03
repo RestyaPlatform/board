@@ -6704,6 +6704,13 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
                 $comment = '##USER_NAME## disabled card cover image on ##BOARD_NAME## board.';
             }
             $activity_type = 'is_show_image_front_of_card';
+        } else if (isset($r_put['is_expand_image_front_of_card'])) {
+            if ($r_put['is_expand_image_front_of_card']) {
+                $comment = '##USER_NAME## enabled expand card cover image on ##BOARD_NAME## board.';
+            } else {
+                $comment = '##USER_NAME## disabled expand card cover image on ##BOARD_NAME## board.';
+            }
+            $activity_type = 'is_expand_image_front_of_card';
         }
         if (!empty($r_put['organization_id'])) {
             $qry_val_arr = array(
