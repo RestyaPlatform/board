@@ -1,5 +1,5 @@
 <% if(board_user != null){ %>
-<a class="clearfix <% if(!_.isUndefined(class_name)){%><%-class_name%><%}else{%>js-add-item-member<%}%>" data-member-id="<%-board_user.id %>" href="#"> 
+<a class="clearfix <% if(!_.isUndefined(class_name)){%><%-class_name%><%}else{%>js-add-item-member<%}%>" data-member-id="<%-board_user.id %>" href="#" data-user-level="item"> 
 	<span data-placement="bottom" data-toggle="tooltip" title="<%- board_user.attributes.username %>">
 	<% if(!_.isEmpty(board_user.attributes.profile_picture_path)) { 
 		var profile_picture_path = board_user.showImage('User', board_user.attributes.user_id, 'small_thumb' );

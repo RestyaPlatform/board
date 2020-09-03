@@ -1,4 +1,4 @@
-<% if(user != null) { %><li><a title="<%-user.attributes.full_name %> (<%-user.attributes.username %>)" href="#" class="js-add-comment-member" data-user-id="<%-user.id %>" data-user-name="<%-user.attributes.username %>" data-user-initial="<%-user.attributes.initials %>" data-user-profile-picture-path="<%-user.attributes.profile_picture_path%>" data-user-fullname="<%-user.attributes.full_name %>><span>
+<% if(user != null) { %><li><a title="<%-user.attributes.full_name %> (<%-user.attributes.username %>)" href="#" class="js-add-comment-member" data-user-id="<%-user.id %>" data-user-level="user" data-user-name="<%-user.attributes.username %>" data-user-initial="<%-user.attributes.initials %>" data-user-profile-picture-path="<%-user.attributes.profile_picture_path%>" data-user-fullname="<%-user.attributes.full_name %>><span>
 <% if(!_.isEmpty(user.attributes.profile_picture_path)) { 
 	var profile_picture_path = user.showImage('User', user.attributes.user_id, 'micro_thumb' );
 %>
