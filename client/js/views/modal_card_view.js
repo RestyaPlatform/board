@@ -4855,9 +4855,17 @@ App.ModalCardView = Backbone.View.extend({
                     }).el).insertAfter($(target).parents('.js-comment-member-search-response'));
                 }
             } else {
-                $(new App.ActivityUserAddSearchResultView({
-                    model: null
-                }).el).insertAfter($(target).parents('.js-comment-member-search-response'));
+                if (('card').indexOf(q) !== -1) {
+                    $('<li><a title="' + addCardMember + '" href="#;" class="js-add-comment-member" data-user-level="card">' + addCardMember + '</span></a></li>').insertAfter($(target).parents('.js-comment-member-search-response'));
+                }
+                if (('board').indexOf(q) !== -1) {
+                    $('<li><a title="' + addBoardMember + '" href="#;" class="js-add-comment-member" data-user-level="board">' + addBoardMember + '</span></a></li>').insertAfter($(target).parents('.js-comment-member-search-response'));
+                }
+                if (('card').indexOf(q) === -1 && ('board').indexOf(q) === -1) {
+                    $(new App.ActivityUserAddSearchResultView({
+                        model: null
+                    }).el).insertAfter($(target).parents('.js-comment-member-search-response'));
+                }
             }
         } else {
             $(target).parents('.js-comment-member-search-response').nextAll().remove();

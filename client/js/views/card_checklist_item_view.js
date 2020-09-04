@@ -60,7 +60,7 @@ App.CardCheckListItemView = Backbone.View.extend({
         'click .js-show-mention-member-form': 'showMentionMemberForm',
         'click .js-show-emoji-list-form': 'showEmojiList',
         'click .js-convert-to-card': 'convertToCard',
-        'keyup .js-item-search-member': 'showSearchItemMembers',
+        'keyup .js-edit-item-search-member': 'showSearchItemMembers',
         'click .js-back-to-item-options': 'backToItemOptions',
         'click .js-edit-item-member': 'editItemMember',
         'click .js-no-action': 'noAction',
@@ -467,7 +467,9 @@ App.CardCheckListItemView = Backbone.View.extend({
      */
     showMentionMemberForm: function(e) {
         e.preventDefault();
-        $('#js-item-option-response-' + this.model.id).html(new App.ChecklistItemMentionMemberSerachFormView().el);
+        $('#js-item-option-response-' + this.model.id).html(new App.ChecklistItemMentionMemberSerachFormView({
+            class_name: 'js-edit-item-member'
+        }).el);
         this.$el.find('.js-item-member-search-response').html('');
         this.renderBoardUsers();
         return false;
@@ -613,17 +615,26 @@ App.CardCheckListItemView = Backbone.View.extend({
                 sprintf: ['(' + this.model.card.list.collection.board.board_users.length + ')']
             });
             if (!_.isEmpty(users.models)) {
-                view.append('<div><a class="clearfix js-add-item-member" title="' + addCardMember + '" href="#;"  data-user-level="card"><span>' + addCardMember + '</span></a></div>');
-                view.append('<div><a class="clearfix js-add-item-member" title="' + addBoardMember + '" href="#" data-user-level="board"><span>' + addBoardMember + '</span></a></div>');
+                view.append('<div><a class="clearfix js-edit-item-member" title="' + addCardMember + '" href="#;"  data-user-level="card"><span>' + addCardMember + '</span></a></div>');
+                view.append('<div><a class="clearfix js-edit-item-member" title="' + addBoardMember + '" href="#" data-user-level="board"><span>' + addBoardMember + '</span></a></div>');
                 users.each(function(board_user) {
                     view.append(new App.ChecklistItemMentionMemberView({
-                        model: board_user
+                        model: board_user,
+                        class_name: 'js-edit-item-member'
                     }).el);
                 });
             } else {
-                view.html(new App.ChecklistItemMentionMemberView({
-                    model: null
-                }).el);
+                if (('card').indexOf(q) !== -1) {
+                    view.append('<div><a class="clearfix js-edit-item-member" title="' + addCardMember + '" href="#;"  data-user-level="card"><span>' + addCardMember + '</span></a></div>');
+                }
+                if (('board').indexOf(q) !== -1) {
+                    view.append('<div><a class="clearfix js-edit-item-member" title="' + addBoardMember + '" href="#" data-user-level="board"><span>' + addBoardMember + '</span></a></div>');
+                }
+                if (('card').indexOf(q) === -1 && ('board').indexOf(q) === -1) {
+                    view.html(new App.ChecklistItemMentionMemberView({
+                        model: null
+                    }).el);
+                }
             }
         } else {
             view.html('');

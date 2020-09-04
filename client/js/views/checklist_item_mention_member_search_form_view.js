@@ -18,7 +18,10 @@ App.ChecklistItemMentionMemberSerachFormView = Backbone.View.extend({
      * Constructor
      * initialize default values and actions
      */
-    initialize: function() {
+    initialize: function(options) {
+        if (!_.isUndefined(options)) {
+            this.class_name = options.class_name;
+        }
         if (!_.isUndefined(this.model) && this.model !== null) {
             this.model.showImage = this.showImage;
         }
@@ -34,7 +37,9 @@ App.ChecklistItemMentionMemberSerachFormView = Backbone.View.extend({
      *
      */
     render: function() {
-        this.$el.html(this.template());
+        this.$el.html(this.template({
+            class_name: this.class_name
+        }));
         this.showTooltip();
         return this;
     }
