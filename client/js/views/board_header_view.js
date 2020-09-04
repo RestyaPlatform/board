@@ -75,6 +75,7 @@ App.BoardHeaderView = Backbone.View.extend({
         this.model.bind('change:is_show_image_front_of_card', this.showAdditionalSettings, this);
         this.model.bind('change:auto_subscribe_on_board', this.showAdditionalSettings, this);
         this.model.bind('change:auto_subscribe_on_card', this.showAdditionalSettings, this);
+        this.model.bind('change:is_expand_image_front_of_card', this.showAdditionalSettings, this);
         this.model.bind('change:sort_by', this.showAdditionalSettings, this);
         this.model.bind('change:sort_direction', this.showAdditionalSettings, this);
         this.model.board_users.bind('add', this.showFilters, this);
@@ -165,6 +166,7 @@ App.BoardHeaderView = Backbone.View.extend({
         'click .js-enable-covers': 'toggleAdditionalSettings',
         'click .js-enable-board-notification': 'toggleBoardNotification',
         'click .js-enable-card-notification': 'toggleCardNotification',
+        'click .js-expand-card-cover-image': 'expandCardCoverImage',
         'click .js-computer-open-board-background': 'computerOpenBoardBackground',
         'change #js-custom-background-attachment': 'addBoardBackground',
         'click .js-no-action': 'noAction',
@@ -2350,6 +2352,36 @@ App.BoardHeaderView = Backbone.View.extend({
             $('.js-auto_subscribe_on_card-enabled').removeClass('hide');
             $('.js-auto_subscribe_on_card-enable').addClass('hide');
             this.model.set('auto_subscribe_on_card', true);
+        }
+        var board = new App.Board();
+        board.url = api_url + 'boards/' + this.model.attributes.id + '.json';
+        board.set('id', this.model.attributes.id);
+        board.save(data);
+        return false;
+    },
+    /**
+     * expandCardCoverImage()
+     * expand the card cover image and show only card name
+     * @param e
+     * @type Object(DOM event)
+     *
+     */
+    expandCardCoverImage: function(e) {
+        var target = $(e.currentTarget);
+        if (target.hasClass('js-is_expand_image_front_of_card-enabled')) {
+            data = {
+                'is_expand_image_front_of_card': false
+            };
+            $('.js-is_expand_image_front_of_card-enabled').addClass('hide');
+            $('.js-is_expand_image_front_of_card-enable').removeClass('hide');
+            this.model.set('is_expand_image_front_of_card', false);
+        } else {
+            data = {
+                'is_expand_image_front_of_card': true
+            };
+            $('.js-is_expand_image_front_of_card-enabled').removeClass('hide');
+            $('.js-is_expand_image_front_of_card-enable').addClass('hide');
+            this.model.set('is_expand_image_front_of_card', true);
         }
         var board = new App.Board();
         board.url = api_url + 'boards/' + this.model.attributes.id + '.json';
