@@ -1244,6 +1244,7 @@ App.FooterView = Backbone.View.extend({
                                             if (!_.isEmpty(card_list) && !_.isUndefined(card_list) && card_list !== null && !_.isEmpty(card_list.cards) && !_.isUndefined(card_list.cards) && card_list.cards !== null) {
                                                 var tmp_list_cards = card_list.cards;
                                                 new_card.set('created', activity.attributes.card.created);
+                                                new_card.set('modified', activity.attributes.card.created);
                                                 new_card.set('position', parseFloat(activity.attributes.card.position));
                                                 tmp_list_cards.add(new_card, {
                                                     silent: true
@@ -1291,6 +1292,7 @@ App.FooterView = Backbone.View.extend({
                                             card.set('description', activity.attributes.revisions.new_value.description);
                                         }
                                         if (!_.isUndefined(card)) {
+                                            card.set('modified', activity.attributes.modified);
                                             if ((!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && $.inArray('r_custom_fields', APPS.enabled_apps)) && (activity.attributes.type === "add_card_custom_field" || activity.attributes.type === "update_card_custom_field" || activity.attributes.type === "delete_card_custom_field") && !_.isEmpty(activity.attributes.custom_fields) && !_.isUndefined(activity.attributes.custom_fields) && activity.attributes.custom_fields !== null) {
                                                 $('body').trigger('CutomFieldsRendered', [parseInt(activity.attributes.card_id), card]);
                                             }
@@ -1338,6 +1340,9 @@ App.FooterView = Backbone.View.extend({
                                             }
                                             if ((!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null) && (activity.attributes.type === "add_card_estimatedtime" || activity.attributes.type === "edit_card_estimatedtime" || activity.attributes.type === "delete_card_estimatedtime" || activity.attributes.type === "add_card_spenttime" || activity.attributes.type === "edit_card_spenttime" || activity.attributes.type === "delete_card_spenttime" || activity.attributes.type === "add_card_startdate" || activity.attributes.type === "edit_card_startdate" || activity.attributes.type === "delete_card_startdate") && !_.isEmpty(activity.attributes.revisions.new_value.custom_fields)) {
                                                 $('body').trigger('cardCutomFieldsRendered', [parseInt(activity.attributes.revisions.new_value.id), card]);
+                                            }
+                                            if (!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && (activity.attributes.type === "add_card_evergreen_card" || activity.attributes.type === "delete_card_evergreen_card") && !_.isEmpty(activity.attributes.revisions.new_value.custom_fields)) {
+                                                $('body').trigger('cardAgingRendered', [parseInt(activity.attributes.revisions.new_value), card]);
                                             }
                                             if (activity.attributes.type === 'add_card_checklist') {
                                                 var new_checklist = new App.CheckList();
@@ -1661,6 +1666,7 @@ App.FooterView = Backbone.View.extend({
                                                 if (!_.isEmpty(card_new_list) && !_.isUndefined(card_new_list) && card_new_list !== null && !_.isEmpty(card_new_list.cards) && !_.isUndefined(card_new_list.cards) && card_new_list.cards !== null) {
                                                     var tmp_newlist_cards = card_new_list.cards;
                                                     card.set('created', card.get('created'));
+                                                    card.set('modified', activity.attributes.created);
                                                     card.set('list_moved_date', activity.attributes.created);
                                                     card.set('list_name', activity.attributes.moved_list_name, {
                                                         silent: true
@@ -2822,6 +2828,7 @@ App.FooterView = Backbone.View.extend({
                                         board_new_card.set('checklist_item_pending_count', new_card_checklist_count);
                                         board_new_card.set('attachment_count', new_card_attachment);
                                         board_new_card.set('created', activity.attributes.card.created);
+                                        board_new_card.set('modified', activity.attributes.card.created);
                                         if (!_.isUndefined(activity.attributes.card.due_date) && activity.attributes.card.due_date !== null) {
                                             board_new_card.set('created', activity.attributes.card.created);
                                         }

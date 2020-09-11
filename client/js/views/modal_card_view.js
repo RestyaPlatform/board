@@ -277,6 +277,9 @@ App.ModalCardView = Backbone.View.extend({
         $('.js-remove-card-color').addClass('hide');
         self.model.url = api_url + 'boards/' + self.model.attributes.board_id + '/lists/' + self.model.attributes.list_id + '/cards/' + self.model.id + '.json';
         $('.js-close-popover').click();
+        var modified_date = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
+        modified_date = modified_date.split(' ').join('T');
+        self.model.set('modified', modified_date);
         self.model.save(data, {
             patch: true,
             success: function(model, response) {
@@ -334,6 +337,9 @@ App.ModalCardView = Backbone.View.extend({
         $('.js-remove-card-color').removeClass('hide');
         self.model.url = api_url + 'boards/' + self.model.attributes.board_id + '/lists/' + self.model.attributes.list_id + '/cards/' + self.model.id + '.json';
         $('.js-close-popover').click();
+        var modified_date = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
+        modified_date = modified_date.split(' ').join('T');
+        self.model.set('modified', modified_date);
         self.model.save(data, {
             patch: true,
             success: function(model, response) {
@@ -388,6 +394,9 @@ App.ModalCardView = Backbone.View.extend({
         $('#js-card-' + card_id).css("border-left-color", color_label).css("border-left-width", "8px");
         $('#js-carousel-card-' + card_id).css("border-left", '5px solid ' + color_label);
         $('.js-remove-card-color').removeClass('hide');
+        var modified_date = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
+        modified_date = modified_date.split(' ').join('T');
+        self.model.set('modified', modified_date);
         self.model.url = api_url + 'boards/' + self.model.attributes.board_id + '/lists/' + self.model.attributes.list_id + '/cards/' + self.model.id + '.json';
         $('.js-close-popover').click();
         self.model.save(data, {
@@ -726,6 +735,7 @@ App.ModalCardView = Backbone.View.extend({
                     $('.js-card-label-section-' + self.model.id).html("");
                 }
                 if (!_.isUndefined(response.activity) && response.activity !== false) {
+                    self.model.set('modified', response.activity.created);
                     response.activity = activityCommentReplace(response.activity);
                     var activity = new App.Activity();
                     activity.set(response.activity);
@@ -1054,6 +1064,9 @@ App.ModalCardView = Backbone.View.extend({
             }
         }
         if (validation) {
+            var modified_date = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
+            modified_date = modified_date.split(' ').join('T');
+            this.model.set('modified', modified_date);
             this.model.set(data);
             this.model.url = api_url + 'boards/' + this.model.attributes.board_id + '/lists/' + this.model.attributes.list_id + '/cards/' + this.model.id + '.json';
             $('.js-close-popover').click();
@@ -1989,6 +2002,9 @@ App.ModalCardView = Backbone.View.extend({
             if (_.isUndefined(vote_count)) {
                 vote_count = 0;
             }
+            var modified_date = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
+            modified_date = modified_date.split(' ').join('T');
+            self.model.set('modified', modified_date);
             self.model.card_voters.add(card_voter);
             self.model.set('card_voter_count', parseInt(vote_count) + 1);
             self.model.list.collection.board.cards.get(self.model.id).card_voters.add(card_voter);
@@ -2076,6 +2092,9 @@ App.ModalCardView = Backbone.View.extend({
             }
         }
         card_voter.url = api_url + 'boards/' + board_id + '/lists/' + list_id + '/cards/' + card_id + '/card_voters/' + voter_id + '.json';
+        var modified_date = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
+        modified_date = modified_date.split(' ').join('T');
+        self.model.set('modified', modified_date);
         self.model.card_voters.remove(card_voter);
         var vote_count = self.model.attributes.card_voter_count;
         self.model.set('card_voter_count', parseInt(vote_count) - 1);
@@ -2138,6 +2157,9 @@ App.ModalCardView = Backbone.View.extend({
         card_subscribe.set('list_id', list_id);
         card_subscribe.set('user_id', parseInt(authuser.user.id));
         card_subscribe.set('is_subscribed', 1);
+        var modified_date = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
+        modified_date = modified_date.split(' ').join('T');
+        self.model.set('modified', modified_date);
         self.model.cards_subscribers.add(card_subscribe);
         if (typeof card_subscribe_id == 'undefined' || card_subscribe_id == 'undefined') {
             var subscribe = {
@@ -2211,6 +2233,9 @@ App.ModalCardView = Backbone.View.extend({
         var self = this;
         var subscribe_id = 'undefined';
         var uuid = new Date().getTime();
+        var modified_date = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
+        modified_date = modified_date.split(' ').join('T');
+        self.model.set('modified', modified_date);
         self.model.cards_subscribers.remove(self.model.cards_subscribers.findWhere({
             card_id: card_id,
             user_id: parseInt(authuser.user.id)
@@ -2335,42 +2360,40 @@ App.ModalCardView = Backbone.View.extend({
                     data.position = 1;
                     this.model.set({
                         position: data.position
-                    });
+                    }, options);
                 } else {
                     if (_.isUndefined(change_prev_card) && !_.isUndefined(change_next_card)) {
                         data.position = (change_next_card.attributes.position) / 2;
                         this.model.set({
                             position: data.position
-                        });
+                        }, options);
                     } else if (_.isUndefined(change_next_card) && !_.isUndefined(change_prev_card)) {
                         data.position = (change_prev_card.attributes.position) + 1;
                         this.model.set({
                             position: data.position
-                        });
+                        }, options);
                     } else if (!_.isUndefined(change_prev_card) && !_.isUndefined(change_next_card)) {
                         data.position = (change_prev_card.attributes.position + change_next_card.attributes.position) / 2;
                         this.model.set({
                             position: data.position
-                        });
+                        }, options);
                     } else {
                         data.position = 1;
                         this.model.set({
                             position: data.position
-                        });
+                        }, options);
                     }
                 }
             } else if (!_.isUndefined(current_board.attributes.sort_by) && current_board.attributes.sort_by !== null && current_board.attributes.sort_by !== 'position') {
                 var board_sort_by = (current_board.attributes.sort_by) ? current_board.attributes.sort_by : 'position';
                 var bard_sort_direction = (current_board.attributes.sort_direction) ? current_board.attributes.sort_direction : 'asc';
                 if (data.list_id !== current_list_id) {
-                    this.model.list.collection.board.lists.get(data.list_id).cards.add(this.model, {
-                        silent: true
-                    });
+                    this.model.list.collection.board.lists.get(data.list_id).cards.add(this.model, options);
                     var new_list_cards = this.model.list.collection.board.lists.get(data.list_id).cards;
                     var sort_filter_cards = self.cardsort(board_sort_by, bard_sort_direction, new_list_cards);
                     $.each(sort_filter_cards.models, function(key, filter_card) {
                         if (parseInt(filter_card.attributes.is_archived) === 0 && parseInt(filter_card.id) === parseInt(self.model.id)) {
-                            self.model.set('position', key);
+                            self.model.set('position', key, options);
                             data.position = key;
                         }
                     });
@@ -2381,24 +2404,20 @@ App.ModalCardView = Backbone.View.extend({
                 data.position = 1;
                 this.model.set({
                     position: data.position
-                });
+                }, options);
             }
             var card = App.boards.get(current_board_id).cards.get(card_id);
             if (data.list_id !== current_list_id) {
                 if (!_.isUndefined(card)) {
                     var change_lists = App.boards.get(current_board_id).lists.get(data.list_id);
                     if (!_.isUndefined(change_lists)) {
-                        card.set('list_name', change_lists.attributes.name, {
-                            silent: true
-                        });
+                        card.set('list_name', change_lists.attributes.name, options);
                         card.list_name = change_lists.attributes.name;
                     }
                 }
             }
             if (!_.isUndefined(card)) {
-                card.set('position', data.position, {
-                    silent: true
-                });
+                card.set('position', data.position, options);
             }
         } else if (parseInt(data.board_id) !== parseInt(current_board_id)) {
             var board = App.boards.get(data.board_id);
@@ -2469,17 +2488,20 @@ App.ModalCardView = Backbone.View.extend({
                 var move_list = App.boards.get(parseInt(data.board_id)).lists.get(data.list_id);
                 if (!_.isUndefined(move_list)) {
                     self.model.list = move_list;
-                    moved_card.set('list_name', move_list.attributes.name);
+                    moved_card.set('list_name', move_list.attributes.name, options);
                     moved_card.list_name = move_list.attributes.name;
                 }
                 moved_card.attributes.list_id = data.list_id;
                 moved_card.attributes.board_id = data.board_id;
                 moved_card.attributes.position = data.position;
-                App.boards.get(data.board_id).cards.add(moved_card);
+                App.boards.get(data.board_id).cards.add(moved_card, options);
                 moved_card.collection = App.boards.get(data.board_id).cards;
-                App.boards.get(current_board_id).cards.remove(card_id);
+                App.boards.get(current_board_id).cards.remove(card_id, options);
             }
         }
+        var modified_date = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
+        modified_date = modified_date.split(' ').join('T');
+        self.model.set('modified', modified_date);
         this.model.url = api_url + 'boards/' + this.model.attributes.board_id + '/lists/' + this.model.attributes.list_id + '/cards/' + this.model.id + '.json';
         $('.js-close-popover').click();
         this.model.save(data, {
@@ -2563,6 +2585,9 @@ App.ModalCardView = Backbone.View.extend({
                 silent: true
             });
         }
+        var modified_date = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
+        modified_date = modified_date.split(' ').join('T');
+        this.model.set('modified', modified_date);
         this.model.save({
             is_archived: 1
         }, {
@@ -2646,6 +2671,9 @@ App.ModalCardView = Backbone.View.extend({
         }
         this.model.url = api_url + 'boards/' + this.model.attributes.board_id + '/lists/' + this.model.attributes.list_id + '/cards/' + this.model.id + '.json';
         this.model.set('is_offline', true);
+        var modified_date = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
+        modified_date = modified_date.split(' ').join('T');
+        this.model.set('modified', modified_date);
         this.model.set('is_archived', 0, {
             silent: false
         });
@@ -2871,6 +2899,9 @@ App.ModalCardView = Backbone.View.extend({
                         $('.js-attachment-loader', $('#js-card-modal-' + self.model.id)).html('');
                         var card_attachments = new App.CardAttachmentCollection();
                         var i = 1;
+                        var modified_date = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
+                        modified_date = modified_date.split(' ').join('T');
+                        self.model.set('modified', modified_date);
                         card_attachments.add(response.card_attachments);
                         card_attachments.each(function(attachment) {
                             var options = {
@@ -3557,6 +3588,9 @@ App.ModalCardView = Backbone.View.extend({
         card_checklist.set('card_id', self.model.id);
         card_checklist.set('list_id', self.model.attributes.list_id);
         card_checklist.set('board_id', self.model.attributes.board_id);
+        var modified_date = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
+        modified_date = modified_date.split(' ').join('T');
+        self.model.set('modified', modified_date);
         card_checklist.url = api_url + 'boards/' + self.model.attributes.board_id + '/lists/' + self.model.attributes.list_id + '/cards/' + self.model.id + '/checklists.json';
         card_checklist.save(data, {
             success: function(model, response, options) {
