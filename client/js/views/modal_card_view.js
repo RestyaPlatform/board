@@ -2507,13 +2507,15 @@ App.ModalCardView = Backbone.View.extend({
         this.model.save(data, {
             patch: true,
             success: function(model, response) {
-                self.model.set('list_moved_date', response.activity.created);
-                var list_moved_date_date_time = response.activity.created.split('T');
-                list_moved_date_date_time = list_moved_date_date_time[0].split(' ');
-                if ($('#js-card-' + self.model.id).find('.list-moved-date').length === 0) {
-                    $('#js-card-' + self.model.id).find('.js-list-card-data').append('<li class="card-listing-truncate list-moved-date"><small title="' + i18next.t('List Moved Date') + '"><span class="label label-default">' + dateFormat(list_moved_date_date_time[0], 'mediumDate') + '</span></small></li>');
-                } else {
-                    $('#js-card-' + self.model.id).find('.list-moved-date').html('<small title="' + i18next.t('List Moved Date') + '"><span class="label label-default">' + dateFormat(list_moved_date_date_time[0], 'mediumDate') + '</span></small>');
+                if (!_.isUndefined(response.activity)) {
+                    self.model.set('list_moved_date', response.activity.created);
+                    var list_moved_date_date_time = response.activity.created.split('T');
+                    list_moved_date_date_time = list_moved_date_date_time[0].split(' ');
+                    if ($('#js-card-' + self.model.id).find('.list-moved-date').length === 0) {
+                        $('#js-card-' + self.model.id).find('.js-list-card-data').append('<li class="card-listing-truncate list-moved-date"><small title="' + i18next.t('List Moved Date') + '"><span class="label label-default">' + dateFormat(list_moved_date_date_time[0], 'mediumDate') + '</span></small></li>');
+                    } else {
+                        $('#js-card-' + self.model.id).find('.list-moved-date').html('<small title="' + i18next.t('List Moved Date') + '"><span class="label label-default">' + dateFormat(list_moved_date_date_time[0], 'mediumDate') + '</span></small>');
+                    }
                 }
             }
         });
@@ -3760,6 +3762,9 @@ App.ModalCardView = Backbone.View.extend({
             card_user.set('username', user_name);
             card_user.set('initials', user_initial);
             card_user.set('full_name', full_name);
+            var modified_date = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
+            modified_date = modified_date.split(' ').join('T');
+            self.model.set('modified', modified_date);
             self.model.users.add(card_user, {
                 silent: true
             });
@@ -3835,6 +3840,9 @@ App.ModalCardView = Backbone.View.extend({
 
         }
         var self = this;
+        var modified_date = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
+        modified_date = modified_date.split(' ').join('T');
+        self.model.set('modified', modified_date);
         self.model.users.remove(card_user);
         self.renderUsersCollection();
         card_user.destroy({
@@ -3880,12 +3888,12 @@ App.ModalCardView = Backbone.View.extend({
      */
     showReplyCommentForm: function(e) {
         var activity_id = $(e.currentTarget).data('activity-id');
-        var activitiy = this.model.activities.get({
+        var activity = this.model.activities.get({
             id: activity_id
         });
         $('.js-acticity-action-' + activity_id).addClass('hide');
         $('.js-activity-reply-form-response-' + activity_id).html(new App.ActivityReplyFormView({
-            model: activitiy,
+            model: activity,
             list: this.model.list
         }).el);
         $('main').trigger('wikiActionRendered');
@@ -3962,7 +3970,7 @@ App.ModalCardView = Backbone.View.extend({
                         activity.cards.add(self.model.collection.models);
                     }
                     activity.board_users = self.model.board_users;
-
+                    self.model.set('modified', response.activity.created);
                     self.model.activities.unshift(activity, {
                         silent: true
                     });
@@ -4074,6 +4082,7 @@ App.ModalCardView = Backbone.View.extend({
                         board: self.model.list.collection.board,
                         flag: '1'
                     });
+                    self.model.set('modified', response.activity.created);
                     self.model.activities.unshift(activity);
                     if ($.cookie('filter') !== 'comment') {
                         var view_activity = $('#js-card-activities-' + self.model.id);
@@ -4166,6 +4175,7 @@ App.ModalCardView = Backbone.View.extend({
                     board: self.model.list.collection.board,
                     flag: '1'
                 });
+                self.model.set('modified', response.activity.created);
                 self.model.activities.unshift(activity);
                 var current_card = self.model.list.collection.board.cards.get(card_id);
                 self.model.list.collection.board.cards.get(card_id).set('comment_count', parseInt(response.activity.comment_count));
@@ -4210,6 +4220,7 @@ App.ModalCardView = Backbone.View.extend({
                         self.closePopup(e);
                         $('#js-card-modal-' + self.model.id).parent('.dockmodal-body').prev('.dockmodal-header').find('.cssloader').remove();
                         $('.js-attachment-loader', $('#js-card-modal-' + self.model.id)).html('');
+                        self.model.set('modified', response.activity.created);
                         var card_attachments = new App.CardAttachmentCollection();
                         var i = 1;
                         card_attachments.add(response.card_attachments);
@@ -4323,6 +4334,9 @@ App.ModalCardView = Backbone.View.extend({
                 cardcheck = true;
             }
             if (cardcheck) {
+                var modified_date = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
+                modified_date = modified_date.split(' ').join('T');
+                this.model.set('modified', modified_date);
                 this.model.set('due_date', null);
                 this.model.set('end', null);
                 this.model.save({
