@@ -70,9 +70,19 @@
 				}
 			} else if(activity.attributes.type != 'edit_comment'){
 				var comment = filterXSS(activity.attributes.full_name) + ' commented in card ' + cardLink;
-				var patt = /@\w+/g;
-				if(patt.test(activity.attributes.comment)) {
-					comment = filterXSS(activity.attributes.full_name) + ' mentioned you in card ' + cardLink;
+				var matches = activity.attributes.comment.match(/@([^ ]*)/g);
+				var _username = [];
+				_.each(matches, function(match) {
+					_username.push(match.substr(1));
+				});
+				if(!_.isEmpty(_username) && !_.isUndefined(authuser.user)){
+					if (_.contains(_username, authuser.user.username)) {
+						comment = filterXSS(activity.attributes.full_name) + ' has mentioned you in card ' + cardLink;
+					} else if (_.contains(_username, 'card')) {
+						comment = filterXSS(activity.attributes.full_name) + ' mentioned all the members in the card ' + cardLink;
+					} else if (_.contains(_username, 'board')) {
+						comment = filterXSS(activity.attributes.full_name) + ' mentioned all the board members in the card ' + cardLink;
+					}
 				}
 			}
 		%>   
