@@ -97,6 +97,9 @@ App.CardView = Backbone.View.extend({
             if (!_.isUndefined(this.model.board)) {
                 this.model.board.bind('change:board_custom_fields', this.render);
             }
+            if (!_.isUndefined(this.model.board)) {
+                this.model.board.bind('change:is_expand_image_front_of_card', this.render);
+            }
             this.model.cards_subscribers.bind('remove', this.render);
             this.model.card_voters.bind('add', this.render);
             this.model.card_voters.bind('remove', this.render);
