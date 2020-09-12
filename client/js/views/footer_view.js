@@ -1292,7 +1292,9 @@ App.FooterView = Backbone.View.extend({
                                             card.set('description', activity.attributes.revisions.new_value.description);
                                         }
                                         if (!_.isUndefined(card)) {
-                                            card.set('modified', activity.attributes.modified);
+                                            if (activity.attributes.type !== "add_card_evergreen_card" && activity.attributes.type !== "delete_card_evergreen_card") {
+                                                card.set('modified', activity.attributes.modified);
+                                            }
                                             if ((!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && $.inArray('r_custom_fields', APPS.enabled_apps)) && (activity.attributes.type === "add_card_custom_field" || activity.attributes.type === "update_card_custom_field" || activity.attributes.type === "delete_card_custom_field") && !_.isEmpty(activity.attributes.custom_fields) && !_.isUndefined(activity.attributes.custom_fields) && activity.attributes.custom_fields !== null) {
                                                 $('body').trigger('CutomFieldsRendered', [parseInt(activity.attributes.card_id), card]);
                                             }
@@ -1342,7 +1344,7 @@ App.FooterView = Backbone.View.extend({
                                                 $('body').trigger('cardCutomFieldsRendered', [parseInt(activity.attributes.revisions.new_value.id), card]);
                                             }
                                             if (!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && (activity.attributes.type === "add_card_evergreen_card" || activity.attributes.type === "delete_card_evergreen_card") && !_.isEmpty(activity.attributes.revisions.new_value.custom_fields)) {
-                                                $('body').trigger('cardAgingRendered', [parseInt(activity.attributes.revisions.new_value), card]);
+                                                $('body').trigger('cardAgingRendered', [parseInt(card.id), card]);
                                             }
                                             if (activity.attributes.type === 'add_card_checklist') {
                                                 var new_checklist = new App.CheckList();
@@ -2940,9 +2942,7 @@ App.FooterView = Backbone.View.extend({
                                     $('#js-card-' + activity.attributes.card_id).parent().removeClass('animation');
                                     $('#js-card-' + activity.attributes.card_id).removeClass('tada-animation');
                                     $('#js-card-' + activity.attributes.card_id).removeClass('active');
-                                    $('#js-card-' + activity.attributes.card_id).animate({
-                                        backgroundColor: '#FFFFFF'
-                                    }, 2000);
+                                    $('#js-card-' + activity.attributes.card_id).css('background-color', '');
                                 });
                             }
                         });
