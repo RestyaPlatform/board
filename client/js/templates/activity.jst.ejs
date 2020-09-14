@@ -116,7 +116,7 @@
 						_.each(matches, function(match) {
 							_username.push(match.substr(1));
 						});
-						if(!_.isEmpty(_username) && !_.isUndefined(authuser.user)){
+						if (!_.isEmpty(_username) && !_.isUndefined(authuser.user)){
 							if (_.contains(_username, authuser.user.username)) {
 								comment = filterXSS(activity.attributes.full_name) + ' has mentioned you in card ' + cardLink;
 							} else if (_.contains(_username, 'card')) {
