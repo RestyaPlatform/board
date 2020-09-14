@@ -3834,7 +3834,6 @@ function sendMailNotification($notification_type)
                 }
                 $is_mention_activity = $is_board_mention_activity = $is_card_mention_activity = 0;
                 if ($activity['type'] == 'add_comment' || $activity['type'] == 'edit_comment') {
-                    
                     preg_match_all('/@(board*)/', $activity['comment'], $boardmatches);
                     if (!empty($boardmatches[1])) {
                         $board_mentioned_activity = $activity;
@@ -3842,8 +3841,8 @@ function sendMailNotification($notification_type)
                         $board_mentioned_activity['comment'] = __l('##USER_NAME## has mentioned all the board members in card ##CARD_NAME## on ##BOARD_NAME##') . '<div style="margin:5px 0px 0px 43px"><div style="background-color: #ffffff;border: 1px solid #dddddd;border-radius: 4px;display: block;line-height: 1.42857;margin:7px 0;padding: 4px;transition: all 0.2s ease-in-out 0s;"><div style="padding:3px 0px 0px 0px;margin:0px">' . $activity['comment'] . '</div></div></div>';
                         $activity['comment'] = '';
                         $br = '<div style="line-height:20px;">&nbsp;</div>';
-                    } 
-                    preg_match_all('/@(card*)/', $activity['comment'], $cardmatches);                    
+                    }
+                    preg_match_all('/@(card*)/', $activity['comment'], $cardmatches);
                     if (!empty($cardmatches[1])) {
                         $card_mentioned_activity = $activity;
                         $is_card_mention_activity = 1;
@@ -3933,10 +3932,10 @@ function sendMailNotification($notification_type)
                         $difference = str_replace($search, $replace, $activity['difference'][0]);
                         if ($is_board_mention_activity) {
                             $board_mentioned_activity['comment'].= '<div style="margin:5px 0px 0px 43px"><div style="background-color: #ffffff;border: 1px solid #dddddd;border-radius: 4px;display: block;line-height: 1.42857;margin:7px 0;padding: 4px;transition: all 0.2s ease-in-out 0s;"><div style="padding:3px 0px 0px 0px;margin:0px">' . $difference . '</div></div></div>';
-                        } 
+                        }
                         if ($is_card_mention_activity) {
                             $card_mentioned_activity['comment'].= '<div style="margin:5px 0px 0px 43px"><div style="background-color: #ffffff;border: 1px solid #dddddd;border-radius: 4px;display: block;line-height: 1.42857;margin:7px 0;padding: 4px;transition: all 0.2s ease-in-out 0s;"><div style="padding:3px 0px 0px 0px;margin:0px">' . $difference . '</div></div></div>';
-                        } 
+                        }
                         if ($is_mention_activity) {
                             $mentioned_activity['comment'].= '<div style="margin:5px 0px 0px 43px"><div style="background-color: #ffffff;border: 1px solid #dddddd;border-radius: 4px;display: block;line-height: 1.42857;margin:7px 0;padding: 4px;transition: all 0.2s ease-in-out 0s;"><div style="padding:3px 0px 0px 0px;margin:0px">' . $difference . '</div></div></div>';
                         } else {
@@ -3967,7 +3966,7 @@ function sendMailNotification($notification_type)
                     $mentioned_mail_content.= '<div>' . $comment . $reply_to . '</div>' . "\n";
                     $mentioned_mail_content.= '</div>' . "\n";
                     $mentioned_mail_content.= $br . "\n";
-                } else if (!($is_board_mention_activity) && !($is_card_mention_activity)){
+                } else if (!($is_board_mention_activity) && !($is_card_mention_activity)) {
                     $comment = findAndReplaceVariables($activity);
                     $mail_content.= '<div>' . "\n";
                     $mail_content.= '<div style="float:left">' . $user_avatar . '</div>' . "\n";
@@ -4001,7 +4000,6 @@ function sendMailNotification($notification_type)
                 }
                 $is_mention_activity = $is_board_mention_activity = $is_card_mention_activity = 0;
                 if ($activity['type'] == 'add_comment' || $activity['type'] == 'edit_comment') {
-                    
                     preg_match_all('/@(board*)/', $activity['comment'], $boardmatches);
                     if (!empty($boardmatches[1])) {
                         $board_mentioned_activity = $activity;
@@ -4018,7 +4016,6 @@ function sendMailNotification($notification_type)
                         $activity['comment'] = '';
                         $br = '<div style="line-height:20px;">&nbsp;</div>';
                     }
-                    
                     preg_match_all('/@([^ ]*)/', $activity['comment'], $matches);
                     if (in_array($user['username'], $matches[1])) {
                         $mentioned_activity = $activity;
@@ -4101,7 +4098,7 @@ function sendMailNotification($notification_type)
                         $difference = str_replace($search, $replace, $activity['difference'][0]);
                         if ($is_board_mention_activity) {
                             $board_mentioned_activity['comment'].= '<div style="margin:5px 0px 0px 43px"><div style="background-color: #ffffff;border: 1px solid #dddddd;border-radius: 4px;display: block;line-height: 1.42857;margin:7px 0;padding: 4px;transition: all 0.2s ease-in-out 0s;"><div style="padding:3px 0px 0px 0px;margin:0px">' . $difference . '</div></div></div>';
-                        } 
+                        }
                         if ($is_card_mention_activity) {
                             $card_mentioned_activity['comment'].= '<div style="margin:5px 0px 0px 43px"><div style="background-color: #ffffff;border: 1px solid #dddddd;border-radius: 4px;display: block;line-height: 1.42857;margin:7px 0;padding: 4px;transition: all 0.2s ease-in-out 0s;"><div style="padding:3px 0px 0px 0px;margin:0px">' . $difference . '</div></div></div>';
                         }
@@ -4135,7 +4132,7 @@ function sendMailNotification($notification_type)
                     $mentioned_mail_content.= '<div>' . $comment . $reply_to . '</div>' . "\n";
                     $mentioned_mail_content.= '</div>' . "\n";
                     $mentioned_mail_content.= $br . "\n";
-                } else if (!($is_board_mention_activity) && !($is_card_mention_activity)){
+                } else if (!($is_board_mention_activity) && !($is_card_mention_activity)) {
                     $comment = findAndReplaceVariables($activity);
                     $mail_content.= '<div>' . "\n";
                     $mail_content.= '<div style="float:left">' . $user_avatar . '</div>' . "\n";
@@ -4169,7 +4166,6 @@ function sendMailNotification($notification_type)
                 }
                 $is_mention_activity = $is_board_mention_activity = $is_card_mention_activity = 0;
                 if ($activity['type'] == 'add_comment' || $activity['type'] == 'edit_comment') {
-                    
                     preg_match_all('/@(board*)/', $activity['comment'], $boardmatches);
                     if (!empty($boardmatches[1])) {
                         $board_mentioned_activity = $activity;
@@ -4177,7 +4173,7 @@ function sendMailNotification($notification_type)
                         $board_mentioned_activity['comment'] = __l('##USER_NAME## has mentioned all the board members in card ##CARD_NAME## on ##BOARD_NAME##') . '<div style="margin:5px 0px 0px 43px"><div style="background-color: #ffffff;border: 1px solid #dddddd;border-radius: 4px;display: block;line-height: 1.42857;margin:7px 0;padding: 4px;transition: all 0.2s ease-in-out 0s;"><div style="padding:3px 0px 0px 0px;margin:0px">' . $activity['comment'] . '</div></div></div>';
                         $activity['comment'] = '';
                         $br = '<div style="line-height:20px;">&nbsp;</div>';
-                    } 
+                    }
                     preg_match_all('/@(card*)/', $activity['comment'], $cardmatches);
                     if (!empty($cardmatches[1])) {
                         $card_mentioned_activity = $activity;
@@ -4268,7 +4264,7 @@ function sendMailNotification($notification_type)
                         $difference = str_replace($search, $replace, $activity['difference'][0]);
                         if ($is_board_mention_activity) {
                             $board_mentioned_activity['comment'].= '<div style="margin:5px 0px 0px 43px"><div style="background-color: #ffffff;border: 1px solid #dddddd;border-radius: 4px;display: block;line-height: 1.42857;margin:7px 0;padding: 4px;transition: all 0.2s ease-in-out 0s;"><div style="padding:3px 0px 0px 0px;margin:0px">' . $difference . '</div></div></div>';
-                        } 
+                        }
                         if ($is_card_mention_activity) {
                             $card_mentioned_activity['comment'].= '<div style="margin:5px 0px 0px 43px"><div style="background-color: #ffffff;border: 1px solid #dddddd;border-radius: 4px;display: block;line-height: 1.42857;margin:7px 0;padding: 4px;transition: all 0.2s ease-in-out 0s;"><div style="padding:3px 0px 0px 0px;margin:0px">' . $difference . '</div></div></div>';
                         }
@@ -4302,7 +4298,7 @@ function sendMailNotification($notification_type)
                     $mentioned_mail_content.= '<div>' . $comment . $reply_to . '</div>' . "\n";
                     $mentioned_mail_content.= '</div>' . "\n";
                     $mentioned_mail_content.= $br . "\n";
-                } else if (!($is_board_mention_activity) && !($is_card_mention_activity)){
+                } else if (!($is_board_mention_activity) && !($is_card_mention_activity)) {
                     $comment = findAndReplaceVariables($activity);
                     $mail_content.= '<div>' . "\n";
                     $mail_content.= '<div style="float:left">' . $user_avatar . '</div>' . "\n";
