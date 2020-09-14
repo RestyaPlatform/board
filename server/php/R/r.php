@@ -29,6 +29,7 @@ require_once '../libs/vendors/GoogleAuthenticator.php';
 require_once '../libs/core.php';
 require_once '../libs/vendors/OAuth2/Autoloader.php';
 require_once '../libs/ActivityHandler.php';
+require_once '../libs/XLSXReader.php';
 $j_username = $j_password = '';
 require_once '../bootstrap.php';
 global $jabberHost, $jaxlDebug;
@@ -3281,6 +3282,66 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 }
             } else {
                 $response['error'] = 'Unable to import. please try again.';
+            }
+        } elseif (!empty($_FILES['board_import_monday'])) {
+            if ( $xlsx = SimpleXLSX::parse($_FILES['board_import_monday']['tmp_name']) ) {
+                
+                $all_rows = array();
+                $data_updates = $xlsx->rows(1);
+                $data = $xlsx->rows();
+                
+                // getting updates
+                $card_updates = array();
+                if (!empty($data_updates)) {
+                    $row = 0;
+                    foreach ($data_updates as $update_key => $update_value) {
+                        if ($row > 1) {
+                            $Result = array();
+                            foreach ($update_value as $valKey => $val) {
+                                if ($update_rows[0][$valKey] == 'Content Type' && $val == '') {
+                                    continue;
+                                } else {
+                                    $Result[$update_rows[0][$valKey]] = $val;
+                                }
+                            }
+                            $card_updates[] = $Result;
+                            
+                        } else if ($row == 1) {
+                            $update_rows[] = $update_value;
+                        }
+                        $row++;
+                    }
+                }
+                $row = 0;
+                foreach ($data as $key => $value) {
+                    if ($row == 0) {
+                        $boardName = $value[0];
+                    } else if ($row > 2) {
+                        $arrResult = array();
+                        if ($value[0] == '' || $value[0] == 'Name') {
+                            continue;
+                        } else {
+                            foreach ($value as $valKey => $val) {
+                                if ($all_rows[0][$valKey] == 'Status' && $val == '') {
+                                    $arrResult[$all_rows[0][$valKey]] = 'Empty';
+                                } else {
+                                    $arrResult[$all_rows[0][$valKey]] = $val;
+                                }
+                            }
+                            $imported_board[] = $arrResult;
+                        }
+                        
+                    } else if ($row == 2) {
+                        $all_rows[] = $value;
+                    }
+                    $row++;
+                }
+                if (!empty($imported_board)) {
+                    $board = importMondayBoard($imported_board, $boardName, $card_updates);
+                    $response['id'] = $board['id'];
+                }
+            } else {
+                $response['error'] = SimpleXLSX::parseError();
             }
         } else {
             $table_name = 'boards';
