@@ -7134,6 +7134,15 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
                 $activity_type = 'delete_card_estimatedtime';
             }
         }
+        if (is_plugin_enabled('r_card_aging')) {
+            if (isset($present_custom_fields['evergreen_card']) && $present_custom_fields['evergreen_card'] == "true") {
+                $comment = '##USER_NAME## has set card ##CARD_NAME## as Evergreen Card on ##BOARD_NAME##';
+                $activity_type = 'add_card_evergreen_card';
+            } else if (isset($present_custom_fields['evergreen_card']) && $present_custom_fields['evergreen_card'] == "false") {
+                $comment = '##USER_NAME## has removed card ##CARD_NAME## as Evergreen Card on ##BOARD_NAME##';
+                $activity_type = 'delete_card_evergreen_card';
+            }
+        }
         if (is_plugin_enabled('r_spent_time')) {
             if ((isset($present_custom_fields['number']) && $present_custom_fields['number'] != 'NULL' && $present_custom_fields['number'] != '') && (isset($present_custom_fields['period']) && $present_custom_fields['period'] != 'NULL' && $present_custom_fields['period'] != '')) {
                 if (isset($previous_custom_fields['number']) && ($previous_custom_fields['number'] != 'null' && $previous_custom_fields['number'] != '') && isset($previous_custom_fields['period']) && ($previous_custom_fields['period'] != 'null' && $previous_custom_fields['period'] != '')) {
