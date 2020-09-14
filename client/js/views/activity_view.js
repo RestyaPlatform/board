@@ -93,7 +93,7 @@ App.ActivityView = Backbone.View.extend({
         if (!_.isEmpty(this.model)) {
             this.$el.addClass('js-list-activity-' + this.model.attributes.id);
             if (this.model.attributes.depth !== 0) {
-                if (listing_type === '') {
+                if (listing_type === 'modal_card') {
                     var column = 12 - parseInt(this.model.attributes.depth);
                     var col_offset = parseInt(this.model.attributes.depth);
                     this.$el.addClass('col-xs-' + column);

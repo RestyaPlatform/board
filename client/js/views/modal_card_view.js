@@ -3983,7 +3983,8 @@ App.ModalCardView = Backbone.View.extend({
                     var view = new App.ActivityView({
                         model: model,
                         board: self.model.list.collection.board,
-                        flag: '1'
+                        flag: '1',
+                        type: 'modal_card'
                     });
                     var current_card = self.model.list.collection.board.cards.get(self.model.id);
                     var comment_count = (!_.isUndefined(current_card)) ? (parseInt(current_card.attributes.comment_count) + 1) : 0;
@@ -4080,7 +4081,8 @@ App.ModalCardView = Backbone.View.extend({
                     var view = new App.ActivityView({
                         model: activity,
                         board: self.model.list.collection.board,
-                        flag: '1'
+                        flag: '1',
+                        type: 'modal_card'
                     });
                     self.model.set('modified', response.activity.created);
                     self.model.activities.unshift(activity);
