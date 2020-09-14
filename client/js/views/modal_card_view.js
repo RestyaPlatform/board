@@ -4833,11 +4833,11 @@ App.ModalCardView = Backbone.View.extend({
             }
             users.add(filtered_users._wrapped);
             $(target).parents('.js-comment-member-search-response').nextAll().remove();
-            var addCardMember = i18next.t('All memebers on the card %s', {
+            var addCardMember = i18next.t('All members on the card %s', {
                 postProcess: 'sprintf',
                 sprintf: ['(' + this.model.users.length + ')']
             });
-            var addBoardMember = i18next.t('All memebers on the board %s', {
+            var addBoardMember = i18next.t('All members on the board %s', {
                 postProcess: 'sprintf',
                 sprintf: ['(' + this.model.list.collection.board.board_users.length + ')']
             });
@@ -4976,11 +4976,11 @@ App.ModalCardView = Backbone.View.extend({
     },
     renderActivityBoardUsers: function() {
         var view = this.$el.find('.js-comment-member-search-response');
-        var addCardMember = i18next.t('All memebers on the card %s', {
+        var addCardMember = i18next.t('All members on the card %s', {
             postProcess: 'sprintf',
             sprintf: ['(' + this.model.users.length + ')']
         });
-        var addBoardMember = i18next.t('All memebers on the board %s', {
+        var addBoardMember = i18next.t('All members on the board %s', {
             postProcess: 'sprintf',
             sprintf: ['(' + this.model.list.collection.board.board_users.length + ')']
         });

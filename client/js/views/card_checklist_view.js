@@ -592,11 +592,11 @@ App.CardCheckListView = Backbone.View.extend({
             }
             users.add(filtered_users._wrapped);
             $('.js-item-member-search-response').html('');
-            var addCardMember = i18next.t('All memebers on the card %s', {
+            var addCardMember = i18next.t('All members on the card %s', {
                 postProcess: 'sprintf',
                 sprintf: ['(' + this.model.card.users.length + ')']
             });
-            var addBoardMember = i18next.t('All memebers on the board %s', {
+            var addBoardMember = i18next.t('All members on the board %s', {
                 postProcess: 'sprintf',
                 sprintf: ['(' + this.model.card.list.collection.board.board_users.length + ')']
             });
@@ -629,11 +629,11 @@ App.CardCheckListView = Backbone.View.extend({
     renderBoardUsers: function() {
         var view = this.$el.find('.js-item-member-search-response');
         if (!_.isEmpty(this.model.card.list.collection.board.board_users.models)) {
-            var addCardMember = i18next.t('All memebers on the card %s', {
+            var addCardMember = i18next.t('All members on the card %s', {
                 postProcess: 'sprintf',
                 sprintf: ['(' + this.model.card.users.length + ')']
             });
-            var addBoardMember = i18next.t('All memebers on the board %s', {
+            var addBoardMember = i18next.t('All members on the board %s', {
                 postProcess: 'sprintf',
                 sprintf: ['(' + this.model.card.list.collection.board.board_users.length + ')']
             });
