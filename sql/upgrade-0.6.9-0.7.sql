@@ -153,3 +153,75 @@ CREATE OR REPLACE VIEW boards_listing AS
    FROM ((boards board
      LEFT JOIN users users ON ((users.id = board.user_id)))
      LEFT JOIN organizations organizations ON ((organizations.id = board.organization_id)));
+
+DROP TRIGGER "label_card_count_update" ON "cards_labels";
+
+CREATE TRIGGER label_card_count_update AFTER INSERT OR DELETE OR UPDATE ON cards_labels FOR EACH ROW EXECUTE PROCEDURE label_card_count_update();
+
+DROP TRIGGER "update_board_count" ON "boards";
+
+CREATE TRIGGER update_board_count AFTER INSERT OR DELETE OR UPDATE ON boards FOR EACH ROW EXECUTE PROCEDURE update_board_count();
+
+DROP TRIGGER "update_board_star_count" ON "board_stars";
+
+CREATE TRIGGER update_board_star_count AFTER INSERT OR DELETE OR UPDATE ON board_stars FOR EACH ROW EXECUTE PROCEDURE update_board_star_count();
+
+DROP TRIGGER "update_board_subscriber_count" ON "board_subscribers";
+
+CREATE TRIGGER update_board_subscriber_count AFTER INSERT OR DELETE OR UPDATE ON board_subscribers FOR EACH ROW EXECUTE PROCEDURE update_board_subscriber_count();
+
+DROP TRIGGER "update_board_user_count" ON "boards_users";
+
+CREATE TRIGGER update_board_user_count AFTER INSERT OR DELETE OR UPDATE ON boards_users FOR EACH ROW EXECUTE PROCEDURE update_board_user_count();
+
+DROP TRIGGER "update_card_attachment_count" ON "card_attachments";
+
+CREATE TRIGGER update_card_attachment_count AFTER INSERT OR DELETE OR UPDATE ON card_attachments FOR EACH ROW EXECUTE PROCEDURE update_card_attachment_count();
+
+DROP TRIGGER "update_card_checklist_count" ON "checklists";
+
+CREATE TRIGGER update_card_checklist_count AFTER INSERT OR DELETE OR UPDATE ON checklists FOR EACH ROW EXECUTE PROCEDURE update_card_checklist_count();
+
+DROP TRIGGER "update_card_checklist_item_count" ON "checklist_items";
+
+CREATE TRIGGER update_card_checklist_item_count AFTER INSERT OR DELETE OR UPDATE ON checklist_items FOR EACH ROW EXECUTE PROCEDURE update_card_checklist_item_count();
+
+DROP TRIGGER "update_card_count" ON "cards";
+
+CREATE TRIGGER update_card_count AFTER INSERT OR DELETE OR UPDATE ON cards FOR EACH ROW EXECUTE PROCEDURE update_card_count();
+
+DROP TRIGGER "update_card_subscriber_count" ON "card_subscribers";
+
+CREATE TRIGGER update_card_subscriber_count AFTER INSERT OR DELETE OR UPDATE ON card_subscribers FOR EACH ROW EXECUTE PROCEDURE update_card_subscriber_count();
+
+DROP TRIGGER "update_card_user_count" ON "cards_users";
+
+CREATE TRIGGER update_card_user_count AFTER INSERT OR DELETE OR UPDATE ON cards_users FOR EACH ROW EXECUTE PROCEDURE update_card_user_count();
+
+DROP TRIGGER "update_card_voters_count" ON "card_voters";
+
+CREATE TRIGGER update_card_voters_count AFTER INSERT OR DELETE OR UPDATE ON card_voters FOR EACH ROW EXECUTE PROCEDURE update_card_voters_count();
+
+DROP TRIGGER "update_list_count" ON "lists";
+
+CREATE TRIGGER update_list_count AFTER INSERT OR DELETE OR UPDATE ON lists FOR EACH ROW EXECUTE PROCEDURE update_list_count();
+
+DROP TRIGGER "update_list_subscriber_count" ON "list_subscribers";
+
+CREATE TRIGGER update_list_subscriber_count AFTER INSERT OR DELETE OR UPDATE ON list_subscribers FOR EACH ROW EXECUTE PROCEDURE update_list_subscriber_count();
+
+DROP TRIGGER "update_organization_count" ON "organizations";
+
+CREATE TRIGGER update_organization_count AFTER INSERT OR DELETE OR UPDATE ON organizations FOR EACH ROW EXECUTE PROCEDURE update_organization_count();
+
+DROP TRIGGER "update_organization_user_count" ON "organizations_users";
+
+CREATE TRIGGER update_organization_user_count AFTER INSERT OR DELETE OR UPDATE ON organizations_users FOR EACH ROW EXECUTE PROCEDURE update_organization_user_count();
+
+DROP TRIGGER "update_user_delete" ON "users";
+
+CREATE TRIGGER update_user_delete AFTER DELETE ON users FOR EACH ROW EXECUTE PROCEDURE update_user_delete();
+
+DROP TRIGGER "update_users_user_login_count" ON "user_logins";
+
+CREATE TRIGGER update_users_user_login_count AFTER INSERT OR DELETE OR UPDATE ON user_logins FOR EACH ROW EXECUTE PROCEDURE update_users_user_login_count();

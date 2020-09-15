@@ -6948,6 +6948,130 @@ CREATE INDEX users_username ON public.users USING btree (username);
 
 CREATE INDEX webhooks_url ON public.webhooks USING btree (url);
 
+--
+-- Name: label_card_count_update; Type: TRIGGER; Schema: public; Owner: restya
+--
+
+CREATE TRIGGER label_card_count_update AFTER INSERT OR DELETE OR UPDATE ON public.cards_labels FOR EACH ROW EXECUTE PROCEDURE public.label_card_count_update();
+
+
+--
+-- Name: update_board_count; Type: TRIGGER; Schema: public; Owner: restya
+--
+
+CREATE TRIGGER update_board_count AFTER INSERT OR DELETE OR UPDATE ON public.boards FOR EACH ROW EXECUTE PROCEDURE public.update_board_count();
+
+
+--
+-- Name: update_board_star_count; Type: TRIGGER; Schema: public; Owner: restya
+--
+
+CREATE TRIGGER update_board_star_count AFTER INSERT OR DELETE OR UPDATE ON public.board_stars FOR EACH ROW EXECUTE PROCEDURE public.update_board_star_count();
+
+
+--
+-- Name: update_board_subscriber_count; Type: TRIGGER; Schema: public; Owner: restya
+--
+
+CREATE TRIGGER update_board_subscriber_count AFTER INSERT OR DELETE OR UPDATE ON public.board_subscribers FOR EACH ROW EXECUTE PROCEDURE public.update_board_subscriber_count();
+
+
+--
+-- Name: update_board_user_count; Type: TRIGGER; Schema: public; Owner: restya
+--
+
+CREATE TRIGGER update_board_user_count AFTER INSERT OR DELETE OR UPDATE ON public.boards_users FOR EACH ROW EXECUTE PROCEDURE public.update_board_user_count();
+
+
+--
+-- Name: update_card_attachment_count; Type: TRIGGER; Schema: public; Owner: restya
+--
+
+CREATE TRIGGER update_card_attachment_count AFTER INSERT OR DELETE OR UPDATE ON public.card_attachments FOR EACH ROW EXECUTE PROCEDURE public.update_card_attachment_count();
+
+
+--
+-- Name: update_card_checklist_count; Type: TRIGGER; Schema: public; Owner: restya
+--
+
+CREATE TRIGGER update_card_checklist_count AFTER INSERT OR DELETE OR UPDATE ON public.checklists FOR EACH ROW EXECUTE PROCEDURE public.update_card_checklist_count();
+
+
+--
+-- Name: update_card_checklist_item_count; Type: TRIGGER; Schema: public; Owner: restya
+--
+
+CREATE TRIGGER update_card_checklist_item_count AFTER INSERT OR DELETE OR UPDATE ON public.checklist_items FOR EACH ROW EXECUTE PROCEDURE public.update_card_checklist_item_count();
+
+
+--
+-- Name: update_card_count; Type: TRIGGER; Schema: public; Owner: restya
+--
+
+CREATE TRIGGER update_card_count AFTER INSERT OR DELETE OR UPDATE ON public.cards FOR EACH ROW EXECUTE PROCEDURE public.update_card_count();
+
+
+--
+-- Name: update_card_subscriber_count; Type: TRIGGER; Schema: public; Owner: restya
+--
+
+CREATE TRIGGER update_card_subscriber_count AFTER INSERT OR DELETE OR UPDATE ON public.card_subscribers FOR EACH ROW EXECUTE PROCEDURE public.update_card_subscriber_count();
+
+
+--
+-- Name: update_card_user_count; Type: TRIGGER; Schema: public; Owner: restya
+--
+
+CREATE TRIGGER update_card_user_count AFTER INSERT OR DELETE OR UPDATE ON public.cards_users FOR EACH ROW EXECUTE PROCEDURE public.update_card_user_count();
+
+
+--
+-- Name: update_card_voters_count; Type: TRIGGER; Schema: public; Owner: restya
+--
+
+CREATE TRIGGER update_card_voters_count AFTER INSERT OR DELETE OR UPDATE ON public.card_voters FOR EACH ROW EXECUTE PROCEDURE public.update_card_voters_count();
+
+
+--
+-- Name: update_list_count; Type: TRIGGER; Schema: public; Owner: restya
+--
+
+CREATE TRIGGER update_list_count AFTER INSERT OR DELETE OR UPDATE ON public.lists FOR EACH ROW EXECUTE PROCEDURE public.update_list_count();
+
+
+--
+-- Name: update_list_subscriber_count; Type: TRIGGER; Schema: public; Owner: restya
+--
+
+CREATE TRIGGER update_list_subscriber_count AFTER INSERT OR DELETE OR UPDATE ON public.list_subscribers FOR EACH ROW EXECUTE PROCEDURE public.update_list_subscriber_count();
+
+
+--
+-- Name: update_organization_count; Type: TRIGGER; Schema: public; Owner: restya
+--
+
+CREATE TRIGGER update_organization_count AFTER INSERT OR DELETE OR UPDATE ON public.organizations FOR EACH ROW EXECUTE PROCEDURE public.update_organization_count();
+
+
+--
+-- Name: update_organization_user_count; Type: TRIGGER; Schema: public; Owner: restya
+--
+
+CREATE TRIGGER update_organization_user_count AFTER INSERT OR DELETE OR UPDATE ON public.organizations_users FOR EACH ROW EXECUTE PROCEDURE public.update_organization_user_count();
+
+
+--
+-- Name: update_user_delete; Type: TRIGGER; Schema: public; Owner: restya
+--
+
+CREATE TRIGGER update_user_delete AFTER DELETE ON public.users FOR EACH ROW EXECUTE PROCEDURE public.update_user_delete();
+
+
+--
+-- Name: update_users_user_login_count; Type: TRIGGER; Schema: public; Owner: restya
+--
+
+CREATE TRIGGER update_users_user_login_count AFTER INSERT OR DELETE OR UPDATE ON public.user_logins FOR EACH ROW EXECUTE PROCEDURE public.update_users_user_login_count();
 
 --
 -- Name: cities_country_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
