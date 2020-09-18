@@ -8,6 +8,16 @@ DO $$
   END;
 $$;
 
+DO $$ 
+   BEGIN
+        BEGIN
+            ALTER TABLE "boards" ADD "show_pending_checklist_item" boolean NOT NULL DEFAULT 'false';
+        EXCEPTION
+            WHEN duplicate_column THEN RAISE NOTICE 'column show_pending_checklist_item already exists in boards';
+        END;  
+  END;
+$$;
+
 CREATE OR REPLACE VIEW boards_listing AS
  SELECT board.id,
     board.name,
@@ -149,7 +159,8 @@ CREATE OR REPLACE VIEW boards_listing AS
     board.sort_direction,
     board.support_list_id,
     board.support_custom_fields,
-    board.is_expand_image_front_of_card
+    board.is_expand_image_front_of_card,
+    board.show_pending_checklist_item
    FROM ((boards board
      LEFT JOIN users users ON ((users.id = board.user_id)))
      LEFT JOIN organizations organizations ON ((organizations.id = board.organization_id)));

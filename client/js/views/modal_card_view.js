@@ -142,6 +142,7 @@ App.ModalCardView = Backbone.View.extend({
         this.model.checklists.bind('remove', this.renderChecklistsCollection);
         this.model.checklists.bind('add', this.renderChecklistsCollection);
         this.model.checklists.bind('change:name', this.renderChecklistsCollection);
+        this.model.list.collection.board.bind('change:show_pending_checklist_item', this.renderChecklistsCollection);
         this.model.list.collection.board.checklists.bind('remove', this.renderChecklistsCollection);
         this.model.list.collection.board.checklists.bind('add', this.renderChecklistsCollection);
         this.model.list.collection.board.checklist_items.bind('add', this.renderChecklistsCollection);
