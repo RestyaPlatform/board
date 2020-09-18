@@ -173,8 +173,13 @@ App.LoginView = Backbone.View.extend({
         if (!_.isUndefined(R_MLDAP_SERVERS) && !_.isEmpty(R_MLDAP_SERVERS)) {
             ldap_servers = R_MLDAP_SERVERS.split(',');
         }
+        var android_user_name = '';
+        if (window.Android && window.Android.getUserName()) {
+            android_user_name = window.Android.getUserName();
+        }
         this.$el.html(this.template({
-            ldap_servers: ldap_servers
+            ldap_servers: ldap_servers,
+            android_user_name: android_user_name
         }));
         this.showTooltip();
         return this;

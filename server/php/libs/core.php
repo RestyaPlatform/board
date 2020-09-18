@@ -610,7 +610,7 @@ function sendMail($template, $replace_content, $to, $reply_to_mail = '')
         }
         $headers.= "MIME-Version: 1.0" . PHP_EOL;
         $headers.= "Content-Type: text/html; charset=UTF-8" . PHP_EOL;
-        $headers.= "X-Mailer: Restyaboard (0.6.8; +http://restya.com/board)" . PHP_EOL;
+        $headers.= "X-Mailer: Restyaboard (0.6.9; +http://restya.com/board)" . PHP_EOL;
         $headers.= "X-Auto-Response-Suppress: All" . PHP_EOL;
         if (is_plugin_enabled('r_sparkpost')) {
             require_once PLUGIN_PATH . DS . 'SparkPost' . DS . 'functions.php';
@@ -2108,8 +2108,8 @@ function importTaigaBoard($board = array())
                 $i+= 1;
                 $is_closed = !empty($card['is_closed']) ? 'true' : 'false';
                 $date = (!empty($card['due'])) ? $card['due_date'] : null;
-                $card['subject'] = preg_replace ('~\x{00a0}~siu', ' ', utf8_decode($card['subject']));
-                $card['description'] = preg_replace ('~\x{00a0}~siu', ' ', utf8_decode($card['description']));
+                $card['subject'] = preg_replace('~\x{00a0}~siu', ' ', utf8_decode($card['subject']));
+                $card['description'] = preg_replace('~\x{00a0}~siu', ' ', utf8_decode($card['description']));
                 $qry_val_arr = array(
                     $new_board['id'],
                     $lists[$card['status']],
@@ -3385,11 +3385,15 @@ function paginate_data($c_sql, $db_lnk, $pg_params, $r_resource_filters, $limit 
 function update_query($table_name, $id, $r_resource_cmd, $r_put, $comment = '', $activity_type = '', $foreign_ids = '')
 {
     global $r_debug, $db_lnk, $authUser, $_server_domain_url;
-    $values = array(
-        'now()'
-    );
+    $values = array();
     $sfields = '';
-    $fields = 'modified';
+    $fields = '';
+    if ($activity_type != 'delete_card_evergreen_card' && $activity_type != 'add_card_evergreen_card') {
+        $fields = 'modified';
+        $values = array(
+            'now()'
+        );
+    }
     if (!empty($table_name) && !empty($id)) {
         $put = getbindValues($table_name, $r_put);
         if ($table_name == 'users') {
@@ -3397,7 +3401,11 @@ function update_query($table_name, $id, $r_resource_cmd, $r_put, $comment = '', 
         }
         foreach ($put as $key => $value) {
             if ($key != 'id') {
-                $fields.= ', ' . $key;
+                if ($fields != '') {
+                    $fields.= ', ' . $key;
+                } else {
+                    $fields = $key;
+                }
                 if ($value === false) {
                     array_push($values, 'false');
                 } elseif ($value === 'null' || $value === 'NULL' || $value === 'null') {

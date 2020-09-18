@@ -25,7 +25,8 @@
 		<i class="avatar avatar-color-194 img-rounded pull-left" title="<%-activity.attributes.full_name %>"></i>
 	<% } %>
 		<div class="media-body">    
-			<%  activity.attributes.organization_name = (activity.attributes.organization_name !== null) ? activity.attributes.organization_name : i18next.t("[deleted]");
+			<%  activity.attributes.comment = filterXSS(activity.attributes.comment);
+				activity.attributes.organization_name = (activity.attributes.organization_name !== null) ? activity.attributes.organization_name : i18next.t("[deleted]");
 				activity.attributes.board_name = (activity.attributes.board_name !== null) ? activity.attributes.board_name : i18next.t("[deleted]");
 				activity.attributes.card_name = (activity.attributes.card_name !== null) ? activity.attributes.card_name : i18next.t("[deleted]");
 				var cardLink;
@@ -125,10 +126,10 @@
 						<div class="activities-list js-activity-<%- activity.attributes.id %>">
 						<% if(activity.attributes.type == 'add_comment') { 
 							var originalComment;
-							if (!_.isUndefined(activity.attributes.revisions) && !_.isEmpty(activity.attributes.revisions) && activity.attributes.revisions !== null) { 
-								originalComment = activity.attributes.revisions.old_value.comment;
-							} else { 
-								originalComment = activity.attributes.comment;
+							if (!_.isUndefined(activity.attributes.revisions) && !_.isEmpty(activity.attributes.revisions) && activity.attributes.revisions !== null) {
+								originalComment = filterXSS(activity.attributes.revisions.old_value.comment);
+							} else {
+								originalComment = filterXSS(activity.attributes.comment);
 							}
 							if(!_.isUndefined(activity.from_footer)) { %>
 								<span><%= comment %></span>
