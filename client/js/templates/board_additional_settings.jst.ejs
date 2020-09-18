@@ -17,6 +17,15 @@
     <li class="clearfix js-enable-covers js-AdditionalSettings-enable list-group-item cur <% if(board.attributes.is_show_image_front_of_card) { %> hide <% } %>">
         <%- i18next.t("Enable Card Cover Images") %>
     </li>
+    <li class="js-expand-card-cover-image js-is_expand_image_front_of_card-enabled <% if(!board.attributes.is_expand_image_front_of_card) { %> hide <% } %>">
+        <div class="cur list-group-item well-sm">
+            <%- i18next.t("Expand Card Cover Image Enabled") %>
+                <i class="icon-ok"></i>
+        </div>
+    </li>
+    <li class="clearfix js-expand-card-cover-image js-is_expand_image_front_of_card-enable list-group-item cur <% if(board.attributes.is_expand_image_front_of_card) { %> hide <% } %>">
+        <%- i18next.t("Expand Card Cover Image") %>
+    </li>
     <li class="js-enable-board-notification js-auto_subscribe_on_board-enabled <% if(!board.attributes.auto_subscribe_on_board) { %> hide <% } %>">
         <div class="cur list-group-item well-sm">
             <%- i18next.t("Automatically subscribe a member when he's added to a board") %>
