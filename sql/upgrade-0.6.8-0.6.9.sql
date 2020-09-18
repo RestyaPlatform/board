@@ -194,5 +194,3 @@ SELECT lists.id,
 UPDATE "acl_board_links" SET "is_hide" = '0' WHERE "slug" = 'add_labels';
 
 UPDATE "acl_board_links" SET "name" = 'Delete Labels' WHERE "slug" = 'delete_labels';
-
-INSERT INTO "settings" ("setting_category_id", "setting_category_parent_id", "name", "value", "description", "type", "options", "label", "order") values ('6', '0', 'UNSPLASH_API_KEY', '', 'Get the Unsplash API Key  by visiting <a href="https://unsplash.com/developers" target="_blank">https://unsplash.com/developers</a>', 'text', NULL, 'Unsplash API Key', '2');
