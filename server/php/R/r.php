@@ -1125,6 +1125,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 $response['error']['message'] = 'Unauthorized';
                 echo json_encode($response);
                 // header($_SERVER['SERVER_PROTOCOL'] . ' 401 Unauthorized', true, 401);
+                
             }
         } else {
             $response['error']['type'] = 'board';
@@ -6703,6 +6704,13 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
                 $comment = '##USER_NAME## disabled card cover image on ##BOARD_NAME## board.';
             }
             $activity_type = 'is_show_image_front_of_card';
+        } else if (isset($r_put['is_expand_image_front_of_card'])) {
+            if ($r_put['is_expand_image_front_of_card']) {
+                $comment = '##USER_NAME## enabled expand card cover image on ##BOARD_NAME## board.';
+            } else {
+                $comment = '##USER_NAME## disabled expand card cover image on ##BOARD_NAME## board.';
+            }
+            $activity_type = 'is_expand_image_front_of_card';
         }
         if (!empty($r_put['organization_id'])) {
             $qry_val_arr = array(
@@ -7124,6 +7132,15 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
             } else if (isset($present_custom_fields['hour']) && isset($present_custom_fields['min'])) {
                 $comment = '##USER_NAME## removed estimated time to the card ##CARD_LINK##';
                 $activity_type = 'delete_card_estimatedtime';
+            }
+        }
+        if (is_plugin_enabled('r_card_aging')) {
+            if (isset($present_custom_fields['evergreen_card']) && $present_custom_fields['evergreen_card'] == "true") {
+                $comment = '##USER_NAME## has set card ##CARD_NAME## as Evergreen Card on ##BOARD_NAME##';
+                $activity_type = 'add_card_evergreen_card';
+            } else if (isset($present_custom_fields['evergreen_card']) && $present_custom_fields['evergreen_card'] == "false") {
+                $comment = '##USER_NAME## has removed card ##CARD_NAME## as Evergreen Card on ##BOARD_NAME##';
+                $activity_type = 'delete_card_evergreen_card';
             }
         }
         if (is_plugin_enabled('r_spent_time')) {
