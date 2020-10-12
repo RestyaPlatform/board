@@ -420,6 +420,39 @@ App.ApplicationView = Backbone.View.extend({
                         });
                         $('#header').html(this.headerView.el);
                     } else {
+                        var lists = {};
+                        var boards = {};
+                        if (response.lists) {
+                            $.each(response.lists, function(list_key, list) {
+                                if (list) {
+                                    var cards = {};
+                                    if (list.cards) {
+                                        $.each(list.cards, function(card_key, card) {
+                                            if (card) {
+                                                cards[card.id] = card.custom_fields;
+                                                // Resets this boards cards collection
+                                                Board.cards.add(card, {
+                                                    silent: true
+                                                });
+                                            }
+                                        });
+                                    }
+                                    lists[list.id] = {
+                                        custom_fields: list.custom_fields,
+                                        cards: cards
+                                    };
+                                    // Resets this boards lists collection
+                                    Board.lists.add(list);
+                                }
+                            });
+                        }
+                        boards[response.id] = {
+                            custom_fields: response.custom_fields,
+                            lists: lists
+                        };
+                        custom_fields.boards = boards;
+                        Board.authuser = self.authuser;
+                        viewed_board = Board;
                         Board.board_user_roles = response.board_user_roles;
                         // Resets this boards users collection
                         if (!_.isUndefined(response.boards_users) && !_.isEmpty(response.boards_users)) {
@@ -427,223 +460,83 @@ App.ApplicationView = Backbone.View.extend({
                                 Board.board_users.add(board_user);
                             });
                         }
-                        var board_user_role = Board.board_users.findWhere({
-                            user_id: parseInt(authuser.user.id)
+                        // Resets this boards activities collection
+                        if (!_.isUndefined(response.activities) && !_.isEmpty(response.activities)) {
+                            $.each(response.activities, function(key, activity) {
+                                Board.activities.add(activity, {
+                                    silent: true
+                                });
+                            });
+                        }
+                        // Resets this boards custom attachments collection
+                        if (!_.isUndefined(response.custom_backgrounds) && !_.isEmpty(response.custom_backgrounds)) {
+                            $.each(response.custom_backgrounds, function(key, custom_background) {
+                                Board.custom_attachments.add(custom_background, {
+                                    silent: true
+                                });
+                            });
+                        }
+                        // Resets this boards attachments collection
+                        if (!_.isUndefined(response.attachments) && !_.isEmpty(response.attachments)) {
+                            $.each(response.attachments, function(key, attachment) {
+                                Board.attachments.add(attachment, {
+                                    silent: true
+                                });
+                            });
+                        }
+                        // Resets this boards subscribers collection
+                        if (!_.isUndefined(response.boards_subscribers) && !_.isEmpty(response.boards_subscribers)) {
+                            $.each(response.boards_subscribers, function(key, boards_subscriber) {
+                                Board.board_subscribers.add(boards_subscriber, {
+                                    silent: true
+                                });
+                            });
+                        }
+                        // Resets this boards stars collection
+                        if (!_.isUndefined(response.boards_stars) && !_.isEmpty(response.boards_stars)) {
+                            $.each(response.boards_stars, function(key, boards_star) {
+                                Board.board_stars.add(boards_star, {
+                                    silent: true
+                                });
+                            });
+                        }
+                        // Resets this boards stars collection
+                        if (!_.isUndefined(response.acl_links) && !_.isEmpty(response.acl_links)) {
+                            $.each(response.acl_links, function(key, acl_link) {
+                                Board.acl_links.add(acl_link, {
+                                    silent: true
+                                });
+                            });
+                        }
+
+                        if (!_.isUndefined(authuser.user)) {
+                            var board_user_role_id = Board.board_users.findWhere({
+                                user_id: parseInt(authuser.user.id)
+                            });
+                            if (!_.isEmpty(board_user_role_id)) {
+                                Board.board_user_role_id = board_user_role_id.attributes.board_user_role_id;
+                            }
+                        }
+                        App.current_board = Board;
+                        $('#header').html(new App.BoardHeaderView({
+                            model: Board,
+                        }).el);
+                        changeTitle('Board - ' + _.escape(Board.attributes.name));
+                        $('#content').html('');
+                        $('#content').html(new App.BoardView({
+                            model: Board
+                        }).el);
+                        $('[data-spy="affix"]').each(function() {
+                            var $spy = $(this);
+                            var data = $spy.data();
+
+                            data.offset = data.offset || {};
+
+                            if (data.offsetBottom) data.offset.bottom = data.offsetBottom;
+                            if (data.offsetTop) data.offset.top = data.offsetTop;
+
+                            $spy.affix(data);
                         });
-                        var board_user_role_id;
-                        if (!_.isEmpty(board_user_role)) {
-                            board_user_role_id = board_user_role.attributes.board_user_role_id;
-                        }
-                        if (!_.isUndefined(board_user_role_id) && board_user_role_id === 4) {
-                            var board = new App.Board({
-                                id: self.id
-                            });
-                            board.url = api_url + 'users/board' + self.id + '/cards.json?';
-                            board.fetch({
-                                cache: false,
-                                abortPending: true,
-                                success: function(model, response) {
-                                    if (!_.isUndefined(response.error)) {
-                                        $.cookie('redirect_link', window.location.hash);
-                                        changeTitle('Board not found');
-                                        $('#content').html('');
-                                        $('#content').html(new App.Board404View({
-                                            model: authuser
-                                        }).el);
-                                        this.headerView = new App.HeaderView({
-                                            model: authuser
-                                        });
-                                        $('#header').html(this.headerView.el);
-                                    } else {
-                                        var lists = {};
-                                        var boards = {};
-                                        if (response.lists) {
-                                            $.each(response.lists, function(list_key, list) {
-                                                if (list) {
-                                                    var cards = {};
-                                                    if (list.cards) {
-                                                        $.each(list.cards, function(card_key, card) {
-                                                            if (card) {
-                                                                cards[card.id] = card.custom_fields;
-                                                                // Resets this boards cards collection
-                                                                board.cards.add(card, {
-                                                                    silent: true
-                                                                });
-                                                            }
-                                                        });
-                                                    }
-                                                    lists[list.id] = {
-                                                        custom_fields: list.custom_fields,
-                                                        cards: cards
-                                                    };
-                                                    // Resets this boards lists collection
-                                                    board.lists.add(list);
-                                                }
-                                            });
-                                        }
-                                        boards[response.id] = {
-                                            custom_fields: response.custom_fields,
-                                            lists: lists
-                                        };
-                                        custom_fields.boards = boards;
-                                        board.authuser = self.authuser;
-                                        viewed_board = board;
-                                        // Resets this boards activities collection
-                                        if (!_.isUndefined(response.activities) && !_.isEmpty(response.activities)) {
-                                            $.each(response.activities, function(key, activity) {
-                                                board.activities.add(activity, {
-                                                    silent: true
-                                                });
-                                            });
-                                        }
-                                        // Resets this boards custom attachments collection
-                                        if (!_.isUndefined(response.custom_backgrounds) && !_.isEmpty(response.custom_backgrounds)) {
-                                            $.each(response.custom_backgrounds, function(key, custom_background) {
-                                                board.custom_attachments.add(custom_background, {
-                                                    silent: true
-                                                });
-                                            });
-                                        }
-                                        // Resets this boards attachments collection
-                                        if (!_.isUndefined(response.attachments) && !_.isEmpty(response.attachments)) {
-                                            $.each(response.attachments, function(key, attachment) {
-                                                board.attachments.add(attachment, {
-                                                    silent: true
-                                                });
-                                            });
-                                        }
-                                        // Resets this boards subscribers collection
-                                        if (!_.isUndefined(response.boards_subscribers) && !_.isEmpty(response.boards_subscribers)) {
-                                            $.each(response.boards_subscribers, function(key, boards_subscriber) {
-                                                board.board_subscribers.add(boards_subscriber, {
-                                                    silent: true
-                                                });
-                                            });
-                                        }
-                                        // Resets this boards stars collection
-                                        if (!_.isUndefined(response.boards_stars) && !_.isEmpty(response.boards_stars)) {
-                                            $.each(response.boards_stars, function(key, boards_star) {
-                                                board.board_stars.add(boards_star, {
-                                                    silent: true
-                                                });
-                                            });
-                                        }
-                                        // Resets this boards stars collection
-                                        if (!_.isUndefined(response.acl_links) && !_.isEmpty(response.acl_links)) {
-                                            $.each(response.acl_links, function(key, acl_link) {
-                                                board.acl_links.add(acl_link, {
-                                                    silent: true
-                                                });
-                                            });
-                                        }
-
-                                        if (!_.isUndefined(authuser.user)) {
-                                            var board_user_role_id = board.board_users.findWhere({
-                                                user_id: parseInt(authuser.user.id)
-                                            });
-                                            if (!_.isEmpty(board_user_role_id)) {
-                                                board.board_user_role_id = board_user_role_id.attributes.board_user_role_id;
-                                            }
-                                        }
-                                        App.current_board = board;
-                                        $('#header').html(new App.BoardHeaderView({
-                                            model: board,
-                                        }).el);
-                                        changeTitle('Board - ' + _.escape(board.attributes.name));
-                                        $('#content').html('');
-                                        $('#content').html(new App.BoardView({
-                                            model: board
-                                        }).el);
-                                        $('[data-spy="affix"]').each(function() {
-                                            var $spy = $(this);
-                                            var data = $spy.data();
-
-                                            data.offset = data.offset || {};
-
-                                            if (data.offsetBottom) data.offset.bottom = data.offsetBottom;
-                                            if (data.offsetTop) data.offset.top = data.offsetTop;
-
-                                            $spy.affix(data);
-                                        });
-                                    }
-                                }
-                            });
-                        } else {
-                            // Resets this boards activities collection
-                            if (!_.isUndefined(response.activities) && !_.isEmpty(response.activities)) {
-                                $.each(response.activities, function(key, activity) {
-                                    Board.activities.add(activity, {
-                                        silent: true
-                                    });
-                                });
-                            }
-                            // Resets this boards custom attachments collection
-                            if (!_.isUndefined(response.custom_backgrounds) && !_.isEmpty(response.custom_backgrounds)) {
-                                $.each(response.custom_backgrounds, function(key, custom_background) {
-                                    Board.custom_attachments.add(custom_background, {
-                                        silent: true
-                                    });
-                                });
-                            }
-                            // Resets this boards attachments collection
-                            if (!_.isUndefined(response.attachments) && !_.isEmpty(response.attachments)) {
-                                $.each(response.attachments, function(key, attachment) {
-                                    Board.attachments.add(attachment, {
-                                        silent: true
-                                    });
-                                });
-                            }
-                            // Resets this boards subscribers collection
-                            if (!_.isUndefined(response.boards_subscribers) && !_.isEmpty(response.boards_subscribers)) {
-                                $.each(response.boards_subscribers, function(key, boards_subscriber) {
-                                    Board.board_subscribers.add(boards_subscriber, {
-                                        silent: true
-                                    });
-                                });
-                            }
-                            // Resets this boards stars collection
-                            if (!_.isUndefined(response.boards_stars) && !_.isEmpty(response.boards_stars)) {
-                                $.each(response.boards_stars, function(key, boards_star) {
-                                    Board.board_stars.add(boards_star, {
-                                        silent: true
-                                    });
-                                });
-                            }
-                            // Resets this boards stars collection
-                            if (!_.isUndefined(response.acl_links) && !_.isEmpty(response.acl_links)) {
-                                $.each(response.acl_links, function(key, acl_link) {
-                                    Board.acl_links.add(acl_link, {
-                                        silent: true
-                                    });
-                                });
-                            }
-
-                            if (!_.isUndefined(authuser.user)) {
-                                if (!_.isUndefined(board_user_role_id)) {
-                                    Board.board_user_role_id = board_user_role_id;
-                                }
-                            }
-                            App.current_board = Board;
-                            $('#header').html(new App.BoardHeaderView({
-                                model: Board,
-                            }).el);
-                            changeTitle('Board - ' + _.escape(Board.attributes.name));
-                            $('#content').html('');
-                            $('#content').html(new App.BoardView({
-                                model: Board
-                            }).el);
-                            $('[data-spy="affix"]').each(function() {
-                                var $spy = $(this);
-                                var data = $spy.data();
-
-                                data.offset = data.offset || {};
-
-                                if (data.offsetBottom) data.offset.bottom = data.offsetBottom;
-                                if (data.offsetTop) data.offset.top = data.offsetTop;
-
-                                $spy.affix(data);
-                            });
-                        }
                         if (view_type === 'list') {
                             $('.js-switch-list-view').trigger('click');
                             view_type = null;
@@ -661,19 +554,11 @@ App.ApplicationView = Backbone.View.extend({
                             $('.js-switch-grid-view').trigger('click');
                             view_type = null;
                         }
-                        if (!_.isUndefined(board_user_role_id) && board_user_role_id === 4) {
-                            this.footerView = new App.FooterView({
-                                model: authuser,
-                                board_id: self.id,
-                                board: board
-                            }).render();
-                        } else {
-                            this.footerView = new App.FooterView({
-                                model: authuser,
-                                board_id: self.id,
-                                board: Board
-                            }).render();
-                        }
+                        this.footerView = new App.FooterView({
+                            model: authuser,
+                            board_id: self.id,
+                            board: Board
+                        }).render();
                         $('#footer').html(this.footerView.el);
                         $('[data-toggle="tooltip"]').tooltip();
                         if (!_.isUndefined(authuser.user)) {
