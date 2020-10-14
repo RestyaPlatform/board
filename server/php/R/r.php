@@ -326,6 +326,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
     case '/users/?/activities':
         $condition = '';
         $flag = 0;
+        $assigned_card_ids = $assigned_board_ids = array();
         if (!empty($authUser) && $authUser['role_id'] == 1 && $authUser['id'] == $r_resource_vars['users'] && empty($r_resource_filters['organization_id']) && empty($r_resource_filters['board_id'])) {
             $i = 1;
             if (!empty($r_resource_filters['mode']) && $r_resource_filters['mode'] != 'all') {
@@ -372,6 +373,27 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                     }
                 }
             }
+            $val_array = array(
+                $authUser['id'],
+                4
+            );
+            // START : check the role for Restricted board user
+            $assigned_boards = pg_query_params($db_lnk, 'SELECT board_id FROM boards_users WHERE user_id = $1 AND board_user_role_id = $2', $val_array);
+            $assigned_board_ids = array();
+            while ($row = pg_fetch_assoc($assigned_boards)) {
+                $assigned_board_ids[] = $row['board_id'];
+            }
+            if (!empty($assigned_board_ids)) {
+                $val_array = array (
+                    $authUser['id'],
+                    '{' . implode(',', $assigned_board_ids) . '}'
+                );
+                $cardID = pg_query_params($db_lnk, ' SELECT c.id FROM cards c inner join cards_users cu on cu.card_id = c.id WHERE cu.user_id = $1 AND c.board_id = ANY ($2)', $val_array);
+                while ($row = pg_fetch_assoc($cardID)) {
+                    $assigned_card_ids[] = $row['id'];
+                }
+            }
+            // END : check the role for Restricted board user
             $val_array = array(
                 $r_resource_vars['users']
             );
@@ -421,9 +443,21 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 if (!empty($r_resource_filters['direction']) && isset($r_resource_filters['direction'])) {
                     $direction = $r_resource_filters['direction'];
                 }
-                $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM activities_listing al WHERE (board_id = ANY ( $1 ) OR organization_id  = ANY ( $2 ) OR revisions = $3)' . $condition . ' ORDER BY id ' . $direction . ' LIMIT ' . PAGING_COUNT . ') as d';
-                $c_sql = 'SELECT COUNT(*) FROM activities_listing al WHERE (board_id = ANY ( $1 ) OR organization_id  = ANY ( $2 ) OR revisions = $3)' . $condition;
-                array_push($pg_params, '{' . implode(',', $board_ids) . '}', '{' . implode(',', $org_ids) . '}', $authUser['id']);
+                // If Restricted board user
+                if (!empty($assigned_card_ids)) {
+                    if (!empty($r_resource_filters['last_activity_id'])) {
+                        $condition = ' AND al.id > $5';
+                    }
+                    $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM activities_listing al WHERE (board_id = ANY ( $1 ) OR organization_id  = ANY ( $2 ) OR revisions = $3 OR  card_id = ANY ($4) ) ' . $condition . ' ORDER BY id ' . $direction . ' LIMIT ' . PAGING_COUNT . ') as d';
+                    
+                    $c_sql = 'SELECT COUNT(*) FROM activities_listing al WHERE (board_id = ANY ( $1 ) OR organization_id  = ANY ( $2 ) OR revisions = $3) AND  card_id = ANY ($4)' . $condition;
+                    $boardIDS = array_diff($board_ids, $assigned_board_ids);
+                    array_push($pg_params, '{' . implode(',', $boardIDS) . '}', '{' . implode(',', $org_ids) . '}', $authUser['id'], '{' . implode(',', $assigned_card_ids) . '}');
+                } else {
+                    $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM activities_listing al WHERE (board_id = ANY ( $1 ) OR organization_id  = ANY ( $2 ) OR revisions = $3)' . $condition . ' ORDER BY id ' . $direction . ' LIMIT ' . PAGING_COUNT . ') as d';
+                    $c_sql = 'SELECT COUNT(*) FROM activities_listing al WHERE (board_id = ANY ( $1 ) OR organization_id  = ANY ( $2 ) OR revisions = $3)' . $condition;
+                    array_push($pg_params, '{' . implode(',', $board_ids) . '}', '{' . implode(',', $org_ids) . '}', $authUser['id']);
+                }
             } else if (!empty($r_resource_filters['board_id']) && $r_resource_filters['board_id'] && $r_resource_filters['type'] == 'board_user_activity') {
                 if (!empty($r_resource_filters['last_activity_id'])) {
                     $condition = ' AND al.id < $3';
