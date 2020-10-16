@@ -384,7 +384,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                     $authUser['id'],
                     4
                 );
-                $cardsIDS = pg_query_params($db_lnk, 'SELECT c.id, c.board_id FROM cards c inner join cards_users cu on cu.card_id = c.id left join boards_users bu on c.board_id = bu.board_id WHERE cu.user_id = $1 AND bu.board_user_role_id = $2', $val);
+                $cardsIDS = pg_query_params($db_lnk, 'SELECT c.id, c.board_id, bu.board_user_role_id FROM cards c inner join cards_users cu on cu.card_id = c.id inner join boards_users bu on c.board_id = bu.board_id WHERE cu.user_id = $1 AND bu.board_user_role_id = $2', $val);
                 while ($row = pg_fetch_assoc($cardsIDS)) {
                     $assigned_card_ids[] = $row['id'];
                     $assigned_board_ids[] = $row['board_id'];
@@ -1081,11 +1081,16 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         break;
 
     case '/boards/?':
-        $board = array();
+        $board = $assigned_card_ids = array();
         $s_sql = 'SELECT id FROM boards WHERE id =  $1';
         $board[] = $r_resource_vars['boards'];
         $check_board = executeQuery($s_sql, $board);
         if (!empty($check_board)) {
+            // For restricted board user assigned cards
+            $cardsIDS = pg_query_params($db_lnk, 'SELECT c.id, c.board_id, bu.board_user_role_id FROM cards c inner join cards_users cu on cu.card_id = c.id inner join boards_users bu on c.board_id = bu.board_id WHERE cu.user_id = $1 AND bu.board_user_role_id = $2 AND c.board_id = $3', array($authUser['id'], 4, $r_resource_vars['boards']));
+            while ($row = pg_fetch_assoc($cardsIDS)) {
+                $assigned_card_ids[] = $row['id'];
+            }
             $s_sql = 'SELECT b.board_visibility, bu.user_id FROM boards AS b LEFT JOIN boards_users AS bu ON bu.board_id = b.id WHERE b.id =  $1';
             $arr = array();
             $arr[] = $r_resource_vars['boards'];
@@ -1109,6 +1114,16 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                         while ($row = pg_fetch_row($result)) {
                             $obj = json_decode($row[0], true);
                             global $_server_domain_url;
+                            // Unset unassigned cards for Restricted board user.
+                            if (!empty($assigned_card_ids)) {
+                                foreach($obj['lists'] as $key => $lists) {
+                                    foreach($lists['cards'] as $card_key => $cards) {
+                                        if (!in_array($cards['id'], $assigned_card_ids)) {
+                                            unset($obj['lists'][$key]['cards'][$card_key]);
+                                        }
+                                    }
+                                }
+                            }
                             if (!empty($authUser)) {
                                 $md5_hash = md5(SECURITYSALT . $r_resource_vars['boards'] . $authUser['id']);
                                 $obj['google_syn_url'] = $_server_domain_url . '/ical/' . $r_resource_vars['boards'] . '/' . $authUser['id'] . '/' . $md5_hash . '.ics';
