@@ -378,7 +378,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 4
             );
             // START : check the role for Restricted board user
-            $val = array (
+            $val = array(
                 $authUser['id'],
                 4
             );
@@ -389,7 +389,6 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             }
             $assigned_board_ids = array_unique($assigned_board_ids);
             // END : check the role for Restricted board user
-
             $val_array = array(
                 $r_resource_vars['users']
             );
@@ -446,7 +445,6 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                     }
                     $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM activities_listing al WHERE (board_id = ANY ( $1 ) OR organization_id  = ANY ( $2 ) OR revisions = $3 OR  (card_id = ANY ($4) OR (board_id = ANY($5) AND card_id = $6) ) ) ' . $condition . ' ORDER BY id ' . $direction . ' LIMIT ' . PAGING_COUNT . ') as d';
                     $c_sql = 'SELECT COUNT(*) FROM activities_listing al WHERE (board_id = ANY ( $1 ) OR organization_id  = ANY ( $2 ) OR revisions = $3 OR  (card_id = ANY ($4) OR (board_id = ANY($5) AND card_id = $6) ) ) ' . $condition;
-                    
                     $boardIDS = array_diff($board_ids, $assigned_board_ids);
                     array_push($pg_params, '{' . implode(',', $boardIDS) . '}', '{' . implode(',', $org_ids) . '}', $authUser['id'], '{' . implode(',', $assigned_card_ids) . '}', '{' . implode(',', $assigned_board_ids) . '}', 0);
                 } else {
@@ -1084,7 +1082,11 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         $check_board = executeQuery($s_sql, $board);
         if (!empty($check_board)) {
             // For restricted board user assigned cards
-            $cardsIDS = pg_query_params($db_lnk, 'SELECT c.id, c.board_id, bu.board_user_role_id FROM cards c inner join cards_users cu on cu.card_id = c.id inner join boards_users bu on c.board_id = bu.board_id WHERE cu.user_id = $1 AND bu.board_user_role_id = $2 AND c.board_id = $3', array($authUser['id'], 4, $r_resource_vars['boards']));
+            $cardsIDS = pg_query_params($db_lnk, 'SELECT c.id, c.board_id, bu.board_user_role_id FROM cards c inner join cards_users cu on cu.card_id = c.id inner join boards_users bu on c.board_id = bu.board_id WHERE cu.user_id = $1 AND bu.board_user_role_id = $2 AND c.board_id = $3', array(
+                $authUser['id'],
+                4,
+                $r_resource_vars['boards']
+            ));
             while ($row = pg_fetch_assoc($cardsIDS)) {
                 $assigned_card_ids[] = $row['id'];
             }
@@ -1113,9 +1115,9 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                             global $_server_domain_url;
                             // Unset unassigned cards for Restricted board user.
                             if (!empty($assigned_card_ids)) {
-                                foreach($obj['lists'] as $key => $lists) {
+                                foreach ($obj['lists'] as $key => $lists) {
                                     if (!empty($lists['cards'])) {
-                                        foreach($lists['cards'] as $card_key => $cards) {
+                                        foreach ($lists['cards'] as $card_key => $cards) {
                                             if (!in_array($cards['id'], $assigned_card_ids)) {
                                                 unset($obj['lists'][$key]['cards'][$card_key]);
                                             }
@@ -1572,7 +1574,9 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                         require_once PLUGIN_PATH . DS . 'CustomFields' . DS . 'functions.php';
                         $data['cards_custom_fields'][] = customFieldAfterFetchBoardsListsCards($r_resource_cmd, $r_resource_vars, $r_resource_filters, $data);
                     }
-                    $attachments = pg_query_params($db_lnk, 'SELECT * FROM card_attachments WHERE card_id = $1 order by created DESC', array($r_resource_vars['cards']));
+                    $attachments = pg_query_params($db_lnk, 'SELECT * FROM card_attachments WHERE card_id = $1 order by created DESC', array(
+                        $r_resource_vars['cards']
+                    ));
                     while ($attachment = pg_fetch_assoc($attachments)) {
                         $data['attachments'][] = $attachment;
                     }
@@ -8033,7 +8037,9 @@ function r_delete($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         $foreign_ids['list_id'] = $r_resource_vars['lists'];
         $foreign_ids['card_id'] = $r_resource_vars['cards'];
         $comment = '##USER_NAME## deleted member from the card ##CARD_LINK##';
-        $s_result = pg_query_params($db_lnk, 'SELECT card_id, user_id FROM cards_users_listing WHERE id = $1', array($r_resource_vars['cards_users']));
+        $s_result = pg_query_params($db_lnk, 'SELECT card_id, user_id FROM cards_users_listing WHERE id = $1', array(
+            $r_resource_vars['cards_users']
+        ));
         $previous_value = pg_fetch_assoc($s_result);
         $response['activity'] = insertActivity($authUser['id'], $comment, 'delete_card_users', $foreign_ids, $previous_value['user_id'], $r_resource_vars['cards_users']);
         $sql = 'DELETE FROM cards_users WHERE id = $1';
