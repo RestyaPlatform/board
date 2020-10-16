@@ -1497,7 +1497,10 @@ App.FooterView = Backbone.View.extend({
                                                             $('#js-card-listing-' + cardList.id).html('<span class="js-list-placeholder-' + cardList.id + '">&nbsp;</span>');
                                                         }
                                                     }
-                                                    self.board.cards.remove(card);
+                                                    card.set('is_archived', 1);
+                                                    self.board.cards.remove(card, {
+                                                        silent: false
+                                                    });
                                                 }
                                             }
                                         }
