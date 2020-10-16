@@ -2691,12 +2691,6 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             $ldap_error = $ldap_response['ldap_error'];
             $user = $ldap_response['user'];
         }
-        if (is_plugin_enabled('r_saml_login')) {
-            require_once PLUGIN_PATH . DS . 'LdapLogin' . DS . 'functions.php';
-            $ldap_response = ldapUpdateUser($log_user, $r_post);
-            $ldap_error = $ldap_response['ldap_error'];
-            $user = $ldap_response['user'];
-        }
         if (is_plugin_enabled('r_multiple_ldap_login')) {
             require_once PLUGIN_PATH . DS . 'MultipleLdapLogin' . DS . 'functions.php';
             $ldap_response = ldapUpdateUser($log_user, $r_post);
