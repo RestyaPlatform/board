@@ -1567,6 +1567,16 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             while ($row = pg_fetch_row($result)) {
                 $obj = json_decode($row[0], true);
                 $data = $obj;
+                if ($r_resource_cmd === "/boards/?/lists/?/cards/?") {
+                    if (is_plugin_enabled('r_custom_fields')) {
+                        require_once PLUGIN_PATH . DS . 'CustomFields' . DS . 'functions.php';
+                        $data['cards_custom_fields'][] = customFieldAfterFetchBoardsListsCards($r_resource_cmd, $r_resource_vars, $r_resource_filters, $data);
+                    }
+                    $attachments = pg_query_params($db_lnk, 'SELECT * FROM card_attachments WHERE card_id = $1 order by created DESC', array($r_resource_vars['cards']));
+                    while ($attachment = pg_fetch_assoc($attachments)) {
+                        $data['attachments'][] = $attachment;
+                    }
+                }
             }
             echo json_encode($data);
         } else {
@@ -8023,7 +8033,9 @@ function r_delete($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         $foreign_ids['list_id'] = $r_resource_vars['lists'];
         $foreign_ids['card_id'] = $r_resource_vars['cards'];
         $comment = '##USER_NAME## deleted member from the card ##CARD_LINK##';
-        $response['activity'] = insertActivity($authUser['id'], $comment, 'delete_card_users', $foreign_ids, null, $r_resource_vars['cards_users']);
+        $s_result = pg_query_params($db_lnk, 'SELECT card_id, user_id FROM cards_users_listing WHERE id = $1', array($r_resource_vars['cards_users']));
+        $previous_value = pg_fetch_assoc($s_result);
+        $response['activity'] = insertActivity($authUser['id'], $comment, 'delete_card_users', $foreign_ids, $previous_value['user_id'], $r_resource_vars['cards_users']);
         $sql = 'DELETE FROM cards_users WHERE id = $1';
         $qry_val_arr = array(
             $r_resource_vars['cards_users']
