@@ -1117,9 +1117,11 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                             // Unset unassigned cards for Restricted board user.
                             if (!empty($assigned_card_ids)) {
                                 foreach($obj['lists'] as $key => $lists) {
-                                    foreach($lists['cards'] as $card_key => $cards) {
-                                        if (!in_array($cards['id'], $assigned_card_ids)) {
-                                            unset($obj['lists'][$key]['cards'][$card_key]);
+                                    if (!empty($lists['cards'])) {
+                                        foreach($lists['cards'] as $card_key => $cards) {
+                                            if (!in_array($cards['id'], $assigned_card_ids)) {
+                                                unset($obj['lists'][$key]['cards'][$card_key]);
+                                            }
                                         }
                                     }
                                 }
