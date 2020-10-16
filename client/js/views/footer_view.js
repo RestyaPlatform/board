@@ -1299,6 +1299,7 @@ App.FooterView = Backbone.View.extend({
                                         }
                                         if (!_.isUndefined(current_board_user) && !_.isEmpty(current_board_user) && current_board_user !== null) {
                                             if (parseInt(current_board_user.attributes.board_user_role_id) === 4) {
+                                                // Restricted card users handling
                                                 if (activity.attributes.type === 'add_card_user' && _.isUndefined(card)) {
                                                     var boardId = parseInt(activity.attributes.board_id);
                                                     var listId = parseInt(activity.attributes.list_id);
