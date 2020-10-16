@@ -378,21 +378,18 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 4
             );
             // START : check the role for Restricted board user
-            $assigned_boards = pg_query_params($db_lnk, 'SELECT board_id FROM boards_users WHERE user_id = $1 AND board_user_role_id = $2', $val_array);
-            if ($assigned_boards) {
-                $val = array (
-                    $authUser['id'],
-                    4
-                );
-                $cardsIDS = pg_query_params($db_lnk, 'SELECT c.id, c.board_id, bu.board_user_role_id FROM cards c inner join cards_users cu on cu.card_id = c.id inner join boards_users bu on c.board_id = bu.board_id WHERE cu.user_id = $1 AND bu.board_user_role_id = $2', $val);
-                while ($row = pg_fetch_assoc($cardsIDS)) {
-                    $assigned_card_ids[] = $row['id'];
-                    $assigned_board_ids[] = $row['board_id'];
-                }
-                $assigned_board_ids = array_unique($assigned_board_ids);    
+            $val = array (
+                $authUser['id'],
+                4
+            );
+            $cardsIDS = pg_query_params($db_lnk, 'SELECT c.id, c.board_id, bu.board_user_role_id FROM cards c inner join cards_users cu on cu.card_id = c.id inner join boards_users bu on c.board_id = bu.board_id WHERE cu.user_id = $1 AND bu.board_user_role_id = $2', $val);
+            while ($row = pg_fetch_assoc($cardsIDS)) {
+                $assigned_card_ids[] = $row['id'];
+                $assigned_board_ids[] = $row['board_id'];
             }
-            
+            $assigned_board_ids = array_unique($assigned_board_ids);
             // END : check the role for Restricted board user
+
             $val_array = array(
                 $r_resource_vars['users']
             );
@@ -2689,6 +2686,12 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
         }
         $log_user = executeQuery('SELECT id, role_id, password, is_ldap::boolean::int FROM users WHERE ' . $where, $val_arr);
         if (is_plugin_enabled('r_ldap_login')) {
+            require_once PLUGIN_PATH . DS . 'LdapLogin' . DS . 'functions.php';
+            $ldap_response = ldapUpdateUser($log_user, $r_post);
+            $ldap_error = $ldap_response['ldap_error'];
+            $user = $ldap_response['user'];
+        }
+        if (is_plugin_enabled('r_saml_login')) {
             require_once PLUGIN_PATH . DS . 'LdapLogin' . DS . 'functions.php';
             $ldap_response = ldapUpdateUser($log_user, $r_post);
             $ldap_error = $ldap_response['ldap_error'];
