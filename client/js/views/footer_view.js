@@ -1484,17 +1484,17 @@ App.FooterView = Backbone.View.extend({
                                                         }
                                                     });
                                                 } else if (activity.attributes.type === 'delete_card_users' && !_.isUndefined(card)) {
-                                                    var cardList = self.board.lists.findWhere({
+                                                    var cardlist = self.board.lists.findWhere({
                                                         id: parseInt(activity.attributes.list_id)
                                                     });
-                                                    cardList.set('card_count', parseInt(cardList.attributes.card_count) - 1);
-                                                    if (cardList !== null && !_.isUndefined(cardList) && !_.isEmpty(cardList) && wip_enabled) {
-                                                        $('body').trigger('cardAddRendered', [cardList.id, cardList]);
+                                                    cardlist.set('card_count', parseInt(cardlist.attributes.card_count) - 1);
+                                                    if (cardlist !== null && !_.isUndefined(cardlist) && !_.isEmpty(cardlist) && wip_enabled) {
+                                                        $('body').trigger('cardAddRendered', [cardlist.id, cardlist]);
                                                     }
-                                                    if (parseInt(cardList.attributes.card_count) === 0) {
-                                                        if ($('#js-card-listing-' + cardList.id).length > 0) {
-                                                            $('#js-card-listing-' + cardList.id).find('.js-list-placeholder-' + cardList.id).remove();
-                                                            $('#js-card-listing-' + cardList.id).html('<span class="js-list-placeholder-' + cardList.id + '">&nbsp;</span>');
+                                                    if (parseInt(cardlist.attributes.card_count) === 0) {
+                                                        if ($('#js-card-listing-' + cardlist.id).length > 0) {
+                                                            $('#js-card-listing-' + cardlist.id).find('.js-list-placeholder-' + cardlist.id).remove();
+                                                            $('#js-card-listing-' + cardlist.id).html('<span class="js-list-placeholder-' + cardlist.id + '">&nbsp;</span>');
                                                         }
                                                     }
                                                     card.set('is_archived', 1);
