@@ -374,12 +374,18 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 }
             }
             // START : check the role for Restricted board user
-            $assigned_board_as_restricted = pg_query_params($db_lnk, 'SELECT board_id FROM boards_users WHERE user_id = $1 AND board_user_role_id = $2', array($authUser['id'], 4));
+            $assigned_board_as_restricted = pg_query_params($db_lnk, 'SELECT board_id FROM boards_users WHERE user_id = $1 AND board_user_role_id = $2', array(
+                $authUser['id'],
+                4
+            ));
             while ($row = pg_fetch_assoc($assigned_board_as_restricted)) {
                 $assigned_board_ids[] = $row['board_id'];
             }
             if ($assigned_board_ids) {
-                $cardsIDS = pg_query_params($db_lnk, 'SELECT c.id, c.board_id, cu.id as card_userid FROM cards c inner join cards_users cu on cu.card_id = c.id WHERE cu.user_id = $1 AND c.board_id = ANY ( $2 )', array($authUser['id'], '{' . implode(',', $assigned_board_ids) . '}'));
+                $cardsIDS = pg_query_params($db_lnk, 'SELECT c.id, c.board_id, cu.id as card_userid FROM cards c inner join cards_users cu on cu.card_id = c.id WHERE cu.user_id = $1 AND c.board_id = ANY ( $2 )', array(
+                    $authUser['id'],
+                    '{' . implode(',', $assigned_board_ids) . '}'
+                ));
                 while ($row = pg_fetch_assoc($cardsIDS)) {
                     $assigned_card_ids[] = $row['id'];
                 }
@@ -1078,9 +1084,16 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         $check_board = executeQuery($s_sql, $board);
         if (!empty($check_board)) {
             // For restricted board user assigned cards
-            $is_restricted_board_user = executeQuery('SELECT board_id FROM boards_users WHERE user_id = $1 AND board_user_role_id = $2 AND board_id = $3', array($authUser['id'], 4, $r_resource_vars['boards']));
+            $is_restricted_board_user = executeQuery('SELECT board_id FROM boards_users WHERE user_id = $1 AND board_user_role_id = $2 AND board_id = $3', array(
+                $authUser['id'],
+                4,
+                $r_resource_vars['boards']
+            ));
             if (!empty($is_restricted_board_user)) {
-                $cardsIDS = pg_query_params($db_lnk, 'SELECT c.id, c.board_id FROM cards c left join cards_users cu on cu.card_id = c.id WHERE cu.user_id = $1 AND c.board_id = $2', array($authUser['id'], $r_resource_vars['boards']));
+                $cardsIDS = pg_query_params($db_lnk, 'SELECT c.id, c.board_id FROM cards c left join cards_users cu on cu.card_id = c.id WHERE cu.user_id = $1 AND c.board_id = $2', array(
+                    $authUser['id'],
+                    $r_resource_vars['boards']
+                ));
                 while ($row = pg_fetch_assoc($cardsIDS)) {
                     $assigned_card_ids[] = $row['id'];
                 }
@@ -1428,15 +1441,21 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             }
             // For Restricted board user role
             if (!isset($r_resource_vars['lists']) && !isset($r_resource_vars['cards'])) {
-                $is_restricted_board_user = executeQuery('SELECT board_id FROM boards_users WHERE user_id = $1 AND board_user_role_id = $2 AND board_id = $3', array($authUser['id'], 4, $r_resource_vars['boards']));
-                if (!empty($is_restricted_board_user) && !empty($r_resource_filters['mode']) && ($r_resource_filters['mode'] === 'all' )) {
-                    $cardsIDS = pg_query_params($db_lnk, 'SELECT c.id FROM cards c left join cards_users cu on cu.card_id = c.id WHERE cu.user_id = $1 AND c.board_id = $2', array($authUser['id'], $r_resource_vars['boards']));
+                $is_restricted_board_user = executeQuery('SELECT board_id FROM boards_users WHERE user_id = $1 AND board_user_role_id = $2 AND board_id = $3', array(
+                    $authUser['id'],
+                    4,
+                    $r_resource_vars['boards']
+                ));
+                if (!empty($is_restricted_board_user) && !empty($r_resource_filters['mode']) && ($r_resource_filters['mode'] === 'all')) {
+                    $cardsIDS = pg_query_params($db_lnk, 'SELECT c.id FROM cards c left join cards_users cu on cu.card_id = c.id WHERE cu.user_id = $1 AND c.board_id = $2', array(
+                        $authUser['id'],
+                        $r_resource_vars['boards']
+                    ));
                     while ($row = pg_fetch_assoc($cardsIDS)) {
                         $assigned_card_ids[] = $row['id'];
                     }
                     if (!empty($assigned_card_ids)) {
                         $sql = 'SELECT row_to_json(d) FROM (SELECT al.*, u.username, u.profile_picture_path, u.initials, u.full_name, c.description, c.name as card_name FROM activities_listing al LEFT JOIN users u ON al.user_id = u.id LEFT JOIN cards c on al.card_id = c.id WHERE al.board_id = $1 AND (al.card_id = ANY ($3) OR al.revisions = $2 )' . $condition . ' ' . $order . ' LIMIT ' . $limit . ' ' . $construct_offset . ') as d ';
-
                         if (empty($r_resource_filters['from']) || (!empty($r_resource_filters['from']) && $r_resource_filters['from'] != 'app')) {
                             $c_sql = 'SELECT COUNT(*) FROM activities_listing al WHERE (al.board_id = $1 AND al.card_id = ANY ($3)) OR al.revisions = $2 ' . $condition;
                         }
@@ -1444,14 +1463,13 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                         array_push($pg_params, $authUser['id'], '{' . implode(',', $assigned_card_ids) . '}');
                     } else {
                         $sql = 'SELECT row_to_json(d) FROM (SELECT al.*, u.username, u.profile_picture_path, u.initials, u.full_name, c.description, c.name as card_name FROM activities_listing al LEFT JOIN users u ON al.user_id = u.id LEFT JOIN cards c on al.card_id = c.id WHERE (al.board_id = $1 AND al.card_id = $2) ' . $condition . ' ' . $order . ' LIMIT ' . $limit . ' ' . $construct_offset . ') as d ';
-
                         if (empty($r_resource_filters['from']) || (!empty($r_resource_filters['from']) && $r_resource_filters['from'] != 'app')) {
                             $c_sql = 'SELECT COUNT(*) FROM activities_listing al WHERE al.board_id = $1 AND card_id = $2 ' . $condition;
                         }
                         array_push($pg_params, 0);
                     }
                 }
-            }            
+            }
             if (!empty($c_sql)) {
                 $paging_data = paginate_data($c_sql, $db_lnk, $pg_params, $r_resource_filters);
                 $sql.= $paging_data['sql'];
