@@ -18,10 +18,11 @@ App.ChecklistAddFormView = Backbone.View.extend({
      * Constructor
      * initialize default values and actions
      */
-    initialize: function() {
+    initialize: function(options) {
         if (!_.isUndefined(this.model) && this.model !== null) {
             this.model.showImage = this.showImage;
         }
+        this.list = options.list;
         this.render();
     },
     template: JST['templates/checklist_add_form'],
@@ -39,7 +40,8 @@ App.ChecklistAddFormView = Backbone.View.extend({
      */
     render: function() {
         this.$el.html(this.template({
-            card: this.model
+            card: this.model,
+            list: this.list,
         }));
         this.showTooltip();
         return this;
