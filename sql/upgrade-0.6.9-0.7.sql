@@ -235,3 +235,9 @@ INSERT INTO "acl_board_links_boards_user_roles" ("created", "modified", "acl_boa
 (now(), now(), (select id from acl_board_links where slug='get_gantt_view'), '2'),
 (now(), now(), (select id from acl_board_links where slug='get_spent_time'), '1'),
 (now(), now(), (select id from acl_board_links where slug='get_spent_time'), '2');
+
+INSERT INTO "acl_board_links" ("created", "modified", "name", "url", "method", "slug", "group_id", "is_hide") VALUES (now(), now(), 'Upload third party background image to board', '/boards/?', 'PUT', 'add_third_party_background', '2', '0');
+
+INSERT INTO "acl_board_links_boards_user_roles" ("created", "modified", "acl_board_link_id", "board_user_role_id") VALUES 
+(now(), now(), (select id from acl_board_links where slug='add_third_party_background'), '1'),
+(now(), now(), (select id from acl_board_links where slug='add_third_party_background'), '2');

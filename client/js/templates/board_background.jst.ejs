@@ -1,3 +1,8 @@
+<% var add_third_party_background_enabled = false;
+	if (!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 ||  !_.isEmpty(board.acl_links.where({slug: 'add_third_party_background',board_user_role_id: parseInt(board.board_user_role_id)})))) {
+		add_third_party_background_enabled = true;
+	}
+%>
 <div class="clearfix text-center col-xs-12">
   <a href="#" class="js-back-to-sidebar pull-left btn btn-xs btn-link"><i class="icon-caret-left"></i></a><span class="col-xs-10 navbar-btn"><strong><%- i18next.t("Change Background") %></strong></span>
 </div>
@@ -43,7 +48,7 @@
   %>
 	  <ul class="list-inline col-xs-offset-0 clearfix">
 		<li class="list-inline board-background-select navbar-btn cur col-xs-12">
-		<% if (board.attributes.background_picture_url.indexOf('images.unsplash.com') === -1) {%>
+		<% if (add_third_party_background_enabled && board.attributes.background_picture_url.indexOf('images.unsplash.com') === -1) {%>
 			<ul class="list-inline clearfix">
 			<li class="pull-left">
 				<span class="background-box show well-lg" style="background-image:url(<%= background_picture_url %>); background-size:cover;"></span>
@@ -96,7 +101,9 @@
 						</p>
 						<div class="pull-right">
 							<div class="btn-group btn-group-xs navbar-btn">
-								<a class="btn btn-primary js-modal-unsplash-trigger" title="<%- i18next.t('Change') %>" href="#" data-type="image" data-toggle="modal" data-target="#modalUnsplashPhoto"><%- i18next.t("Change") %></a>
+								<% if (add_third_party_background_enabled) { %>
+									<a class="btn btn-primary js-modal-unsplash-trigger" title="<%- i18next.t('Change') %>" href="#" data-type="image" data-toggle="modal" data-target="#modalUnsplashPhoto"><%- i18next.t("Change") %></a>
+								<% } %>
 								<div class="dropdown btn btn-default">
 									<a data-toggle="dropdown" class="dropdown-toggle" title="<%- i18next.t('Delete') %>" href="#">
 										<i class="icon-remove cur js-delete-background-img"></i>
@@ -116,25 +123,30 @@
 							</div>
 						</div>
 					</div>
-					<div>
-						<small class="navbar-btn"><%- i18next.t("Powered by") %> <a href="https://www.unsplash.com/" target="_blank" title="<%- i18next.t('Unsplash') %>"><strong class="text-primary"><%- i18next.t("Unsplash") %></strong></a></small>
-					</div>		
+					<% if (add_third_party_background_enabled) { %>
+						<div>
+							<small class="navbar-btn"><%- i18next.t("Powered by") %> <a href="https://www.unsplash.com/" target="_blank" title="<%- i18next.t('Unsplash') %>"><strong class="text-primary"><%- i18next.t("Unsplash") %></strong></a></small>
+						</div>	
+					<% } %>
 				</li>
 			</ul>
 		<% } %>
 		</li>
 	  </ul>
-	  <% if (board.attributes.background_picture_url.indexOf('images.unsplash.com') === -1) {%>
-		<a href="#" class="js-modal-unsplash-trigger" data-toggle="modal" data-target="#modalUnsplashPhoto"><%- i18next.t("Choose From Unsplash...") %></a>
-	  <% }else{ %>
-		<a href="#" class="js-modal-fliker-trigger"  data-type="image" data-toggle="modal" data-target="#modalFlickrPhoto"><%- i18next.t("Choose From Flickr...") %></a>
+	  <% if (add_third_party_background_enabled) { %>
+		<% if (board.attributes.background_picture_url.indexOf('images.unsplash.com') === -1) {%>
+			<a href="#" class="js-modal-unsplash-trigger" data-toggle="modal" data-target="#modalUnsplashPhoto"><%- i18next.t("Choose From Unsplash...") %></a>
+		<% }else{ %>
+			<a href="#" class="js-modal-fliker-trigger"  data-type="image" data-toggle="modal" data-target="#modalFlickrPhoto"><%- i18next.t("Choose From Flickr...") %></a>
+		<% } %>
 	  <% } %>
-  <% } else { %>
+  <% } else if (add_third_party_background_enabled) { %>
 	 <p><a href="#" class="js-modal-fliker-trigger"  data-type="image" data-toggle="modal" data-target="#modalFlickrPhoto"><%- i18next.t("Choose From Flickr...") %></a></p>
 	 <p><a href="#" class="js-modal-unsplash-trigger" data-toggle="modal" data-target="#modalUnsplashPhoto"><%- i18next.t("Choose From Unsplash...") %></a></p>
   <% } %>  
-
-  <h4><%- i18next.t("Patterns and Textures") %></h4>
+  <% if ((!_.isEmpty(board.attributes.background_pattern_url) && board.attributes.background_pattern_url != 'NULL') || (add_third_party_background_enabled)) { %>
+	  <h4><%- i18next.t("Patterns and Textures") %></h4>
+  <% } %>
   <% if (!_.isEmpty(board.attributes.background_pattern_url) && board.attributes.background_pattern_url != 'NULL') { 
 		var background_pattern_url = (board.attributes.background_pattern_url).replace("_XXXX.jpg", "_s.jpg"); 
   %>		
@@ -152,7 +164,9 @@
 				<% } %> </p>
 				<div class="pull-right">
 					<div class="btn-group btn-group-xs navbar-btn">
-						<a class="btn btn-primary js-modal-fliker-trigger" title="<%- i18next.t('Change') %>" href="#" data-type="texture" data-toggle="modal" data-target="#modalFlickrPhoto"><%- i18next.t("Change") %></a>
+						<% if (add_third_party_background_enabled) { %>
+							<a class="btn btn-primary js-modal-fliker-trigger" title="<%- i18next.t('Change') %>" href="#" data-type="texture" data-toggle="modal" data-target="#modalFlickrPhoto"><%- i18next.t("Change") %></a>
+						<% } %>
 						<div class="dropdown btn btn-default">
 							<a data-toggle="dropdown" class="dropdown-toggle" title="<%- i18next.t('Delete') %>" href="#">
 								<i class="icon-remove cur js-delete-background-img"></i>
@@ -173,17 +187,18 @@
 				</div>
 			</div>
 			<div>
-				<small class="navbar-btn"><%- i18next.t("Powered by") %> <a href="javascript:void(0);" title="<%- i18next.t('Flickr') %>"><strong class="text-primary"><%- i18next.t("Flickr") %></strong></a></small>
+				<% if (add_third_party_background_enabled) { %>
+					<small class="navbar-btn"><%- i18next.t("Powered by") %> <a href="javascript:void(0);" title="<%- i18next.t('Flickr') %>"><strong class="text-primary"><%- i18next.t("Flickr") %></strong></a></small>
+				<% } %>
 			</div>		
 		</li>
 		</ul>
 		
 	</li>
   </ul>
-  <% } else { %>
+  <% } else if (add_third_party_background_enabled) { %>
 	 <a href="#" class="js-modal-fliker-trigger" data-type="texture" data-toggle="modal" data-target="#modalFlickrPhoto"><%- i18next.t("Choose...") %></a>
   <% } %>  
- 
 <% if (!_.isEmpty(authuser.user) && !_.isUndefined(authuser.user)) { %>
 	<% if(authuser.user.role_id == 1 || !_.isEmpty(board.acl_links.where({slug: "add_custom_background", board_user_role_id: parseInt(board.board_user_role_id)}))){ %> 
 		<h4><%- i18next.t("Custom") %><span class="clearfix navbar-btn col-xs-7 pull-right"><span id="custom-dropzone-cssloader"></span></span></h4>
