@@ -414,6 +414,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM activities_listing al WHERE ' . $str . $condition . ' ORDER BY id DESC LIMIT ' . PAGING_COUNT . ') as d';
                 $c_sql = 'SELECT COUNT(*) FROM activities_listing al WHERE ' . $str;
             } else if (!empty($r_resource_filters['type']) && $r_resource_filters['type'] == 'all') {
+                $flag = 1;
                 if (!empty($r_resource_filters['last_activity_id'])) {
                     $condition = ' AND al.id > $4';
                 }
@@ -421,8 +422,8 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 if (!empty($r_resource_filters['direction']) && isset($r_resource_filters['direction'])) {
                     $direction = $r_resource_filters['direction'];
                 }
-                $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM activities_listing al WHERE (board_id = ANY ( $1 ) OR organization_id  = ANY ( $2 ) OR revisions = $3)' . $condition . ' ORDER BY id ' . $direction . ' LIMIT ' . PAGING_COUNT . ') as d';
-                $c_sql = 'SELECT COUNT(*) FROM activities_listing al WHERE (board_id = ANY ( $1 ) OR organization_id  = ANY ( $2 ) OR revisions = $3)' . $condition;
+                $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM activities_listing al WHERE (board_id = ANY ( $1 ) OR organization_id  = ANY ( $2 ) OR revisions = $3 OR type = $5 OR type = $6)' . $condition . ' ORDER BY id ' . $direction . ' LIMIT ' . PAGING_COUNT . ') as d';
+                $c_sql = 'SELECT COUNT(*) FROM activities_listing al WHERE (board_id = ANY ( $1 ) OR organization_id  = ANY ( $2 ) OR revisions = $3 OR type = $5 OR type = $6)' . $condition;
                 array_push($pg_params, '{' . implode(',', $board_ids) . '}', '{' . implode(',', $org_ids) . '}', $authUser['id']);
             } else if (!empty($r_resource_filters['board_id']) && $r_resource_filters['board_id'] && $r_resource_filters['type'] == 'board_user_activity') {
                 if (!empty($r_resource_filters['last_activity_id'])) {
@@ -449,6 +450,9 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         }
         if (!empty($r_resource_filters['last_activity_id'])) {
             array_push($pg_params, $r_resource_filters['last_activity_id']);
+        }
+        if (!empty($r_resource_filters['type']) && $r_resource_filters['type'] == 'all' && $flag === 1) {
+            array_push($pg_params, "add_permission", "remove_permission");
         }
         if (!empty($c_sql)) {
             $paging_data = paginate_data($c_sql, $db_lnk, $pg_params, $r_resource_filters);
@@ -1877,7 +1881,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         while ($row = pg_fetch_assoc($roles_result)) {
             $response['roles'][] = $row;
         }
-        $acl_board_links_sql = 'SELECT row_to_json(d) FROM (SELECT acl_board_links.id,  acl_board_links.name, acl_board_links.group_id, ( SELECT array_to_json(array_agg(row_to_json(alr.*))) AS array_to_json FROM ( SELECT acl_board_links_boards_user_roles.board_user_role_id FROM acl_board_links_boards_user_roles acl_board_links_boards_user_roles WHERE acl_board_links_boards_user_roles.acl_board_link_id = acl_board_links.id ORDER BY acl_board_links_boards_user_roles.board_user_role_id) alr) AS acl_board_links_boards_user_roles, acl_board_links.is_hide FROM acl_board_links acl_board_links ORDER BY group_id ASC, id ASC) as d';
+        $acl_board_links_sql = 'SELECT row_to_json(d) FROM (SELECT acl_board_links.id,  acl_board_links.name, acl_board_links.group_id,acl_board_links.slug, ( SELECT array_to_json(array_agg(row_to_json(alr.*))) AS array_to_json FROM ( SELECT acl_board_links_boards_user_roles.board_user_role_id FROM acl_board_links_boards_user_roles acl_board_links_boards_user_roles WHERE acl_board_links_boards_user_roles.acl_board_link_id = acl_board_links.id ORDER BY acl_board_links_boards_user_roles.board_user_role_id) alr) AS acl_board_links_boards_user_roles, acl_board_links.is_hide FROM acl_board_links acl_board_links ORDER BY group_id ASC, id ASC) as d';
         $acl_board_links_result = pg_query_params($db_lnk, $acl_board_links_sql, array());
         $response['acl_board_links'] = array();
         while ($row = pg_fetch_assoc($acl_board_links_result)) {
@@ -6082,13 +6086,32 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 $r_post['acl_link_id'],
                 $r_post['role_id']
             );
-            pg_query_params($db_lnk, 'DELETE FROM ' . $table_name . ' WHERE ' . $colmns[$table_name][0] . ' = $1 AND ' . $colmns[$table_name][1] . ' = $2', $qry_val_arr);
+            $aclLinks = pg_query_params($db_lnk, 'DELETE FROM ' . $table_name . ' WHERE ' . $colmns[$table_name][0] . ' = $1 AND ' . $colmns[$table_name][1] . ' = $2  RETURNING id', $qry_val_arr);
+            $link = pg_fetch_assoc($aclLinks);
+            if ($r_post['slug']) {
+                $foreign_id['id'] = $link['id'];
+                $revisions['old_value']['slug'] = $r_post['slug'];
+                $revisions['old_value']['role_id'] = $r_post['role_id'];
+                $revision = serialize($revisions);
+                $comment = '##USER_NAME## updated the permissions';
+                insertActivity($authUser['id'], $comment, 'remove_permission', $foreign_id, $revision, $link['id']);
+            }
         } else {
             $qry_val_arr = array(
                 $r_post['acl_link_id'],
                 $r_post['role_id']
             );
-            pg_query_params($db_lnk, 'INSERT INTO ' . $table_name . ' (created, modified, ' . $colmns[$table_name][0] . ', ' . $colmns[$table_name][1] . ') VALUES(now(), now(), $1, $2)', $qry_val_arr);
+            $aclLinks = pg_query_params($db_lnk, 'INSERT INTO ' . $table_name . ' (created, modified, ' . $colmns[$table_name][0] . ', ' . $colmns[$table_name][1] . ') VALUES(now(), now(), $1, $2)  RETURNING id', $qry_val_arr);
+            $link = pg_fetch_assoc($aclLinks);
+            if ($r_post['slug']) {
+                $revisions = array();
+                $revisions['new_value']['slug'] = $r_post['slug'];
+                $revisions['new_value']['role_id'] = $r_post['role_id'];
+                $revision = serialize($revisions);
+                $foreign_id['id'] = $link['id'];
+                $comment = '##USER_NAME## updated the permissions';
+                insertActivity($authUser['id'], $comment, 'add_permission', $foreign_id, $revision, $link['id']);
+            }
         }
         echo json_encode($response);
         break;
