@@ -16,6 +16,7 @@ var is_append_activities = true;
 var SITE_NAME = '';
 var DROPBOX_APPKEY = '';
 var FLICKR_API_KEY = '';
+var UNSPLASH_API_KEY = '';
 var LABEL_ICON = '';
 var SITE_TIMEZONE = '';
 var LDAP_LOGIN_ENABLED = '';

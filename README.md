@@ -65,6 +65,7 @@ sudo ./restyaboard.sh
 * Visit admin panel at `/#/settings/6`
 * Update Dropbox App Key by visiting [https://www.dropbox.com/developers/apps/](https://www.dropbox.com/developers/apps/)
 * Update Flickr API Key by visiting [https://www.flickr.com/services/apps/](https://www.flickr.com/services/apps/)
+* Update Unsplash API Key by visiting [https://unsplash.com/developers](https://unsplash.com/developers)
 * Visit `/#/settings/3` for configuring site name, email and server timezone.
 * Change admin email and password
 * To add/reply cards via email, visit `/#/settings/10` to configure IMAP settings
