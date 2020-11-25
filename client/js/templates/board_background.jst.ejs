@@ -43,51 +43,95 @@
   %>
 	  <ul class="list-inline col-xs-offset-0 clearfix">
 		<li class="list-inline board-background-select navbar-btn cur col-xs-12">
-
-		<ul class="list-inline clearfix">
-		<li class="pull-left">
-			<span class="background-box show well-lg" style="background-image:url(<%= background_picture_url %>); background-size:cover;"></span>
-		</li>
-		<li class="pull-left col-xs-8">
-			<div class="clearfix">
-				<p class="col-xs-5 nav htruncate">
-				<% if (!_.isEmpty(board.attributes.background_name) && board.attributes.background_name != 'NULL') { %>
-					<%= board.attributes.background_name %> 
-				<% } %>
-				</p>
-				<div class="pull-right">
-					<div class="btn-group btn-group-xs navbar-btn">
-						<a class="btn btn-primary js-modal-fliker-trigger" title="<%- i18next.t('Change') %>" href="#" data-type="image" data-toggle="modal" data-target="#modalFlickrPhoto"><%- i18next.t("Change") %></a>
-						<div class="dropdown btn btn-default">
-							<a data-toggle="dropdown" class="dropdown-toggle" title="<%- i18next.t('Delete') %>" href="#">
-								<i class="icon-remove cur js-delete-background-img"></i>
-							</a>
-							<ul class="dropdown-menu arrow arrow-right list-unstyled">
-								<li id="js-attachment-confirm-respons-22" class="js-dropdown-popup">
-								  <div>
-									<div class="clearfix text-center col-xs-12"><span class="col-xs-10"><strong><%- i18next.t("Delete Attachment") %>?</strong></span><a href="#" class="js-span-close-popup pull-right"><i class="icon-remove"></i></a></div>
-									<div class="col-xs-12 divider"></div>
-									<div class="col-xs-12 text-left">
-									  <p><%- i18next.t("Deleting a background photo. There is no undo.") %></p>
-									  <a title="<%- i18next.t('Delete background photo') %>" class="btn btn-primary btn-large"><%- i18next.t("Delete") %></a></div>
-								  </div>
-								</li>
-							</ul>
+		<% if (board.attributes.background_picture_url.indexOf('images.unsplash.com') === -1) {%>
+			<ul class="list-inline clearfix">
+			<li class="pull-left">
+				<span class="background-box show well-lg" style="background-image:url(<%= background_picture_url %>); background-size:cover;"></span>
+			</li>
+			<li class="pull-left col-xs-8">
+				<div class="clearfix">
+					<p class="col-xs-5 nav htruncate">
+					<% if (!_.isEmpty(board.attributes.background_name) && board.attributes.background_name != 'NULL') { %>
+						<%= board.attributes.background_name %> 
+					<% } %>
+					</p>
+					<div class="pull-right">
+						<div class="btn-group btn-group-xs navbar-btn">
+							<a class="btn btn-primary js-modal-fliker-trigger" title="<%- i18next.t('Change') %>" href="#" data-type="image" data-toggle="modal" data-target="#modalFlickrPhoto"><%- i18next.t("Change") %></a>
+							<div class="dropdown btn btn-default">
+								<a data-toggle="dropdown" class="dropdown-toggle" title="<%- i18next.t('Delete') %>" href="#">
+									<i class="icon-remove cur js-delete-background-img"></i>
+								</a>
+								<ul class="dropdown-menu arrow arrow-right list-unstyled">
+									<li id="js-attachment-confirm-respons-22" class="js-dropdown-popup">
+									<div>
+										<div class="clearfix text-center col-xs-12"><span class="col-xs-10"><strong><%- i18next.t("Delete Attachment") %>?</strong></span><a href="#" class="js-span-close-popup pull-right"><i class="icon-remove"></i></a></div>
+										<div class="col-xs-12 divider"></div>
+										<div class="col-xs-12 text-left">
+										<p><%- i18next.t("Deleting a background photo. There is no undo.") %></p>
+										<a title="<%- i18next.t('Delete background photo') %>" class="btn btn-primary btn-large"><%- i18next.t("Delete") %></a></div>
+									</div>
+									</li>
+								</ul>
+							</div>
 						</div>
 					</div>
 				</div>
-			</div>
-			<div>
-				<small class="navbar-btn"><%- i18next.t("Powered by") %> <a href="https://www.flickr.com/" target="_blank" title="<%- i18next.t('Flickr') %>"><strong class="text-primary"><%- i18next.t("Flickr") %></strong></a></small>
-			</div>		
-		</li>
-		</ul>	
-		
-		
+				<div>
+					<small class="navbar-btn"><%- i18next.t("Powered by") %> <a href="https://www.flickr.com/" target="_blank" title="<%- i18next.t('Flickr') %>"><strong class="text-primary"><%- i18next.t("Flickr") %></strong></a></small>
+				</div>		
+			</li>
+			</ul>
+		<% }else{ %>
+			<ul class="list-inline clearfix">
+				<li class="pull-left">
+					<span class="background-box show well-lg" style="background-image:url(<%= background_picture_url %>); background-size:cover;"></span>
+				</li>
+				<li class="pull-left col-xs-8">
+					<div class="clearfix">
+						<p class="col-xs-5 nav htruncate">
+						<% if (!_.isEmpty(board.attributes.background_name) && board.attributes.background_name != 'NULL') { %>
+							<%= board.attributes.background_name %> 
+						<% } %>
+						</p>
+						<div class="pull-right">
+							<div class="btn-group btn-group-xs navbar-btn">
+								<a class="btn btn-primary js-modal-unsplash-trigger" title="<%- i18next.t('Change') %>" href="#" data-type="image" data-toggle="modal" data-target="#modalUnsplashPhoto"><%- i18next.t("Change") %></a>
+								<div class="dropdown btn btn-default">
+									<a data-toggle="dropdown" class="dropdown-toggle" title="<%- i18next.t('Delete') %>" href="#">
+										<i class="icon-remove cur js-delete-background-img"></i>
+									</a>
+									<ul class="dropdown-menu arrow arrow-right list-unstyled">
+										<li id="js-attachment-confirm-respons-22" class="js-dropdown-popup">
+										<div>
+											<div class="clearfix text-center col-xs-12"><span class="col-xs-10"><strong><%- i18next.t("Delete Attachment") %>?</strong></span><a href="#" class="js-span-close-popup pull-right"><i class="icon-remove"></i></a></div>
+											<div class="col-xs-12 divider"></div>
+											<div class="col-xs-12 text-left">
+											<p><%- i18next.t("Deleting a background photo. There is no undo.") %></p>
+											<a title="<%- i18next.t('Delete background photo') %>" class="btn btn-primary btn-large"><%- i18next.t("Delete") %></a></div>
+										</div>
+										</li>
+									</ul>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div>
+						<small class="navbar-btn"><%- i18next.t("Powered by") %> <a href="https://www.unsplash.com/" target="_blank" title="<%- i18next.t('Unsplash') %>"><strong class="text-primary"><%- i18next.t("Unsplash") %></strong></a></small>
+					</div>		
+				</li>
+			</ul>
+		<% } %>
 		</li>
 	  </ul>
+	  <% if (board.attributes.background_picture_url.indexOf('images.unsplash.com') === -1) {%>
+		<a href="#" class="js-modal-unsplash-trigger" data-toggle="modal" data-target="#modalUnsplashPhoto"><%- i18next.t("Choose From Unsplash...") %></a>
+	  <% }else{ %>
+		<a href="#" class="js-modal-fliker-trigger"  data-type="image" data-toggle="modal" data-target="#modalFlickrPhoto"><%- i18next.t("Choose From Flickr...") %></a>
+	  <% } %>
   <% } else { %>
-	 <a href="#" class="js-modal-fliker-trigger"  data-type="image" data-toggle="modal" data-target="#modalFlickrPhoto"><%- i18next.t("Choose...") %></a>
+	 <p><a href="#" class="js-modal-fliker-trigger"  data-type="image" data-toggle="modal" data-target="#modalFlickrPhoto"><%- i18next.t("Choose From Flickr...") %></a></p>
+	 <p><a href="#" class="js-modal-unsplash-trigger" data-toggle="modal" data-target="#modalUnsplashPhoto"><%- i18next.t("Choose From Unsplash...") %></a></p>
   <% } %>  
 
   <h4><%- i18next.t("Patterns and Textures") %></h4>

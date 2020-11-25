@@ -107,6 +107,7 @@ App.ApplicationView = Backbone.View.extend({
                                 SITE_NAME = settings_response.SITE_NAME;
                                 page.set_page_title();
                                 FLICKR_API_KEY = settings_response.FLICKR_API_KEY;
+                                UNSPLASH_API_KEY = settings_response.UNSPLASH_API_KEY;
                                 DROPBOX_APPKEY = settings_response.DROPBOX_APPKEY;
                                 LABEL_ICON = settings_response.LABEL_ICON;
                                 SITE_TIMEZONE = settings_response.SITE_TIMEZONE;
@@ -222,6 +223,7 @@ App.ApplicationView = Backbone.View.extend({
                             }
                             page.set_page_title();
                             FLICKR_API_KEY = settings_response.FLICKR_API_KEY;
+                            UNSPLASH_API_KEY = settings_response.UNSPLASH_API_KEY;
                             DROPBOX_APPKEY = settings_response.DROPBOX_APPKEY;
                             LABEL_ICON = settings_response.LABEL_ICON;
                             SITE_TIMEZONE = settings_response.SITE_TIMEZONE;
