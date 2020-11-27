@@ -1151,6 +1151,46 @@ App.FooterView = Backbone.View.extend({
                                         activity.set('comment', activity.attributes.originial_activity_comment);
                                     }
                                     // Update board view code starting
+                                    if (!_.isUndefined(self.board)) {
+                                        var board_user_role, board_user_role_id;
+                                        if (!_.isUndefined(authuser.user)) {
+                                            board_user_role = self.board.board_users.findWhere({
+                                                user_id: parseInt(authuser.user.id)
+                                            });
+                                            if (!_.isEmpty(board_user_role)) {
+                                                board_user_role_id = board_user_role.attributes.board_user_role_id;
+                                            }
+                                            if (activity.attributes.type === 'add_permission') {
+                                                var isPermissionExist = !_.isEmpty(self.board.acl_links.where({
+                                                    slug: activity.attributes.acl_links.slug,
+                                                    board_user_role_id: parseInt(board_user_role_id)
+                                                }));
+                                                if (!isPermissionExist) {
+                                                    activity.attributes.acl_links.board_user_role_id = parseInt(activity.attributes.acl_links.board_user_role_id);
+                                                    self.board.acl_links.add(activity.attributes.acl_links);
+                                                    if (!_.isUndefined(App.current_board)) {
+                                                        var permissionExist = !_.isEmpty(App.current_board.acl_links.where({
+                                                            slug: activity.attributes.acl_links.slug,
+                                                            board_user_role_id: parseInt(board_user_role_id)
+                                                        }));
+                                                        if (!permissionExist) {
+                                                            App.current_board.acl_links.add(activity.attributes.acl_links);
+                                                        }
+                                                    }
+                                                }
+                                            } else if (activity.attributes.type === 'remove_permission') {
+                                                var acl_link = self.board.acl_links.where({
+                                                    slug: activity.attributes.revisions.old_value.slug,
+                                                    board_user_role_id: parseInt(activity.attributes.revisions.old_value.role_id)
+                                                });
+                                                if (!_.isEmpty(acl_link)) {
+                                                    self.board.acl_links.remove(acl_link);
+                                                    App.current_board.acl_links.remove(acl_link);
+                                                }
+                                            }
+                                        }
+                                    }
+
                                     if (!_.isUndefined(activity.attributes.card_id) && activity.attributes.card_id !== 0 && !_.isUndefined(activity.attributes.board_id) && parseInt(activity.attributes.board_id) === parseInt(self.board_id)) { // Update Card
                                         card = self.board.cards.findWhere({
                                             id: parseInt(activity.attributes.card_id)
