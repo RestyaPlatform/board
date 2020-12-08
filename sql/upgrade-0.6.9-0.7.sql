@@ -241,3 +241,33 @@ INSERT INTO "acl_board_links" ("created", "modified", "name", "url", "method", "
 INSERT INTO "acl_board_links_boards_user_roles" ("created", "modified", "acl_board_link_id", "board_user_role_id") VALUES 
 (now(), now(), (select id from acl_board_links where slug='add_third_party_background'), '1'),
 (now(), now(), (select id from acl_board_links where slug='add_third_party_background'), '2');
+
+--
+-- Name: user_push_tokens_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE user_push_tokens_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+--
+-- Name: user_push_tokens; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE user_push_tokens (
+    id bigint DEFAULT nextval('user_push_tokens_id_seq'::regclass) NOT NULL,
+    created timestamp NOT NULL,
+    modified timestamp NOT NULL,
+    token character varying(255) NOT NULL,
+    device_serial character varying(255) NOT NULL,
+    device_modal character varying(255) NOT NULL,
+    device_brand character varying(255) NOT NULL,
+    device_manufacturer character varying(255) NOT NULL,
+    device_version bigint NOT NULL,
+    app_version bigint NOT NULL,
+    device_type bigint NOT NULL,
+    appname character varying(255) NOT NULL
+);
