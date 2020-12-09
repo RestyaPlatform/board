@@ -122,6 +122,7 @@ App.LoginView = Backbone.View.extend({
                                 auth_response.user.is_intro_video_skipped = response.user.is_intro_video_skipped;
                                 auth_response.user.is_two_factor_authentication_enabled = response.user.is_two_factor_authentication_enabled;
                                 $.cookie('auth', JSON.stringify(auth_response));
+                                $.removeCookie('push_tokens');
                                 i18next.changeLanguage(response.user.language);
                                 api_token = response.access_token;
                                 var links = JSON.parse(response.links);
