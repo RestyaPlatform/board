@@ -1079,13 +1079,27 @@ App.FooterView = Backbone.View.extend({
                                 } else {
                                     user_avatar = 'https://ui-avatars.com/api/?background=fff&color=f47564&name=' + activity.attributes.initials + '@&size=32';
                                 }
+                                var s = activity.attributes.created.replace("T", " "),
+                                    current_timezone;
+                                new_date = moment.tz(s, 'YYYY-MM-DD HH:mm:ss', SITE_TIMEZONE).utc().format('YYYY-MM-DD HH:mm:ss');
+                                if (authuser && authuser.user && !_.isUndefined(authuser.user.timezone) && !_.isEmpty(authuser.user.timezone) && authuser.user.timezone !== null) {
+                                    current_timezone = moment.tz(authuser.user.timezone).format('Z').replace(':', '');
+                                } else {
+                                    current_timezone = moment.tz(SITE_TIMEZONE).format('Z').replace(':', '');
+                                }
+                                tz = moment(new_date + ' Z').utcOffset(current_timezone).format('YYYY-MM-DD HH:mm:ss');
+                                if (!moment.isMoment(tz)) {
+                                    tz = moment(tz);
+                                }
+                                tz = tz.format('x');
                                 var json_str = JSON.stringify({
                                     "largeIcon": "ic_launcher",
                                     "largeIconUrl": user_avatar,
                                     "smallIcon": "ic_notification",
                                     "title": fullname,
                                     "message": activity.attributes.comment,
-                                    "url": notification_link
+                                    "url": notification_link,
+                                    "timestamp": tz
                                 });
                                 try {
                                     window.Android.jsLocalNotification(json_str);
