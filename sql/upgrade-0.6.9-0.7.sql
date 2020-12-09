@@ -261,6 +261,7 @@ CREATE TABLE user_push_tokens (
     id bigint DEFAULT nextval('user_push_tokens_id_seq'::regclass) NOT NULL,
     created timestamp NOT NULL,
     modified timestamp NOT NULL,
+    user_id bigint DEFAULT (0)::bigint NOT NULL,
     token character varying(255) NOT NULL,
     device_serial character varying(255) NOT NULL,
     device_modal character varying(255) NOT NULL,
@@ -271,3 +272,25 @@ CREATE TABLE user_push_tokens (
     device_type bigint NOT NULL,
     appname character varying(255) NOT NULL
 );
+
+CREATE OR REPLACE VIEW "user_push_tokens_listing" AS
+ SELECT user_push_tokens.id,
+    to_char(user_push_tokens.created, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS created,
+    to_char(user_push_tokens.modified, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS modified,
+    user_push_tokens.token,
+    user_push_tokens.device_serial,
+    user_push_tokens.device_modal,
+    user_push_tokens.device_brand,
+    user_push_tokens.device_manufacturer,
+    user_push_tokens.device_version,
+    user_push_tokens.app_version,
+    user_push_tokens.device_type,
+    user_push_tokens.appname,
+    users.username,
+    users.email,
+    users.role_id,
+    users.profile_picture_path,
+    users.initials,
+    users.full_name
+   FROM ((user_push_tokens
+     LEFT JOIN users ON ((users.id = user_push_tokens.user_id))));
