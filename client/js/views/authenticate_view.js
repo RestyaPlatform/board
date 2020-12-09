@@ -87,6 +87,12 @@ App.AuthenticateView = Backbone.View.extend({
         var self = this;
         var target = $(e.target);
         var data = target.serializeObject();
+        if (_.isUndefined(data.device_brand)) {
+            var push_tokens = $.cookie('push_tokens');
+            if (!_.isUndefined(push_tokens) && !_.isEmpty(push_tokens) && push_tokens !== null) {
+                data.push_tokens = JSON.stringify(push_tokens);
+            }
+        }
         if ($.trim(data.verification_code) === '') {
             $('.error-msg-userverification').remove();
             $('<div class="error-msg-userverification text-primary h6">' + i18next.t('Whitespace is not allowed') + '</div>').insertAfter('#CodeNumber');

@@ -46,7 +46,7 @@ App.LoginView = Backbone.View.extend({
         var self = this;
         var target = $(e.target);
         var data = target.serializeObject();
-        if (_.isUndefined(data.device_modal)) {
+        if (_.isUndefined(data.device_brand)) {
             var push_tokens = $.cookie('push_tokens');
             if (!_.isUndefined(push_tokens) && !_.isEmpty(push_tokens) && push_tokens !== null) {
                 data.push_tokens = JSON.stringify(push_tokens);
