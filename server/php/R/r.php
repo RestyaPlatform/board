@@ -311,6 +311,47 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         }
         break;
 
+    case '/user_push_tokens':
+        $response['users'] = array();
+        $order_by = 'id';
+        $direction = 'desc';
+        $filter_condition = '';
+        $_metadata = array();
+        if (!empty($r_resource_filters['sort'])) {
+            $order_by = $r_resource_filters['sort'];
+            $direction = $r_resource_filters['direction'];
+        } else if (!empty($r_resource_filters['search'])) {
+            $filter_condition = "WHERE LOWER(full_name) LIKE '%" . strtolower($r_resource_filters['search']) . "%' OR LOWER(email) LIKE '%" . strtolower($r_resource_filters['search']) . "%' ";
+        }
+        $c_sql = 'SELECT COUNT(*) FROM user_push_tokens_listing ul ';
+        if (!empty($r_resource_filters['search'])) {
+            $c_sql = 'SELECT COUNT(*) FROM user_push_tokens_listing ul ' . $filter_condition;
+        }
+        if (!empty($c_sql)) {
+            $paging_data = paginate_data($c_sql, $db_lnk, $pg_params, $r_resource_filters);
+            $_metadata = $paging_data['_metadata'];
+        }
+        $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM user_push_tokens_listing ul ' . $filter_condition . ' ORDER BY ' . $order_by . ' ' . $direction . ' limit ' . $_metadata['limit'] . ' offset ' . $_metadata['offset'] . ') as d ';
+        if (!empty($sql)) {
+            if ($result = pg_query_params($db_lnk, $sql, $pg_params)) {
+                $data = array();
+                $board_lists = array();
+                while ($row = pg_fetch_row($result)) {
+                    $obj = json_decode($row[0], true);
+                    $data['data'][] = $obj;
+                }
+                if (!empty($_metadata)) {
+                    $data['_metadata'] = $_metadata;
+                }
+                echo json_encode($data);
+            } else {
+                $r_debug.= __LINE__ . ': ' . pg_last_error($db_lnk) . '\n';
+            }
+        } else {
+            echo json_encode($response);
+        }
+        break;
+
     case '/users/logout':
         $response['user'] = array();
         if (!empty($_GET['token'])) {
@@ -2735,6 +2776,43 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     $user = array_merge($user, $notify_count);
                     $response['user'] = $user;
                     $response['user']['organizations'] = json_decode($user['organizations'], true);
+                    if (!empty($r_post['push_tokens'])) {
+                        $r_post['push_tokens'] = json_decode(base64decode($r_post['push_tokens']));
+                        $qry_val_array = array(
+                            $user['id']
+                        );
+                        $user_push_tokens = executeQuery('SELECT * FROM user_push_tokens WHERE user_id = $1', $qry_val_array);
+                        if ($user_push_tokens) {
+                            $qry_val_array = array(
+                                $user_push_tokens['id'],
+                                $r_post['push_tokens']->token,
+                                $r_post['push_tokens']->device_serial,
+                                $r_post['push_tokens']->device_modal,
+                                $r_post['push_tokens']->device_brand,
+                                $r_post['push_tokens']->device_manufacturer,
+                                $r_post['push_tokens']->device_version,
+                                $r_post['push_tokens']->app_version,
+                                $r_post['push_tokens']->device_type,
+                                $r_post['push_tokens']->appname
+                            );
+                            pg_query_params($db_lnk, 'UPDATE user_push_tokens SET token = $2, device_serial = $3, device_modal = $4, device_brand = $5, device_manufacturer = $6, device_version = $7, app_version = $8, device_type = $9, appname = $10  WHERE id = $1', $qry_val_array);
+                        } else {
+                            $table_name = 'user_push_tokens';
+                            $r_user_push_tokens = array();
+                            $r_user_push_tokens['user_id'] = $user['id'];
+                            $r_user_push_tokens['token'] = $r_post['push_tokens']->token;
+                            $r_user_push_tokens['device_serial'] = $r_post['push_tokens']->device_serial;
+                            $r_user_push_tokens['device_modal'] = $r_post['push_tokens']->device_modal;
+                            $r_user_push_tokens['device_brand'] = $r_post['push_tokens']->device_brand;
+                            $r_user_push_tokens['device_manufacturer'] = $r_post['push_tokens']->device_manufacturer;
+                            $r_user_push_tokens['device_version'] = $r_post['push_tokens']->device_version;
+                            $r_user_push_tokens['app_version'] = $r_post['push_tokens']->app_version;
+                            $r_user_push_tokens['device_type'] = $r_post['push_tokens']->device_type;
+                            $r_user_push_tokens['appname'] = $r_post['push_tokens']->appname;
+                            $post = getbindValues($table_name, $r_user_push_tokens);
+                            $result = pg_execute_insert($table_name, $post);
+                        }
+                    }
                 } else {
                     $response = array(
                         'code' => 'verification_code',
