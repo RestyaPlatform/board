@@ -69,6 +69,10 @@ App.HeaderView = Backbone.View.extend({
             this.model.current_param = 'user_logins';
             current_param = 'user_logins';
         }
+        if (!_.isEmpty(current_param_split[0]) && current_param_split[0] === 'push_notifications') {
+            this.model.current_param = 'push_notifications';
+            current_param = 'push_notifications';
+        }
         if (!_.isEmpty(current_param_split[1]) && current_param_split[1] === 'list') {
             this.model.current_param = 'admin_boards_list';
         }
@@ -79,7 +83,7 @@ App.HeaderView = Backbone.View.extend({
             this.model.is_show_enable_notification = (Notification.permission == 'default') ? true : false;
         }
         current_param = this.model.current_param;
-        if (typeof(authuser) != "undefined" && !_.isEmpty(current_param) && (current_param === 'activities' || current_param === 'users' || current_param === 'user_logins' || current_param === 'roles' || current_param === 'apps' || current_param === 'settings' || current_param === 'email_templates' || current_param === 'admin_boards_list' || current_param === 'oauth_clients' || current_param === 'board_user_roles' || current_param === 'organization_user_roles')) {
+        if (typeof(authuser) != "undefined" && !_.isEmpty(current_param) && (current_param === 'activities' || current_param === 'users' || current_param === 'user_logins' || current_param === 'push_notifications' || current_param === 'roles' || current_param === 'apps' || current_param === 'settings' || current_param === 'email_templates' || current_param === 'admin_boards_list' || current_param === 'oauth_clients' || current_param === 'board_user_roles' || current_param === 'organization_user_roles')) {
             this.$el.attr('id', 'admin-panel');
         }
         this.$el.html(this.template(this.model));
