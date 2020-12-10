@@ -1331,6 +1331,232 @@ App.FooterView = Backbone.View.extend({
                                         if (activity.attributes.type === 'add_card_desc' || activity.attributes.type === 'edit_card_desc') {
                                             card.set('description', activity.attributes.revisions.new_value.description);
                                         }
+                                        var current_board_user;
+                                        if (!_.isUndefined(authuser.user) && !_.isEmpty(authuser.user) && !_.isUndefined(App.current_board) && !_.isEmpty(App.current_board)) {
+                                            current_board_user = App.current_board.board_users.findWhere({
+                                                user_id: parseInt(authuser.user.id)
+                                            });
+                                        }
+                                        if (!_.isUndefined(current_board_user) && !_.isEmpty(current_board_user) && current_board_user !== null) {
+                                            if (parseInt(current_board_user.attributes.board_user_role_id) === 4) {
+                                                // Restricted card users handling
+                                                if (activity.attributes.type === 'add_card_user' && _.isUndefined(card)) {
+                                                    var listId = parseInt(activity.attributes.list_id);
+                                                    $.ajax({
+                                                        url: api_url + 'boards/' + parseInt(activity.attributes.board_id) + '/lists/' + listId + '/cards/' + parseInt(activity.attributes.card_id) + '.json?token=' + authuser.access_token,
+                                                        cache: false,
+                                                        type: 'GET',
+                                                        success: function(response) {
+                                                            if (!_.isUndefined(response) && response !== null) {
+                                                                if (parseInt(response.is_archived) === 0) {
+                                                                    var new_card = new App.Card();
+                                                                    var board_sort_by = (self.board.attributes.sort_by) ? self.board.attributes.sort_by : 'position';
+                                                                    var bard_sort_direction = (self.board.attributes.sort_direction) ? self.board.attributes.sort_direction : 'asc';
+                                                                    response.is_archived = parseInt(response.is_archived);
+                                                                    var card_checklist_item_count = isNaN(response.checklist_item_count) ? 0 : parseInt(response.checklist_item_count);
+                                                                    var card_checklist_item_completed_count = isNaN(response.checklist_item_completed_count) ? 0 : parseInt(response.checklist_item_completed_count);
+                                                                    var card_checklist_item_pending_count = card_checklist_item_count - card_checklist_item_completed_count;
+                                                                    new_card.set(response);
+                                                                    new_card.set({
+                                                                        id: parseInt(response.id),
+                                                                        board_id: parseInt(response.board_id),
+                                                                        list_id: parseInt(response.list_id),
+                                                                        created: response.created,
+                                                                        modified: response.modified,
+                                                                        name: response.name,
+                                                                        description: response.description,
+                                                                        due_date: response.due_date,
+                                                                        is_archived: response.is_archived,
+                                                                        attachment_count: parseInt(response.attachment_count),
+                                                                        checklist_count: response.checklist_count,
+                                                                        checklist_item_count: card_checklist_item_count,
+                                                                        checklist_item_completed_count: card_checklist_item_completed_count,
+                                                                        checklist_item_pending_count: card_checklist_item_pending_count,
+                                                                        card_voter_count: parseInt(response.card_voter_count),
+                                                                        position: parseFloat(response.position),
+                                                                        user_id: parseInt(response.user_id)
+                                                                    });
+                                                                    var card_list = self.board.lists.findWhere({
+                                                                        id: parseInt(listId)
+                                                                    });
+                                                                    if (!_.isUndefined(card_list) && !_.isEmpty(card_list) && card_list !== null) {
+                                                                        new_card.list = card_list;
+                                                                        new_card.board = self.board;
+                                                                        if (!_.isEmpty(card_list) && !_.isUndefined(card_list) && card_list !== null && !_.isEmpty(card_list.cards) && !_.isUndefined(card_list.cards) && card_list.cards !== null) {
+                                                                            var tmp_list_cards = card_list.cards;
+                                                                            tmp_list_cards.add(new_card, {
+                                                                                silent: true
+                                                                            });
+                                                                            if (board_sort_by !== 'position') {
+                                                                                var sort_filter_cards = self.cardsort(board_sort_by, bard_sort_direction, tmp_list_cards);
+                                                                                $.each(sort_filter_cards.models, function(key, filter_card) {
+                                                                                    if (parseInt(filter_card.attributes.is_archived) === 0 && parseInt(filter_card.id) === parseInt(new_card.id)) {
+                                                                                        new_card.set('position', key + 1);
+                                                                                    }
+                                                                                });
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                    if (!_.isEmpty(response.cards_users) && !_.isUndefined(response.cards_users) && response.cards_users !== null) {
+                                                                        _.each(response.cards_users, function(user) {
+                                                                            var new_card_user = new App.CardUser();
+                                                                            new_card_user.set(user);
+                                                                            new_card_user.set({
+                                                                                id: parseInt(user.id),
+                                                                                user_id: parseInt(user.user_id),
+                                                                                card_id: parseInt(user.card_id),
+                                                                                profile_picture_path: user.profile_picture_path,
+                                                                                username: user.username,
+                                                                                initials: user.initials,
+                                                                                full_name: user.full_name
+                                                                            });
+                                                                            new_card.users.add(new_card_user, {
+                                                                                silent: true
+                                                                            });
+                                                                            new_card.set('users', new_card_user, {
+                                                                                silent: true
+                                                                            });
+                                                                        });
+                                                                    }
+                                                                    if (!_.isEmpty(response.cards_voters) && !_.isUndefined(response.cards_voters) && response.cards_voters !== null) {
+                                                                        new_card.attributes.cards_voters = [];
+                                                                        _.each(response.cards_voters, function(voter) {
+                                                                            new_card.attributes.cards_voters.push(voter);
+                                                                            var new_voter = new App.CardVoter();
+                                                                            new_voter.set(voter);
+                                                                            new_voter.set({
+                                                                                id: parseInt(voter.id),
+                                                                                user_id: parseInt(voter.user_id),
+                                                                                card_id: parseInt(voter.card_id)
+                                                                            });
+                                                                            new_card.card_voters.add(new_voter);
+                                                                        });
+                                                                    }
+                                                                    if (!_.isEmpty(response.cards_labels) && !_.isUndefined(response.cards_labels) && response.cards_labels !== null) {
+                                                                        _.each(response.cards_labels, function(label) {
+                                                                            var new_card_label = new App.Label();
+                                                                            new_card_label.set(label);
+                                                                            new_card_label.set({
+                                                                                id: parseInt(label.id),
+                                                                                label_id: parseInt(label.label_id),
+                                                                                card_id: parseInt(label.card_id),
+                                                                                list_id: parseInt(label.list_id),
+                                                                                board_id: parseInt(label.board_id)
+                                                                            });
+                                                                            self.board.labels.add(new_card_label, {
+                                                                                silent: true
+                                                                            });
+                                                                            var options = {
+                                                                                silent: true
+                                                                            };
+                                                                            new_card.labels.add(new_card_label, options);
+                                                                        });
+                                                                        new_card.set('cards_labels', response.cards_labels);
+                                                                    }
+                                                                    if (!_.isEmpty(response.cards_checklists) && !_.isUndefined(response.cards_checklists) && response.cards_checklists !== null) {
+                                                                        _.each(response.cards_checklists, function(checklist) {
+                                                                            var new_card_checklist = new App.CheckList();
+                                                                            new_card_checklist.set(checklist);
+                                                                            new_card_checklist.set({
+                                                                                id: parseInt(checklist.id),
+                                                                                user_id: parseInt(checklist.user_id),
+                                                                                card_id: parseInt(checklist.card_id),
+                                                                                name: checklist.name,
+                                                                                position: checklist.position
+                                                                            });
+                                                                            self.board.checklists.add(new_card_checklist, {
+                                                                                silent: true
+                                                                            });
+                                                                            if (checklist.checklists_items !== null) {
+                                                                                _.each(checklist.checklists_items, function(checklists_item) {
+                                                                                    var new_checklist_item = new App.CheckListItem();
+                                                                                    new_checklist_item.set(checklists_item);
+                                                                                    new_checklist_item.set({
+                                                                                        id: parseInt(checklists_item.id),
+                                                                                        user_id: parseInt(checklists_item.user_id),
+                                                                                        card_id: parseInt(checklists_item.card_id),
+                                                                                        checklist_id: parseInt(checklists_item.checklist_id),
+                                                                                        position: parseFloat(checklists_item.position),
+                                                                                        is_completed: checklists_item.is_completed,
+                                                                                        name: checklists_item.name
+                                                                                    });
+                                                                                    self.board.checklist_items.add(new_checklist_item, {
+                                                                                        silent: true
+                                                                                    });
+                                                                                });
+                                                                                checklist_items = self.board.checklist_items.where({
+                                                                                    card_id: parseInt(checklist.card_id)
+                                                                                });
+                                                                                items = new App.CheckListItemCollection();
+                                                                                items.add(checklist_items, {
+                                                                                    silent: true
+                                                                                });
+                                                                            }
+                                                                        });
+                                                                    }
+                                                                    if (!_.isUndefined(card_list) && !_.isEmpty(card_list) && card_list !== null && !_.isUndefined(card_list.attributes.card_count) && card_list.attributes.card_count === 0) {
+                                                                        // Removing the &nbsp; in the card listing after adding card or copy card
+                                                                        $('#js-card-listing-' + card_list.id).find('.js-list-placeholder-' + card_list.id).remove();
+                                                                    }
+                                                                    if (!_.isUndefined(self.board) && !_.isEmpty(self.board) && self.board !== null && !_.isUndefined(self.board.cards) && !_.isEmpty(self.board.cards) && self.board.cards !== null) {
+                                                                        self.board.cards.add(new_card);
+                                                                    }
+                                                                    if (!_.isUndefined(card_list) && !_.isEmpty(card_list) && card_list !== null && !_.isUndefined(card_list.cards) && !_.isEmpty(card_list.cards) && card_list.cards !== null) {
+                                                                        card_list.cards.add(new_card);
+                                                                        var card_list_card_count = isNaN(card_list.attributes.card_count) ? 0 : card_list.attributes.card_count;
+                                                                        // Updating the list card count
+                                                                        card_list.set('card_count', parseInt(card_list_card_count) + 1);
+                                                                        if (card_list !== null && !_.isEmpty(card_list) && wip_enabled) {
+                                                                            $('body').trigger('cardAddRendered', [card_list.id, card_list]);
+                                                                        }
+                                                                    }
+                                                                    _.each(response.attachments, function(attachment) {
+                                                                        var new_card_attachment = new App.CardAttachment();
+                                                                        new_card_attachment.set(attachment);
+                                                                        new_card_attachment.set({
+                                                                            id: parseInt(attachment.id),
+                                                                            board_id: parseInt(attachment.board_id),
+                                                                            list_id: parseInt(attachment.list_id),
+                                                                            card_id: parseInt(attachment.card_id)
+                                                                        });
+                                                                        if (!_.isUndefined(self.board) && !_.isEmpty(self.board) && self.board !== null && !_.isUndefined(self.board.cards) && !_.isEmpty(self.board.cards) && self.board.cards !== null) {
+                                                                            self.board.attachments.unshift(new_card_attachment);
+                                                                            var attachment_card = self.board.cards.findWhere({
+                                                                                id: parseInt(attachment.card_id)
+                                                                            });
+                                                                            if (!_.isUndefined(attachment_card) && attachment_card !== null) {
+                                                                                attachment_card.attachments.unshift(new_card_attachment);
+                                                                            }
+                                                                        }
+                                                                    });
+                                                                    if ((!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null)) {
+                                                                        $('body').trigger('CutomFieldsRendered', [parseInt(response.id), new_card]);
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    });
+                                                } else if (activity.attributes.type === 'delete_card_users' && !_.isUndefined(card)) {
+                                                    var cardlist = self.board.lists.findWhere({
+                                                        id: parseInt(activity.attributes.list_id)
+                                                    });
+                                                    cardlist.set('card_count', parseInt(cardlist.attributes.card_count) - 1);
+                                                    if (cardlist !== null && !_.isUndefined(cardlist) && !_.isEmpty(cardlist) && wip_enabled) {
+                                                        $('body').trigger('cardAddRendered', [cardlist.id, cardlist]);
+                                                    }
+                                                    if (parseInt(cardlist.attributes.card_count) === 0) {
+                                                        if ($('#js-card-listing-' + cardlist.id).length > 0) {
+                                                            $('#js-card-listing-' + cardlist.id).find('.js-list-placeholder-' + cardlist.id).remove();
+                                                            $('#js-card-listing-' + cardlist.id).html('<span class="js-list-placeholder-' + cardlist.id + '">&nbsp;</span>');
+                                                        }
+                                                    }
+                                                    card.set('is_archived', 1);
+                                                    self.board.cards.remove(card, {
+                                                        silent: false
+                                                    });
+                                                }
+                                            }
+                                        }
                                         if (!_.isUndefined(card)) {
                                             if (activity.attributes.type !== "add_card_evergreen_card" && activity.attributes.type !== "delete_card_evergreen_card") {
                                                 card.set('modified', activity.attributes.modified);
