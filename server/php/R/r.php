@@ -2015,7 +2015,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         break;
 
     case '/settings':
-        $s_sql = pg_query_params($db_lnk, "SELECT name, value FROM settings WHERE name IN ('SITE_NAME', 'SITE_TIMEZONE', 'DROPBOX_APPKEY', 'LABEL_ICON', 'FLICKR_API_KEY', 'UNSPLASH_API_KEY', 'DEFAULT_LANGUAGE', 'IS_TWO_FACTOR_AUTHENTICATION_ENABLED', 'IMAP_EMAIL', 'PAGING_COUNT', 'ALLOWED_FILE_EXTENSIONS', 'DEFAULT_CARD_VIEW', 'DEFAULT_CARD_VIEW', 'R_LDAP_LOGIN_HANDLE', 'CALENDAR_VIEW_CARD_COLOR','R_MLDAP_LOGIN_HANDLE','R_MLDAP_SERVERS')", array());
+        $s_sql = pg_query_params($db_lnk, "SELECT name, value FROM settings WHERE name IN ('SITE_NAME', 'SITE_TIMEZONE', 'DROPBOX_APPKEY', 'LABEL_ICON', 'FLICKR_API_KEY', 'UNSPLASH_API_KEY', 'DEFAULT_LANGUAGE', 'IS_TWO_FACTOR_AUTHENTICATION_ENABLED', 'IMAP_EMAIL', 'PAGING_COUNT', 'ALLOWED_FILE_EXTENSIONS', 'DEFAULT_CARD_VIEW', 'DEFAULT_CARD_VIEW', 'R_LDAP_LOGIN_HANDLE', 'R_SAML_ENTITY_NAME', 'CALENDAR_VIEW_CARD_COLOR','R_MLDAP_LOGIN_HANDLE','R_MLDAP_SERVERS')", array());
         while ($row = pg_fetch_assoc($s_sql)) {
             $response[$row['name']] = $row['value'];
         }
@@ -2114,6 +2114,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 $value['is_public'] = false;
                 $value['info'] = $row['description'];
                 $value['value'] = $row['value'];
+                $value['type'] = $row['type'];
                 $value['label'] = $row['label'];
                 $replaceContent = array(
                     '##SITE_NAME##' => SITE_NAME,
@@ -6224,6 +6225,33 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
 
     case '/apps/settings':
         $folder_name = $r_post['folder'];
+        if (($folder_name == 'r_saml_shibboleth_sso') && isset($r_post['R_SAML_FULL_XML']) && isset($r_post['is_saml_post_1st_step'])) {
+            $response['status'] = array();
+            $response['data'] = array();
+            //get Metadata from samlone login
+            require_once PLUGIN_PATH . DS . 'SamlLogin' . DS . 'functions.php';
+            $get_saml_idp_meta_data_responces = getParseMetaData($r_post['R_SAML_FULL_XML']);
+            if ($get_saml_idp_meta_data_responces['status']['code'] == '200' && !empty($get_saml_idp_meta_data_responces['metadata'])) {
+                if ($get_saml_idp_meta_data_responces['metadata'] && $get_saml_idp_meta_data_responces['metadata']['idp']) {
+                    $response['data']['idp'] = (!empty($get_saml_idp_meta_data_responces['metadata']['idp']) ? $get_saml_idp_meta_data_responces['metadata']['idp'] : '');
+                    $response['data']['sp'] = (!empty($get_saml_idp_meta_data_responces['metadata']['sp']) ? $get_saml_idp_meta_data_responces['metadata']['sp'] : '');
+                }
+                $saml_qry_val_arr = array(
+                    $r_post['R_SAML_FULL_XML'],
+                    'R_SAML_FULL_XML'
+                );
+                pg_query_params($db_lnk, "UPDATE settings SET value = $1 WHERE name = $2", $saml_qry_val_arr);
+                $response['status']['code'] = 200;
+                echo json_encode($response);
+                break;
+            } else {
+                $response['status']['code'] = 401;
+                $response['error']['type'] = 'Idp metadata not generated';
+                $response['error']['content'] = 'Please check your Idp metadata xml';
+                echo json_encode($response);
+                break;
+            }
+        }
         unset($r_post['folder']);
         if (isset($r_post['ldap_removed_server'])) {
             $ldap_removed_server = $r_post['ldap_removed_server'];
@@ -6309,6 +6337,23 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     $fh = fopen(APP_PATH . '/client/apps/' . $folder_name . '/app.json', 'w');
                     fwrite($fh, json_encode($app, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
                     fclose($fh);
+                }
+            }
+            if (($folder_name == 'r_saml_shibboleth_sso') && isset($r_post['is_saml_final_step'])) {
+                //get Metadata from samlone login
+                require_once PLUGIN_PATH . DS . 'SamlLogin' . DS . 'functions.php';
+                $get_saml_meta_data_responces = getOwnMetaData();
+                if ($get_saml_meta_data_responces['status']['code'] == '200') {
+                    $saml_qry_val_arr = array(
+                        $get_saml_meta_data_responces['metadata'],
+                        'R_SAML_META_DATA'
+                    );
+                    pg_query_params($db_lnk, "UPDATE settings SET value = $1 WHERE name = $2", $saml_qry_val_arr);
+                } else {
+                    $response['error']['type'] = 'Metadata Error';
+                    $response['error']['content'] = 'Metadata Not Updated';
+                    echo json_encode($response);
+                    break;
                 }
             }
             $response['success'] = 'App updated successfully';
