@@ -6246,8 +6246,8 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 break;
             } else {
                 $response['status']['code'] = 401;
-                $response['error']['type'] = 'Idp metadata not generated';
-                $response['error']['content'] = 'Please check your Idp metadata xml';
+                $response['error']['type'] = 'IdP metadata not generated';
+                $response['error']['content'] = 'Please check your IdP metadata XML';
                 echo json_encode($response);
                 break;
             }
