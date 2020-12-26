@@ -1,4 +1,5 @@
 <% if(!_.isEmpty(activity) && activity != null){ %> 
+	<% if(activity.attributes.type !== 'add_permission'&& activity.attributes.type !== 'remove_permission'){ %>
 <%  activity.attributes.card_name = (activity.attributes.card_name !== null) ? activity.attributes.card_name : i18next.t("[deleted]");
 	activity.attributes.organization_name = (activity.attributes.organization_name !== null) ? activity.attributes.organization_name : i18next.t("[deleted]");
 	activity.attributes.board_name = (activity.attributes.board_name !== null) ? activity.attributes.board_name : i18next.t("[deleted]");
@@ -14,6 +15,7 @@
 	} else {
 		organizationLink = '<a href="javascript:void(0);">' + _.escape(activity.attributes.organization_name) + '</a>';
 	}
+	activity.attributes.comment = filterXSS(activity.attributes.comment);
 	if(activity.attributes.type != 'add_comment') {
 		if(activity.attributes.comment.indexOf('##ORGANIZATION_LINK##') != -1){
 			activity.attributes.comment = activity.attributes.comment.replace('##ORGANIZATION_LINK##', organizationLink);
@@ -178,4 +180,5 @@
 	</small>
 </div>
 <hr class="clearfix col-xs-12 btn-block"/>
+<% } %>
 <% }else{ %><div class="media-body alert alert-info"><%- i18next.t('No %s available.', { postProcess: 'sprintf', sprintf: [i18next.t('activities')] }) %></div><% } %>

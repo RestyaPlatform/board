@@ -353,7 +353,7 @@ function insertActivity($user_id, $comment, $type, $foreign_ids = array() , $rev
             }
         }
     }
-    if (!empty($foreign_ids['board_id']) || !empty($foreign_ids['organization_id']) || !empty($foreign_ids['user_id'])) {
+    if (!empty($foreign_ids['board_id']) || !empty($foreign_ids['organization_id']) || !empty($foreign_ids['user_id']) || $type === 'add_permission' || $type === 'remove_permission') {
         $val = '';
         for ($i = 1, $len = count($values); $i <= $len; $i++) {
             $val.= '$' . $i;
@@ -610,7 +610,7 @@ function sendMail($template, $replace_content, $to, $reply_to_mail = '')
         }
         $headers.= "MIME-Version: 1.0" . PHP_EOL;
         $headers.= "Content-Type: text/html; charset=UTF-8" . PHP_EOL;
-        $headers.= "X-Mailer: Restyaboard (0.6.8; +http://restya.com/board)" . PHP_EOL;
+        $headers.= "X-Mailer: Restyaboard (0.6.9; +http://restya.com/board)" . PHP_EOL;
         $headers.= "X-Auto-Response-Suppress: All" . PHP_EOL;
         if (is_plugin_enabled('r_sparkpost')) {
             require_once PLUGIN_PATH . DS . 'SparkPost' . DS . 'functions.php';
@@ -2108,11 +2108,13 @@ function importTaigaBoard($board = array())
                 $i+= 1;
                 $is_closed = !empty($card['is_closed']) ? 'true' : 'false';
                 $date = (!empty($card['due'])) ? $card['due_date'] : null;
+                $card['subject'] = preg_replace('~\x{00a0}~siu', ' ', utf8_decode($card['subject']));
+                $card['description'] = preg_replace('~\x{00a0}~siu', ' ', utf8_decode($card['description']));
                 $qry_val_arr = array(
                     $new_board['id'],
                     $lists[$card['status']],
-                    utf8_decode($card['subject']) ,
-                    utf8_decode($card['description']) ,
+                    $card['subject'],
+                    $card['description'],
                     $is_closed,
                     $i,
                     $date,
@@ -3383,11 +3385,15 @@ function paginate_data($c_sql, $db_lnk, $pg_params, $r_resource_filters, $limit 
 function update_query($table_name, $id, $r_resource_cmd, $r_put, $comment = '', $activity_type = '', $foreign_ids = '')
 {
     global $r_debug, $db_lnk, $authUser, $_server_domain_url;
-    $values = array(
-        'now()'
-    );
+    $values = array();
     $sfields = '';
-    $fields = 'modified';
+    $fields = '';
+    if ($activity_type != 'delete_card_evergreen_card' && $activity_type != 'add_card_evergreen_card') {
+        $fields = 'modified';
+        $values = array(
+            'now()'
+        );
+    }
     if (!empty($table_name) && !empty($id)) {
         $put = getbindValues($table_name, $r_put);
         if ($table_name == 'users') {
@@ -3395,7 +3401,11 @@ function update_query($table_name, $id, $r_resource_cmd, $r_put, $comment = '', 
         }
         foreach ($put as $key => $value) {
             if ($key != 'id') {
-                $fields.= ', ' . $key;
+                if ($fields != '') {
+                    $fields.= ', ' . $key;
+                } else {
+                    $fields = $key;
+                }
                 if ($value === false) {
                     array_push($values, 'false');
                 } elseif ($value === 'null' || $value === 'NULL' || $value === 'null') {
@@ -3431,6 +3441,19 @@ function update_query($table_name, $id, $r_resource_cmd, $r_put, $comment = '', 
                 $foreign_id = $r_put['list_id'];
             }
             $response['activity'] = insertActivity($authUser['id'], $comment, $activity_type, $foreign_ids, $revision, $foreign_id);
+            if ($activity_type == 'move_list') {
+                $qry_val_arr = array(
+                    $foreign_id
+                );
+                $result = pg_query_params($db_lnk, 'SELECT board_id,list_id,id FROM cards_listing WHERE list_id = $1 ORDER BY name ASC', $qry_val_arr);
+                while ($row = pg_fetch_assoc($result)) {
+                    $foreign_ids['board_id'] = $row['board_id'];
+                    $foreign_ids['list_id'] = $row['list_id'];
+                    $foreign_ids['card_id'] = $row['id'];
+                    $comment = '##USER_NAME## moved the card ##CARD_LINK## to different board';
+                    insertActivity($authUser['id'], $comment, 'moved_board_list_card', $foreign_ids, null, $foreign_id);
+                }
+            }
             if (!empty($response['activity']['revisions']) && trim($response['activity']['revisions']) != '') {
                 $revisions = unserialize($response['activity']['revisions']);
             }

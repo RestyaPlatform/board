@@ -27,7 +27,7 @@ if (!empty($argv) && !empty($argv[1])) {
     if ($db_lnk) {
         $to_email = DEFAULT_REPLY_TO_EMAIL_ADDRESS;
         $from_email = DEFAULT_FROM_EMAIL_ADDRESS;
-        if (!empty($to_email) && !empty($from_email)) {
+        if (!empty($to_email) && !empty($from_email) && $to_email != 'board@restya.com') {
             $email = pg_fetch_assoc($result);
             $subject = 'Restyaboard / From cron (' . $argv[1] . ')';
             $from_email = DEFAULT_FROM_EMAIL_ADDRESS;
@@ -38,7 +38,7 @@ if (!empty($argv) && !empty($argv[1])) {
             }
             $headers.= "MIME-Version: 1.0" . PHP_EOL;
             $headers.= "Content-Type: text/html; charset=UTF-8" . PHP_EOL;
-            $headers.= "X-Mailer: Restyaboard (0.6.8; +http://restya.com/board)" . PHP_EOL;
+            $headers.= "X-Mailer: Restyaboard (0.6.9; +http://restya.com/board)" . PHP_EOL;
             $headers.= "X-Auto-Response-Suppress: All" . PHP_EOL;
             $result = mail($to_email, $subject, $message, $headers, '-f' . $from_email);
             if (R_DEBUG) {

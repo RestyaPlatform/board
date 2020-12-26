@@ -113,6 +113,7 @@ App.LoginView = Backbone.View.extend({
                                 auth_response.user.is_card_checklists_notifications_enabled = response.user.is_card_checklists_notifications_enabled;
                                 auth_response.user.is_card_attachments_notifications_enabled = response.user.is_card_attachments_notifications_enabled;
                                 auth_response.user.is_ldap = response.user.is_ldap;
+                                auth_response.user.is_saml = response.user.is_saml;
                                 auth_response.user.is_intro_video_skipped = response.user.is_intro_video_skipped;
                                 auth_response.user.is_two_factor_authentication_enabled = response.user.is_two_factor_authentication_enabled;
                                 $.cookie('auth', JSON.stringify(auth_response));
@@ -173,8 +174,13 @@ App.LoginView = Backbone.View.extend({
         if (!_.isUndefined(R_MLDAP_SERVERS) && !_.isEmpty(R_MLDAP_SERVERS)) {
             ldap_servers = R_MLDAP_SERVERS.split(',');
         }
+        var android_user_name = '';
+        if (window.Android && window.Android.getUserName()) {
+            android_user_name = window.Android.getUserName();
+        }
         this.$el.html(this.template({
-            ldap_servers: ldap_servers
+            ldap_servers: ldap_servers,
+            android_user_name: android_user_name
         }));
         this.showTooltip();
         return this;

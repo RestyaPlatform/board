@@ -5,7 +5,7 @@
 </div>
 <% var currenturl = window.location.hash;
 	var splits = currenturl.split('/');
-	if(splits['1'] === 'board'){
+	if(splits['1'] === 'board' && CheckFieldPermission(card.list.collection.board, list.board_user_role_id, 'get_card_checklist_item')){
 %>
 <div class="form-group">
 	<label for="copy-items"><%- i18next.t('Copy Items From') %></label>

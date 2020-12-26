@@ -50,5 +50,6 @@ App.Board = Backbone.Model.extend({
         this.checklist_items = new App.CheckListItemCollection();
         this.boards_stars = new App.BoardStarCollection();
         this.acl_links = new App.AclBoardLinksCollection();
+        this.attributes.is_card_filtered = false;
     }
 });

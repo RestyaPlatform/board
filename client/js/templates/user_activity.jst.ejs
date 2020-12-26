@@ -1,4 +1,5 @@
 <% if(!_.isEmpty(activity) && activity != null){  %> 
+	<% if(activity.attributes.type !== 'add_permission'&& activity.attributes.type !== 'remove_permission') { %>
 	<%			activity.attributes.card_name = (activity.attributes.card_name !== null) ? activity.attributes.card_name : i18next.t("[deleted]");
 				activity.attributes.board_name = (activity.attributes.board_name !== null) ? activity.attributes.board_name : i18next.t("[deleted]");
 				activity.attributes.organization_name = (activity.attributes.organization_name !== null) ? activity.attributes.organization_name : i18next.t("[deleted]");
@@ -92,7 +93,9 @@
 						<% if(activity.attributes.type == 'add_comment' || activity.attributes.type == 'edit_comment') { %>	
 							<span><%= comment %></span>
 							<% if(activity.attributes.type == 'add_comment' && !_.isUndefined(activity.attributes.revisions) && !_.isEmpty(activity.attributes.revisions) && activity.attributes.revisions !== null) { 
-								activity.attributes.comment = activity.attributes.revisions.old_value.comment;
+								activity.attributes.comment = filterXSS(activity.attributes.revisions.old_value.comment);
+							} else { 
+								activity.attributes.comment = filterXSS(activity.attributes.comment);
 							} %>
 							<% if(activity.attributes.type == 'add_comment') { %><div class="thumbnail media-body no-mar"><% } %>
 								<%= makeLink(converter.makeHtml((activity.attributes.comment)), activity.attributes.board_id) %>
@@ -148,6 +151,7 @@
 			</li>
 			<li><hr></li>
 		</ul>
+		<% } %>
 <% }else{ %>
 	<span id="js-no-activities" class="alert alert-info col-xs-12"><%- i18next.t('No %s available.', { postProcess: 'sprintf', sprintf: [i18next.t('activities')] }) %></span>
 <% } %>
