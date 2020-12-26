@@ -4053,6 +4053,52 @@ COPY public.acl_board_links_boards_user_roles (id, created, modified, acl_board_
 137	2019-04-19 19:34:07.775468	2019-04-19 19:34:07.775468	66	2
 138	2019-04-19 19:34:07.808949	2019-04-19 19:34:07.808949	67	1
 139	2019-04-19 19:34:07.817227	2019-04-19 19:34:07.817227	67	2
+140	2020-08-11 13:04:01.749072	2020-08-11 13:04:01.749072	15	4
+141	2020-08-11 13:04:02.431161	2020-08-11 13:04:02.431161	20	4
+142	2020-08-11 13:04:04.91128	2020-08-11 13:04:04.91128	32	4
+143	2020-08-11 13:04:06.326835	2020-08-11 13:04:06.326835	45	4
+144	2020-08-11 13:04:17.043455	2020-08-11 13:04:17.043455	49	4
+145	2020-08-11 13:04:19.942915	2020-08-11 13:04:19.942915	58	4
+146	2020-08-11 13:04:26.627172	2020-08-11 13:04:26.627172	5	4
+147	2020-08-11 13:04:27.713814	2020-08-11 13:04:27.713814	8	4
+148	2020-08-11 13:04:28.958727	2020-08-11 13:04:28.958727	30	4
+149	2020-08-11 13:04:30.047113	2020-08-11 13:04:30.047113	37	4
+150	2020-08-11 13:04:31.738373	2020-08-11 13:04:31.738373	47	4
+151	2020-08-11 13:04:32.356364	2020-08-11 13:04:32.356364	51	4
+152	2020-08-11 13:04:34.395114	2020-08-11 13:04:34.395114	57	4
+153	2020-08-11 13:04:35.603125	2020-08-11 13:04:35.603125	65	4
+154	2020-08-11 13:04:38.131038	2020-08-11 13:04:38.131038	3	4
+155	2020-08-11 13:04:39.482909	2020-08-11 13:04:39.482909	4	4
+156	2020-08-11 13:04:40.354651	2020-08-11 13:04:40.354651	7	4
+157	2020-08-11 13:04:41.739465	2020-08-11 13:04:41.739465	12	4
+158	2020-08-11 13:04:42.364583	2020-08-11 13:04:42.364583	16	4
+159	2020-08-11 13:04:43.911053	2020-08-11 13:04:43.911053	18	4
+160	2020-08-11 13:04:44.395432	2020-08-11 13:04:44.395432	19	4
+161	2020-08-11 13:04:45.678792	2020-08-11 13:04:45.678792	21	4
+162	2020-08-11 13:04:47.306594	2020-08-11 13:04:47.306594	25	4
+163	2020-08-11 13:04:48.330679	2020-08-11 13:04:48.330679	26	4
+164	2020-08-11 13:04:49.631274	2020-08-11 13:04:49.631274	27	4
+165	2020-08-11 13:04:51.17602	2020-08-11 13:04:51.17602	28	4
+166	2020-08-11 13:04:51.666659	2020-08-11 13:04:51.666659	31	4
+167	2020-08-11 13:04:52.640803	2020-08-11 13:04:52.640803	33	4
+168	2020-08-11 13:04:54.059624	2020-08-11 13:04:54.059624	34	4
+169	2020-08-11 13:04:54.978907	2020-08-11 13:04:54.978907	35	4
+170	2020-08-11 13:04:55.465016	2020-08-11 13:04:55.465016	36	4
+171	2020-08-11 13:04:58.214274	2020-08-11 13:04:58.214274	38	4
+172	2020-08-11 13:04:59.339038	2020-08-11 13:04:59.339038	39	4
+173	2020-08-11 13:04:59.993509	2020-08-11 13:04:59.993509	40	4
+174	2020-08-11 13:05:01.144169	2020-08-11 13:05:01.144169	42	4
+175	2020-08-11 13:05:02.667371	2020-08-11 13:05:02.667371	44	4
+176	2020-08-11 13:05:03.260447	2020-08-11 13:05:03.260447	46	4
+177	2020-08-11 13:05:04.202755	2020-08-11 13:05:04.202755	50	4
+178	2020-08-11 13:05:05.266915	2020-08-11 13:05:05.266915	52	4
+179	2020-08-11 13:05:06.99149	2020-08-11 13:05:06.99149	54	4
+180	2020-08-11 13:05:07.762718	2020-08-11 13:05:07.762718	56	4
+181	2020-08-11 13:05:08.825545	2020-08-11 13:05:08.825545	59	4
+182	2020-08-11 13:05:10.643089	2020-08-11 13:05:10.643089	61	4
+183	2020-08-11 13:05:11.6761	2020-08-11 13:05:11.6761	63	4
+184	2020-08-11 13:05:13.091307	2020-08-11 13:05:13.091307	66	4
+185	2020-08-11 13:05:13.994899	2020-08-11 13:05:13.994899	67	4
 \.
 
 
@@ -4405,6 +4451,7 @@ COPY public.board_user_roles (id, created, modified, name, description) FROM std
 1	2016-02-22 17:39:17.68	2016-02-22 17:39:17.68	Owner	Can view and edit cards, remove members, and change settings for the board.
 2	2016-02-22 17:39:17.68	2016-02-22 17:39:17.68	Editor	Can view and edit cards, remove members, but not change settings.
 3	2016-02-22 17:39:17.68	2016-02-22 17:39:17.68	Viewer	Can view only.
+4	2020-08-11 13:03:57.053261	2020-08-11 13:03:57.053261	Restricted	Can view and edit cards, remove members, but not add cards and change settings.
 \.
 
 
@@ -6948,6 +6995,130 @@ CREATE INDEX users_username ON public.users USING btree (username);
 
 CREATE INDEX webhooks_url ON public.webhooks USING btree (url);
 
+--
+-- Name: label_card_count_update; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER label_card_count_update AFTER INSERT OR DELETE OR UPDATE ON public.cards_labels FOR EACH ROW EXECUTE PROCEDURE public.label_card_count_update();
+
+
+--
+-- Name: update_board_count; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER update_board_count AFTER INSERT OR DELETE OR UPDATE ON public.boards FOR EACH ROW EXECUTE PROCEDURE public.update_board_count();
+
+
+--
+-- Name: update_board_star_count; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER update_board_star_count AFTER INSERT OR DELETE OR UPDATE ON public.board_stars FOR EACH ROW EXECUTE PROCEDURE public.update_board_star_count();
+
+
+--
+-- Name: update_board_subscriber_count; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER update_board_subscriber_count AFTER INSERT OR DELETE OR UPDATE ON public.board_subscribers FOR EACH ROW EXECUTE PROCEDURE public.update_board_subscriber_count();
+
+
+--
+-- Name: update_board_user_count; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER update_board_user_count AFTER INSERT OR DELETE OR UPDATE ON public.boards_users FOR EACH ROW EXECUTE PROCEDURE public.update_board_user_count();
+
+
+--
+-- Name: update_card_attachment_count; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER update_card_attachment_count AFTER INSERT OR DELETE OR UPDATE ON public.card_attachments FOR EACH ROW EXECUTE PROCEDURE public.update_card_attachment_count();
+
+
+--
+-- Name: update_card_checklist_count; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER update_card_checklist_count AFTER INSERT OR DELETE OR UPDATE ON public.checklists FOR EACH ROW EXECUTE PROCEDURE public.update_card_checklist_count();
+
+
+--
+-- Name: update_card_checklist_item_count; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER update_card_checklist_item_count AFTER INSERT OR DELETE OR UPDATE ON public.checklist_items FOR EACH ROW EXECUTE PROCEDURE public.update_card_checklist_item_count();
+
+
+--
+-- Name: update_card_count; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER update_card_count AFTER INSERT OR DELETE OR UPDATE ON public.cards FOR EACH ROW EXECUTE PROCEDURE public.update_card_count();
+
+
+--
+-- Name: update_card_subscriber_count; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER update_card_subscriber_count AFTER INSERT OR DELETE OR UPDATE ON public.card_subscribers FOR EACH ROW EXECUTE PROCEDURE public.update_card_subscriber_count();
+
+
+--
+-- Name: update_card_user_count; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER update_card_user_count AFTER INSERT OR DELETE OR UPDATE ON public.cards_users FOR EACH ROW EXECUTE PROCEDURE public.update_card_user_count();
+
+
+--
+-- Name: update_card_voters_count; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER update_card_voters_count AFTER INSERT OR DELETE OR UPDATE ON public.card_voters FOR EACH ROW EXECUTE PROCEDURE public.update_card_voters_count();
+
+
+--
+-- Name: update_list_count; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER update_list_count AFTER INSERT OR DELETE OR UPDATE ON public.lists FOR EACH ROW EXECUTE PROCEDURE public.update_list_count();
+
+
+--
+-- Name: update_list_subscriber_count; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER update_list_subscriber_count AFTER INSERT OR DELETE OR UPDATE ON public.list_subscribers FOR EACH ROW EXECUTE PROCEDURE public.update_list_subscriber_count();
+
+
+--
+-- Name: update_organization_count; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER update_organization_count AFTER INSERT OR DELETE OR UPDATE ON public.organizations FOR EACH ROW EXECUTE PROCEDURE public.update_organization_count();
+
+
+--
+-- Name: update_organization_user_count; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER update_organization_user_count AFTER INSERT OR DELETE OR UPDATE ON public.organizations_users FOR EACH ROW EXECUTE PROCEDURE public.update_organization_user_count();
+
+
+--
+-- Name: update_user_delete; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER update_user_delete AFTER DELETE ON public.users FOR EACH ROW EXECUTE PROCEDURE public.update_user_delete();
+
+
+--
+-- Name: update_users_user_login_count; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER update_users_user_login_count AFTER INSERT OR DELETE OR UPDATE ON public.user_logins FOR EACH ROW EXECUTE PROCEDURE public.update_users_user_login_count();
 
 --
 -- Name: cities_country_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -

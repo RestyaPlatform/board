@@ -1,4 +1,5 @@
 <% if(!_.isEmpty(activity) && activity != null){ %> 
+	<% if(activity.attributes.type !== 'add_permission'&& activity.attributes.type !== 'remove_permission') { %>
 	<% var unread = ""; %>
 	<% if(!_.isUndefined(authuser) && !_.isUndefined(authuser.user) && !_.isUndefined(activity.from_footer) && parseInt(activity.attributes.id) > parseInt(authuser.user.unread_activity_id)){ %>
 		 <%if(activity.attributes.token !== authuser.access_token){%> 
@@ -246,6 +247,7 @@
 		<%}%>
 		<% if(!_.isEmpty(unread)){ %>
 			<div class="well-sm clearfix"></div>
+		<%}%>
 		<%}%>
 	<% }else{ %><div class="media-body alert alert-info"><%- i18next.t('No %s available.', { postProcess: 'sprintf', sprintf: [i18next.t('activities')] }) %></div><% } %>
 	
