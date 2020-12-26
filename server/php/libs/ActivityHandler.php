@@ -34,7 +34,7 @@ class ActivityHandler
     {
         global $r_debug, $db_lnk, $authUser, $_server_domain_url;
         $obj_type = $obj['type'];
-        if (!empty($obj['revisions']) && trim($obj['revisions']) !== '' && $obj_type !== 'delete_label' && $obj_type !== 'change_grid_view_configuration' && $obj_type !== 'change_list_view_configuration' && $obj_type !== 'update_label' && $obj_type !== 'delete_card_dependency' && $obj_type !== 'delete_board_user') {
+        if (!empty($obj['revisions']) && trim($obj['revisions']) !== '' && $obj_type !== 'delete_label' && $obj_type !== 'change_grid_view_configuration' && $obj_type !== 'change_list_view_configuration' && $obj_type !== 'update_label' && $obj_type !== 'delete_card_dependency' && $obj_type !== 'delete_board_user' && $obj_type !== 'delete_card_users' && $obj_type !== 'add_permission' && $obj_type !== 'remove_permission') {
             $revisions = unserialize($obj['revisions']);
             $obj['revisions'] = $revisions;
             $diff = array();
@@ -309,6 +309,18 @@ class ActivityHandler
                 $obj['card_id']
             );
             $obj['card'] = executeQuery('SELECT * FROM cards_listing WHERE id = $1', $obj_val_arr);
+        } else if ($obj['type'] == 'add_permission') {
+            $revisions = unserialize($obj['revisions']);
+            if (!empty($revisions['new_value']) && !empty($revisions['new_value']['slug'])) {
+                $obj_val_arr = array(
+                    $revisions['new_value']['slug'],
+                    $revisions['new_value']['role_id']
+                );
+                $obj['acl_links'] = executeQuery('SELECT * FROM acl_board_links_listing WHERE slug = $1 AND board_user_role_id = $2', $obj_val_arr);
+            }
+        } else if ($obj['type'] == 'remove_permission') {
+            $revisions = unserialize($obj['revisions']);
+            $obj['revisions'] = $revisions;
         }
         return $obj;
     }

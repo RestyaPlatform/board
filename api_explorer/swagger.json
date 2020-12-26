@@ -7238,6 +7238,9 @@
                                 "FLICKR_API_KEY": {
                                     "type": "string"
                                 },
+                                "UNSPLASH_API_KEY": {
+                                    "type": "string"
+                                },
                                 "LABEL_ICON": {
                                     "type": "string"
                                 },

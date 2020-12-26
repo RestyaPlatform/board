@@ -2,17 +2,20 @@
 		<div class="table-responsive navbar-btn">
 			<ul id = "myTab" class = "nav nav-tabs js-role-setting-tab">
 				<% 
-				var user_active,board_active,org_active;
+				var user_active,board_active,org_active,card_active;
 				if(tab_choosen == 'users'){
 					user_active = 'active'
 				}else if (tab_choosen == 'boards'){
 					board_active = 'active'
+				}else if (tab_choosen == 'cards'){
+					card_active = 'active';
 				}else{
 					org_active = 'active'
 				}
 				%>
 			   <li class="<%- user_active %>"><a href = "#users" data-toggle = "tab" id="js-rolesetting-tab" data-toggle_id="users" title="<%- i18next.t('Users') %>"><%- i18next.t('Users') %></a></li>			   
 			   <li class="<%- board_active %>"><a href = "#boards" data-toggle = "tab" id="js-rolesetting-tab" data-toggle_id="boards" title="<%- i18next.t('Boards') %>"><%- i18next.t('Boards') %></a></li>			
+			   <li class="<%- card_active %>"><a href = "#cards" data-toggle = "tab" id="js-rolesetting-tab" data-toggle_id="cards" title="<%- i18next.t('Cards') %>"><%- i18next.t('Cards') %></a></li>
 			   <li class="<%- org_active %>"><a href = "#organizations" data-toggle = "tab" id="js-rolesetting-tab" data-toggle_id="organizations" title="<%- i18next.t('Organizations') %>"><%- i18next.t('Organizations') %></a></li>			
 			</ul>
 			<div id = "myTabContent" class = "tab-content js-role-setting-content">
@@ -273,6 +276,7 @@
 							acl_board_link.acl_board_links_boards_user_roles.add(acl_board_link.attributes.acl_board_links_boards_user_roles);
 							group_id = acl_board_link.attributes.group_id - 2;
 							group = acl_board_links_groups[group_id];
+							if (parseInt(group_id) <= 2) {
 					%>
 							<% if ( group != old_group) { %>
 								<tr>
@@ -298,12 +302,91 @@
 							</tr>
 							<% old_group = group; %>
 					<%
+						}
 						});
 					%>
 				</tbody>
 			</table>
 			   </div>
 			   
+			   <div class = "tab-pane fade in <%- card_active %>" id = "cards">
+			 <div class="well-sm"></div>
+			 <table class="table js-acl-link-list acl-link-list">
+				 <thead>
+					 <th colspan="2" class="col-xs-15"><%- i18next.t('Name') %></th>
+					 <% board_user_roles.each(function(board_user_role) { %>
+						 <th class="col-xs-1 text-center">
+						 <div class="dropdown navbar-right">
+							 <a href="javascript:void(0);"><%- i18next.t(board_user_role.attributes.name) %></a>
+						</div>
+						 </th>
+					 <% }); %>
+				 </thead>
+				 <tbody class="js-acl-link-list-body acl-link-list">
+					 <%
+						 var acl_board_links_groups = ["Cards"];
+						 var group = '';
+						 var old_group = '';
+						 var group_id = '';
+						 var linked_child_fields = ["get_attachment_downloader", "get_card_comments", "get_canned_response", "get_card_checklist_item"];
+						 var linked_parent_fields = {};
+						 linked_parent_fields.get_attachment_downloader = "get_card_attachment";
+						 linked_parent_fields.get_card_comments = "view_card_activity_feed";
+						 linked_parent_fields.get_canned_response = "view_card_activity_feed";
+						 linked_parent_fields.get_card_checklist_item = "get_card_checklist";
+						 acl_board_links.each(function(acl_board_link) {
+							 if (acl_board_link.attributes.is_hide === 1) {
+								 return;
+							 }
+							 acl_board_link.acl_board_links_boards_user_roles.add(acl_board_link.attributes.acl_board_links_boards_user_roles);
+							 group_id = acl_board_link.attributes.group_id - 5;
+							 group = acl_board_links_groups[group_id];
+							 if (parseInt(group_id) === 0) {
+					 %>
+							 <% if ( group != old_group) { %>
+								 <tr>
+									 <td colspan="5" class="text-primary"><h3><%- group %></h3></td>
+								 </tr>
+							 <% } %>
+							 <tr>
+								 <td class="col-xs-1"><div class="invisible"></div></td>
+								 <td class="<% if(linked_child_fields.indexOf(acl_board_link.attributes.slug) > -1) { %>pl22<% } %>"><%- acl_board_link.attributes.name %></td>
+								 <%
+									 board_user_roles.each(function(board_user_role) {
+										 var is_enabled = acl_board_link.acl_board_links_boards_user_roles.findWhere({
+											 board_user_role_id: parseInt(board_user_role.attributes.id)
+										 });
+										 var is_disabled = false;
+										 if (!_.isUndefined(linked_parent_fields[acl_board_link.attributes.slug])) {
+											 var acl_link = acl_board_links.findWhere({
+												 slug: linked_parent_fields[acl_board_link.attributes.slug]
+											 });
+											 acl_link.acl_board_links_boards_user_roles.add(acl_link.attributes.acl_board_links_boards_user_roles);
+											 var isChecked = acl_link.acl_board_links_boards_user_roles.findWhere({
+												board_user_role_id: parseInt(board_user_role.attributes.id)
+											});
+											if (_.isUndefined(isChecked)) {
+												is_disabled = true;
+											}
+										 }
+								 %>
+										 <td class="text-center">
+											 <div class="checkbox">
+												 <input type="checkbox" class="<% if(!is_disabled) { %>cur<%} %>" name="acl_link_id[<%- board_user_role.attributes.id %>][<%- acl_board_link.attributes.id %>]" data-checked="<% if(!_.isEmpty(is_enabled)) { %>checked<% }else{ %>false<% } %>"value="<%- acl_board_link.attributes.id%>" <% if(!_.isEmpty(is_enabled)) { %> checked="checked" <% } %> id="acl_link_board_id_<%- board_user_role.attributes.id %>_<%- acl_board_link.attributes.id %>" <% if(is_disabled) { %>disabled<% } %>/>
+												 <label class="<% if(!is_disabled) { %>js-update-role<% } %> <%- acl_board_link.attributes.slug %>_<%- board_user_role.attributes.id %> <% if(is_disabled) { %>no-cur<% } %>" data-table="acl_board_links_boards_user_roles" data-acl_link_id="<%- acl_board_link.attributes.id %>"  data-role_id="<%- board_user_role.attributes.id %>" data-group_id="<%- acl_board_link.attributes.group_id %>" data-slug="<%- acl_board_link.attributes.slug %>" for="acl_link_board_id_<%- board_user_role.attributes.id %>_<%- acl_board_link.attributes.id %>"></label>
+											 </div>
+										 </td>
+								 <% }); %>
+							 </tr>
+							 <% old_group = group; %>
+					 <%
+						}
+						 });
+					 %>
+				 </tbody>
+			 </table>
+				</div>
+
 			   <div class = "tab-pane fade in <%- org_active %>" id = "organizations">
 			   <div class="pull-right well-sm dropdown"><a title="Add Organization User Role" href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-plus-sign"></i><span><%- i18next.t('Add Organization User Role') %></span></a>
 			   <ul class="dropdown-menu arrow arrow-right">

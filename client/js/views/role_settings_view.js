@@ -65,6 +65,7 @@ App.RoleSettingsView = Backbone.View.extend({
         this.role_setting_title = {
             'users': i18next.t('Users Role Settings'),
             'boards': i18next.t('Boards Role Settings'),
+            'cards': i18next.t('Cards Permission Settings'),
             'organizations': i18next.t('Organizations Role Settings')
         };
         this.render();
@@ -158,16 +159,59 @@ App.RoleSettingsView = Backbone.View.extend({
      * @type Object(DOM event)
      */
     saveRoleSettings: function(e) {
-        var self = $(e.target);
+        var self = this;
+        var target = $(e.target);
         var data = {
-            'acl_link_id': self.data('acl_link_id'),
-            'role_id': self.data('role_id'),
-            'table': self.data('table')
+            'acl_link_id': target.data('acl_link_id'),
+            'role_id': target.data('role_id'),
+            'table': target.data('table')
         };
+        if (target.data('role_id')) {
+            data.slug = target.data('slug');
+        }
         var role_setting = new App.RoleSetting();
         role_setting.set(data);
         role_setting.url = api_url + 'acl_links.json';
         role_setting.save(data);
+
+        var linked_parent_fields = {};
+        linked_parent_fields.get_card_attachment = ["get_attachment_downloader"];
+        linked_parent_fields.get_card_checklist = ["get_card_checklist_item"];
+        linked_parent_fields.view_card_activity_feed = ["get_card_comments", "get_canned_response"];
+
+        var role = $('#acl_link_board_id_' + data.role_id + '_' + data.acl_link_id);
+        if (target.data('group_id')) {
+            var fields = linked_parent_fields[target.data('slug')];
+            if (!_.isUndefined(fields)) {
+                _.each(fields, function(field) {
+                    var acl_board_link = self.acl_board_links.findWhere({
+                        slug: field
+                    });
+                    if ($(role).prop('checked')) {
+                        if ($('#acl_link_board_id_' + data.role_id + '_' + acl_board_link.id).data('checked')) {
+                            $('#acl_link_board_id_' + data.role_id + '_' + acl_board_link.id).prop('checked', false);
+                            $('#acl_link_board_id_' + data.role_id + '_' + acl_board_link.id).data('checked', false);
+                            $('.' + field + '_' + data.role_id).trigger('click');
+                        }
+                        $('.' + field + '_' + data.role_id).removeClass('js-update-role');
+                        $('#acl_link_board_id_' + data.role_id + '_' + acl_board_link.id).removeClass('cur');
+                        $('.' + field + '_' + data.role_id).addClass('no-cur');
+                        $('#acl_link_board_id_' + data.role_id + '_' + acl_board_link.id).prop('disabled', true);
+                    } else {
+                        if (!$('#acl_link_board_id_' + data.role_id + '_' + acl_board_link.id).data('checked')) {
+                            $('#acl_link_board_id_' + data.role_id + '_' + acl_board_link.id).prop('checked', 'checked');
+                            $('#acl_link_board_id_' + data.role_id + '_' + acl_board_link.id).data('checked', 'checked');
+                            $('.' + field + '_' + data.role_id).addClass('js-update-role');
+                            $('.' + field + '_' + data.role_id).trigger('click');
+                        }
+                        $('.' + field + '_' + data.role_id).removeClass('no-cur');
+                        $('#acl_link_board_id_' + data.role_id + '_' + acl_board_link.id).addClass('cur');
+                        $('#acl_link_board_id_' + data.role_id + '_' + acl_board_link.id).prop('disabled', false);
+                    }
+                });
+            }
+        }
+
     },
     /**
      * DeleteUserRoleDropdown()
