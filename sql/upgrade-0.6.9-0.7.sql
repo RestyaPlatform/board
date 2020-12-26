@@ -263,14 +263,16 @@ CREATE TABLE user_push_tokens (
     modified timestamp NOT NULL,
     user_id bigint DEFAULT (0)::bigint NOT NULL,
     token character varying(255) NOT NULL,
-    device_serial character varying(255) NOT NULL,
+    device_serial character varying(255) DEFAULT NULL,
     device_modal character varying(255) NOT NULL,
     device_brand character varying(255) NOT NULL,
     device_manufacturer character varying(255) NOT NULL,
-    device_version bigint NOT NULL,
-    app_version bigint NOT NULL,
-    device_type bigint NOT NULL,
-    appname character varying(255) NOT NULL
+    device_version character varying(255) NOT NULL,
+    app_version character varying(255) NOT NULL,
+    device_os character varying(255) NOT NULL,
+    appname character varying(255) NOT NULL,
+    last_push_notified timestamp DEFAULT NULL,
+    is_active boolean NOT NULL DEFAULT true
 );
 
 CREATE OR REPLACE VIEW "user_push_tokens_listing" AS
@@ -284,16 +286,19 @@ CREATE OR REPLACE VIEW "user_push_tokens_listing" AS
     user_push_tokens.device_manufacturer,
     user_push_tokens.device_version,
     user_push_tokens.app_version,
-    user_push_tokens.device_type,
+    user_push_tokens.device_os,
     user_push_tokens.appname,
     users.username,
     users.email,
     users.role_id,
     users.profile_picture_path,
     users.initials,
-    users.full_name
+    users.full_name,
+    to_char(user_push_tokens.last_push_notified, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS last_push_notified,
+    (user_push_tokens.is_active)::integer AS is_active
    FROM ((user_push_tokens
      LEFT JOIN users ON ((users.id = user_push_tokens.user_id))));
+
 ALTER TABLE "users"
 ADD "is_saml" boolean NOT NULL DEFAULT 'false';
 

@@ -19,7 +19,22 @@ App.AdminPushNotifictaionView = Backbone.View.extend({
      * initialize default values and actions
      */
     initialize: function(options) {
-        this.current_page = (!_.isUndefined(options.page) && options.page !== null) ? options.page : 1;
+        if (!_.isUndefined(options.page) && options.page !== null) {
+            var page_no;
+            if (options.page.indexOf('filter') !== -1) {
+                var query_param = options.page.split('&filter=');
+                page_no = query_param[0].replace('page=', '');
+                this.current_page = page_no + '&filter=' + query_param[1];
+                this.current_param = query_param[1];
+            } else {
+                page_no = options.page.split('page=');
+                this.current_page = page_no[1];
+                this.current_param = 'all';
+            }
+        } else {
+            this.current_page = 1;
+            this.current_param = 'all';
+        }
         this.render();
     },
     /**
@@ -35,6 +50,7 @@ App.AdminPushNotifictaionView = Backbone.View.extend({
     updateCollection: function() {
         var _this = this;
         _this.current_page = (!_.isUndefined(_this.current_page)) ? _this.current_page : 1;
+        _this.pagination = (!_.isUndefined(_this.pagination)) ? _this.pagination : 1;
         _this.users = new App.UserCollection();
         $('.js-user-list').html('<tr class="js-loader"><td colspan="15"><span class="cssloader"></span></td></tr>');
         _this.users.url = api_url + 'user_push_tokens.json?page=' + _this.current_page;
@@ -49,10 +65,10 @@ App.AdminPushNotifictaionView = Backbone.View.extend({
                 $('#js-navbar-default').remove();
                 var view = $('#content').html(new App.PushNotifictaionContainerView({
                     filter_count: response.filter_count,
-                    roles: response.roles
+                    roles: response.roles,
+                    'current_param': _this.current_param
                 }).el);
                 users.each(function(user) {
-                    user.roles = response.roles;
                     $('.js-pushNotification-list').append(new App.PushNotifictaionsIndex({
                         model: user
                     }).el);
@@ -67,11 +83,18 @@ App.AdminPushNotifictaionView = Backbone.View.extend({
                         callback: function(event, page) {
                             event.preventDefault();
                             if (page) {
-                                _this.current_page = page;
-                                app.navigate('#/' + 'user_push_tokens?page=' + page, {
-                                    trigger: true,
-                                    trigger_function: true,
+                                _this.pagination = 2;
+                                if (!_.isUndefined(_this.current_param) && _this.current_param !== null && _this.current_param !== 'all') {
+                                    _this.current_page = page + '&filter=' + _this.current_param;
+                                    page = _this.current_page;
+                                } else {
+                                    _this.current_page = page;
+                                }
+                                app.navigate('#/' + 'push_devices?page=' + page, {
+                                    trigger: false,
+                                    trigger_function: false,
                                 });
+                                _this.updateCollection();
                             }
                         }
                     });

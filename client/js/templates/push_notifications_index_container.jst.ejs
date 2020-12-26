@@ -1,4 +1,44 @@
 <div class="well-sm"></div>
+
+<div class="js-admin-pushToken-lists">
+  <section class="clearfix">
+    <div class="col-xs-12">
+      <ul class="nav nav-pills text-center thumbnail js-filter-list">
+        <li class="<% if(current_param === 'active') { %>active<% } %>">
+          <a class="js-filter cur" data-filter="active" title="<%- i18next.t('Active') %>">
+            <span class="show">
+              <strong>
+                <%- filter_count.active %>
+              </strong>
+            </span>
+            <%- i18next.t('Active') %>
+          </a>
+        </li>
+        <li class="<% if(current_param === 'inactive') { %>active<% } %>">
+          <a class="js-filter cur" data-filter="inactive" title="<%- i18next.t('Inactive') %>">
+            <span class="show">
+              <strong>
+                <%- filter_count.inactive %>
+              </strong>
+            </span>
+            <%- i18next.t('Inactive') %>
+          </a>
+        </li>
+        <% var all = parseInt(filter_count.active) + parseInt(filter_count.inactive); %>
+        <li class="<% if(current_param === 'all') { %>active<% } %>">
+          <a href="#/push_devices" title="<%- i18next.t('All') %>">
+            <span class="show">
+              <strong>
+                <%-  all %>
+              </strong>
+            </span>
+            <%- i18next.t('All') %>
+          </a>
+        </li>
+      </ul>
+  </section>
+</div>
+<div class="well-sm"></div>
 <section>
   <div class="well-sm"></div>
   <form role="form" class="col-xs-12">
@@ -22,52 +62,77 @@
               </span>
             </th>
             <th rowspan="2" class="text-center">
-                <span class="js-sort cur" data-field="device_serial" data-direction="desc" title="<%- i18next.t('Device Serial') %>">
-                  <span class="icon-caret-down hide"></span>
-                  <%- i18next.t("Device Serial") %>
-                </span>
+              <span class="js-sort cur" data-field="last_push_notified" data-direction="desc" title="<%- i18next.t('Last activity') %>">
+                <span class="icon-caret-down hide"></span>
+                <%- i18next.t("Last activity") %>
+              </span>
+            </th>
+            <th colspan="6" class="text-center">
+              <%- i18next.t("Device") %>
+            </th>
+            <th colspan="2" class="text-center th-width-sm">
+              <%- i18next.t("App") %>
             </th>
             <th rowspan="2" class="text-center">
-                <span class="js-sort cur" data-field="device_modal" data-direction="desc" title="<%- i18next.t('Device Modal') %>">
-                  <span class="icon-caret-down hide"></span>
-                  <%- i18next.t("Device Modal") %>
-                </span>
+              <%- i18next.t("Actions") %>
             </th>
-            <th rowspan="2" class="text-center">
-                <span class="js-sort cur" data-field="device_brand" data-direction="desc" title="<%- i18next.t('Device Brand') %>">
-                  <span class="icon-caret-down hide"></span>
-                  <%- i18next.t("Device Brand") %>
-                </span>
+          </tr>
+          <tr class="active">
+            <th class="text-center">
+              <span class="icon-caret-down hide"></span>
+              <span class="js-sort cur verticalTableHeader show" data-field="device_serial" data-direction="desc" title="<%- i18next.t('Serial') %>">
+                <span class="icon-caret-down hide"></span>
+                <%- i18next.t("Serial") %>
+              </span>
             </th>
-            <th rowspan="2" class="text-center">
-                <span class="js-sort cur" data-field="device_manufacturer" data-direction="desc" title="<%- i18next.t('Device Manufacturer') %>">
-                  <span class="icon-caret-down hide"></span>
-                  <%- i18next.t("Device Manufacturer") %>
-                </span>
+            <th class="text-center">
+              <span class="icon-caret-down hide"></span>
+              <span class="js-sort cur verticalTableHeader show" data-field="device_modal" data-direction="desc" title="<%- i18next.t('Modal') %>">
+                <span class="icon-caret-down hide"></span>
+                <%- i18next.t("Model") %>
+              </span>
             </th>
-            <th rowspan="2" class="text-center">
-                <span class="js-sort cur" data-field="device_version" data-direction="desc" title="<%- i18next.t('Device Version') %>">
-                  <span class="icon-caret-down hide"></span>
-                  <%- i18next.t("Device Version") %>
-                </span>
+            <th class="text-center">
+              <span class="icon-caret-down hide"></span>
+              <span class="js-sort cur verticalTableHeader show" data-field="device_brand" data-direction="desc" title="<%- i18next.t('Brand') %>">
+                <span class="icon-caret-down hide"></span>
+                <%- i18next.t("Brand") %>
+              </span>
             </th>
-            <th rowspan="2" class="text-center">
-                <span class="js-sort cur" data-field="app_version" data-direction="desc" title="<%- i18next.t('App version') %>">
-                  <span class="icon-caret-down hide"></span>
-                  <%- i18next.t("App version") %>
-                </span>
+            <th class="text-center">
+              <span class="icon-caret-down hide"></span>
+              <span class="js-sort cur verticalTableHeader show" data-field="device_manufacturer" data-direction="desc" title="<%- i18next.t('Manufacturer') %>">
+                <span class="icon-caret-down hide"></span>
+                <%- i18next.t("Manufacturer") %>
+              </span>
             </th>
-            <th rowspan="2" class="text-center">
-                <span class="js-sort cur" data-field="device_type" data-direction="desc" title="<%- i18next.t('Device Type') %>">
-                  <span class="icon-caret-down hide"></span>
-                  <%- i18next.t("Device Type") %>
-                </span>
+            <th class="text-center">
+              <span class="icon-caret-down hide"></span>
+              <span class="js-sort cur verticalTableHeader show" data-field="device_os" data-direction="desc" title="<%- i18next.t('Type') %>">
+                <span class="icon-caret-down hide"></span>
+                <%- i18next.t("OS") %>
+              </span>
             </th>
-            <th rowspan="2" class="text-center">
-                <span class="js-sort cur" data-field="app_name" data-direction="desc" title="<%- i18next.t('App Name') %>">
-                  <span class="icon-caret-down hide"></span>
-                  <%- i18next.t("App Name") %>
-                </span>
+            <th class="text-center">
+              <span class="icon-caret-down hide"></span>
+              <span class="js-sort cur verticalTableHeader show" data-field="device_version" data-direction="desc" title="<%- i18next.t('Version') %>">
+                <span class="icon-caret-down hide"></span>
+                <%- i18next.t("Version") %>
+              </span>
+            </th>
+            <th class="text-center">
+              <span class="icon-caret-down hide"></span>
+              <span class="js-sort cur verticalTableHeader show" data-field="app_name" data-direction="desc" title="<%- i18next.t('Name') %>">
+                <span class="icon-caret-down hide"></span>
+                <%- i18next.t("Name") %>
+              </span>
+            </th>
+            <th class="text-center">
+              <span class="icon-caret-down hide"></span>
+              <span class="js-sort cur verticalTableHeader show" data-field="app_version" data-direction="desc" title="<%- i18next.t('version') %>">
+                <span class="icon-caret-down hide"></span>
+                <%- i18next.t("version") %>
+              </span>
             </th>
           </tr>
         </thead>

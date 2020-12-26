@@ -3,7 +3,7 @@
 		<div class="row">
 			<div class="col-xs-12">
 				<div class="clearfix"> 
-					<a  title="<%- user.attributes.full_name%> (<%- user.attributes.username%>)" class="small-user pull-left show" href="#/user/<%- user.attributes.id%>">
+					<a  title="<%- user.attributes.full_name%> (<%- user.attributes.username%>)" class="small-user pull-left show" href="#/user/<%- user.attributes.user_id%>">
 						<% if(!_.isEmpty(user.attributes.profile_picture_path)){ 
 							var profile_picture_path = user.showImage('User', user.attributes.user_id, 'small_thumb' );
 						%>
@@ -23,7 +23,7 @@
 		</div>
 </td>
 <td class="text-center">
-	<div class="btn-group text-left navbar-btn dropdown">
+	<div class="htruncate js-pushNotification-token">
 		<%- user.attributes.token %>
 	</div>
 </td>
@@ -34,8 +34,18 @@
 		<span class="js-timeago-user3-<%- user.attributes.id %>"><%= parse_date(user.get('created'), authuser, 'js-timeago-user3-'+user.attributes.id, true) %></span>
 </td>
 <td class="text-center">
+	<% if (!_.isUndefined(user.attributes.last_push_notified) && !_.isEmpty(user.attributes.last_push_notified) && user.attributes.last_push_notified !== null) { %>
+	<% setInterval(function() { %>
+		<% parse_date(user.get('last_push_notified'), authuser, 'js-timeago-user4-'+user.attributes.id); %>
+	<% }, 10000); %>
+	<span class="js-timeago-user3-<%- user.attributes.id %>"><%= parse_date(user.get('last_push_notified'), authuser, 'js-timeago-user4-'+user.attributes.id, true) %></span>
+	<% } else { %>  
+		-
+	<% } %>
+</td>
+<td class="text-center">
 	<span class="show">
-        <% if (!_.isUndefined(user.attributes.device_serial) && !_.isEmpty(user.attributes.device_serial) && user.attributes.device_serial !== null) { %>
+        <% if (!_.isUndefined(user.attributes.device_serial) && !_.isEmpty(user.attributes.device_serial) && user.attributes.device_serial !== null && user.attributes.device_serial !== 'unknown') { %>
             <%- user.attributes.device_serial%>
         <% } else { %>  
             -
@@ -44,7 +54,7 @@
 </td>
 <td class="text-center">
 	<span class="show">
-        <% if (!_.isUndefined(user.attributes.device_modal) && !_.isEmpty(user.attributes.device_modal) && user.attributes.device_modal !== null) { %>
+        <% if (!_.isUndefined(user.attributes.device_modal) && !_.isEmpty(user.attributes.device_modal) && user.attributes.device_modal !== null && user.attributes.device_modal !== 'unknown') { %>
             <%- user.attributes.device_modal%>
         <% } else { %>  
             -
@@ -53,7 +63,7 @@
 </td>
 <td class="text-center">
 	<span class="show">
-        <% if (!_.isUndefined(user.attributes.device_brand) && !_.isEmpty(user.attributes.device_brand) && user.attributes.device_brand !== null) { %>
+        <% if (!_.isUndefined(user.attributes.device_brand) && !_.isEmpty(user.attributes.device_brand) && user.attributes.device_brand !== null && user.attributes.device_brand !== 'unknown') { %>
             <%- user.attributes.device_brand%>
         <% } else { %>  
             -
@@ -62,7 +72,7 @@
 </td>
 <td class="text-center">
 	<span class="show">
-        <% if (!_.isUndefined(user.attributes.device_manufacturer) && !_.isEmpty(user.attributes.device_manufacturer) && user.attributes.device_manufacturer !== null) { %>
+        <% if (!_.isUndefined(user.attributes.device_manufacturer) && !_.isEmpty(user.attributes.device_manufacturer) && user.attributes.device_manufacturer !== null && user.attributes.device_manufacturer !== 'unknown') { %>
             <%- user.attributes.device_manufacturer%>
         <% } else { %>  
             -
@@ -71,7 +81,16 @@
 </td>
 <td class="text-center">
 	<span class="show">
-        <% if (!_.isUndefined(user.attributes.device_version) && user.attributes.device_version !== null) { %>
+        <% if (!_.isUndefined(user.attributes.device_os) && user.attributes.device_os !== null && user.attributes.device_os !== 'unknown') { %>
+            <%- user.attributes.device_os%>
+        <% } else { %>  
+            -
+        <% } %>
+	</span>
+</td>
+<td class="text-center">
+	<span class="show">
+        <% if (!_.isUndefined(user.attributes.device_version) && user.attributes.device_version !== null && user.attributes.device_version !== 'unknown') { %>
             <%- user.attributes.device_version%>
         <% } else { %>  
             -
@@ -80,28 +99,35 @@
 </td>
 <td class="text-center">
 	<span class="show">
-        <% if (!_.isUndefined(user.attributes.app_version) && user.attributes.app_version !== null) { %>
+        <% if (!_.isUndefined(user.attributes.appname) && !_.isEmpty(user.attributes.appname) && user.attributes.appname !== null && user.attributes.appname !== 'unknown') { %>
+            <%- user.attributes.appname%>
+        <% } else { %>  
+            -
+        <% } %>
+	</span>
+</td>
+<td class="text-center">
+	<span class="show">
+        <% if (!_.isUndefined(user.attributes.app_version) && user.attributes.app_version !== null && user.attributes.app_version !== 'unknown') { %>
             <%- user.attributes.app_version%>
         <% } else { %>  
             -
         <% } %>
 	</span>
 </td>
-<td class="text-center">
-	<span class="show">
-        <% if (!_.isUndefined(user.attributes.device_type) && user.attributes.device_type !== null) { %>
-            <%- user.attributes.device_type%>
-        <% } else { %>  
-            -
-        <% } %>
-	</span>
-</td>
-<td class="text-center">
-	<span class="show">
-        <% if (!_.isUndefined(user.attributes.appname) && !_.isEmpty(user.attributes.appname) && user.attributes.appname !== null) { %>
-            <%- user.attributes.appname%>
-        <% } else { %>  
-            -
-        <% } %>
-	</span>
+<td>
+	<ul class="list-inline list-group-item-text">
+		<li class="navbar-btn js-user-push-token-<%- user.attributes.id %>">
+			<a href="javascript:void(0);" class="btn btn-default btn-xs <%if(parseInt(user.attributes.is_active) === 1){%>js-block-user<%}else{%>js-unblock-user<%}%>"
+			 title="<%if(parseInt(user.attributes.is_active) === 1){%><%- i18next.t('Disable') %><%}else{%><%- i18next.t('Enable') %><%}%>">
+				<i class="icon-exclamation"></i>
+				<span>
+					<%if(parseInt(user.attributes.is_active) === 1){%>
+					<%- i18next.t("Disable") %>
+					<%}else{%>
+					<%- i18next.t("Enable") %>
+					<%}%>
+				</span></a>
+		</li>
+	</ul>
 </td>

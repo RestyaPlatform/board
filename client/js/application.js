@@ -367,8 +367,8 @@ var AppRouter = Backbone.Router.extend({
         'users': 'users_index',
         'user_logins?page=:page': 'user_logins_index',
         'user_logins': 'user_logins_index',
-        'push_notifications?page=:page': 'push_notifications_index',
-        'push_notifications': 'push_notifications_index',
+        'push_devices?page=:page': 'push_devices_index',
+        'push_devices': 'push_devices_index',
         'boards/list?query_param': 'admin_boards_index',
         'boards/list': 'admin_boards_index',
         'user/:id': 'user_view',
@@ -631,9 +631,9 @@ var AppRouter = Backbone.Router.extend({
             page: page
         });
     },
-    push_notifications_index: function(page) {
+    push_devices_index: function(page) {
         new App.ApplicationView({
-            model: 'push_notifications_index',
+            model: 'push_devices_index',
             page: page
         });
     },

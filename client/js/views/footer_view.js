@@ -1060,7 +1060,7 @@ App.FooterView = Backbone.View.extend({
                                     activity.attributes.comment = _.escape(activity.attributes.full_name) + ' has mentioned you in card ' + activity.attributes.card_name + ' ' + activity.attributes.comment;
                                 }
                             }
-                            if (mode == 1 && activity.attributes.token !== authuser.access_token) {
+                            /* if (mode == 1 && activity.attributes.token !== authuser.access_token) {
                                 var user_avatar;
                                 var fullname;
                                 var notification_link;
@@ -1104,7 +1104,7 @@ App.FooterView = Backbone.View.extend({
                                 try {
                                     window.Android.jsLocalNotification(json_str);
                                 } catch (err) {}
-                            }
+                            } */
                             if (typeof Notification != 'undefined') {
                                 if (mode == 1 && activity.attributes.token !== authuser.access_token && Notification.permission === 'granted') {
                                     if (!_.isUndefined(authuser) && !_.isUndefined(authuser.user) && authuser.user.default_desktop_notification === true || authuser.user.default_desktop_notification === 'true' || authuser.user.default_desktop_notification === 't') {

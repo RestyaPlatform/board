@@ -21,7 +21,10 @@ App.PushNotifictaionsIndex = Backbone.View.extend({
      * Events
      * functions to fire on events (Mouse events, Keyboard Events, Frame/Object Events, Form Events, Drag Events, etc...)
      */
-    events: {},
+    events: {
+        'click .js-block-user': 'blockUser',
+        'click .js-unblock-user': 'unBlockUser',
+    },
     /**
      * Constructor
      * initialize default values and actions
@@ -31,6 +34,8 @@ App.PushNotifictaionsIndex = Backbone.View.extend({
             this.model.showImage = this.showImage;
         }
         this.render();
+        _.bindAll(this, 'render');
+        this.model.bind('change:is_active', this.render);
     },
     /**
      * render()
@@ -48,4 +53,44 @@ App.PushNotifictaionsIndex = Backbone.View.extend({
         this.showTooltip();
         return this;
     },
+    /**
+     * blockUser()
+     * @param e
+     * @type Object(DOM event)
+     */
+    blockUser: function(e) {
+        e.preventDefault();
+        var self = this;
+        this.model.set('user_push_token_is_active', 0);
+        this.model.url = api_url + 'users/' + this.model.attributes.user_id + '.json';
+        this.model.save({
+            user_push_token_is_active: 0,
+            user_push_token_id: this.model.attributes.id
+        }, {
+            patch: true,
+            success: function(model, response) {
+                self.model.set("is_active", 0);
+            }
+        });
+    },
+    /**
+     * unBlockUser()
+     * @param e
+     * @type Object(DOM event)
+     */
+    unBlockUser: function(e) {
+        e.preventDefault();
+        var self = this;
+        this.model.set('user_push_token_is_active', 1);
+        this.model.url = api_url + 'users/' + this.model.attributes.user_id + '.json';
+        this.model.save({
+            user_push_token_is_active: 1,
+            user_push_token_id: this.model.attributes.id
+        }, {
+            patch: true,
+            success: function(model, response) {
+                self.model.set("is_active", 1);
+            }
+        });
+    }
 });

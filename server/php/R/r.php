@@ -320,11 +320,18 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         if (!empty($r_resource_filters['sort'])) {
             $order_by = $r_resource_filters['sort'];
             $direction = $r_resource_filters['direction'];
+        } else if (!empty($r_resource_filters['filter'])) {
+            $filter_condition = 'WHERE ';
+            if ($r_resource_filters['filter'] == 'inactive') {
+                $filter_condition.= 'is_active = 0';
+            } else {
+                $filter_condition.= 'is_active = 1';
+            }
         } else if (!empty($r_resource_filters['search'])) {
             $filter_condition = "WHERE LOWER(full_name) LIKE '%" . strtolower($r_resource_filters['search']) . "%' OR LOWER(email) LIKE '%" . strtolower($r_resource_filters['search']) . "%' ";
         }
         $c_sql = 'SELECT COUNT(*) FROM user_push_tokens_listing ul ';
-        if (!empty($r_resource_filters['search'])) {
+        if (!empty($r_resource_filters['search']) || !empty($r_resource_filters['filter'])) {
             $c_sql = 'SELECT COUNT(*) FROM user_push_tokens_listing ul ' . $filter_condition;
         }
         if (!empty($c_sql)) {
@@ -332,6 +339,20 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             $_metadata = $paging_data['_metadata'];
         }
         $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM user_push_tokens_listing ul ' . $filter_condition . ' ORDER BY ' . $order_by . ' ' . $direction . ' limit ' . $_metadata['limit'] . ' offset ' . $_metadata['offset'] . ') as d ';
+        $filter_count = array();
+        $val_array = array(
+            true
+        );
+        $active_count = executeQuery('SELECT count(*) FROM user_push_tokens WHERE is_active = $1', $val_array);
+        $filter_count['active'] = $active_count['count'];
+        $val_array = array(
+            0
+        );
+        $inactive_count = executeQuery('SELECT count(*) FROM user_push_tokens WHERE is_active = $1', $val_array);
+        $filter_count['inactive'] = $inactive_count['count'];
+        $val_array = array(
+            true
+        );
         if (!empty($sql)) {
             if ($result = pg_query_params($db_lnk, $sql, $pg_params)) {
                 $data = array();
@@ -339,6 +360,9 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 while ($row = pg_fetch_row($result)) {
                     $obj = json_decode($row[0], true);
                     $data['data'][] = $obj;
+                }
+                if (!empty($_metadata) && !empty($filter_count)) {
+                    $data['filter_count'] = $filter_count;
                 }
                 if (!empty($_metadata)) {
                     $data['_metadata'] = $_metadata;
