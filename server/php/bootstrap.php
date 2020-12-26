@@ -56,7 +56,7 @@ function main()
                     'access_token' => $_GET['token']
                 );
                 $response = executeQuery("SELECT user_id as username, expires, scope, client_id FROM oauth_access_tokens WHERE access_token = $1", $conditions);
-                $expires = strtotime($response['expires']);
+                $expires = !empty($response['expires']) ? strtotime($response['expires']) : time();
                 $clientresponse = executeQuery("SELECT is_expirable_token FROM oauth_clients WHERE client_id = $1", array(
                     'client_id' => OAUTH_CLIENTID
                 ));
