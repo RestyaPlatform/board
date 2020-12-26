@@ -16,6 +16,7 @@ var is_append_activities = true;
 var SITE_NAME = '';
 var DROPBOX_APPKEY = '';
 var FLICKR_API_KEY = '';
+var UNSPLASH_API_KEY = '';
 var LABEL_ICON = '';
 var SITE_TIMEZONE = '';
 var LDAP_LOGIN_ENABLED = '';
@@ -28,6 +29,7 @@ var CALENDAR_VIEW_CARD_COLOR = '';
 var PAGING_COUNT = '';
 var ALLOWED_FILE_EXTENSIONS = '';
 var R_LDAP_LOGIN_HANDLE = '';
+var R_SAML_ENTITY_NAME = '';
 var R_MLDAP_LOGIN_HANDLE = '';
 var R_MLDAP_SERVERS = '';
 var last_activity = '';
@@ -176,7 +178,7 @@ callbackTranslator = {
                 $('#content').html(view.el);
                 return;
             } else if (model !== null && !_.isUndefined(model.status) && model.status == '401') {
-                if ((!_.isUndefined(model.responseText) && !_.isEmpty(model.responseText) && JSON.parse(model.responseText).error.type === 'OAuth') || (!_.isUndefined(model.statusText) && !_.isEmpty(model.statusText) && model.statusText === 'Unauthorized')) {
+                if ((!_.isUndefined(model.responseText) && !_.isEmpty(model.responseText) && JSON.parse(model.responseText).error.type === 'OAuth') || (!_.isUndefined(model.statusText) && !_.isEmpty(model.statusText) && model.statusText === 'Unauthorized') || (!_.isUndefined(model.statusText) && !_.isEmpty(model.statusText) && model.statusText === 'error')) {
                     api_token = '';
                     if ($.cookie('auth') !== undefined && $.cookie('auth') !== null) {
                         var Auth = JSON.parse($.cookie('auth'));
@@ -356,6 +358,7 @@ var AppRouter = Backbone.Router.extend({
         'users/admin_user_add': 'admin_user_add',
         'users/register': 'register',
         'users/login': 'login',
+        'users/saml/:id': 'saml_authentication',
         'users/logout': 'logout',
         'users/forgotpassword': 'forgotpassword',
         'users/activation/:id/:hash': 'user_activation',
@@ -424,6 +427,13 @@ var AppRouter = Backbone.Router.extend({
         $('.dockmodal, .dockmodal-overlay').remove();
         new App.ApplicationView({
             model: 'login'
+        });
+    },
+    saml_authentication: function(id) {
+        $('.dockmodal, .dockmodal-overlay').remove();
+        new App.ApplicationView({
+            model: 'saml_authentication',
+            'id': id
         });
     },
     user_verification: function(id) {

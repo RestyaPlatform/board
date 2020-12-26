@@ -353,7 +353,7 @@ function insertActivity($user_id, $comment, $type, $foreign_ids = array() , $rev
             }
         }
     }
-    if (!empty($foreign_ids['board_id']) || !empty($foreign_ids['organization_id']) || !empty($foreign_ids['user_id'])) {
+    if (!empty($foreign_ids['board_id']) || !empty($foreign_ids['organization_id']) || !empty($foreign_ids['user_id']) || $type === 'add_permission' || $type === 'remove_permission') {
         $val = '';
         for ($i = 1, $len = count($values); $i <= $len; $i++) {
             $val.= '$' . $i;

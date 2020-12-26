@@ -4,7 +4,8 @@
 <section class="row js-card-dock-modal-<%- card.attributes.id %> js-card-container" id="dropzone<%- card.attributes.id %>" data-mode="1" data-board_id = "<%- card.attributes.board_id %>" data-list_id = "<%- card.attributes.list_id %>">
   <div class="pull-right js-attachment-loader"></div>
   <div class="clearfix col-xs-12 printable">
-  <h3 class="navbar-btn"> <span class="icon-credit-card text-muted"></span> <a href="" title="<%- card.attributes.name %>" class="<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: "edit_card",board_user_role_id: parseInt(list.board_user_role_id)})))){ %>js-show-card-title-edit-form<% }else{ %> js-no-action<%}%>"><%- card.attributes.name %></a><small class = "no-print">&nbsp;<%- i18next.t('in list') %>&nbsp;</small><span class="dropdown"><a class="dropdown-toggle <% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 ||  !_.isEmpty(card.list.collection.board.acl_links.where({slug: 'move_list_cards',board_user_role_id: parseInt(list.board_user_role_id)})))){ %>js-show-move-card-form<%}else{%>js-no-action<%}%>" data-toggle="dropdown" title="<%- list.attributes.name %>" href="#"><%- list.attributes.name %></a>
+  <% if(!_.isUndefined(authuser.user) && (!_.isEmpty(card.list.collection.board.acl_links.where({slug: "get_card_title",board_user_role_id: parseInt(list.board_user_role_id)})))){ %>
+  <h3 class="navbar-btn"> <span class="icon-credit-card text-muted"></span> <a href="" title="<%- card.attributes.name %>" class="<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: "edit_card",board_user_role_id: parseInt(list.board_user_role_id)})))){ %>js-show-card-title-edit-form<% }else{ %> js-no-action<%}%>"><%- card.attributes.name %></a><small class = "no-print">&nbsp;<%- i18next.t('in list') %>&nbsp;</small><span class="dropdown"><a class="dropdown-toggle <% if(!_.isUndefined(authuser.user) && CheckFieldPermission(card.list.collection.board, list.board_user_role_id, 'move_card')&& (authuser.user.role_id == 1 ||  !_.isEmpty(card.list.collection.board.acl_links.where({slug: 'move_list_cards',board_user_role_id: parseInt(list.board_user_role_id)})))){ %>js-show-move-card-form<%}else{%>js-no-action<%}%>" data-toggle="dropdown" title="<%- list.attributes.name %>" href="#"><%- list.attributes.name %></a>
   <% if(!_.isUndefined(authuser.user)){ %>
 	<ul class="dropdown-menu arrow col-xs-12 panel-body">
 		<li class="col-xs-12 clearfix text-center"><div> <span class="col-xs-10"><strong><%- i18next.t('Move Card') %></strong></span><a class="js-close-popover pull-right" href="#"><i class="icon-remove "></i></a></div></li>
@@ -23,6 +24,7 @@
 	</span>
 	<span class="icon-eye-open hide" id="js-title-subscribe-icon-<%- card.attributes.id %>" ></span>
   </h3>
+  <% } %>
   <div class="clearfix navbar-btn row">
 	  <div class="splitter-wrap editor ui-resizable" >
 		<div class="col-xs-12">
@@ -46,6 +48,7 @@
 				  <% } %>
 				</div>
 				<ul class="list-group-item-text list-inline clearfix">
+				  <% if(!_.isUndefined(authuser.user) && CheckFieldPermission(card.list.collection.board, list.board_user_role_id, 'get_card_member')) { %>
 				  <li class="mar-bottom">
 					<h4 class="text-muted list-group-item-heading"><%- i18next.t('Members') %></h4>
 					<ul class="list-inline clearfix" id="js-card-users-list-<%- card.attributes.id %>">
@@ -74,13 +77,17 @@
 					  <%}%>
 					</ul>
 				  </li>
+				  <% } %>
+				  <% if(CheckFieldPermission(card.list.collection.board, list.board_user_role_id, 'get_card_labels')) { %>
 				  <% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 ||  !_.isEmpty(card.list.collection.board.acl_links.where({slug: "view_card_labels",board_user_role_id: parseInt(list.board_user_role_id)})))) { %>
 				  <li class="mar-bottom">
 					<h4 class="text-muted list-group-item-heading"><%- i18next.t('Labels') %></h4>
 					<ul class="list-inline clearfix js-card-labels-list"></ul>
 				  </li>
 				  <% } %> 
-					<% if (!_.isEmpty(card.card_voters)) { %>
+				  <% } %>
+				  <% if(CheckFieldPermission(card.list.collection.board, list.board_user_role_id, 'get_card_vote')) { %>
+				  <% if (!_.isEmpty(card.card_voters)) { %>
 					  <li class="mar-bottom">
 						<h4 class="text-muted list-group-item-heading"><%- i18next.t('Votes') %></h4>
 						<ul class="list-inline clearfix">
@@ -94,15 +101,19 @@
 					</ul>
 				  </li>
 				  <% } %>
+				  <% } %>
+				  <% if(CheckFieldPermission(card.list.collection.board, list.board_user_role_id, 'get_gantt_view')) { %>
 					<li class="after-start-date-<%- card.id %> mar-bottom">
 					</li>
+				  <% } %>
 					<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: "get_custom_fields",board_user_role_id: parseInt(list.board_user_role_id)})))){ %>
 						<li id="js-custom-fields-listing-<%- card.attributes.id %>"></li>
 					<% } %>
-					<% if(!_.isUndefined(authuser.user)) { %>
+					<% if(!_.isUndefined(authuser.user) && CheckFieldPermission(card.list.collection.board, list.board_user_role_id, 'get_card_due_date')) { %>
 						<li class="mar-bottom" id="js-modal-duedate-show-<%- card.attributes.id %>"></li>
 					<% } %>
 				</ul>
+				<% if (CheckFieldPermission(card.list.collection.board, list.board_user_role_id, 'get_card_description')) { %>
 					<div class="list-group-item-text clearfix github-markdown">
 					  <h4 class="text-muted"><%- i18next.t('Description') %> 
 					  <% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: "edit_card",board_user_role_id: parseInt(list.board_user_role_id)})))){ %>
@@ -140,14 +151,20 @@
 					  </form>
 					  <% }%>
 					</div>
+				<% } %>
+				<% if(CheckFieldPermission(card.list.collection.board, list.board_user_role_id, 'get_gantt_view')) { %>
 				<div class="list-group-item-text clearfix js-card_dependency-listing-<%- card.attributes.id %>">
 				</div>
+				<% } %>
 				<div class="list-group-item-text clearfix js-salesforce-listing-<%- card.attributes.id %>">
 				</div>
+				<% if(CheckFieldPermission(card.list.collection.board, list.board_user_role_id, 'get_card_checklist')) { %>
 				<div id="js-card-checklists"></div>
+				<% } %>
 					<div class="list-group-item-text clearfix js-card-drawio-section">
 						<ul class="list-unstyled clearfix attachment-list" id="js-card-drawio-list"></ul>
 					</div>
+				<% if(CheckFieldPermission(card.list.collection.board, list.board_user_role_id, 'get_card_attachment')) { %>
 				<% if(!_.isEmpty(card.attachments)){ %>
 				<div class="list-group-item-heading clearfix js-modalCard-attachments-<%- card.id %>">
 				  <h3 class="pull-left"> <span class="pull-left"><i class="icon-paper-clip lead"></i></span><%- i18next.t('Attachment') %></h3>
@@ -184,6 +201,7 @@
 				  <% } %>
 				</div>
 				<% } %>
+				<% } %>
 				<% if(!_.isUndefined(authuser.user)) { %>
 				<div class="list-group-item-text clearfix no-print">	
 					<div class="col-xs-12 row">
@@ -191,6 +209,7 @@
 					</div>
 					<a class="hide js-app-activity-trigger"></a>
 					<ul class="js-card-actions js-card-add list-inline action-list navbar-btn">
+						<% if(CheckFieldPermission(card.list.collection.board, list.board_user_role_id, 'get_card_color')) { %>
 						<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: "edit_card",board_user_role_id: parseInt(list.board_user_role_id)})))){ %>
 						<li class="dropdown js-color-dropdown-<%- card.id %>">
 								<% if(!_.isEmpty(card.attributes.color)){ %>
@@ -255,11 +274,15 @@
 										<% } %>
 								</ul>
 						</ul>
-					</li>
+						</li>
+						<% } %>
 					<% } %>
+					<% if(CheckFieldPermission(card.list.collection.board, list.board_user_role_id, 'get_gantt_view')) { %>
 					<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: "edit_card",board_user_role_id: parseInt(list.board_user_role_id)})))){ %>
 					<li class = "check_start_date_set-<%- card.id%> js-gantt-card-app" data-card_id = "<%- card.id%>"></li>
 					<% } %>
+					<% } %>
+					<% if (CheckFieldPermission(card.list.collection.board, list.board_user_role_id, 'get_card_due_date')) { %>
 					<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: "edit_card",board_user_role_id: parseInt(list.board_user_role_id)})))){ %>
 					<li class="dropdown"> <a class="btn btn-default dropdown-toggle js-show-card-due-date-form custom-datepicker-position js-due-date-intiated-<%=card.attributes.id%>  even-action htruncate" role="button" data-toggle="dropdown" title="<%- i18next.t('Due Date') %>" href="#"><i class="icon-calendar"></i><%- i18next.t('Due Date') %></a>
 					  <ul class="dropdown-menu dropdown-menu-left arrow col-xs-12">
@@ -305,6 +328,8 @@
 					  </ul>
 					</li>
 					<% } %>
+					<% } %>
+					<% if(CheckFieldPermission(card.list.collection.board, list.board_user_role_id, 'get_card_checklist')) { %>
 					<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 ||  !_.isEmpty(card.list.collection.board.acl_links.where({slug: "add_checklists",board_user_role_id: parseInt(list.board_user_role_id)})))) { %>
 						<li class="dropdown"> <a class="btn btn-default dropdown-toggle js-show-checklist-add-form even-action htruncate" role="button" data-toggle="dropdown" data-action="modalcard" title="<%- i18next.t('Checklist') %>" href="#"><i class="icon-list-ul"></i><%- i18next.t('Checklist') %></a>
 						  <ul class="dropdown-menu dropdown-menu-left arrow col-xs-12">
@@ -313,6 +338,7 @@
 							<li class="col-xs-12 js-checklist-add-form-response-card-<%- card.id %>"> </li>
 						  </ul>
 						</li>
+					<% } %>
 					<% } %>
 					<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: "get_custom_fields",board_user_role_id: parseInt(list.board_user_role_id)})))) { %>
 					<li id="js-custom-fields-edi-listing-<%- card.id%>"></li>
@@ -326,6 +352,7 @@
 					  <h3 class="pull-left"><%- i18next.t('Actions') %></h3>
 				    </div>
 				<ul class="js-card-actions list-inline action-list navbar-btn">
+					<% if(CheckFieldPermission(card.list.collection.board, list.board_user_role_id, 'move_card')) { %>
 					<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 ||  !_.isEmpty(card.list.collection.board.acl_links.where({slug: "move_list_cards",board_user_role_id: parseInt(list.board_user_role_id)})))) { %>
 					<li class="dropdown js-card-custom-app" data-card_id = "<%- card.id%>"> <a class="btn btn-default dropdown-toggle js-show-move-card-form js-card-header-action even-action htruncate" role="button" data-toggle="dropdown" title="<%- i18next.t('Move') %>" href="#"><i class="icon-folder-close js-card-header-action"></i><%- i18next.t('Move') %></a>
 					  <ul class="dropdown-menu dropdown-menu-left arrow col-xs-12">
@@ -343,6 +370,8 @@
 					  </ul>
 					</li>
 					<% } %>
+					<% } %>
+					<% if(CheckFieldPermission(card.list.collection.board, list.board_user_role_id, 'copy_cards')) { %>
 					<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 ||  !_.isEmpty(card.list.collection.board.acl_links.where({slug: "copy_card",board_user_role_id: parseInt(list.board_user_role_id)})))  && !is_offline_data){ %>
 						<li class="dropdown js-hide-on-offline navbar-btn"> <a class="btn btn-default dropdown-toggle js-show-copy-card-form even-action htruncate" role="button" data-toggle="dropdown" data-action="modalcard-actions" title="<%- i18next.t('Copy') %>" href="#"><i class="icon-copy" data-action="modalcard-actions"></i><%- i18next.t('Copy') %></a>
 						  <ul class="dropdown-menu dropdown-menu-left arrow col-xs-12 pre-scrollable vertical-scrollbar">
@@ -364,24 +393,35 @@
 						  </ul>
 						</li>
 					<% } %>
+					<% } %>
+					<% if(CheckFieldPermission(card.list.collection.board, list.board_user_role_id, 'subscribe_cards')) { %>
 					<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || (((!_.isEmpty(card.list.collection.board.acl_links.where({slug: "subscribe_card",board_user_role_id: parseInt(list.board_user_role_id)}))) || (!_.isEmpty(card.list.collection.board.acl_links.where({slug: "unsubscribe_card",board_user_role_id: parseInt(list.board_user_role_id)}))))  || (!_.isEmpty(role_links.where({slug: "subscribe_card"})) && card.list.collection.board.attributes.board_visibility == 2) || (!_.isEmpty(role_links.where({slug: "unsubscribe_card"})) && card.list.collection.board.attributes.board_visibility == 2)))) { %>
 						<li class="navbar-btn" id="js-modal-subscribe-show-<%- card.attributes.id%>"></li>
 				   <% } %>
+				   <% } %>
+				   <% if(CheckFieldPermission(card.list.collection.board, list.board_user_role_id, 'get_card_template')) { %>
 					<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: "card_template_add",board_user_role_id: parseInt(list.board_user_role_id)})))) { %>
 					 <li class = "card_templete_set-<%- card.id%> js-card-template-app dropdown" data-card_id = "<%- card.id%>"></li>
+					 <% } %> 
 					 <% } %> 
 					 </ul>	
 				</div>
 				<div class="list-group-item-text clearfix no-print">	
+					<% if(CheckFieldPermission(card.list.collection.board, list.board_user_role_id, 'archive_cards')) { %>
 					<div class="col-xs-12 row">
 						<h3 class="pull-left"><%- i18next.t('Archive') %></h3>
 					</div>
+					<% } %>
 					<ul class="js-card-actions list-inline action-list navbar-btn">
+						<% if(CheckFieldPermission(card.list.collection.board, list.board_user_role_id, 'archive_cards')) { %>
 						<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: "archive_card",board_user_role_id: parseInt(list.board_user_role_id)})))) { %>
 							<li class="navbar-btn" id="js-modal-archieved-show-<%- card.attributes.id%>"> </li>
-					<% } %>
+						<% } %>
+						<% } %>
+					<% if(CheckFieldPermission(card.list.collection.board, list.board_user_role_id, 'delete_cards')) { %>
 					<% if((!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: "delete_card",board_user_role_id: parseInt(list.board_user_role_id)}))))){ %>
 						<li class="navbar-btn dropdown" id="js-modal-archive-delete-<%- card.attributes.id%>"></li>
+					<% } %>
 					<% } %>
 					</ul>
 				</div>
@@ -396,15 +436,19 @@
 		 } %>
 	  <div class="splitter-wrap ui-resizable"> 
 	  <div class="inner col-xs-12">   
+		<% if(CheckFieldPermission(card.list.collection.board, list.board_user_role_id, 'view_card_activity_feed')) { %>
 		<ul class="list-unstyled navbar-btn row"  id="card_activities">
 		  <li class="list-group-item list-group-item-info clearfix">
+			<% if(CheckFieldPermission(card.list.collection.board, list.board_user_role_id, 'get_card_comments')) { %>
 			<% if(add_comment_permission){ %>
 				<div class="list-group-item-heading clearfix">
 					<h3 class="pull-left"><%- i18next.t('Add Comment') %></h3>
 				</div>
 			<% } %>
+			<% } %>
 			<div class="list-group-item-text">
 			  <ul class="media-list comment-list activity-mod-comments">
+				<% if(CheckFieldPermission(card.list.collection.board, list.board_user_role_id, 'get_card_comments')) { %>
 				<% if(add_comment_permission){ %>
 				<li class="media media-comment comment-block">
 						<div class="row">
@@ -505,6 +549,7 @@
 					</div>
 				</li>
 				<% } %>
+				<% } %>
 				<li> </li>
 				<div class="clearfix">
 				  <h3 class="pull-left"><%- i18next.t('Activity') %></h3>
@@ -522,6 +567,7 @@
 			</div>
 			</li>
 		  </ul>
+		<% } %>
 		</div>
 	  </div>
   </div>
@@ -533,6 +579,7 @@
   <div class="dropdown dockheader-dropdown docmodal-submenu js-modal-settings hide">
   <a aria-expanded="true" data-toggle="dropdown" id="dropdownMenu1" class="dropdown-toggle label"> <i class="icon-cog h3"></i></a>
   <ul role="menu" class="dropdown-menu arrow">
+		<% if(CheckFieldPermission(card.list.collection.board, list.board_user_role_id, 'get_card_color')) { %>
 		<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: "edit_card",board_user_role_id: parseInt(list.board_user_role_id)})))){ %>
 		<li class="dropdown js-show-color-settings-dropdown-<%- card.id %>"><a class="dropdown-toggle js-show-color-settings" href="#" title="Color" data-toggle="dropdown"><i class="text-primary"></i>Color</a>
 				<ul class="dropdown-menu dropdown-menu-left dropdown-new arrow selectcolourdown col-xs-12">
@@ -596,6 +643,8 @@
 			</ul>
 		</li>
 		<% } %>
+		<% } %>
+	  <% if (CheckFieldPermission(card.list.collection.board, list.board_user_role_id, 'get_card_due_date')) { %>
 	  <% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: "edit_card",board_user_role_id: parseInt(list.board_user_role_id)})))){ %>
 		<li class="dropdown"> <a class="dropdown-toggle js-show-card-due-date-form js-due-date-action-<%=card.attributes.id%> custom-datepicker-position" role="button" data-toggle="dropdown" title="<%- i18next.t('Due Date') %>" href="#"><%- i18next.t('Due Date') %></a>
 		  <ul class="dropdown-menu dropdown-menu-left arrow col-xs-12">
@@ -641,6 +690,8 @@
 		  </ul>
 		</li>
 		<% } %>
+		<% } %>
+		<% if(!_.isUndefined(authuser.user) && CheckFieldPermission(card.list.collection.board, list.board_user_role_id, 'get_card_member')) { %>
 		<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 ||  !_.isEmpty(card.list.collection.board.acl_links.where({slug: "add_card_user",board_user_role_id: parseInt(list.board_user_role_id)})))) { %>
 			<li class="dropdown"><a data-toggle="dropdown" class="dropdown-toggle js-show-add-member-form js-card-header-action" title="<%- i18next.t('Members') %>" href="#"><%- i18next.t('Members') %></a>
 				  <ul class="dropdown-menu arrow">
@@ -660,12 +711,16 @@
 				  </ul>
 			</li>
 		<% } %>
+		<% } %>
+		<% if(!_.isUndefined(authuser.user) && CheckFieldPermission(card.list.collection.board, list.board_user_role_id, 'get_card_labels')) { %>
 		<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 ||  !_.isEmpty(card.list.collection.board.acl_links.where({slug: "add_labels",board_user_role_id: parseInt(list.board_user_role_id)})))) { %>
 			<li class="dropdown"> <a class="dropdown-toggle js-show-card-label-form js-card-header-action" role="button" data-toggle="dropdown" title="<%- i18next.t('Labels') %>" href="#"><%- i18next.t('Labels') %></a>
 				<ul class="dropdown-menu dropdown-menu-left arrow col-xs-12 js-show-card-label-form-response">
 				</ul>
 			</li>
 		<% } %>
+		<% } %>
+		<% if(CheckFieldPermission(card.list.collection.board, list.board_user_role_id, 'get_card_checklist')) { %>
 		<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 ||  !_.isEmpty(card.list.collection.board.acl_links.where({slug: "add_checklists",board_user_role_id: parseInt(list.board_user_role_id)})))) { %>
 		    <li class="dropdown"> <a class="dropdown-toggle js-show-checklist-add-form" role="button" data-toggle="dropdown" data-action="modalcard-actions" title="<%- i18next.t('Checklist') %>" href="#"><%- i18next.t('Checklist') %></a>
 		      <ul class="dropdown-menu dropdown-menu-left arrow col-xs-12">
@@ -674,7 +729,9 @@
 				<li class="col-xs-12 js-checklist-add-form-response-actions-<%- card.id %>"> </li>
 		      </ul>
 		    </li>
-	    <% } %>
+		<% } %>
+		<% } %>
+		<% if(CheckFieldPermission(card.list.collection.board, list.board_user_role_id, 'get_card_title') || CheckFieldPermission(card.list.collection.board, list.board_user_role_id, 'get_card_description')) { %>
 		<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 ||  !_.isEmpty(card.list.collection.board.acl_links.where({slug: "edit_card",board_user_role_id: parseInt(list.board_user_role_id)})))) { %>
 			<li class="dropdown"> <a class="js-show-side-card-title-edit-form" role="button" data-toggle="dropdown" title="<%- i18next.t('Info') %>" href="#"><%- i18next.t('Info') %></a>
 			  <ul class="dropdown-menu dropdown-menu-left arrow col-xs-12">
@@ -682,14 +739,18 @@
 				<li class="col-xs-12 divider"></li>
 				<li class="col-xs-12 js-show-side-card-title-edit-form-response">
 				  <form class="js-card-edit-form" method="POST">
+					<% if (CheckFieldPermission(card.list.collection.board, list.board_user_role_id, 'get_card_title')) { %>
 					<div class="form-group">
 					  <label for="cardTitle<%- card.id%>"><%- i18next.t('Title') %></label>
 					  <input type="text" class="form-control" id="cardTitle<%- card.id%>" name="name" data-format="hh:mm:ss" value="<%- card.attributes.name %>"/>
 					</div>
+					<% } %>
+					<% if (CheckFieldPermission(card.list.collection.board, list.board_user_role_id, 'get_card_description')) { %>
 					<div class="form-group">
 					  <label for="cardDescription<%- card.id%>"><%- i18next.t('Description') %></label>
 					  <textarea name="description" rows="3" class="form-control" id="cardDescription<%- card.id%>"><%- card.attributes.description %></textarea>
 					</div>
+					<% } %>
 					<div class="form-group">
 					  <div class="col-xs-6 nav">
 						<label for="save" class="sr-only"><%- i18next.t('Save') %></label>
@@ -701,6 +762,8 @@
 			  </ul>
 			</li>
 			<% } %>
+			<% } %>
+			<% if(CheckFieldPermission(card.list.collection.board, list.board_user_role_id, 'get_card_attachment')) { %>
 			<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 ||  !_.isEmpty(card.list.collection.board.acl_links.where({slug: "add_card_attachment",board_user_role_id: parseInt(list.board_user_role_id)})))) { %>
 			<li class="dropdown"> <a class="dropdown-toggle js-load-dropbox js-card-header-action" role="button" data-toggle="dropdown" title="<%- i18next.t('Attachment') %>" href="#"><%- i18next.t('Attachment') %></a>
 			  <ul class="dropdown-menu dropdown-menu-left arrow col-xs-12">
@@ -725,10 +788,12 @@
 				</li>
 			  </ul>
 			</li>
-	  <% } %>
+		 <% } %>
+		 <% } %>
 		</li>
 		<li class="col-xs-12 divider"></li>
 	  <% if(!_.isUndefined(authuser.user)) { %>
+		<% if(CheckFieldPermission(card.list.collection.board, list.board_user_role_id, 'move_card')) { %>
 		<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 ||  !_.isEmpty(card.list.collection.board.acl_links.where({slug: "move_list_cards",board_user_role_id: parseInt(list.board_user_role_id)})))) { %>
 		<li class="dropdown"> <a class="dropdown-toggle js-show-move-card-form js-card-header-action" role="button" data-toggle="dropdown" title="<%- i18next.t('Move') %>" href="#"><%- i18next.t('Move') %></a>
 			<ul class="dropdown-menu dropdown-menu-left arrow col-xs-12">
@@ -746,6 +811,8 @@
 			</ul>
 		</li>
 		<% } %>
+		<% } %>
+		<% if(CheckFieldPermission(card.list.collection.board, list.board_user_role_id, 'copy_cards')) { %>
 		<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 ||  !_.isEmpty(card.list.collection.board.acl_links.where({slug: "copy_card",board_user_role_id: parseInt(list.board_user_role_id)})))  && !is_offline_data){ %>
 			<li class="dropdown js-hide-on-offline"> <a class="dropdown-toggle js-show-copy-card-form" role="button" data-toggle="dropdown" data-action="modalcard" title="<%- i18next.t('Copy') %>" href="#"><%- i18next.t('Copy') %></a>
 				<ul class="dropdown-menu dropdown-menu-left arrow col-xs-12 pre-scrollable vertical-scrollbar" style="max-height: 180px; overflow-y: auto;">
@@ -767,20 +834,30 @@
 				</ul>
 			</li>
 		<% } %>
+		<% } %>
+		<% if(CheckFieldPermission(card.list.collection.board, list.board_user_role_id, 'subscribe_cards')) { %>
 		<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || (((!_.isEmpty(card.list.collection.board.acl_links.where({slug: "subscribe_card",board_user_role_id: parseInt(list.board_user_role_id)}))) || (!_.isEmpty(card.list.collection.board.acl_links.where({slug: "unsubscribe_card",board_user_role_id: parseInt(list.board_user_role_id)}))))  || (!_.isEmpty(role_links.where({slug: "subscribe_card"})) && card.list.collection.board.attributes.board_visibility == 2) || (!_.isEmpty(role_links.where({slug: "unsubscribe_card"})) && card.list.collection.board.attributes.board_visibility == 2)))) { %>
 			<li id="js-header-dropdown-subscribe-<%- card.attributes.id %>"></li>
-			<% } %>
-			<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: "vote_card",board_user_role_id: parseInt(list.board_user_role_id)})) || !_.isEmpty(card.list.collection.board.acl_links.where({slug: "unvote_card",board_user_role_id: parseInt(list.board_user_role_id)})))) { %>
+		<% } %>
+		<% } %>
+		<% if (CheckFieldPermission(card.list.collection.board, list.board_user_role_id, 'get_card_vote')) { %>
+		<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: "vote_card",board_user_role_id: parseInt(list.board_user_role_id)})) || !_.isEmpty(card.list.collection.board.acl_links.where({slug: "unvote_card",board_user_role_id: parseInt(list.board_user_role_id)})))) { %>
 				<li id="js-header-voteshow-<%- card.id %>"></li>
-			<% } %>
+		<% } %>
+		<% } %>
+		<% if(CheckFieldPermission(card.list.collection.board, list.board_user_role_id, 'get_card_template')) { %>
 		<li class = "card_templete_action_set-<%- card.id%> js-card-template-app dropdown" data-card_id = "<%- card.id%>"></li>
+		<% } %>
 		<li class="col-xs-12 divider"></li>
+		<% if(CheckFieldPermission(card.list.collection.board, list.board_user_role_id, 'archive_cards')) { %>
 		<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: "archive_card",board_user_role_id: parseInt(list.board_user_role_id)})))) { %>
 			<li id="js-modal-header-archieved-show-<%- card.attributes.id%>"> </li>
-		</li>
 		<% } %>
+		<% } %>
+		<% if(CheckFieldPermission(card.list.collection.board, list.board_user_role_id, 'delete_cards')) { %>
 		<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: "delete_card",board_user_role_id: parseInt(list.board_user_role_id)})))){ %>
 			<li class="dropdown" id="js-modal-action-card-delete-<%- card.attributes.id%>"></li>
+		<% } %>
 		<% } %>
 		<% } %>
 		<% 
