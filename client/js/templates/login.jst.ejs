@@ -5,34 +5,41 @@
 		 </div>
 		 <div class="panel-body well-lg">
 			<form class="form-horizontal clearfix col-xs-12" role="form" name="UserLoginForm" id="UserLoginForm">
-				<div class="form-group">
-				  <label for="inputEmail" class="sr-only control-label"><%- i18next.t('Email or Username') %></label>
-				  <input type="text" placeholder="<%- i18next.t('Email or Username') %>" class="form-control change-ldap" id="inputEmail" name="email"  title="" value="<%- android_user_name %>" autofocus required/>
-				</div>
-				<div class="form-group">
-				  <label for="inputPassword" class="sr-only control-label"><%- i18next.t('Password') %></label>
-				  <input type="password" placeholder="<%- i18next.t('Password') %>" class="form-control" id="inputPassword" name="password" title="<%- i18next.t('Password') %>" required autocomplete="off"/>
-				</div>
-				<% if (!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && $.inArray('r_multiple_ldap_login',APPS.enabled_apps) !== -1 && ldap_servers.length) {%>
+				<% if(!_.isEmpty(role_links.where({slug: "users_login"}))){ %>
 					<div class="form-group">
-						<label for="inputPassword" class="sr-only control-label"><%- i18next.t('LDAP Servers') %></label>
-						<select name="login_ldap_server" id="login_ldap_server" class="form-control">
-							<option value="">Please Select LDAP Server</option>
-						<% _.each(ldap_servers, function(ldap_server, k) { %>
-							<option value="<%- ldap_server %>"><%- ldap_server %></option>
-						<% }); %>
-					</select>
+					<label for="inputEmail" class="sr-only control-label"><%- i18next.t('Email or Username') %></label>
+					<input type="text" placeholder="<%- i18next.t('Email or Username') %>" class="form-control change-ldap" id="inputEmail" name="email"  title="" value="<%- android_user_name %>" autofocus required/>
+					</div>
+					<div class="form-group">
+					<label for="inputPassword" class="sr-only control-label"><%- i18next.t('Password') %></label>
+					<input type="password" placeholder="<%- i18next.t('Password') %>" class="form-control" id="inputPassword" name="password" title="<%- i18next.t('Password') %>" required autocomplete="off"/>
+					</div>
+					<% if (!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && $.inArray('r_multiple_ldap_login',APPS.enabled_apps) !== -1 && ldap_servers.length) {%>
+						<div class="form-group">
+							<label for="inputPassword" class="sr-only control-label"><%- i18next.t('LDAP Servers') %></label>
+							<select name="login_ldap_server" id="login_ldap_server" class="form-control">
+								<option value="">Please Select LDAP Server</option>
+							<% _.each(ldap_servers, function(ldap_server, k) { %>
+								<option value="<%- ldap_server %>"><%- ldap_server %></option>
+							<% }); %>
+						</select>
+						</div>
+					<% } %>
+					<div class="form-group">
+					<label for="submit2" class="sr-only control-label"><%- i18next.t('Login') %></label>
+					<input type="submit" class="btn btn-primary col-xs-12" value="<%- i18next.t('Login') %>" id="submitLogin" />
+					</div>
+					<ul class="list-inline small text-center">
+					<% if(!_.isEmpty(role_links.where({slug: "users_forgotpassword"}))){ %>
+						<li><a href="#/users/forgotpassword" title="<%- i18next.t('Forgot your password') %>?" class="text-primary"><%- i18next.t('Forgot your password') %>?</a></li>
+					<% } %>
+					</ul>
+				<% } %>
+				<% if (!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && $.inArray('r_saml_shibboleth_sso',APPS.enabled_apps) !== -1 && R_SAML_ENTITY_NAME !== null && R_SAML_ENTITY_NAME !== '' && !_.isUndefined(R_SAML_ENTITY_NAME)) { %>
+					<div class="form-group">
+						<a class="btn btn-primary htruncate col-xs-12" href="saml?sso"><%= i18next.t("Login with %s", { postProcess: 'sprintf', sprintf: [R_SAML_ENTITY_NAME] }) %></a>
 					</div>
 				<% } %>
-				<div class="form-group">
-				  <label for="submit2" class="sr-only control-label"><%- i18next.t('Login') %></label>
-				  <input type="submit" class="btn btn-primary col-xs-12" value="<%- i18next.t('Login') %>" id="submitLogin" />
-				</div>
-				<ul class="list-inline small text-center">
-				  <% if(!_.isEmpty(role_links.where({slug: "users_forgotpassword"}))){ %>
-					<li><a href="#/users/forgotpassword" title="<%- i18next.t('Forgot your password') %>?" class="text-primary"><%- i18next.t('Forgot your password') %>?</a></li>
-			      <% } %>
-				</ul>
 		  </form>
 		 </div>
 	</div>

@@ -420,7 +420,9 @@
                 } else {
                     $dockModal.find(".action-popout").attr("title", "Pop-in");
                 }
-
+                if (typeof minimize_set_interval !== undefined) {
+                    clearTimeout(minimize_set_interval);
+                }
                 methods.refreshLayout();
 
                 setTimeout(function () {
