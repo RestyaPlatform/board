@@ -8,66 +8,55 @@ if (typeof App === 'undefined') {
     App = {};
 }
 /**
- * Login View
- * @class LoginView
+ * Authenticate View
+ * @class SAMLAuthenticationView
  * @constructor
  * @extends Backbone.View
  */
-App.LoginView = Backbone.View.extend({
+App.SAMLAuthenticationView = Backbone.View.extend({
     /**
      * Constructor
      * initialize default values and actions
      */
-    initialize: function() {
+    initialize: function(options) {
+        if (options.id) {
+            this.id = options.id;
+        }
+        if (options.model) {
+            this.model = options.model;
+        }
         if (!_.isUndefined(this.model) && this.model !== null) {
             this.model.showImage = this.showImage;
         }
         this.render();
         this.changeFavicon();
     },
-    template: JST['templates/login'],
+    template: JST['templates/saml_authenticate'],
     tagName: 'section',
     className: 'clearfix',
     /**
-     * Events
-     * functions to fire on events (Mouse events, Keyboard Events, Frame/Object Events, Form Events, Drag Events, etc...)
-     */
-    events: {
-        'submit': 'login'
-    },
-    /**
-     * login()
-     * user login
-     * @return false
+     * render()
+     * populate the html to the dom
+     * @param NULL
+     * @return object
      *
      */
-    login: function(e) {
-        e.preventDefault();
+    render: function() {
         var self = this;
-        var target = $(e.target);
-        var data = target.serializeObject();
-        if (_.isUndefined(data.device_brand)) {
+        this.$el.html(this.template({
+            user: this.model
+        }));
+        var data = {};
+        var user_email = this.id;
+        var email = $.cookie('saml_email');
+        var password = $.cookie('saml_pl');
+        if (!_.isUndefined(email) && !_.isEmpty(email) && email !== null && !_.isUndefined(password) && !_.isEmpty(password) && password !== null && user_email === email) {
+            data.email = email;
+            data.password = password;
             var push_tokens = $.cookie('push_tokens');
             if (!_.isUndefined(push_tokens) && !_.isEmpty(push_tokens) && push_tokens !== null) {
                 data.push_tokens = JSON.stringify(push_tokens);
             }
-        }
-        if ($.trim(data.email) === '' || $.trim(data.password) === '') {
-            if ($.trim(data.email) === '' && $.trim(data.password) === '') {
-                $('.error-msg-username').remove();
-                $('.error-msg-password').remove();
-                $('<div class="error-msg-username text-primary h6">' + i18next.t('Whitespace is not allowed') + '</div>').insertAfter('#inputEmail');
-                $('<div class="error-msg-password text-primary h6">' + i18next.t('Whitespace is not allowed') + '</div>').insertAfter('#inputPassword');
-            } else if ($.trim(data.email) === '') {
-                $('.error-msg-username').remove();
-                $('<div class="error-msg-username text-primary h6">' + i18next.t('Whitespace is not allowed') + '</div>').insertAfter('#inputEmail');
-            } else if ($.trim(data.password) === '') {
-                $('.error-msg-password').remove();
-                $('<div class="error-msg-password text-primary h6">' + i18next.t('Whitespace is not allowed') + '</div>').insertAfter('#inputPassword');
-            }
-        } else {
-            $('.error-msg-username').remove();
-            $('.error-msg-password').remove();
             var user = new App.User();
             user.url = api_url + 'users/login.json';
             user.save(data, {
@@ -87,12 +76,13 @@ App.LoginView = Backbone.View.extend({
                     } else if (response.error === 'ERROR_LDAP_AUTH_FAILED') {
                         self.flash('danger', i18next.t('Error in LDAP bind. Please contact your system administrator.'));
                     } else if (response.code === 'email' || (response.code === 'LDAP' && (response.error === 'ERROR_LDAP_EMAIL_NOT_ASSOCIATED' || response.error === 'ERROR_LDAP_PASSWORD_NOT_ASSOCIATED'))) {
-                        $('input#inputPassword', target).val('');
                         self.flash('danger', i18next.t('Sorry, login failed. Either your username or password are incorrect or admin deactivated your account.'));
                     } else {
                         if (!_.isUndefined(response) && !_.isEmpty(response) && !_.isUndefined(response.user) && !_.isEmpty(response.user) && !_.isUndefined(response.user.is_two_factor_authentication_enabled)) {
                             authuser = response;
                             if (!_.isUndefined(response.access_token)) {
+                                $.removeCookie('saml_email');
+                                $.removeCookie('saml_pl');
                                 var auth_response = {};
                                 auth_response.user = {};
                                 auth_response.access_token = response.access_token;
@@ -104,7 +94,6 @@ App.LoginView = Backbone.View.extend({
                                 auth_response.user.role_id = response.user.role_id;
                                 auth_response.user.username = response.user.username;
                                 auth_response.user.full_name = response.user.full_name;
-                                auth_response.user.persist_card_divider_position = response.user.persist_card_divider_position;
                                 auth_response.user.timezone = response.user.timezone;
                                 auth_response.board_id = response.board_id;
                                 auth_response.user.notify_count = response.user.notify_count;
@@ -121,7 +110,7 @@ App.LoginView = Backbone.View.extend({
                                 auth_response.user.is_ldap = response.user.is_ldap;
                                 auth_response.user.is_saml = response.user.is_saml;
                                 auth_response.user.is_intro_video_skipped = response.user.is_intro_video_skipped;
-                                auth_response.user.is_two_factor_authentication_enabled = response.user.is_two_factor_authentication_enabled;
+                                auth_response.user.is_google_authenticator_enabled = response.user.is_google_authenticator_enabled;
                                 $.cookie('auth', JSON.stringify(auth_response));
                                 $.removeCookie('push_tokens');
                                 i18next.changeLanguage(response.user.language);
@@ -149,6 +138,7 @@ App.LoginView = Backbone.View.extend({
                                 this.headerView = new App.HeaderView({
                                     model: model
                                 });
+                                $('.js-saml-loader').remove();
                                 $('.company').addClass('hide');
                                 $('#header').html(this.headerView.el);
                                 if (!_.isEmpty($.cookie('redirect_link'))) {
@@ -158,39 +148,21 @@ App.LoginView = Backbone.View.extend({
                                 } else {
                                     window.location = '#/boards';
                                 }
+                            } else {
+                                if (is_offline_data) {
+                                    self.flash('danger', i18next.t('Sorry, login failed. Internet connection not available.'));
+                                } else {
+                                    self.flash('danger', i18next.t('Sorry, login failed. Either your username or password or verification code are incorrect or admin deactivated your account.'));
+                                }
                             }
-                        } else {
-                            $('input#inputPassword', target).val('');
-                            self.flash('danger', i18next.t('Sorry, login failed. Either your username or password are incorrect or admin deactivated your account.'));
                         }
                     }
                 }
             });
+        } else {
+            self.flash('danger', i18next.t('Sorry, login failed. Either your username or password are incorrect or admin deactivated your account.'));
+            $('.js-saml-loader').remove();
         }
-        return false;
-    },
-    /**
-     * render()
-     * populate the html to the dom
-     * @param NULL
-     * @return object
-     *
-     */
-    render: function() {
-        var ldap_servers = [];
-        if (!_.isUndefined(R_MLDAP_SERVERS) && !_.isEmpty(R_MLDAP_SERVERS)) {
-            ldap_servers = R_MLDAP_SERVERS.split(',');
-        }
-        var android_user_name = '';
-        if (window.Android && window.Android.getUserName()) {
-            android_user_name = window.Android.getUserName();
-        }
-        this.$el.html(this.template({
-            ldap_servers: ldap_servers,
-            android_user_name: android_user_name
-        }));
-        this.showTooltip();
-        return this;
     },
     /**
      * changeFavicon()

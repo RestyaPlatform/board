@@ -29,6 +29,7 @@ var CALENDAR_VIEW_CARD_COLOR = '';
 var PAGING_COUNT = '';
 var ALLOWED_FILE_EXTENSIONS = '';
 var R_LDAP_LOGIN_HANDLE = '';
+var R_SAML_ENTITY_NAME = '';
 var R_MLDAP_LOGIN_HANDLE = '';
 var R_MLDAP_SERVERS = '';
 var last_activity = '';
@@ -357,6 +358,7 @@ var AppRouter = Backbone.Router.extend({
         'users/admin_user_add': 'admin_user_add',
         'users/register': 'register',
         'users/login': 'login',
+        'users/saml/:id': 'saml_authentication',
         'users/logout': 'logout',
         'users/forgotpassword': 'forgotpassword',
         'users/activation/:id/:hash': 'user_activation',
@@ -427,6 +429,13 @@ var AppRouter = Backbone.Router.extend({
         $('.dockmodal, .dockmodal-overlay').remove();
         new App.ApplicationView({
             model: 'login'
+        });
+    },
+    saml_authentication: function(id) {
+        $('.dockmodal, .dockmodal-overlay').remove();
+        new App.ApplicationView({
+            model: 'saml_authentication',
+            'id': id
         });
     },
     user_verification: function(id) {

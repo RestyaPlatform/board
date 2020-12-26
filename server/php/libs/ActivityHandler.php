@@ -34,7 +34,7 @@ class ActivityHandler
     {
         global $r_debug, $db_lnk, $authUser, $_server_domain_url;
         $obj_type = $obj['type'];
-        if (!empty($obj['revisions']) && trim($obj['revisions']) !== '' && $obj_type !== 'delete_label' && $obj_type !== 'change_grid_view_configuration' && $obj_type !== 'change_list_view_configuration' && $obj_type !== 'update_label' && $obj_type !== 'delete_card_dependency' && $obj_type !== 'delete_board_user' && $obj_type !== 'add_permission' && $obj_type !== 'remove_permission') {
+        if (!empty($obj['revisions']) && trim($obj['revisions']) !== '' && $obj_type !== 'delete_label' && $obj_type !== 'change_grid_view_configuration' && $obj_type !== 'change_list_view_configuration' && $obj_type !== 'update_label' && $obj_type !== 'delete_card_dependency' && $obj_type !== 'delete_board_user' && $obj_type !== 'delete_card_users' && $obj_type !== 'add_permission' && $obj_type !== 'remove_permission') {
             $revisions = unserialize($obj['revisions']);
             $obj['revisions'] = $revisions;
             $diff = array();
