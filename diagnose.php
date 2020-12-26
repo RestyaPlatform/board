@@ -65,6 +65,10 @@ $flickr_setting_class = false;
 if (FLICKR_API_KEY) {
     $flickr_setting_class = true;
 }
+$unsplash_setting_class = false;
+if (UNSPLASH_API_KEY) {
+    $unsplash_setting_class = true;
+}
 $email_setting_class = false;
 if (DEFAULT_REPLY_TO_EMAIL_ADDRESS != 'board@restya.com' && DEFAULT_FROM_EMAIL_ADDRESS != 'board@restya.com' && DEFAULT_CONTACT_EMAIL_ADDRESS != 'board@restya.com') {
     $email_setting_class = true;
@@ -495,6 +499,10 @@ div#final_verdict h1 {
    <tr>
        <td> Flickr API Key </td>
        <td class="<?php echo (!empty($flickr_setting_class)) ? 'green' : 'red'; ?>"> <?php echo FLICKR_API_KEY; ?> 
+   </tr>
+   <tr>
+       <td> Unsplash API Key </td>
+       <td class="<?php echo (!empty($unsplash_setting_class)) ? 'green' : 'red'; ?>"> <?php echo UNSPLASH_API_KEY; ?> 
    </tr>
    <tr>
        <td> IMAP </td>

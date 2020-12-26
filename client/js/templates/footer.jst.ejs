@@ -330,7 +330,7 @@ if (_.isEmpty(role_links.where({
 													</a>
 													<ul class="dropdown-menu text-left js-change-avatar-form-response">
 														<li>
-															<a title="<%- i18next.t('Logout') %>" href="#/users/logout">
+															<a title="<%- i18next.t('Logout') %>" href="<% if (!_.isUndefined(APPS) && APPS !== null && !_.isEmpty(APPS.permission_checked_apps) && !_.isUndefined(APPS.permission_checked_apps) && APPS.permission_checked_apps !== null && APPS.permission_checked_apps.indexOf('r_saml_shibboleth_sso') !== -1 && parseInt(authuser.user.is_saml) === 1) { %>/saml?slo<% }else{ %>#/users/logout<% } %>">
 																<%- i18next.t("Logout") %>
 															</a>
 														</li>
@@ -347,7 +347,7 @@ if (_.isEmpty(role_links.where({
 																</a>
 															</li>
 															<% } %>
-																<% if(!_.isEmpty(role_links.where({slug: "user_changepassword"})) && parseInt(authuser.user.is_ldap) === 0){ %>
+																<% if(!_.isEmpty(role_links.where({slug: "user_changepassword"})) && parseInt(authuser.user.is_ldap) === 0 && parseInt(authuser.user.is_saml) === 0){ %>
 																	<li>
 																		<a title="<%- i18next.t('Change Password') %>" href="#/users/<%-model.user.id%>/changepassword">
 																			<%- i18next.t("Change Password") %>
