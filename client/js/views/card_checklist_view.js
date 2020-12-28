@@ -237,7 +237,13 @@ App.CardCheckListView = Backbone.View.extend({
                     'data-item_id': checklist_item.attributes.id,
                 },
             });
-            view_item.append(view.render().el);
+            if (!_.isEmpty(self.model.card.collection) && self.model.card.list.collection.board.attributes.show_pending_checklist_item) {
+                if (checklist_item.get('is_completed') !== 1) {
+                    view_item.append(view.render().el);
+                }
+            } else {
+                view_item.append(view.render().el);
+            }
         });
         if (!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(this.model.board_users.board.acl_links.where({
                 slug: 'add_checklist_item',

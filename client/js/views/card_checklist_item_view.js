@@ -171,7 +171,14 @@ App.CardCheckListItemView = Backbone.View.extend({
      *
      */
     renderChecklistitemsCollection: function() {
-        this.render();
+        var self = this;
+        if (!_.isEmpty(self.model.card.collection) && self.model.card.list.collection.board.attributes.show_pending_checklist_item) {
+            if (self.model.get('is_completed') === 1) {
+                self.$el.remove();
+            }
+        } else {
+            self.render();
+        }
         this.renderProgress();
     },
     /**
