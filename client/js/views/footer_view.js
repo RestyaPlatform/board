@@ -1055,9 +1055,19 @@ App.FooterView = Backbone.View.extend({
                             } else if (activity.attributes.type === 'add_comment') {
                                 activity.set('originial_activity_comment', activity.attributes.comment);
                                 activity.attributes.comment = _.escape(activity.attributes.full_name) + ' commented in card ' + activity.attributes.card_name + ' ' + activity.attributes.comment;
-                                var patt = /@\w+/g;
-                                if (patt.test(activity.attributes.comment)) {
-                                    activity.attributes.comment = _.escape(activity.attributes.full_name) + ' has mentioned you in card ' + activity.attributes.card_name + ' ' + activity.attributes.comment;
+                                var matches = activity.attributes.comment.match(/@([^ ]*)/g);
+                                var _username = [];
+                                _.each(matches, function(match) {
+                                    _username.push(match.substr(1));
+                                });
+                                if (!_.isEmpty(_username) && !_.isUndefined(authuser.user)) {
+                                    if (_.contains(_username, authuser.user.username)) {
+                                        activity.attributes.comment = _.escape(activity.attributes.full_name) + ' has mentioned you in card ' + activity.attributes.card_name + ' ' + activity.attributes.comment;
+                                    } else if (_.contains(_username, 'card')) {
+                                        activity.attributes.comment = _.escape(activity.attributes.full_name) + ' has mentioned all the members in the card ' + activity.attributes.card_name + ' ' + activity.attributes.comment;
+                                    } else if (_.contains(_username, 'board')) {
+                                        activity.attributes.comment = _.escape(activity.attributes.full_name) + ' has mentioned all the board members in the card ' + activity.attributes.card_name + ' ' + activity.attributes.comment;
+                                    }
                                 }
                             }
                             if (mode == 1 && activity.attributes.token !== authuser.access_token) {

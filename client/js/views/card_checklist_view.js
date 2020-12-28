@@ -571,11 +571,16 @@ App.CardCheckListView = Backbone.View.extend({
     addItemMember: function(e) {
         e.preventDefault();
         var member_id = $(e.currentTarget).data('member-id');
-        var selected_user = this.model.card.list.collection.board.board_users.get({
-            id: parseInt(member_id)
-        });
+        var user_level = $(e.currentTarget).data('user-level');
         var target = $('form.js-add-item textarea');
-        target.val(target.val() + ' @' + selected_user.attributes.username);
+        if (user_level === 'item') {
+            var selected_user = this.model.card.list.collection.board.board_users.get({
+                id: parseInt(member_id)
+            });
+            target.val(target.val() + ' @' + selected_user.attributes.username);
+        } else {
+            target.val(target.val() + ' @' + user_level);
+        }
         return false;
     },
     /**
@@ -593,16 +598,34 @@ App.CardCheckListView = Backbone.View.extend({
             }
             users.add(filtered_users._wrapped);
             $('.js-item-member-search-response').html('');
+            var addCardMember = i18next.t('All members on the card %s', {
+                postProcess: 'sprintf',
+                sprintf: ['(' + this.model.card.users.length + ')']
+            });
+            var addBoardMember = i18next.t('All members on the board %s', {
+                postProcess: 'sprintf',
+                sprintf: ['(' + this.model.card.list.collection.board.board_users.length + ')']
+            });
             if (!_.isEmpty(users.models)) {
+                self.$el.find('.js-item-member-search-response').append('<div><a class="clearfix js-add-item-member" title="' + addCardMember + '" href="#;"  data-user-level="card"><span>' + addCardMember + '</span></a></div>');
+                self.$el.find('.js-item-member-search-response').append('<div><a class="clearfix js-add-item-member" title="' + addBoardMember + '" href="#" data-user-level="board"><span>' + addBoardMember + '</span></a></div>');
                 users.each(function(board_user) {
                     self.$el.find('.js-item-member-search-response').append(new App.ChecklistItemMentionMemberView({
                         model: board_user
                     }).el);
                 });
             } else {
-                $('.js-item-member-search-response').html(new App.ChecklistItemMentionMemberView({
-                    model: null
-                }).el);
+                if (('card').indexOf(q) !== -1) {
+                    self.$el.find('.js-item-member-search-response').append('<div><a class="clearfix js-add-item-member" title="' + addCardMember + '" href="#;"  data-user-level="card"><span>' + addCardMember + '</span></a></div>');
+                }
+                if (('board').indexOf(q) !== -1) {
+                    self.$el.find('.js-item-member-search-response').append('<div><a class="clearfix js-add-item-member" title="' + addBoardMember + '" href="#" data-user-level="board"><span>' + addBoardMember + '</span></a></div>');
+                }
+                if (('card').indexOf(q) === -1 && ('board').indexOf(q) === -1) {
+                    $('.js-item-member-search-response').html(new App.ChecklistItemMentionMemberView({
+                        model: null
+                    }).el);
+                }
             }
         } else {
             this.$el.find('.js-item-member-search-response').html('');
@@ -612,11 +635,21 @@ App.CardCheckListView = Backbone.View.extend({
     renderBoardUsers: function() {
         var view = this.$el.find('.js-item-member-search-response');
         if (!_.isEmpty(this.model.card.list.collection.board.board_users.models)) {
+            var addCardMember = i18next.t('All members on the card %s', {
+                postProcess: 'sprintf',
+                sprintf: ['(' + this.model.card.users.length + ')']
+            });
+            var addBoardMember = i18next.t('All members on the board %s', {
+                postProcess: 'sprintf',
+                sprintf: ['(' + this.model.card.list.collection.board.board_users.length + ')']
+            });
             this.model.card.list.collection.board.board_users.each(function(board_user) {
                 view.append(new App.ChecklistItemMentionMemberView({
                     model: board_user
                 }).el);
             });
+            view.append('<div><a class="clearfix js-add-item-member" title="' + addCardMember + '" href="#;" data-user-level="card">' + addCardMember + '</a></div>');
+            view.append('<div><a class="clearfix js-add-item-member" title="' + addBoardMember + '" href="#;" data-user-level="board">' + addBoardMember + '</a></div>');
         } else {
             view.html(new App.ChecklistItemMentionMemberView({
                 model: null
