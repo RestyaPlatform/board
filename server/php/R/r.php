@@ -2509,6 +2509,8 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     $default_email_notification = 4;
                 }
             }
+            $activity = executeQuery('SELECT id FROM activities ORDER BY id DESC');
+            $r_post['last_email_notified_activity_id'] = $activity['id'];
             $r_post['is_send_newsletter'] = $default_email_notification;
             $r_post['default_desktop_notification'] = (DEFAULT_DESKTOP_NOTIFICATION === 'Enabled') ? 'true' : 'false';
             $r_post['is_list_notifications_enabled'] = IS_LIST_NOTIFICATIONS_ENABLED;
@@ -2657,6 +2659,8 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             } else if (DEFAULT_EMAIL_NOTIFICATION === 'Weekly') {
                 $default_email_notification = 4;
             }
+            $activity = executeQuery('SELECT id FROM activities ORDER BY id DESC');
+            $r_post['last_email_notified_activity_id'] = $activity['id'];
             $r_post['is_send_newsletter'] = $default_email_notification;
             $r_post['default_desktop_notification'] = (DEFAULT_DESKTOP_NOTIFICATION === 'Enabled') ? 'true' : 'false';
             $r_post['is_list_notifications_enabled'] = IS_LIST_NOTIFICATIONS_ENABLED;
