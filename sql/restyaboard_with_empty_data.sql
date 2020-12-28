@@ -30,7 +30,7 @@ COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
 
 
 --
--- Name: label_card_count_update(); Type: FUNCTION; Schema: public; Owner: restya
+-- Name: label_card_count_update(); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION public.label_card_count_update() RETURNS trigger
@@ -75,7 +75,7 @@ $$;
 
 
 --
--- Name: update_board_count(); Type: FUNCTION; Schema: public; Owner: restya
+-- Name: update_board_count(); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION public.update_board_count() RETURNS trigger
