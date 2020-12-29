@@ -1055,9 +1055,19 @@ App.FooterView = Backbone.View.extend({
                             } else if (activity.attributes.type === 'add_comment') {
                                 activity.set('originial_activity_comment', activity.attributes.comment);
                                 activity.attributes.comment = _.escape(activity.attributes.full_name) + ' commented in card ' + activity.attributes.card_name + ' ' + activity.attributes.comment;
-                                var patt = /@\w+/g;
-                                if (patt.test(activity.attributes.comment)) {
-                                    activity.attributes.comment = _.escape(activity.attributes.full_name) + ' has mentioned you in card ' + activity.attributes.card_name + ' ' + activity.attributes.comment;
+                                var matches = activity.attributes.comment.match(/@([^ ]*)/g);
+                                var _username = [];
+                                _.each(matches, function(match) {
+                                    _username.push(match.substr(1));
+                                });
+                                if (!_.isEmpty(_username) && !_.isUndefined(authuser.user)) {
+                                    if (_.contains(_username, authuser.user.username)) {
+                                        activity.attributes.comment = _.escape(activity.attributes.full_name) + ' has mentioned you in card ' + activity.attributes.card_name + ' ' + activity.attributes.comment;
+                                    } else if (_.contains(_username, 'card')) {
+                                        activity.attributes.comment = _.escape(activity.attributes.full_name) + ' has mentioned all the members in the card ' + activity.attributes.card_name + ' ' + activity.attributes.comment;
+                                    } else if (_.contains(_username, 'board')) {
+                                        activity.attributes.comment = _.escape(activity.attributes.full_name) + ' has mentioned all the board members in the card ' + activity.attributes.card_name + ' ' + activity.attributes.comment;
+                                    }
                                 }
                             }
                             /* if (mode == 1 && activity.attributes.token !== authuser.access_token) {
@@ -2227,10 +2237,10 @@ App.FooterView = Backbone.View.extend({
                                             new_move_list.set('is_archived', 0);
                                             new_move_list.set('position', parseFloat(activity_list.position));
                                             self.board.lists.add(new_move_list);
-                                            if (self.board.attributes.lists === null) {
+                                            if (self.board.attributes.lists === null || _.isUndefined(self.board.attributes.lists)) {
                                                 self.board.attributes.lists = [];
                                             }
-                                            if (self.board.attributes.lists !== null) {
+                                            if (self.board.attributes.lists !== null && !_.isUndefined(self.board.attributes.lists)) {
                                                 self.board.attributes.lists.push(new_move_list);
                                             }
                                             if (!_.isUndefined(App.boards) && !_.isUndefined(App.boards.get(new_move_list.attributes.board_id))) {
@@ -2945,10 +2955,10 @@ App.FooterView = Backbone.View.extend({
                                         if (!_.isUndefined(App.boards) && !_.isUndefined(App.boards.get(board_new_list.attributes.board_id))) {
                                             var is_list_exist = App.boards.get(parseInt(board_new_list.attributes.board_id)).lists.get(parseInt(activity.attributes.list.id));
                                             if (_.isUndefined(is_list_exist) || _.isEmpty(is_list_exist) || is_list_exist === null) {
-                                                if (App.boards.get(parseInt(board_new_list.attributes.board_id)).attributes.lists === null) {
+                                                if (App.boards.get(parseInt(board_new_list.attributes.board_id)).attributes.lists === null || _.isUndefined(App.boards.get(parseInt(board_new_list.attributes.board_id)).attributes.lists)) {
                                                     App.boards.get(parseInt(board_new_list.attributes.board_id)).attributes.lists = [];
                                                 }
-                                                if (App.boards.get(parseInt(board_new_list.attributes.board_id)).attributes.lists !== null) {
+                                                if (App.boards.get(parseInt(board_new_list.attributes.board_id)).attributes.lists !== null && !_.isUndefined(App.boards.get(parseInt(board_new_list.attributes.board_id)).attributes.lists)) {
                                                     App.boards.get(parseInt(board_new_list.attributes.board_id)).lists.add(board_new_list);
                                                     App.boards.get(parseInt(board_new_list.attributes.board_id)).attributes.lists.push(board_new_list);
                                                 }
@@ -3022,11 +3032,11 @@ App.FooterView = Backbone.View.extend({
                                             if (!_.isUndefined(App.boards.get(newBoardlist.attributes.board_id))) {
                                                 var list_already_exist = App.boards.get(parseInt(newBoardlist.attributes.board_id)).lists.get(parseInt(activity.attributes.list.id));
                                                 if (_.isUndefined(list_already_exist) || _.isEmpty(list_already_exist) || list_already_exist === null) {
-                                                    if (App.boards.get(parseInt(newBoardlist.attributes.board_id)).attributes.lists === null) {
+                                                    if (App.boards.get(parseInt(newBoardlist.attributes.board_id)).attributes.lists === null || _.isUndefined(App.boards.get(parseInt(newBoardlist.attributes.board_id)).attributes.lists)) {
                                                         App.boards.get(parseInt(newBoardlist.attributes.board_id)).attributes.lists = [];
                                                     }
                                                     App.boards.get(parseInt(newBoardlist.attributes.board_id)).lists.add(newBoardlist);
-                                                    if (App.boards.get(parseInt(newBoardlist.attributes.board_id)).attributes.lists !== null) {
+                                                    if (App.boards.get(parseInt(newBoardlist.attributes.board_id)).attributes.lists !== null && !_.isUndefined(App.boards.get(parseInt(newBoardlist.attributes.board_id)).attributes.lists)) {
                                                         App.boards.get(parseInt(newBoardlist.attributes.board_id)).attributes.lists.push(newBoardlist);
                                                     }
                                                 }

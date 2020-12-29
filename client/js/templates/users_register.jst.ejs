@@ -26,7 +26,7 @@
 	  </ul>
 	  <% if (!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && $.inArray('r_saml_shibboleth_sso',APPS.enabled_apps) !== -1 && R_SAML_ENTITY_NAME !== null && R_SAML_ENTITY_NAME !== '') {%>
 		<div class="form-group">
-			<a class="btn btn-primary htruncate col-xs-12" href="saml/?sso"><%= i18next.t("Login with %s", { postProcess: 'sprintf', sprintf: [R_SAML_ENTITY_NAME] }) %></a>
+			<a class="btn btn-primary htruncate col-xs-12" href="saml?sso"><%= i18next.t("Login with %s", { postProcess: 'sprintf', sprintf: [R_SAML_ENTITY_NAME] }) %></a>
 		</div>
 	  <% } %>
 	</form>

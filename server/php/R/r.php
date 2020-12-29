@@ -2574,6 +2574,8 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     $default_email_notification = 4;
                 }
             }
+            $activity = executeQuery('SELECT id FROM activities ORDER BY id DESC');
+            $r_post['last_email_notified_activity_id'] = $activity['id'];
             $r_post['is_send_newsletter'] = $default_email_notification;
             $r_post['default_desktop_notification'] = (DEFAULT_DESKTOP_NOTIFICATION === 'Enabled') ? 'true' : 'false';
             $r_post['is_list_notifications_enabled'] = IS_LIST_NOTIFICATIONS_ENABLED;
@@ -2722,6 +2724,8 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             } else if (DEFAULT_EMAIL_NOTIFICATION === 'Weekly') {
                 $default_email_notification = 4;
             }
+            $activity = executeQuery('SELECT id FROM activities ORDER BY id DESC');
+            $r_post['last_email_notified_activity_id'] = $activity['id'];
             $r_post['is_send_newsletter'] = $default_email_notification;
             $r_post['default_desktop_notification'] = (DEFAULT_DESKTOP_NOTIFICATION === 'Enabled') ? 'true' : 'false';
             $r_post['is_list_notifications_enabled'] = IS_LIST_NOTIFICATIONS_ENABLED;
@@ -6980,6 +6984,13 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
                 $comment = '##USER_NAME## disabled card cover image on ##BOARD_NAME## board.';
             }
             $activity_type = 'is_show_image_front_of_card';
+        } else if (isset($r_put['show_pending_checklist_item'])) {
+            if ($r_put['show_pending_checklist_item']) {
+                $comment = '##USER_NAME## enabled show only pending item in checklist on ##BOARD_NAME## board.';
+            } else {
+                $comment = '##USER_NAME## disabled show only pending item in checklist on ##BOARD_NAME## board.';
+            }
+            $activity_type = 'show_pending_checklist_item';
         } else if (isset($r_put['is_expand_image_front_of_card'])) {
             if ($r_put['is_expand_image_front_of_card']) {
                 $comment = '##USER_NAME## enabled expand card cover image on ##BOARD_NAME## board.';

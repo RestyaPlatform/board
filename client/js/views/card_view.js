@@ -902,10 +902,10 @@ App.CardView = Backbone.View.extend({
             model: this.model
         }).el);
         this.showTooltip();
-        var selected_memebers = $('.js-card-user-ids').val();
-        var selected_memebers_arr = selected_memebers.split(",");
-        for (i = 0; i < selected_memebers_arr.length; i++) {
-            target = $('.js-add-card-member[data-user-id="' + selected_memebers_arr[i] + '"]');
+        var selected_members = $('.js-card-user-ids').val();
+        var selected_members_arr = selected_members.split(",");
+        for (i = 0; i < selected_members_arr.length; i++) {
+            target = $('.js-add-card-member[data-user-id="' + selected_members_arr[i] + '"]');
             target.removeClass('js-add-card-member').addClass('js-remove-card-member');
             target.append('<i class="icon-ok"></i>');
         }
