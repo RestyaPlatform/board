@@ -30,9 +30,9 @@ App.QrCodeView = Backbone.View.extend({
      *
      */
     render: function() {
-        this.$el.html(this.template()).attr('title', i18next.t('View in iOS App'));
+        this.$el.html(this.template()).attr('title', i18next.t('View in App'));
         this.$el.dockmodal({
-            initialState: 'docked',
+            initialState: 'modal',
             height: 300,
             width: 400,
             animationSpeed: ANIMATION_SPEED
