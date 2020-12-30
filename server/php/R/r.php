@@ -2912,7 +2912,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     $response['user'] = $user;
                     $response['user']['organizations'] = json_decode($user['organizations'], true);
                     if (!empty($r_post['push_tokens'])) {
-                        $r_post['push_tokens'] = json_decode(base64decode($r_post['push_tokens']));
+                        $r_post['push_tokens'] = json_decode(base64_decode($r_post['push_tokens']));
                         $qry_val_array = array(
                             $user['id']
                         );
