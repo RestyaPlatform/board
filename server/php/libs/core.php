@@ -12,20 +12,6 @@
  * @license    http://restya.com/ Restya Licence
  * @link       http://restya.com/
  */
-require_once 'vendors/ricwein/push-notifications/src/Config.php';
-require_once 'vendors/ricwein/push-notifications/src/Handler.php';
-require_once 'vendors/ricwein/push-notifications/src/Message.php';
-require_once 'vendors/ricwein/push-notifications/src/PushNotification.php';
-require_once 'vendors/ricwein/push-notifications/src/Result.php';
-require_once 'vendors/ricwein/push-notifications/src/Handler/FCM.php';
-require_once 'vendors/ricwein/push-notifications/src/Handler/APNS.php';
-require_once 'vendors/ricwein/push-notifications/src/Handler/APNSBinary.php';
-require_once 'vendors/ricwein/push-notifications/src/Exceptions/PushException.php';
-require_once 'vendors/ricwein/push-notifications/src/Exceptions/RequestException.php';
-require_once 'vendors/ricwein/push-notifications/src/Exceptions/ResponseException.php';
-use ricwein\PushNotification\ {
-    PushNotification, Message, Handler, Config
-};
 /**
  * Returns an OAuth2 access token to the client
  *
@@ -650,7 +636,8 @@ function sendMail($template, $replace_content, $to, $reply_to_mail = '')
  *
  * @return mixed
  */
-function PushNotificationCurlExecute($url, $payload){
+function PushNotificationCurlExecute($url, $payload)
+{
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $url);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -665,7 +652,6 @@ function PushNotificationCurlExecute($url, $payload){
     }
     curl_close($ch);
 }
-
 /**
  * Common method to send push notification
  *
@@ -675,17 +661,17 @@ function PushNotificationCurlExecute($url, $payload){
  * @param string $title                 Notification title
  * @param string $comment               Notification Comment
  * @param string $additional_info       Notification Additional Information
- * 
+ *
  *
  * @return void
  */
-function sendPushNotification($user_id, $user_device_tokens = [], $profile_picture_path, $title, $comment, $additional_info){
-
+function sendPushNotification($user_id, $user_device_tokens = [], $profile_picture_path, $title, $comment, $additional_info)
+{
     global $db_lnk;
-    $andriod_push_message =  array (
+    $andriod_push_message = array(
         "body" => $comment,
         "title" => $title,
-        "ttl"=>3600,
+        "ttl" => 3600,
         "largeIcon" => "ic_launcher",
         "largeIconUrl" => $profile_picture_path,
         "smallIcon" => "ic_notification",
@@ -693,31 +679,31 @@ function sendPushNotification($user_id, $user_device_tokens = [], $profile_pictu
         "sound" => "default",
     );
     $apns_push_message = array(
-        "aps" => [
-            "alert" => $comment
-        ],
+        "aps" => ["alert" => $comment],
     );
     $andriod_device_tokens = array();
     $ios_device_tokens = array();
     $device_tokens = json_decode($user_device_tokens);
     foreach ($device_tokens as $value) {
-        if($value->device_os === 'Android' ){
-            $payload = array ('to' => $value->token,'data' => $andriod_push_message);
+        if ($value->device_os === 'Android') {
+            $payload = array(
+                'to' => $value->token,
+                'data' => $andriod_push_message
+            );
             PushNotificationCurlExecute('http://push.restya.com:8322/api/push/fcm', $payload);
-        }else{
-            $payload = array (
+        } else {
+            $payload = array(
                 'service' => 'apns',
-                'headers' => [
-                    "apns-priority" => 10, 
-                    // "apns-topic"=> "com.shove.app",
+                'headers' => ["apns-priority" => 10,
+                // "apns-topic"=> "com.shove.app",
                 ],
-                "payload" => $apns_push_message, 
-                "token" =>$value->token
+                "payload" => $apns_push_message,
+                "token" => $value->token
             );
             PushNotificationCurlExecute('http://push.restya.com:8322/api/push/apns', $payload);
         }
     }
-    if(!empty($user_id)){
+    if (!empty($user_id)) {
         $qry_val_array = array(
             $user_id,
             'now()',
@@ -3933,7 +3919,7 @@ function sendMailNotification($notification_type)
                     $user_avatar = '<img style="margin-right: 10px;vertical-align: middle;" src="' . $profile_picture_path . '" alt="[Image: ' . $activity['full_name'] . ']" class="img-rounded img-responsive">' . "\n";
                 } else if (!empty($activity['initials'])) {
                     $user_avatar = '<i style="border-radius:4px;text-shadow:#6f6f6f 0.02em 0.02em 0.02em;width:32px;height:32px;line-height:32px;font-size:16px;display:inline-block;font-style:normal;text-align:center;text-transform:uppercase;color:#f47564 !important;background-color:#ffffff !important;border:1px solid #d7d9db;margin-right: 10px;">' . $activity['initials'] . '</i>' . "\n";
-                    $profile_picture_path = "https://ui-avatars.com/api/?background=fff&color=f47564&name=" . $activity['initials'] ."@&size=32";
+                    $profile_picture_path = "https://ui-avatars.com/api/?background=fff&color=f47564&name=" . $activity['initials'] . "@&size=32";
                 }
                 if (empty($i)) {
                     $activity_id[] = $activity['id'];
@@ -4083,7 +4069,7 @@ function sendMailNotification($notification_type)
                 }
                 $push_message_title = (!empty($activity['full_name']) ? $activity['full_name'] : 'Deleted account');
                 if (!empty($user['user_push_tokens'])) {
-                    sendPushNotification($user['id'], $user['user_push_tokens'], $profile_picture_path, $push_message_title, strip_tags($comment), $reply_to);
+                    sendPushNotification($user['id'], $user['user_push_tokens'], $profile_picture_path, $push_message_title, strip_tags($comment) , $reply_to);
                 }
                 $notification_count++;
             }
@@ -4104,7 +4090,7 @@ function sendMailNotification($notification_type)
                     $user_avatar = '<img style="margin-right: 10px;vertical-align: middle;" src="' . $profile_picture_path . '" alt="[Image: ' . $activity['full_name'] . ']" class="img-rounded img-responsive">' . "\n";
                 } else if (!empty($activity['initials'])) {
                     $user_avatar = '<i style="border-radius:4px;text-shadow:#6f6f6f 0.02em 0.02em 0.02em;width:32px;height:32px;line-height:32px;font-size:16px;display:inline-block;font-style:normal;text-align:center;text-transform:uppercase;color:#f47564 !important;background-color:#ffffff !important;border:1px solid #d7d9db;margin-right: 10px;">' . $activity['initials'] . '</i>' . "\n";
-                    $profile_picture_path = "https://ui-avatars.com/api/?background=fff&color=f47564&name=" . $activity['initials'] ."@&size=32";
+                    $profile_picture_path = "https://ui-avatars.com/api/?background=fff&color=f47564&name=" . $activity['initials'] . "@&size=32";
                 }
                 if (empty($i)) {
                     $activity_id[] = $activity['id'];
@@ -4254,7 +4240,7 @@ function sendMailNotification($notification_type)
                 }
                 $push_message_title = (!empty($activity['full_name']) ? $activity['full_name'] : 'Deleted account');
                 if (!empty($user['user_push_tokens'])) {
-                    sendPushNotification($user['id'], $user['user_push_tokens'], $profile_picture_path, $push_message_title, strip_tags($comment), $reply_to);
+                    sendPushNotification($user['id'], $user['user_push_tokens'], $profile_picture_path, $push_message_title, strip_tags($comment) , $reply_to);
                 }
                 $notification_count++;
             }
@@ -4275,7 +4261,7 @@ function sendMailNotification($notification_type)
                     $user_avatar = '<img style="margin-right: 10px;vertical-align: middle;" src="' . $profile_picture_path . '" alt="[Image: ' . $activity['full_name'] . ']" class="img-rounded img-responsive">' . "\n";
                 } else if (!empty($activity['initials'])) {
                     $user_avatar = '<i style="border-radius:4px;text-shadow:#6f6f6f 0.02em 0.02em 0.02em;width:32px;height:32px;line-height:32px;font-size:16px;display:inline-block;font-style:normal;text-align:center;text-transform:uppercase;color:#02aff1 !important;background-color:#ffffff !important;border:1px solid #d7d9db;margin-right: 10px;">' . $activity['initials'] . '</i>' . "\n";
-                    $profile_picture_path = "https://ui-avatars.com/api/?background=fff&color=f47564&name=" . $activity['initials'] ."@&size=32";
+                    $profile_picture_path = "https://ui-avatars.com/api/?background=fff&color=f47564&name=" . $activity['initials'] . "@&size=32";
                 }
                 if (empty($i)) {
                     $activity_id[] = $activity['id'];
@@ -4425,7 +4411,7 @@ function sendMailNotification($notification_type)
                 }
                 $push_message_title = (!empty($activity['full_name']) ? $activity['full_name'] : 'Deleted account');
                 if (!empty($user['user_push_tokens'])) {
-                    sendPushNotification($user['id'], $user['user_push_tokens'], $profile_picture_path, $push_message_title, strip_tags($comment), $reply_to);
+                    sendPushNotification($user['id'], $user['user_push_tokens'], $profile_picture_path, $push_message_title, strip_tags($comment) , $reply_to);
                 }
                 $notification_count++;
             }
