@@ -769,7 +769,7 @@ App.UserView = Backbone.View.extend({
             type: 'POST',
             patch: true,
             success: function(model, response) {
-                $('.js-push-notification-' + push_token_id).attr('title', i18next.t("Enable"));   
+                $('.js-push-notification-' + push_token_id).attr('title', i18next.t("Enable"));
                 $('.js-push-notification-' + push_token_id).html('<i class="icon-exclamation"></i><span data-id="' + push_token_id + '">' + i18next.t('Enable') + '</span>');
                 $('.js-push-notification-' + push_token_id).addClass('js-unblock-notification').removeClass('js-block-notification');
             }
