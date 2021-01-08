@@ -214,12 +214,21 @@
 								  <label for="inputSetting<%- setting.id %>" class="col-sm-2 control-label text-right"><%- i18next.t(setting.label) %></label>
 								  <div class=" col-sm-10 col-xs-12">
 								  <% } else {%>
-								  <div class="form-group">
-								  <label for="inputSetting<%- setting.id %>" class="<% if(settingCategory.get('id') == 2){ %>col-sm-3 <% } else { %> col-sm-4 <% } %> control-label col-xs-12"><%- i18next.t(setting.label) %></label>
-								  <div class="<% if(settingCategory.get('id') == 2){ %>col-sm-9 <% } else { %> col-sm-8 <% } %> col-xs-12">
+									<% if(setting.name === 'SITE_TIMEZONE') { %>
+										<% if (window.location.host.indexOf('restyacloud.com') === -1) {%>
+											<div class="form-group">
+												<label for="inputSetting<%- setting.id %>" class="<% if(settingCategory.get('id') == 2){ %>col-sm-3 <% } else { %> col-sm-4 <% } %> control-label col-xs-12"><%- i18next.t(setting.label) %></label>
+												<div class="<% if(settingCategory.get('id') == 2){ %>col-sm-9 <% } else { %> col-sm-8 <% } %> col-xs-12">
+										<% } %>
+									<% } else { %>
+								  		<div class="form-group">
+								  			<label for="inputSetting<%- setting.id %>" class="<% if(settingCategory.get('id') == 2){ %>col-sm-3 <% } else { %> col-sm-4 <% } %> control-label col-xs-12"><%- i18next.t(setting.label) %></label>
+											  <div class="<% if(settingCategory.get('id') == 2){ %>col-sm-9 <% } else { %> col-sm-8 <% } %> col-xs-12">
+									<% } %>
 								  <% } %>
 								  <% if(setting.type == 'select'){ %>
 										<% if(setting.name === 'SITE_TIMEZONE') { %>
+											<% if (window.location.host.indexOf('restyacloud.com') === -1) {%>
 											<select  id="inputSetting<%- setting.id %>" class="form-control" name="<%- i18next.t(setting.name) %>">
 											<% _.each(timezones, function(timezone) { %>
 												<% if(setting.value.toString() == timezone.code.toString()) { %> 
@@ -229,6 +238,7 @@
 												<% } %>
 											<% }); %>
 											</select>
+											<% } %>
 										<% } else { %>
 											<select name="<%- i18next.t(setting.name) %>" id="inputSetting<%- setting.id %>" class="form-control">
 										<% var options = setting.options.split(',');
@@ -287,8 +297,15 @@
 									<input type="<%- setting.type %>" id="inputSetting<%- setting.id %>" name="<%- i18next.t(setting.name) %>" class="form-control" value="<%- setting.value %>" />
 									<% } %>
 									<div><span class="help-block text-wrap"><%= i18next.t(setting.description) %></span></div>
+							<% if(setting.name === 'SITE_TIMEZONE') { %>
+								<% if (window.location.host.indexOf('restyacloud.com') === -1) {%>
 								  </div>
 								</div>
+								<% } %>
+							<% } else { %>
+								   </div>
+								</div>
+							<% } %>
 							<% } %>
 						<% } %>
 						<% 
