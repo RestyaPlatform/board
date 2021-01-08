@@ -27,6 +27,7 @@ App.SettingView = Backbone.View.extend({
     events: {
         'submit form#js-setting-list-form': 'updateSetting',
         'click #js-setting_trigger': 'TriggerSettingtab',
+        'click .js-chooseMobileApp': 'chooseMobileAPP'
     },
 
     /**
@@ -155,5 +156,11 @@ App.SettingView = Backbone.View.extend({
         $('.js-admin-setting-menu').addClass('active');
         $('.js-admin-activity-menu, .js-admin-user-menu, .js-admin-email-menu, .js-admin-role-menu, .js-admin-board-menu').removeClass('active');
         return this;
+    },
+    chooseMobileAPP: function(e) {
+        var target = $(e.currentTarget);
+        if ($(target).val() === 'Customized - Contact') {
+            window.open("https://restya.com/contact?category=other");
+        }
     }
 });

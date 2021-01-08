@@ -308,7 +308,7 @@
 						<input type="submit" value="<%- i18next.t('Submit') %>" id="submit2" class="btn btn-primary">
 						</div>
 					  </div>
-					 <% } else { %> 
+					 <% } else if (settingCategory.get('name') !== "Mobile App"){ %> 
 					 <div class="form-group">
 						<label for="submit2" class="sr-only <% if(settingCategory.get('id') == 2){ %>col-sm-3 <% } else { %> col-sm-4 <% } %> control-label col-xs-12"><%- i18next.t('Submit') %></label>
 						<div class="col-sm-8">
@@ -317,6 +317,51 @@
 					  </div>
 					 <% } %> 
 					</form>
+					<% } else if (settingCategory.get('name') === "Mobile App"){ %>
+						<form class="form-horizontal clearfix col-sm-6 col-xs-12 js-setting-list-form" role="form" id="js-setting-list-form">
+							<input type="hidden" id="input_setting_category_name" value="Mobile App">
+							<legend>
+								<span class="show h4"><%- i18next.t("Mobile App") %></span>
+							</legend>
+							<div class="form-group">
+								<label for="inputSetting" class="col-sm-3 control-label col-xs-12">Mobile App</label>
+								<div>
+								
+									<div class="col-sm-3 col-xs-12 checkbox">
+										<input class="js-checkbox js-chooseMobileApp" id="inputSetting-0" name="Mobile_App" type="checkbox" checked="checked" value="Regular">
+										<label for="inputSetting-0"><%- i18next.t('Regular') %> </label>
+									</div>
+								
+									<div class="col-sm-4 col-xs-12 checkbox">
+										<input class="js-checkbox js-chooseMobileApp" id="inputSetting-1" name="Mobile_App" type="checkbox" value="Customized - Contact">
+										<label for="inputSetting-1"><a href="https://restya.com/contact?category=other" target="_blank" title="<%- i18next.t('Customized - Contact') %>" class="text-primary"><%- i18next.t('Customized - Contact') %></a> </label>
+									</div>
+								
+								</div>
+							</div>
+							<div class="well-sm col-sm-12 col-xs-12">
+								<div class="alert alert-info text-justify "><%- i18next.t("To use Restyaboard mobile apps, you'll need a publicly accessible instance and or you have to use the mobile app from VPN. If you use it on intranet and or using VPN, push notifications will not work.")%></div>
+							</div>
+							<div class="form-group">
+								<div class="col-sm-12 col-xs-12">
+									<div class="col-sm-6">
+										<% if (window.location.host.indexOf('restyacloud.com') === -1) {%>
+											<a href="https://restya.com/contact?category=other" target="_blank" title="<%- i18next.t('Whitelist server IP for push notifications') %>" class="btn btn-primary btn-sm"> <%- i18next.t('Whitelist server IP for push notifications') %> </a>
+										<% } else if (window.location.host.indexOf('restyacloud.com') !== -1) { %>
+											<a href="https://restya.com/contact?category=other" target="_blank" title="<%- i18next.t('Whitelist Pro instance for push notification') %>" class="btn btn-primary btn-sm"> <%- i18next.t('Whitelist Pro instance for push notification') %> </a>
+										<% } %>
+									</div>
+									<div class="col-sm-4">
+										<a href="https://restya.com/contact?category=other" target="_blank" title="<%- i18next.t('Request custom mobile app') %>" class="btn btn-default"> <%- i18next.t('Request custom mobile app') %> </a>
+										<span class="help-block text-wrap"><%- i18next.t('for privacy') %></span>
+									</div>
+								</div>
+							</div>
+						</form>
+						<div class="well-sm col-sm-6 col-xs-12 mt5">
+							<h2>Important</h2>
+							<p><%= i18next.t("Restyaboard app is available on both Android and iOS. Since the Restyaboard web application is already optimized for mobile display, the mobile apps are only an embedded web application + push notifications. Regular mobile apps are common for all instances. You'll need to enter an instance URL to get started (For more details, refer to %s ). Being a common app for multiple instances, push notifications are routed through our common proxy. Hence, you'll need to whitelist your server IP with us. Though we don't intercept the push messages, if you're worried about data privacy, please %s offering.", { postProcess: 'sprintf', sprintf: ['<a href="https://restya.com/board/mobile-app" target="_blank" title="our website" class="text-primary"> our website </a>' , '<a href="https://restya.com/contact?category=other" target="_blank" title="contact us for a customized mobile app" class="text-primary"> contact us for a customized mobile app </a>'] }) %></p>
+						</div>
 					<% } %>
 				</div>
 		<%  			j++; 
