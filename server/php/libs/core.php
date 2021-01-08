@@ -643,6 +643,30 @@ function sendMail($template, $replace_content, $to, $reply_to_mail = '')
     }
 }
 /**
+ * Execute CURL Request For Push Notification
+ *
+ * @param string $url    URL
+ * @param mixed  $payload   optional CURL Values default value : array ()
+ *
+ * @return mixed
+ */
+function PushNotificationCurlExecute($url, $payload){
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($ch, CURLOPT_POST, 1);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
+    $headers = array();
+    $headers[] = 'Content-Type: application/x-www-form-urlencoded';
+    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+    $result = curl_exec($ch);
+    if (curl_errno($ch)) {
+        echo 'Error:' . curl_error($ch);
+    }
+    curl_close($ch);
+}
+
+/**
  * Common method to send push notification
  *
  * @param string $user_id               Notification User ID
@@ -656,46 +680,42 @@ function sendMail($template, $replace_content, $to, $reply_to_mail = '')
  * @return void
  */
 function sendPushNotification($user_id, $user_device_tokens = [], $profile_picture_path, $title, $comment, $additional_info){
+
     global $db_lnk;
-    $push_message = array(
-        'notification' => array (
-            "body" => $comment,
-            "title" => $title,
-            "largeIcon" => "ic_launcher",
-            "largeIconUrl" => $profile_picture_path,
-            "smallIcon" => "ic_notification",
-            "icon" => $profile_picture_path,
-            "sound" => "default"
-        ),
-        'data' => array(
-            "body" => $comment,
-              "title" => $title,
-              "ttl"=>3600,
-              "message" => array(
-                "title" =>  $title,
-                "body" => $comment . $additional_info
-              )
-        )
+    $andriod_push_message =  array (
+        "body" => $comment,
+        "title" => $title,
+        "ttl"=>3600,
+        "largeIcon" => "ic_launcher",
+        "largeIconUrl" => $profile_picture_path,
+        "smallIcon" => "ic_notification",
+        "icon" => $profile_picture_path,
+        "sound" => "default",
     );
-    $message = new Message($comment, $title);
+    $apns_push_message = array(
+        "aps" => [
+            "alert" => $comment
+        ],
+    );
     $andriod_device_tokens = array();
     $ios_device_tokens = array();
     $device_tokens = json_decode($user_device_tokens);
     foreach ($device_tokens as $value) {
         if($value->device_os === 'Android' ){
-            $andriod_device_tokens[$value->token] = 'fcm';
+            $payload = array ('to' => $value->token,'data' => $andriod_push_message);
+            PushNotificationCurlExecute('http://push.restya.com:8322/api/push/fcm', $payload);
         }else{
-            $ios_device_tokens[$value->token] = 'apns';
+            $payload = array (
+                'service' => 'apns',
+                'headers' => [
+                    "apns-priority" => 10, 
+                    // "apns-topic"=> "com.shove.app",
+                ],
+                "payload" => $apns_push_message, 
+                "token" =>$value->token
+            );
+            PushNotificationCurlExecute('http://push.restya.com:8322/api/push/apns', $payload);
         }
-    }
-    $fcm = new Handler\FCM('AAAAkRNshvI:APA91bH2v7lk729iXyFGL5TUQJckGTED3j9nvof-ZThW3tgxVKhnGpqs_1VTZctaNinKhYUY1uekJOUgC210x5IpshhjzoCqpz1vKy_Ovmvs2IDPSamRGUCZCtnzsdRtvzR-8y3G90zC');
-    $apns = new Handler\APNS('prod', 'com.restya.board', 'live.pem');
-    $push = new PushNotification(['apns' => $apns, 'fcm' => $fcm]);
-    if (!empty($andriod_device_tokens)) {
-        $push->sendRaw($push_message, $andriod_device_tokens);
-    } 
-    if(!empty($ios_device_tokens)) {
-        $push->sendRaw($message,  $ios_device_tokens);
     }
     if(!empty($user_id)){
         $qry_val_array = array(
