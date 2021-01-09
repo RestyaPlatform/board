@@ -160,7 +160,7 @@ App.SettingView = Backbone.View.extend({
     chooseMobileAPP: function(e) {
         var target = $(e.currentTarget);
         if ($(target).val() === 'Customized - Contact') {
-            window.open("https://restya.com/contact?category=other");
+            window.open("https://restya.com/contact?category=custom-mobile-app&utm_source=Restyaboard - " + SITE_NAME + "&utm_medium=web&utm_campaign=mobile_app");
         }
     }
 });
