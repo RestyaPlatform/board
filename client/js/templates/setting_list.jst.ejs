@@ -1,348 +1,347 @@
 <!-- Main block start -->
 <section class="clearfix row">
-  <div class="col-xs-12">
+	<div class="col-xs-12">
 	<div class="clearfix">
-		<ul class="nav nav-tabs no-bor h3">
-		<%
-			var timezones; 
-			var languages;
-			var i = 0;
-			if (list.models.length > 0 ) { 
-				_.each(list.models, function(settingCategory) {				
-					var settings = settingCategory.get('settings');
-					if(timezones !== '' && !_.isUndefined(settingCategory.get('timezones')) && !_.isEmpty(settingCategory.get('timezones')) && settingCategory.get('timezones') != null) {
-						timezones = settingCategory.get('timezones');
-					}
-					if(languages !== '' && !_.isUndefined(settingCategory.get('languages')) && !_.isEmpty(settingCategory.get('languages')) && settingCategory.get('languages') != null) {
-						languages = JSON.parse(settingCategory.get('languages'));
-					}
-					if (!_.isUndefined(settingCategory.get('id')) && !_.isEmpty(settingCategory.get('id')) && (settingCategory.get('id')) !== null) {
-		%>
-						<li <% if (!_.isUndefined(id) && id == settingCategory.get('id')) { %>class="active" <%} else if (_.isUndefined(id) && settingCategory.get('id') == 3) { %>class="active" <%}%> ><a href="#/settings/<%-settingCategory.get('id')%>" data-setting_category_id="<%-settingCategory.get('id')%>" id="js-setting_trigger"><%- i18next.t(settingCategory.get('name')) %></a></li>
-		<% 			
-					}
-					i++;
-				});
-			}
-		%>
-		</ul>
+	   <ul class="nav nav-tabs no-bor h3">
+		  <%
+			 var timezones; 
+			 var languages;
+			 var i = 0;
+			 if (list.models.length > 0 ) { 
+				 _.each(list.models, function(settingCategory) {				
+					 var settings = settingCategory.get('settings');
+					 if(timezones !== '' && !_.isUndefined(settingCategory.get('timezones')) && !_.isEmpty(settingCategory.get('timezones')) && settingCategory.get('timezones') != null) {
+						 timezones = settingCategory.get('timezones');
+					 }
+					 if(languages !== '' && !_.isUndefined(settingCategory.get('languages')) && !_.isEmpty(settingCategory.get('languages')) && settingCategory.get('languages') != null) {
+						 languages = JSON.parse(settingCategory.get('languages'));
+					 }
+					 if (!_.isUndefined(settingCategory.get('id')) && !_.isEmpty(settingCategory.get('id')) && (settingCategory.get('id')) !== null) {
+			 %>
+		  <li <% if (!_.isUndefined(id) && id == settingCategory.get('id')) { %>class="active" <%} else if (_.isUndefined(id) && settingCategory.get('id') == 3) { %>class="active" <%}%> ><a href="#/settings/<%-settingCategory.get('id')%>" data-setting_category_id="<%-settingCategory.get('id')%>" id="js-setting_trigger"><%- i18next.t(settingCategory.get('name')) %></a></li>
+		  <% 			
+			 }
+			 i++;
+			 });
+			 }
+			 %>
+	   </ul>
 	</div>
 	<div class="row">
-		<div class="tab-content col-sm-10">
-		<% if (list.models.length > 0 ) { 
-				var j = 0;
-				_.each(list.models, function(settingCategory) {				
-					var settings = settingCategory.get('settings');
-					if (!_.isUndefined(settingCategory.get('id')) && !_.isEmpty(settingCategory.get('id')) && (settingCategory.get('id')) !== null) {
-		%>		
-				<div class="modal-body tab-pane clearfix <% if (!_.isUndefined(id) && id == settingCategory.get('id')) { %> active <%} else if (_.isUndefined(id) && settingCategory.get('id') == 3) { %> active <%} else { %> hide <% } %>" id="settingTab<%- settingCategory.get('id') %>">
-					<% if(!_.isUndefined(settings) && !_.isEmpty(settings) && settings !== null){ %>
-					<% if(settingCategory.get('id') == 10){ %>
-					<p class="alert alert-info "><%- i18next.t('To add/reply cards via email you must set up a secret email account with IMAP access. This should support plus addressing and has to be dedicated to handle replying through email feature. Suggested email address is rbreply@yourdomain.tld') %></p>
-					<% } %>
-					<% if(settingCategory.get('id') == 8){ %>
-					<p class="alert alert-info "><%- i18next.t('Different people may use different naming for Todo, Doing and Done. So, it is usually difficult to identify what are actually in Todo, Doing and Done. Below, you can configure how the lists have to be recognized. For a list, you can configure its indicator icon and its color too.') %></p>
-					<form class="col-md-9 col-xs-12 js-setting-list-form" role="form" id="js-setting-list-form">
-					<% } else { %>
-					<form class="form-horizontal clearfix <% if(settingCategory.get('id') == 2){ %>col-lg-8<% } else { %>col-lg-6<% } %> col-md-8 col-sm-12 col-xs-12 js-setting-list-form" role="form" id="js-setting-list-form">
-					<% } %>
-					<input type="hidden" id="input_setting_category_name" value ="<%- settingCategory.get('name') %>" />
-					<% if(settingCategory.get('id') == 14) { %>
-						<fieldset>
-							<legend>
-								<span class="show h4"><%- i18next.t('Auto Subscription') %></span>
-							</legend>
-						</fieldset>
-					<% } %>
-					<%
-					 var server_detail_fields_count = 0;
-					 var connection_detail_fields_count = 0;
-					  _.each(settings, function(setting) {  
-						  if(setting.setting_category_id == 4 && setting.setting_category_parent_id != 0){
-							server_detail_fields_count = server_detail_fields_count + 1;
-						  }
-						  if(setting.setting_category_id == 5 && setting.setting_category_parent_id != 0){
-							connection_detail_fields_count = connection_detail_fields_count + 1;
-						  }
-					  });
-					  %>
-					<%
-					 var prev_category_id = 0;
-					 var current_server_detail_fields_count = 0;
-					 var current_connection_detail_fields_count = 0;
-					  var todo_color = '';
-					  var doing_color = '';
-					  var done_color = '';
-					  var todo_icon = '';
-					  var doing_icon = '';
-					  var done_icon = '';
-						var auto_subscriptions_inputs_count = 0;
-						var desktop_notification_inputs_count = 0;
-						var email_notification_inputs_count = 0;
-						var inc = 0;
-					  _.each(settings, function(setting) {  
-						inc += 1;
-						%>
-						<% 
-						  if(setting.name == 'TODO_COLOR') {
-							todo_color = setting.type+'__'+setting.id+'__'+setting.name+'__'+setting.value+'__'+setting.label;
-							return;
-						  }
-						  if(setting.name == 'DOING_COLOR') {
-							doing_color = setting.type+'__'+setting.id+'__'+setting.name+'__'+setting.value+'__'+setting.label;
-							return;
-						  }
-						  if(setting.name == 'DONE_COLOR') {
-							done_color = setting.type+'__'+setting.id+'__'+setting.name+'__'+setting.value+'__'+setting.label;
-							return;
-						  }
-						  if(setting.name == 'TODO_ICON') {
-							todo_icon = setting.type+'__'+setting.id+'__'+setting.name+'__'+setting.value+'__'+setting.label;
-							return;
-						  }
-						  if(setting.name == 'DOING_ICON') {
-							doing_icon = setting.type+'__'+setting.id+'__'+setting.name+'__'+setting.value+'__'+setting.label;
-							return;
-						  }
-						  if(setting.name == 'DONE_ICON') {
-							done_icon = setting.type+'__'+setting.id+'__'+setting.name+'__'+setting.value+'__'+setting.label;
-							return;
-						  }
-						  if(setting.setting_category_id == 4 && setting.setting_category_parent_id != 0){
-							current_server_detail_fields_count = current_server_detail_fields_count + 1;
-						  }
-						  if(setting.setting_category_id == 5 && setting.setting_category_parent_id != 0){
-							current_connection_detail_fields_count = current_connection_detail_fields_count + 1;
-						  }
-							if(setting.setting_category_id != prev_category_id && setting.setting_category_parent_id != 0){ 
-							prev_category_id =  setting.setting_category_id;
-						%>
-								<% if(setting.setting_category_id == 4) { %>
-									<hr>
-									<fieldset>
-										<legend>
-											<span class="show h4"><%- i18next.t('LDAP configuration') %></span>
-										</legend>
-									</fieldset>
-								<% } %>
-									<% if(setting.setting_category_id == 4 || setting.setting_category_id == 5) { %>
-										<fieldset>
-										<div class="col-sm-offset-2">
-									<% } %>
-											<legend>
-												<span class="show h4"><%= i18next.t(setting.category_name) %></span>
-											</legend>				
-									<% if(setting.setting_category_id == 4 || setting.setting_category_id == 5) { %>
-										<div class="col-sm-offset-2">
-									<% } %>
-						<%}%>
-						<% if(setting.setting_category_id == 14 && email_notification_inputs_count === 0 && inc === 1) {
-							email_notification_inputs_count += 1; 
-						%>
-							<p class="alert alert-info text-justify"><%- i18next.t('Configure global initial setting for all boards. Note that these settings can be overridden in board level, by accessing "') %><i class="icon-cog h3"></i><%- i18next.t('Additional Settings"') %></p>
-							<fieldset class="col-sm-offset-1">
-								<legend>
-									<span class="show h4"><%- i18next.t('Default Auto Subscription') %></span>
-								</legend>
-							</fieldset>
-						<% } %>
-						<% if(setting.setting_category_id == 14 && auto_subscriptions_inputs_count === 0 && inc === 3) { 
-							auto_subscriptions_inputs_count += 1;
-						%>
-							<p class="alert alert-info text-justify"><%- i18next.t('Configure global initial setting for all users. Note that these settings can be overridden by users in their profile.') %></p>
-							<fieldset>
-								<legend>
-									<span class="show h4"><%- i18next.t('Email Notifications') %></span>
-								</legend>
-							</fieldset>
-						<% } %>
-						<% if(setting.setting_category_id == 14 && desktop_notification_inputs_count === 0 && inc === 4) { 
-							desktop_notification_inputs_count += 1;
-						%>
-							<fieldset>
-								<legend>
-									<span class="show h4"><%- i18next.t('Desktop notification') %></span>
-								</legend>
-							</fieldset>
-						<% } %>
-						<% if(setting.type == 'select' && setting.setting_category_id == 14) { %>
+	<div class="tab-content col-sm-10">
+	   <% if (list.models.length > 0 ) { 
+		  var j = 0;
+		  _.each(list.models, function(settingCategory) {				
+			  var settings = settingCategory.get('settings');
+			  if (!_.isUndefined(settingCategory.get('id')) && !_.isEmpty(settingCategory.get('id')) && (settingCategory.get('id')) !== null) {
+		  %>		
+	   <div class="modal-body tab-pane clearfix <% if (!_.isUndefined(id) && id == settingCategory.get('id')) { %> active <%} else if (_.isUndefined(id) && settingCategory.get('id') == 3) { %> active <%} else { %> hide <% } %>" id="settingTab<%- settingCategory.get('id') %>">
+		  <% if(!_.isUndefined(settings) && !_.isEmpty(settings) && settings !== null){ %>
+		  <% if(settingCategory.get('id') == 10){ %>
+		  <p class="alert alert-info "><%- i18next.t('To add/reply cards via email you must set up a secret email account with IMAP access. This should support plus addressing and has to be dedicated to handle replying through email feature. Suggested email address is rbreply@yourdomain.tld') %></p>
+		  <% } %>
+		  <% if(settingCategory.get('id') == 8){ %>
+		  <p class="alert alert-info "><%- i18next.t('Different people may use different naming for Todo, Doing and Done. So, it is usually difficult to identify what are actually in Todo, Doing and Done. Below, you can configure how the lists have to be recognized. For a list, you can configure its indicator icon and its color too.') %></p>
+		  <form class="col-md-9 col-xs-12 js-setting-list-form" role="form" id="js-setting-list-form">
+			 <% } else { %>
+		  <form class="form-horizontal clearfix <% if(settingCategory.get('id') == 2){ %>col-lg-8<% } else { %>col-lg-6<% } %> col-md-8 col-sm-12 col-xs-12 js-setting-list-form" role="form" id="js-setting-list-form">
+			 <% } %>
+			 <input type="hidden" id="input_setting_category_name" value ="<%- settingCategory.get('name') %>" />
+			 <% if(settingCategory.get('id') == 14) { %>
+			 <fieldset>
+				<legend>
+				   <span class="show h4"><%- i18next.t('Auto Subscription') %></span>
+				</legend>
+			 </fieldset>
+			 <% } %>
+			 <%
+				var server_detail_fields_count = 0;
+				var connection_detail_fields_count = 0;
+				 _.each(settings, function(setting) {  
+				  if(setting.setting_category_id == 4 && setting.setting_category_parent_id != 0){
+					server_detail_fields_count = server_detail_fields_count + 1;
+				  }
+				  if(setting.setting_category_id == 5 && setting.setting_category_parent_id != 0){
+					connection_detail_fields_count = connection_detail_fields_count + 1;
+				  }
+				 });
+				 %>
+			 <%
+				var prev_category_id = 0;
+				var current_server_detail_fields_count = 0;
+				var current_connection_detail_fields_count = 0;
+				 var todo_color = '';
+				 var doing_color = '';
+				 var done_color = '';
+				 var todo_icon = '';
+				 var doing_icon = '';
+				 var done_icon = '';
+				var auto_subscriptions_inputs_count = 0;
+				var desktop_notification_inputs_count = 0;
+				var email_notification_inputs_count = 0;
+				var inc = 0;
+				 _.each(settings, function(setting) {  
+				inc += 1;
+				%>
+			 <% 
+				if(setting.name == 'TODO_COLOR') {
+				todo_color = setting.type+'__'+setting.id+'__'+setting.name+'__'+setting.value+'__'+setting.label;
+				return;
+				}
+				if(setting.name == 'DOING_COLOR') {
+				doing_color = setting.type+'__'+setting.id+'__'+setting.name+'__'+setting.value+'__'+setting.label;
+				return;
+				}
+				if(setting.name == 'DONE_COLOR') {
+				done_color = setting.type+'__'+setting.id+'__'+setting.name+'__'+setting.value+'__'+setting.label;
+				return;
+				}
+				if(setting.name == 'TODO_ICON') {
+				todo_icon = setting.type+'__'+setting.id+'__'+setting.name+'__'+setting.value+'__'+setting.label;
+				return;
+				}
+				if(setting.name == 'DOING_ICON') {
+				doing_icon = setting.type+'__'+setting.id+'__'+setting.name+'__'+setting.value+'__'+setting.label;
+				return;
+				}
+				if(setting.name == 'DONE_ICON') {
+				done_icon = setting.type+'__'+setting.id+'__'+setting.name+'__'+setting.value+'__'+setting.label;
+				return;
+				}
+				if(setting.setting_category_id == 4 && setting.setting_category_parent_id != 0){
+				current_server_detail_fields_count = current_server_detail_fields_count + 1;
+				}
+				if(setting.setting_category_id == 5 && setting.setting_category_parent_id != 0){
+				current_connection_detail_fields_count = current_connection_detail_fields_count + 1;
+				}
+				if(setting.setting_category_id != prev_category_id && setting.setting_category_parent_id != 0){ 
+				prev_category_id =  setting.setting_category_id;
+				%>
+			 <% if(setting.setting_category_id == 4) { %>
+			 <hr>
+			 <fieldset>
+				<legend>
+				   <span class="show h4"><%- i18next.t('LDAP configuration') %></span>
+				</legend>
+			 </fieldset>
+			 <% } %>
+			 <% if(setting.setting_category_id == 4 || setting.setting_category_id == 5) { %>
+			 <fieldset>
+				<div class="col-sm-offset-2">
+				   <% } %>
+				   <legend>
+					  <span class="show h4"><%= i18next.t(setting.category_name) %></span>
+				   </legend>
+				   <% if(setting.setting_category_id == 4 || setting.setting_category_id == 5) { %>
+				   <div class="col-sm-offset-2">
+					  <% } %>
+					  <%}%>
+					  <% if(setting.setting_category_id == 14 && email_notification_inputs_count === 0 && inc === 1) {
+						 email_notification_inputs_count += 1; 
+						 %>
+					  <p class="alert alert-info text-justify"><%- i18next.t('Configure global initial setting for all boards. Note that these settings can be overridden in board level, by accessing "') %><i class="icon-cog h3"></i><%- i18next.t('Additional Settings"') %></p>
+					  <fieldset class="col-sm-offset-1">
+						 <legend>
+							<span class="show h4"><%- i18next.t('Default Auto Subscription') %></span>
+						 </legend>
+					  </fieldset>
+					  <% } %>
+					  <% if(setting.setting_category_id == 14 && auto_subscriptions_inputs_count === 0 && inc === 3) { 
+						 auto_subscriptions_inputs_count += 1;
+						 %>
+					  <p class="alert alert-info text-justify"><%- i18next.t('Configure global initial setting for all users. Note that these settings can be overridden by users in their profile.') %></p>
+					  <fieldset>
+						 <legend>
+							<span class="show h4"><%- i18next.t('Email Notifications') %></span>
+						 </legend>
+					  </fieldset>
+					  <% } %>
+					  <% if(setting.setting_category_id == 14 && desktop_notification_inputs_count === 0 && inc === 4) { 
+						 desktop_notification_inputs_count += 1;
+						 %>
+					  <fieldset>
+						 <legend>
+							<span class="show h4"><%- i18next.t('Desktop notification') %></span>
+						 </legend>
+					  </fieldset>
+					  <% } %>
+					  <% if(setting.type == 'select' && setting.setting_category_id == 14) { %>
+					  <div class="form-group">
+						 <label for="inputSetting<%- setting.id %>" class="col-sm-4 control-label col-xs-12"><%- i18next.t(setting.label) %></label>
+						 <div class="col-sm-8 col-xs-12">
+							<select name="<%- i18next.t(setting.name) %>" id="inputSetting<%- setting.id %>" class="form-control">
+							   <% var options = setting.options.split(',');
+								  _.each(options, function(v, k) { %>
+							   <option <% if(v === setting.value) { %>selected <% }%> value="<%- v %>"><%- v %></option>
+							   <% }); %>
+							</select>
+						 </div>
+					  </div>
+					  <% } else if(setting.type == 'checkbox') { %>
+					  <% if(setting.id == 22){ %>
+					  <div class="form-group">
+						 <div class="col-sm-offset-2 col-sm-8 checkbox-inline">
+							<% } %>
 							<div class="form-group">
-								<label for="inputSetting<%- setting.id %>" class="col-sm-4 control-label col-xs-12"><%- i18next.t(setting.label) %></label>
-								<div class="col-sm-8 col-xs-12">
-									<select name="<%- i18next.t(setting.name) %>" id="inputSetting<%- setting.id %>" class="form-control">
-										<% var options = setting.options.split(',');
-										_.each(options, function(v, k) { %>
-											<option <% if(v === setting.value) { %>selected <% }%> value="<%- v %>"><%- v %></option>
-										<% }); %>
-									</select>
-								</div>
+							   <div class="col-sm-offset-4 col-sm-8 col-xs-12">
+								  <input class="js-checkbox" id="inputSetting<%- setting.id %>" name="<%- setting.name %>" type="checkbox" <% if(setting.value === 'true') { %> checked="checked" <% } %> value="<%- setting.value %>">
+								  <label for="inputSetting<%- setting.id %>"><%- i18next.t(setting.label) %> </label>
+							   </div>
 							</div>
-						<% } else if(setting.type == 'checkbox') { %>
-						<% if(setting.id == 22){ %>
-							<div class="form-group">
-								<div class="col-sm-offset-2 col-sm-8 checkbox-inline">
-						<% } %>
-									<div class="form-group">
-											<div class="col-sm-offset-4 col-sm-8 col-xs-12">
- 												<input class="js-checkbox" id="inputSetting<%- setting.id %>" name="<%- setting.name %>" type="checkbox" <% if(setting.value === 'true') { %> checked="checked" <% } %> value="<%- setting.value %>">
- 												<label for="inputSetting<%- setting.id %>"><%- i18next.t(setting.label) %> </label>
-										 </div>
- 									</div>
-					    <% if(setting.id == 3){ %>
-								</div>
-							</div>
-						<% } %>
-						<% } else { %>
-							<% if(setting.id == 31){ %>
-								<div class="form-group">
-								  <label for="inputSetting<%- setting.id %>" class="<% if(settingCategory.get('id') == 2){ %>col-sm-3 <% } else { %> col-sm-4 <% } %> control-label col-xs-12"><%- i18next.t(setting.label) %></label>
-								  <div class="<% if(settingCategory.get('id') == 2){ %>col-sm-9 <% } else { %> col-sm-8 <% } %> col-xs-12">
-									<select name="<%- i18next.t(setting.name) %>" id="inputSetting<%- setting.id %>" class="form-control">
-									 <%
-										if (!_.isUndefined(languages) && !_.isEmpty(languages) && languages !== null) {
-									 		_.each(languages, function(v, k) { %>
-												<option <% if(k === setting.value) { %>selected <% }%> value="<%- k %>"><%- v %></option>
-									<% 		});
-										} %>
-									</select>
-									<div><span class="help-block"><%= i18next.t(setting.description) %></span></div>
-								  </div>
-								</div>
-							<% } else { %>
-								  <% if(setting.name == 'TODO' || setting.name == 'DOING' || setting.name == 'DONE') { %> 
-								  <div class="clearfix">
-								  <label for="inputSetting<%- setting.id %>" class="col-sm-2 control-label text-right"><%- i18next.t(setting.label) %></label>
-								  <div class=" col-sm-10 col-xs-12">
-								  <% } else {%>
-									<% if(setting.name === 'SITE_TIMEZONE') { %>
-										<% if (window.location.host.indexOf('restyacloud.com') === -1) {%>
-											<div class="form-group">
-												<label for="inputSetting<%- setting.id %>" class="<% if(settingCategory.get('id') == 2){ %>col-sm-3 <% } else { %> col-sm-4 <% } %> control-label col-xs-12"><%- i18next.t(setting.label) %></label>
-												<div class="<% if(settingCategory.get('id') == 2){ %>col-sm-9 <% } else { %> col-sm-8 <% } %> col-xs-12">
-										<% } %>
-									<% } else { %>
-								  		<div class="form-group">
-								  			<label for="inputSetting<%- setting.id %>" class="<% if(settingCategory.get('id') == 2){ %>col-sm-3 <% } else { %> col-sm-4 <% } %> control-label col-xs-12"><%- i18next.t(setting.label) %></label>
-											  <div class="<% if(settingCategory.get('id') == 2){ %>col-sm-9 <% } else { %> col-sm-8 <% } %> col-xs-12">
-									<% } %>
-								  <% } %>
-								  <% if(setting.type == 'select'){ %>
-										<% if(setting.name === 'SITE_TIMEZONE') { %>
-											<% if (window.location.host.indexOf('restyacloud.com') === -1) {%>
-											<select  id="inputSetting<%- setting.id %>" class="form-control" name="<%- i18next.t(setting.name) %>">
-											<% _.each(timezones, function(timezone) { %>
-												<% if(setting.value.toString() == timezone.code.toString()) { %> 
-													<option selected value="<%- timezone.code %>"><%- timezone.name %></option>
-												<% } else { %>
-													<option value="<%- timezone.code %>"><%- timezone.name %></option>
-												<% } %>
-											<% }); %>
-											</select>
-											<% } %>
-										<% } else { %>
-											<select name="<%- i18next.t(setting.name) %>" id="inputSetting<%- setting.id %>" class="form-control">
-										<% var options = setting.options.split(',');
-										_.each(options, function(v, k) { %>
-												<option <% if(v === setting.value) { %>selected <% }%> value="<%- v %>"><%- v %></option>
-											<% }); %>
-											</select>
-										<% } %>
-									  
-								  <% } else if(setting.type == 'password') {%>
-									<input type="<%- setting.type %>" id="inputSetting<%- setting.id %>" name="<%- i18next.t(setting.name) %>" class="form-control" />
-								  <% } else if(setting.type == 'textarea') {%>
-									<% if(setting.name == 'TODO') { 
-										todo_color = todo_color.split('__');
-										todo_icon = todo_icon.split('__');
-									%>
-										<div class="col-sm-4 form-group">
-										<input type="<%- todo_icon[0] %>" id="inputSetting<%- todo_icon[1] %>" name="<%- i18next.t(todo_icon[2]) %>" class="form-control" value="<%- todo_icon[3] %>" placeholder="<%- todo_icon[4] %>" />
-										</div>
-										<div class="col-sm-4 form-group clearfix">
-										<input type="<%- todo_color[0] %>" id="inputSetting<%- todo_color[1] %>" name="<%- i18next.t(todo_color[2]) %>" class="form-control pull-left" value="<%- todo_color[3] %>" placeholder="<%- todo_color[4] %>" />
-										</div>
-									<% } %>
-									<% if(setting.name == 'DOING') { 
-										doing_color = doing_color.split('__');
-										doing_icon = doing_icon.split('__');
-									%>	
-										<div class="col-sm-4 form-group">
-										<input type="<%- doing_icon[0] %>" id="inputSetting<%- doing_icon[1] %>" name="<%- i18next.t(doing_icon[2]) %>" class="form-control" value="<%- doing_icon[3] %>" placeholder="<%- doing_icon[4] %>" />
-										</div>
-										<div class="col-sm-4 form-group clearfix">
-										<input type="<%- doing_color[0] %>" id="inputSetting<%- doing_color[1] %>" name="<%- i18next.t(doing_color[2]) %>" class="form-control pull-left" value="<%- doing_color[3] %>" placeholder="<%- doing_color[4] %>" />
-										</div>
-									<% } %>
-									<% if(setting.name == 'DONE') { 
-										done_color = done_color.split('__');
-										done_icon = done_icon.split('__');
-									%>
-										<div class="col-sm-4 form-group">
-										<input type="<%- done_icon[0] %>" id="inputSetting<%- done_icon[1] %>" name="<%- i18next.t(done_icon[2]) %>" class="form-control" value="<%- done_icon[3] %>" placeholder="<%- done_icon[4] %>"/>
-										</div>
-										<div class="col-sm-4 form-group clearfix">
-										<input type="<%- done_color[0] %>" id="inputSetting<%- done_color[1] %>" name="<%- i18next.t(done_color[2]) %>" class="form-control pull-left" value="<%- done_color[3] %>" placeholder="<%- done_color[4] %>"/>
-										</div>
-									<% } %>
-									<% if(setting.name == 'TODO' || setting.name == 'DOING' || setting.name == 'DONE') { %> 
-									<div class="col-sm-4 form-group">
-									<% } %>
-									<textarea id="inputSetting<%- setting.id %>" name="<%- i18next.t(setting.name) %>" class="form-control" ><%- setting.value %></textarea>
-									<% if(setting.name == 'TODO' || setting.name == 'DOING' || setting.name == 'DONE') { %> 
-									</div>
-									<% } %>
-								  <% } else if (setting.name === 'R_LDAP_LOGIN_BIND_PASSWORD'){ %>
-									<input type="<%- setting.type %>" id="inputSetting<%- setting.id %>" name="<%- i18next.t(setting.name) %>" class="form-control"/>
-									<% } else {%>
-									<input type="<%- setting.type %>" id="inputSetting<%- setting.id %>" name="<%- i18next.t(setting.name) %>" class="form-control" value="<%- setting.value %>" />
-									<% } %>
-									<div><span class="help-block text-wrap"><%= i18next.t(setting.description) %></span></div>
+							<% if(setting.id == 3){ %>
+						 </div>
+					  </div>
+					  <% } %>
+					  <% } else { %>
+					  <% if(setting.id == 31){ %>
+					  <div class="form-group">
+						 <label for="inputSetting<%- setting.id %>" class="<% if(settingCategory.get('id') == 2){ %>col-sm-3 <% } else { %> col-sm-4 <% } %> control-label col-xs-12"><%- i18next.t(setting.label) %></label>
+						 <div class="<% if(settingCategory.get('id') == 2){ %>col-sm-9 <% } else { %> col-sm-8 <% } %> col-xs-12">
+							<select name="<%- i18next.t(setting.name) %>" id="inputSetting<%- setting.id %>" class="form-control">
+							   <%
+								  if (!_.isUndefined(languages) && !_.isEmpty(languages) && languages !== null) {
+										  _.each(languages, function(v, k) { %>
+							   <option <% if(k === setting.value) { %>selected <% }%> value="<%- k %>"><%- v %></option>
+							   <% 		});
+								  } %>
+							</select>
+							<div><span class="help-block"><%= i18next.t(setting.description) %></span></div>
+						 </div>
+					  </div>
+					  <% } else { %>
+					  <% if(setting.name == 'TODO' || setting.name == 'DOING' || setting.name == 'DONE') { %> 
+					  <div class="clearfix">
+						 <label for="inputSetting<%- setting.id %>" class="col-sm-2 control-label text-right"><%- i18next.t(setting.label) %></label>
+						 <div class=" col-sm-10 col-xs-12">
+							<% } else {%>
 							<% if(setting.name === 'SITE_TIMEZONE') { %>
-								<% if (window.location.host.indexOf('restyacloud.com') === -1) {%>
+							<% if (window.location.host.indexOf('restyacloud.com') === -1) {%>
+							<div class="form-group">
+							   <label for="inputSetting<%- setting.id %>" class="<% if(settingCategory.get('id') == 2){ %>col-sm-3 <% } else { %> col-sm-4 <% } %> control-label col-xs-12"><%- i18next.t(setting.label) %></label>
+							   <div class="<% if(settingCategory.get('id') == 2){ %>col-sm-9 <% } else { %> col-sm-8 <% } %> col-xs-12">
+								  <% } %>
+								  <% } else { %>
+								  <div class="form-group">
+									 <label for="inputSetting<%- setting.id %>" class="<% if(settingCategory.get('id') == 2){ %>col-sm-3 <% } else { %> col-sm-4 <% } %> control-label col-xs-12"><%- i18next.t(setting.label) %></label>
+									 <div class="<% if(settingCategory.get('id') == 2){ %>col-sm-9 <% } else { %> col-sm-8 <% } %> col-xs-12">
+										<% } %>
+										<% } %>
+										<% if(setting.type == 'select'){ %>
+										<% if(setting.name === 'SITE_TIMEZONE') { %>
+										<% if (window.location.host.indexOf('restyacloud.com') === -1) {%>
+										<select  id="inputSetting<%- setting.id %>" class="form-control" name="<%- i18next.t(setting.name) %>">
+										   <% _.each(timezones, function(timezone) { %>
+										   <% if(setting.value.toString() == timezone.code.toString()) { %> 
+										   <option selected value="<%- timezone.code %>"><%- timezone.name %></option>
+										   <% } else { %>
+										   <option value="<%- timezone.code %>"><%- timezone.name %></option>
+										   <% } %>
+										   <% }); %>
+										</select>
+										<% } %>
+										<% } else { %>
+										<select name="<%- i18next.t(setting.name) %>" id="inputSetting<%- setting.id %>" class="form-control">
+										   <% var options = setting.options.split(',');
+											  _.each(options, function(v, k) { %>
+										   <option <% if(v === setting.value) { %>selected <% }%> value="<%- v %>"><%- v %></option>
+										   <% }); %>
+										</select>
+										<% } %>
+										<% } else if(setting.type == 'password') {%>
+										<input type="<%- setting.type %>" id="inputSetting<%- setting.id %>" name="<%- i18next.t(setting.name) %>" class="form-control" />
+										<% } else if(setting.type == 'textarea') {%>
+										<% if(setting.name == 'TODO') { 
+										   todo_color = todo_color.split('__');
+										   todo_icon = todo_icon.split('__');
+										   %>
+										<div class="col-sm-4 form-group">
+										   <input type="<%- todo_icon[0] %>" id="inputSetting<%- todo_icon[1] %>" name="<%- i18next.t(todo_icon[2]) %>" class="form-control" value="<%- todo_icon[3] %>" placeholder="<%- todo_icon[4] %>" />
+										</div>
+										<div class="col-sm-4 form-group clearfix">
+										   <input type="<%- todo_color[0] %>" id="inputSetting<%- todo_color[1] %>" name="<%- i18next.t(todo_color[2]) %>" class="form-control pull-left" value="<%- todo_color[3] %>" placeholder="<%- todo_color[4] %>" />
+										</div>
+										<% } %>
+										<% if(setting.name == 'DOING') { 
+										   doing_color = doing_color.split('__');
+										   doing_icon = doing_icon.split('__');
+										   %>	
+										<div class="col-sm-4 form-group">
+										   <input type="<%- doing_icon[0] %>" id="inputSetting<%- doing_icon[1] %>" name="<%- i18next.t(doing_icon[2]) %>" class="form-control" value="<%- doing_icon[3] %>" placeholder="<%- doing_icon[4] %>" />
+										</div>
+										<div class="col-sm-4 form-group clearfix">
+										   <input type="<%- doing_color[0] %>" id="inputSetting<%- doing_color[1] %>" name="<%- i18next.t(doing_color[2]) %>" class="form-control pull-left" value="<%- doing_color[3] %>" placeholder="<%- doing_color[4] %>" />
+										</div>
+										<% } %>
+										<% if(setting.name == 'DONE') { 
+										   done_color = done_color.split('__');
+										   done_icon = done_icon.split('__');
+										   %>
+										<div class="col-sm-4 form-group">
+										   <input type="<%- done_icon[0] %>" id="inputSetting<%- done_icon[1] %>" name="<%- i18next.t(done_icon[2]) %>" class="form-control" value="<%- done_icon[3] %>" placeholder="<%- done_icon[4] %>"/>
+										</div>
+										<div class="col-sm-4 form-group clearfix">
+										   <input type="<%- done_color[0] %>" id="inputSetting<%- done_color[1] %>" name="<%- i18next.t(done_color[2]) %>" class="form-control pull-left" value="<%- done_color[3] %>" placeholder="<%- done_color[4] %>"/>
+										</div>
+										<% } %>
+										<% if(setting.name == 'TODO' || setting.name == 'DOING' || setting.name == 'DONE') { %> 
+										<div class="col-sm-4 form-group">
+										   <% } %>
+										   <textarea id="inputSetting<%- setting.id %>" name="<%- i18next.t(setting.name) %>" class="form-control" ><%- setting.value %></textarea>
+										   <% if(setting.name == 'TODO' || setting.name == 'DOING' || setting.name == 'DONE') { %> 
+										</div>
+										<% } %>
+										<% } else if (setting.name === 'R_LDAP_LOGIN_BIND_PASSWORD'){ %>
+										<input type="<%- setting.type %>" id="inputSetting<%- setting.id %>" name="<%- i18next.t(setting.name) %>" class="form-control"/>
+										<% } else {%>
+										<input type="<%- setting.type %>" id="inputSetting<%- setting.id %>" name="<%- i18next.t(setting.name) %>" class="form-control" value="<%- setting.value %>" />
+										<% } %>
+										<div><span class="help-block text-wrap"><%= i18next.t(setting.description) %></span></div>
+										<% if(setting.name === 'SITE_TIMEZONE') { %>
+										<% if (window.location.host.indexOf('restyacloud.com') === -1) {%>
+									 </div>
 								  </div>
-								</div>
-								<% } %>
-							<% } else { %>
-								   </div>
-								</div>
+								  <% } %>
+								  <% } else { %>
+							   </div>
+							</div>
 							<% } %>
 							<% } %>
-						<% } %>
-						<% 
-							if((setting.setting_category_id == 4 || setting.setting_category_id == 5) && (current_server_detail_fields_count == server_detail_fields_count || current_connection_detail_fields_count == connection_detail_fields_count)){ 
-							server_detail_fields_count = 0;
-							connection_detail_fields_count = 0;
-						%>
-							</div>
-							</div>
-							</fieldset>		
-						<%}%>
-					<% }); %>
-					<% if(settingCategory.get('id') == 8){ %>
-					  <div class="form-group well-lg">
-						<label for="submit2" class="col-sm-2 control-label"></label>
-						<div class="col-sm-8">
-						<input type="submit" value="<%- i18next.t('Submit') %>" id="submit2" class="btn btn-primary">
-						</div>
+							<% } %>
+							<% 
+							   if((setting.setting_category_id == 4 || setting.setting_category_id == 5) && (current_server_detail_fields_count == server_detail_fields_count || current_connection_detail_fields_count == connection_detail_fields_count)){ 
+							   server_detail_fields_count = 0;
+							   connection_detail_fields_count = 0;
+							   %>
+						 </div>
 					  </div>
-					 <% } else { %> 
-					 <div class="form-group">
-						<label for="submit2" class="sr-only <% if(settingCategory.get('id') == 2){ %>col-sm-3 <% } else { %> col-sm-4 <% } %> control-label col-xs-12"><%- i18next.t('Submit') %></label>
-						<div class="col-sm-8">
-						<input type="submit" value="<%- i18next.t('Submit') %>" id="submit2" class="btn btn-primary">
-						</div>
-					  </div>
-					 <% } %> 
-					</form>
-					<% } %>
-				</div>
-		<%  			j++; 
-					}
-				});
-			} 
-		%>	
-		</div>
+			 </fieldset>
+			 <%}%>
+			 <% }); %>
+			 <% if(settingCategory.get('id') == 8){ %>
+			 <div class="form-group well-lg">
+			 <label for="submit2" class="col-sm-2 control-label"></label>
+			 <div class="col-sm-8">
+			 <input type="submit" value="<%- i18next.t('Submit') %>" id="submit2" class="btn btn-primary">
+			 </div>
+			 </div>
+			 <% } else { %> 
+			 <div class="form-group">
+			 <label for="submit2" class="sr-only <% if(settingCategory.get('id') == 2){ %>col-sm-3 <% } else { %> col-sm-4 <% } %> control-label col-xs-12"><%- i18next.t('Submit') %></label>
+			 <div class="col-sm-8">
+			 <input type="submit" value="<%- i18next.t('Submit') %>" id="submit2" class="btn btn-primary">
+			 </div>
+			 </div>
+			 <% } %> 
+		  </form>
+		  <% } %>
+		  </div>
+		  <%  			j++; 
+			 }
+			 });
+			 } 
+			 %>	
+		  </div>
+	   </div>
 	</div>
-  </div>
-</section>
-<!-- Main block end -->
+ </section>
+ <!-- Main block end -->
