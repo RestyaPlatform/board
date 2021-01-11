@@ -666,6 +666,13 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                     }
                     $data = $obj;
                 }
+                $qry_val_array = array(
+                    $r_resource_vars['users']
+                );
+                $user_push_tokens_result = pg_query_params($db_lnk, 'SELECT id,device_modal,last_push_notified,is_active FROM user_push_tokens WHERE user_id = $1 ORDER BY id DESC', $qry_val_array);
+                while ($row = pg_fetch_assoc($user_push_tokens_result)) {
+                    $data['user_push_tokens'][] = $row;
+                }
                 if ($data['id'] != $authUser['id'] && $authUser['role_id'] != 1) {
                     $jsonArr = array(
                         'id' => $data['id'],
@@ -2914,37 +2921,15 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     if (!empty($r_post['push_tokens'])) {
                         $r_post['push_tokens'] = json_decode(base64_decode($r_post['push_tokens']));
                         $qry_val_array = array(
-                            $user['id']
+                            $user['id'],
+                            $r_post['push_tokens']->token,
                         );
-                        $user_push_tokens = executeQuery('SELECT * FROM user_push_tokens WHERE user_id = $1', $qry_val_array);
-                        if ($user_push_tokens) {
-                            $qry_val_array = array(
-                                $user_push_tokens['id'],
-                                $r_post['push_tokens']->token,
-                                $r_post['push_tokens']->device_serial,
-                                $r_post['push_tokens']->device_modal,
-                                $r_post['push_tokens']->device_brand,
-                                $r_post['push_tokens']->device_manufacturer,
-                                $r_post['push_tokens']->device_version,
-                                $r_post['push_tokens']->app_version,
-                                $r_post['push_tokens']->device_type,
-                                $r_post['push_tokens']->appname
-                            );
-                            pg_query_params($db_lnk, 'UPDATE user_push_tokens SET token = $2, device_serial = $3, device_modal = $4, device_brand = $5, device_manufacturer = $6, device_version = $7, app_version = $8, device_type = $9, appname = $10  WHERE id = $1', $qry_val_array);
-                        } else {
+                        $user_push_tokens = executeQuery('SELECT * FROM user_push_tokens WHERE user_id = $1 AND token = $2', $qry_val_array);
+                        if (empty($user_push_tokens)) {
                             $table_name = 'user_push_tokens';
-                            $r_user_push_tokens = array();
-                            $r_user_push_tokens['user_id'] = $user['id'];
-                            $r_user_push_tokens['token'] = $r_post['push_tokens']->token;
-                            $r_user_push_tokens['device_serial'] = $r_post['push_tokens']->device_serial;
-                            $r_user_push_tokens['device_modal'] = $r_post['push_tokens']->device_modal;
-                            $r_user_push_tokens['device_brand'] = $r_post['push_tokens']->device_brand;
-                            $r_user_push_tokens['device_manufacturer'] = $r_post['push_tokens']->device_manufacturer;
-                            $r_user_push_tokens['device_version'] = $r_post['push_tokens']->device_version;
-                            $r_user_push_tokens['app_version'] = $r_post['push_tokens']->app_version;
-                            $r_user_push_tokens['device_type'] = $r_post['push_tokens']->device_type;
-                            $r_user_push_tokens['appname'] = $r_post['push_tokens']->appname;
-                            $post = getbindValues($table_name, $r_user_push_tokens);
+                            $r_post['push_tokens']->user_id = $user['id'];
+                            $push_token = json_decode(json_encode($r_post['push_tokens']) , true);
+                            $post = getbindValues($table_name, $push_token);
                             $result = pg_execute_insert($table_name, $post);
                         }
                     }
@@ -3245,7 +3230,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                             }
                         }
                     }
-                    if (isset($diff)) {
+                    if (isset($diff) && !empty($diff)) {
                         $response['activity']['difference'] = $diff;
                     }
                 }
@@ -3314,6 +3299,13 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     );
                     pg_query_params($db_lnk, 'UPDATE oauth_access_tokens set user_id = $1 WHERE user_id= $2', $conditions);
                     pg_query_params($db_lnk, 'UPDATE oauth_refresh_tokens set user_id = $1 WHERE user_id= $2', $conditions);
+                }
+                if (isset($r_post['user_push_token_is_active']) && isset($r_post['user_push_token_id'])) {
+                    $qry_val_array = array(
+                        $r_post['user_push_token_id'],
+                        $r_post['user_push_token_is_active']
+                    );
+                    pg_query_params($db_lnk, 'UPDATE user_push_tokens SET is_active = $2  WHERE id = $1', $qry_val_array);
                 }
                 if (!empty($response['activity']['id'])) {
                     $qry_val_arr = array(
@@ -6750,6 +6742,13 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
                     'error' => 'Entered verification code is wrong. Please try again.'
                 );
             }
+        }
+        if (isset($r_put['user_push_token_is_active']) && isset($r_put['user_push_token_id'])) {
+            $qry_val_array = array(
+                $r_put['user_push_token_id'],
+                $r_put['user_push_token_is_active']
+            );
+            pg_query_params($db_lnk, 'UPDATE user_push_tokens SET is_active = $2  WHERE id = $1', $qry_val_array);
         }
         if (isset($r_put['password'])) {
             unset($r_put['password']);
