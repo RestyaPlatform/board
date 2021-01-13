@@ -142,6 +142,7 @@ App.ModalCardView = Backbone.View.extend({
         this.model.checklists.bind('remove', this.renderChecklistsCollection);
         this.model.checklists.bind('add', this.renderChecklistsCollection);
         this.model.checklists.bind('change:name', this.renderChecklistsCollection);
+        this.model.list.collection.board.bind('change:show_pending_checklist_item', this.renderChecklistsCollection);
         this.model.list.collection.board.acl_links.bind('add', this.refreshdock);
         this.model.list.collection.board.acl_links.bind('remove', this.refreshdock);
         this.model.list.collection.board.checklists.bind('remove', this.renderChecklistsCollection);
@@ -4119,7 +4120,7 @@ App.ModalCardView = Backbone.View.extend({
             var list_id = current_card.attributes.list_id;
             var card_id = current_card.attributes.card_id;
             var data = $(e.target).serializeObject();
-            $('.js-activity-' + activity_id).html('<div class="panel no-mar"><div class="panel-body github-markdown">' + this.converter.makeHtml(data.comment) + '</div></div>');
+            $('.js-activity-' + activity_id).html('<div class="panel no-mar"><div class="panel-body github-markdown">' + makeLink(this.converter.makeHtml(data.comment)) + '</div></div>');
             $('.js-acticity-action-' + activity_id).removeClass('hide');
             $('.js-timeago-' + activity_id).removeClass('hide');
             //Update in list table
@@ -4942,7 +4943,17 @@ App.ModalCardView = Backbone.View.extend({
             }
             users.add(filtered_users._wrapped);
             $(target).parents('.js-comment-member-search-response').nextAll().remove();
+            var addCardMember = i18next.t('All members on the card %s', {
+                postProcess: 'sprintf',
+                sprintf: ['(' + this.model.users.length + ')']
+            });
+            var addBoardMember = i18next.t('All members on the board %s', {
+                postProcess: 'sprintf',
+                sprintf: ['(' + this.model.list.collection.board.board_users.length + ')']
+            });
             if (!_.isEmpty(users.models)) {
+                $('<li><a title="' + addBoardMember + '" href="#;" class="js-add-comment-member" data-user-level="board">' + addBoardMember + '</span></a></li>').insertAfter($(target).parents('.js-comment-member-search-response'));
+                $('<li><a title="' + addCardMember + '" href="#;" class="js-add-comment-member" data-user-level="card">' + addCardMember + '</span></a></li>').insertAfter($(target).parents('.js-comment-member-search-response'));
                 _.each(users.models, function(user) {
                     $(new App.ActivityUserAddSearchResultView({
                         model: user
@@ -4954,9 +4965,17 @@ App.ModalCardView = Backbone.View.extend({
                     }).el).insertAfter($(target).parents('.js-comment-member-search-response'));
                 }
             } else {
-                $(new App.ActivityUserAddSearchResultView({
-                    model: null
-                }).el).insertAfter($(target).parents('.js-comment-member-search-response'));
+                if (('card').indexOf(q) !== -1) {
+                    $('<li><a title="' + addCardMember + '" href="#;" class="js-add-comment-member" data-user-level="card">' + addCardMember + '</span></a></li>').insertAfter($(target).parents('.js-comment-member-search-response'));
+                }
+                if (('board').indexOf(q) !== -1) {
+                    $('<li><a title="' + addBoardMember + '" href="#;" class="js-add-comment-member" data-user-level="board">' + addBoardMember + '</span></a></li>').insertAfter($(target).parents('.js-comment-member-search-response'));
+                }
+                if (('card').indexOf(q) === -1 && ('board').indexOf(q) === -1) {
+                    $(new App.ActivityUserAddSearchResultView({
+                        model: null
+                    }).el).insertAfter($(target).parents('.js-comment-member-search-response'));
+                }
             }
         } else {
             $(target).parents('.js-comment-member-search-response').nextAll().remove();
@@ -4976,7 +4995,13 @@ App.ModalCardView = Backbone.View.extend({
         var member = '';
         if (_.isEmpty(this.$el.find('.js-search-member').val())) {
             this.$el.find(".current-comment-box").each(function(i) {
-                member = '@' + $(e.currentTarget).data('user-name');
+                if ($(e.currentTarget).data('user-level') == 'board') {
+                    member = '@board';
+                } else if ($(e.currentTarget).data('user-level') == 'card') {
+                    member = '@card';
+                } else {
+                    member = '@' + $(e.currentTarget).data('user-name');
+                }
                 if (_.isUndefined(autoMentionSelectionStart) || parseInt(autoMentionSelectionStart) === 0) {
                     this.value = this.value + ' ' + member;
                     this.focus();
@@ -5003,7 +5028,13 @@ App.ModalCardView = Backbone.View.extend({
             });
         } else {
             this.$el.find(".current-comment-box").each(function(i) {
-                member = '@' + $(e.currentTarget).data('user-name');
+                if ($(e.currentTarget).data('user-level') == 'board') {
+                    member = '@board';
+                } else if ($(e.currentTarget).data('user-level') == 'card') {
+                    member = '@card';
+                } else {
+                    member = '@' + $(e.currentTarget).data('user-name');
+                }
                 if (_.isUndefined(autoMentionSelectionStart) || parseInt(autoMentionSelectionStart) === 0) {
                     this.value = this.value + ' ' + member;
                     this.focus();
@@ -5055,6 +5086,16 @@ App.ModalCardView = Backbone.View.extend({
     },
     renderActivityBoardUsers: function() {
         var view = this.$el.find('.js-comment-member-search-response');
+        var addCardMember = i18next.t('All members on the card %s', {
+            postProcess: 'sprintf',
+            sprintf: ['(' + this.model.users.length + ')']
+        });
+        var addBoardMember = i18next.t('All members on the board %s', {
+            postProcess: 'sprintf',
+            sprintf: ['(' + this.model.list.collection.board.board_users.length + ')']
+        });
+        $('<li><a title="' + addBoardMember + '" href="#;" class="js-add-comment-member" data-user-level="board">' + addBoardMember + '</span></a></li>').insertAfter(view);
+        $('<li><a title="' + addCardMember + '" href="#;" class="js-add-comment-member" data-user-level="card">' + addCardMember + '</span></a></li>').insertAfter(view);
         this.model.list.collection.board.board_users.each(function(board_user) {
             $(new App.ActivityUserAddSearchResultView({
                 model: board_user

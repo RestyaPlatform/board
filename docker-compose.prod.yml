@@ -31,6 +31,8 @@ services:
 
   postgres:
     image: postgres:12-alpine
+    volumes:
+      - /var/opt/restya/data:/var/lib/postgresql/data
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=admin
