@@ -97,6 +97,9 @@ RUN chmod +x /docker-entrypoint.sh
 RUN chmod +x /init-db.sh
 RUN chmod +x server/php/shell/main.sh
 
+# Default ports
+EXPOSE 80
+
 # TODO root user should be avoided but required for now
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
