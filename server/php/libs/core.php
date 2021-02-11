@@ -3291,338 +3291,491 @@ function importpipefyBoard($board = array())
  *
  * @return mixed
  */
-function importMondayBoard($board = array(), $name, $comments = array())
+function importMondayBoards($path, $folder)
 {
     global $r_debug, $db_lnk, $authUser, $_server_domain_url;
-    $users = $userNames = $lists = $listNames = $cards = $cardLists = $labels = array();
-    if (!empty($board)) {
-        $user_id = $authUser['id'];
-        foreach ($board as $key => $value) {
-            if (!empty($value['Status']) && $value['Status'] !== '') {
-                if (empty($data['lists'][$value['Status']])) {
-                    $data['lists'][$value['Status']] = $value['Status'];
-                }
-            }
-            if (!empty($value['Tags']) && $value['Tags'] !== '') {
-                $temp_lables = explode(', ', $value['Tags']);
-                foreach ($temp_lables as $tmp_label) {
-                    if (empty($data['labels'][$tmp_label])) {
-                        $data['labels'][$tmp_label] = $tmp_label;
+    $team_peoples = $boards = $card_updates = $sub_boards_names = $new_boards = array();
+
+    // Reading team files for the peoples 
+    $team_filecount = 0; 
+    $teamfiles = glob($path . 'team'. DS . '*.xlsx');
+    if($teamfiles ) { 
+        $team_filecount = count($teamfiles); 
+        if(!empty($team_filecount)){
+            foreach ($teamfiles as $key => $value) {
+                if ( $xlsx = SimpleXLSX::parse($value) ) {
+                    $all_rows = array();
+                    $data = $xlsx->rows();
+                    $arrResult = array();
+                    $row = 0;
+                    foreach ($data as $key => $value) {
+                     if ($row >= 2) {
+                            if ($value[0] == '' || $value[0] == 'Name') {
+                                continue;
+                            } else {
+                                foreach ($value as $valKey => $val) {
+                                        $arrResult[$all_rows[0][$valKey]] = $val;
+                                }
+                                $team_peoples[$arrResult["Name"]] = $arrResult;
+                            }
+                        } else if ($row == 1) {
+                            $all_rows[] = $value;
+                        }
+                        $row++;
                     }
-                };
-            }
-            if (!empty($value['People']) && $value['People'] !== '') {
-                $temp_people = explode(', ', $value['People']);
-                foreach ($temp_people as $people) {
-                    if (empty($data['creators'][$people])) {
-                        $data['creators'][$people] = $people;
-                    }
                 }
-                $creators = array_unique($data['creators']);
             }
         }
-        
-        // insert new board
-        $qry_val_arr = array(
-            $name,
-            2,
-            $user_id
-        );
-        $new_board = pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO boards (created, modified, name, board_visibility, user_id) VALUES (now(), now(), $1, $2, $3) RETURNING id', $qry_val_arr));
-        $server = strtolower($_SERVER['SERVER_SOFTWARE']);
-        if (strpos($server, 'apache') !== false) {
+    }
+    // Reading team files for the peoples 
+    $updates_filecount = 0; 
+    $updatesfiles = glob($path . 'updates'. DS . '*.xlsx');
+    if($updatesfiles ) { 
+        $updates_filecount = count($updatesfiles); 
+        if(!empty($updates_filecount)){
+            foreach ($updatesfiles as $key => $value) {
+                if ( $xlsx = SimpleXLSX::parse($value) ) {
+                    $all_rows = array();
+                    $data = $xlsx->rows();
+                    $arrResult = array();
+                    $row = 0;
+                    foreach ($data as $key => $value) {
+                     if ($row >= 2) {
+                        foreach ($value as $valKey => $val) {
+                            $arrResult[$all_rows[$valKey]] = $val;
+                        }
+                        $card_updates[$arrResult['Item ID']][] = $arrResult;
+                        } else if ($row == 1) {
+                            $all_rows = $value;
+                        }
+                        $row++;
+                    }
+                }
+            }
+        }
+    }
+    // Reading sub board files
+    $sub_board_files = glob($path . 'boards'. DS . '*_Subitems of*.xlsx');
+    if(!empty($sub_board_files)){
+        foreach ($sub_board_files as $sub_board_file) {
+            if (!empty(basename($sub_board_file))) {
+                $sub_boards_names[] = basename($sub_board_file);
+            }
+        }
+    }
+    // Reading board files
+    $board_filecount = 0; 
+    $boardfiles = glob($path . 'boards'. DS . '*.xlsx');
+    if($boardfiles ) { 
+        $board_filecount = count($boardfiles); 
+        if(!empty($board_filecount)){
+            foreach ($boardfiles as $key => $value) {
+                $board_file_name = basename($value);
+                if (array_search($board_file_name, $sub_boards_names) > -1) {
+                    continue;
+                } else if ( $xlsx = SimpleXLSX::parse($value)) {
+                    $all_rows = array();
+                    $data = $xlsx->rows();
+                    $arrResult = array();
+                    $board = array();
+                    $row = 0;
+                    foreach ($data as $key => $value) {
+                        if ($row == 0) {
+                            $board['name'] = $value[0];
+                        }else if ($row > 2 && !empty($all_rows)) {
+                            if ($value[0] == '' || $value[0] == 'Name') {
+                                continue;
+                            } else {
+                                foreach ($value as $valKey => $val) {
+                                    if ($all_rows[$valKey] == 'Status') {
+                                        $status = $val;
+                                        if($val == ''){
+                                            $status = 'Empty';
+                                        }
+                                        $arrResult[$all_rows[$valKey]] = $status;
+                                        if( !empty($status) && $status !== ''){
+                                            if (empty($board['lists'][$status])) {
+                                                $board['lists'][$status] = $status;
+                                            }
+                                        }
+                                    } else if ($all_rows[$valKey] =='Tags' && !empty($val) && $val !== '') {
+                                        $arrResult[$all_rows[$valKey]] = $val;
+                                        $temp_lables = explode(', ', $val);
+                                        foreach ($temp_lables as $tmp_label) {
+                                            if (empty($board['labels'][$tmp_label])) {
+                                                $board['labels'][$tmp_label] = $tmp_label;
+                                            }
+                                        };
+                                    } else if ($all_rows[$valKey] =='People' && !empty($val) && $val !== '') {
+                                        $temp_people = explode(', ', $val);
+                                        foreach ($temp_people as $people) {
+                                            if (empty($team_peoples[$people])) {
+                                                $team_peoples[$people] = ['Name' => $people];
+                                            }
+                                        }
+                                    }else if($all_rows[$valKey] =='Item ID (auto generated)'){
+                                        $arrResult['Item ID'] = $val;
+                                    }else {
+                                        $arrResult[$all_rows[$valKey]] = $val;
+                                    }
+                                }
+                                $board['cards'][] = $arrResult;
+                            }
+                        } else if ($row > 0 && $value[0] == 'Name') {
+                            $all_rows = $value;
+                        }
+                        $row++;
+                    }
+                    if (empty($board['lists'])) {
+                        $board['lists']['Empty'] = 'Empty';
+                    }
+                    $boards[] = $board;
+                }
+            }
+        }
+    }
+    $server = strtolower($_SERVER['SERVER_SOFTWARE']);
+    if (strpos($server, 'apache') !== false) {
             ob_end_clean();
             header("Connection: close\r\n");
             header("Content-Encoding: none\r\n");
             ignore_user_abort(true); // optional
             ob_start();
-            echo json_encode($new_board);
+            echo json_encode(["msg"=> "Success"]);
             $size = ob_get_length();
             header("Content-Length: $size");
             ob_end_flush(); // Strange behaviour, will not work
             flush(); // Unless both are called !
             ob_end_clean();
         } else {
-            echo json_encode($new_board);
+            echo json_encode(["msg"=> "Success"]);
             fastcgi_finish_request();
-        }
-        // insert current user as board member
-        $qry_val_arr = array(
-            $authUser['id'],
-            $new_board['id'],
-            1
-        );
-        pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO boards_users (created, modified, user_id, board_id, board_user_role_id) VALUES (now(), now(), $1, $2, $3) RETURNING id', $qry_val_arr));
-        $auto_subscribe_on_board = (AUTO_SUBSCRIBE_ON_BOARD === 'Enabled') ? 'true' : false;
-        if ($auto_subscribe_on_board) {
+    }
+    foreach ($boards as $key => $board) {
+        $users = $userNames = $lists = $listNames = $cards = $cardLists = $labels = array();
+        if (!empty($board)) {
+            $user_id = $authUser['id'];
+            
+            // insert new board
+            $qry_val_arr = array(
+                $board['name'],
+                2,
+                $user_id
+            );
+            $new_board = pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO boards (created, modified, name, board_visibility, user_id) VALUES (now(), now(), $1, $2, $3) RETURNING id', $qry_val_arr));
+            $new_boards[$board['name']] = $new_board;
+            // insert current user as board member
             $qry_val_arr = array(
                 $authUser['id'],
                 $new_board['id'],
-                true
+                1
             );
-            pg_query_params($db_lnk, 'INSERT INTO board_subscribers (created, modified, user_id, board_id, is_subscribed) VALUES (now(), now(), $1, $2, $3)', $qry_val_arr);
-        }
-        // insert labels
-        if (!empty($data['labels'])) {
-            foreach ($data['labels'] as $label) {
-                if (!empty($label)) {
-                    $qry_val_arr = array(
-                        utf8_decode($label)
-                    );
-                    $check_label = executeQuery('SELECT id FROM labels WHERE name = $1', $qry_val_arr);
-                    if (empty($check_label)) {
+            pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO boards_users (created, modified, user_id, board_id, board_user_role_id) VALUES (now(), now(), $1, $2, $3) RETURNING id', $qry_val_arr));
+            $auto_subscribe_on_board = (AUTO_SUBSCRIBE_ON_BOARD === 'Enabled') ? 'true' : false;
+            if ($auto_subscribe_on_board) {
+                $qry_val_arr = array(
+                    $authUser['id'],
+                    $new_board['id'],
+                    true
+                );
+                pg_query_params($db_lnk, 'INSERT INTO board_subscribers (created, modified, user_id, board_id, is_subscribed) VALUES (now(), now(), $1, $2, $3)', $qry_val_arr);
+            }
+            // insert labels
+            if (!empty($board['labels'])) {
+                foreach ($board['labels'] as $label) {
+                    if (!empty($label)) {
                         $qry_val_arr = array(
                             utf8_decode($label)
                         );
-                        $check_label = pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO labels (created, modified, name) VALUES (now(), now(), $1) RETURNING id', $qry_val_arr));
-                    }
-                    $labels[$label] = $check_label['id'];
-                }
-            }
-        }
-        // insert board members
-        if (!empty($creators)) {
-            foreach ($creators as $boarduser) {
-                if (empty($users[$boarduser])) {
-                    $member = array(
-                        'id' => $boarduser,
-                        'username' => strtolower($boarduser) ,
-                        'fullName' => $boarduser,
-                        'avatarUrl' => null,
-                        'initials' => strtoupper(substr($boarduser, 0, 1))
-                    );
-                    $users = importMember($member, $new_board, 'monday');
-                    $userNames[$boarduser] = $users[$boarduser];
-                }
-            }
-        }
-        // insert lists
-        if (!empty($data['lists'])) {
-            $i = 0;
-            foreach ($data['lists'] as $list) {
-                $i+= 1;
-                if (!in_array($list, $listNames)) {
-                    $qry_val_arr = array(
-                        utf8_decode($list) ,
-                        $new_board['id'],
-                        $i,
-                        $user_id
-                    );
-                    $_list = pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO lists (created, modified, name, board_id, position, color, user_id) VALUES (now(), now(), $1, $2, $3, NULL, $4) RETURNING id', $qry_val_arr));
-                    $lists[$list] = $_list['id'];
-                    $listNames[$list] = $list;
-                }
-            }
-        }
-        //Import cards
-        $i = 0;
-        foreach ($board as $key => $card) {
-            if (isset($card['Item ID']) && !empty($card['Item ID'])) {
-                $i+= 1;
-                $is_closed = 'false';
-                $date = (!empty($card['Date']) && $card['Date'] !== '') ? date('Y-m-d H:i:s', strtotime($card['Date'])) : NULL;
-                if (isset($card['Text']) && !empty($card['Text']) && $card['Text'] !== 'NULL') {
-                    $description = $card['Text'];
-                } else {
-                    $description = '';
-                }
-                $card_user_id = (!empty($card['Creator']) && $card['Creator'] !== "") ? $userNames[$card['Creator']] : $user_id;
-                $created_at = (!empty($card['Created at']) && $card['Created at'] !== "") ? date('Y-m-d H:i:s', strtotime($card['Created at'])) : date('Y-m-d H:i:s');
-                $updated_at = (!empty($card['Updated at']) && $card['Updated at'] !== "") ? date('Y-m-d H:i:s', strtotime($card['Updated at'])) : date('Y-m-d H:i:s');
-                $qry_val_arr = array(
-                    $new_board['id'],
-                    $lists[$card['Status']],
-                    utf8_decode($card['Name']),
-                    $description,
-                    $is_closed,
-                    $i,
-                    $date,
-                    $card_user_id,
-                    $created_at,
-                    $updated_at
-                );
-                $_card = pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO cards (created, modified, board_id, list_id, name, description, is_archived, position, due_date, user_id) VALUES ($9, $10, $1, $2, $3, $4, $5, $6, $7, $8) RETURNING id', $qry_val_arr));
-                $cards[$card['ID']] = $_card['id'];
-                if (!empty($comments)) {
-                    $mat_path = array();
-                    foreach ($comments as $cardComment) {
-                        $comment = $cardComment['Update Content'];
-                        $comment = preg_replace('/[[:^print:]]/', '', $comment);
-                        $comment = utf8_decode($comment);
-                        if (($card['Item ID'] == $cardComment['Item ID']) && !empty($comment)) {
-                            $type = 'add_comment';                            
-
-                            $comment_user_id = (!empty($cardComment['User']) && $cardComment['User'] !== "") ? $userNames[$cardComment['User']] : $user_id;
-                            
-                            $newdate = date_create_from_format("d/F/Y H:i:s A", $cardComment['Created At']);
-                            $newupdated = date_create_from_format("d/F/Y H:i:s A", $cardComment['Updated At']);
-                            $newdate = date_format($newdate, 'Y-m-d H:i:s');
-                            $newupdated = date_format($newupdated, 'Y-m-d H:i:s');
-                            
-                            $created = (!empty($newdate) && $newdate !== "") ? date('Y-m-d H:i:s', strtotime($newdate)) : date('Y-m-d H:i:s');
-                            
-                            $modified = (!empty($newupdated) && $newupdated !== "") ? date('Y-m-d H:i:s', strtotime($newupdated)) : date('Y-m-d H:i:s');
-                            
+                        $check_label = executeQuery('SELECT id FROM labels WHERE name = $1', $qry_val_arr);
+                        if (empty($check_label)) {
                             $qry_val_arr = array(
-                                $created,
-                                $modified,
-                                $new_board['id'],
-                                $$lists[$card['Status']],
-                                $_card['id'],
-                                $comment_user_id,
-                                $type,
-                                $comment,
-                                $_GET['token']
+                                utf8_decode($label)
                             );
-                            $activity = pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO activities (created, modified, board_id, list_id, card_id, user_id, type, comment, token) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id', $qry_val_arr));
-                            $card_parent[$cardComment['Post ID']] = $activity['id'];
-                            if (!empty($activity)) {
-                                $id_converted = base_convert($activity['id'], 10, 36);
-                                $materialized_path = sprintf("%08s", $id_converted);
-                                $path = 'P' . $activity['id'];
-                                $depth = 0;
-                                $root = $activity['id'];
-                                $revisions = Null;
-                                if (!empty($cardComment['Parent Post ID']) && $cardComment['Content Type'] == 'Reply') {
-                                    $path = 'P' . $card_parent[$cardComment['Parent Post ID']] . '.P' . $activity['id'];
-                                    $materialized_path = $mat_path[$cardComment['Parent Post ID']] . '-' . $materialized_path;
-                                    
-                                    $root = $prev_root[$cardComment['Parent Post ID']];
-                                    $depth = $prev_depth[$cardComment['Parent Post ID']] + 1;
-                                    
-                                    $revision['old_value']['comment'] = $comment;
-                                    $revisions = serialize($revision);
-                                }
-                                
-                                $freshness_ts = $created;
-                                $qry_val_arr = array(
-                                    $materialized_path,
-                                    $path,
-                                    $depth,
-                                    $root,
-                                    $freshness_ts,
-                                    $activity['id'],
-                                    $revisions
-                                );
-                                pg_query_params($db_lnk, 'UPDATE activities SET materialized_path = $1, path = $2, depth = $3, root = $4, freshness_ts = $5, revisions = $7 WHERE id = $6', $qry_val_arr);
-                                $qry_val_arr = array(
-                                    $freshness_ts,
-                                    $root
-                                );
-                                pg_query_params($db_lnk, 'UPDATE activities SET freshness_ts = $1 WHERE root = $2', $qry_val_arr);
-                                $mat_path[$cardComment['Post ID']] = $materialized_path;
-                                $prev_root[$cardComment['Post ID']] = $root;
-                                $prev_depth[$cardComment['Post ID']] = $depth;
-                            }
+                            $check_label = pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO labels (created, modified, name) VALUES (now(), now(), $1) RETURNING id', $qry_val_arr));
+                        }
+                        $labels[$label] = $check_label['id'];
+                    }
+                }
+            }
+            // insert board members
+            if (!empty($team_peoples)) {
+                foreach ($team_peoples as $boarduser) {
+                    if(empty($boarduser['User Status']) || (!empty($boarduser['User Status']) && $boarduser['User Status'] == "Activated")){
+                        if (empty($users[$boarduser["Name"]])) {
+                            $member = array(
+                                'id' => $boarduser["Name"],
+                                'username' => strtolower($boarduser["Name"]) ,
+                                'fullName' => $boarduser["Name"],
+                                'avatarUrl' => null,
+                                'initials' => strtoupper(substr($boarduser["Name"], 0, 1))
+                            );
+                            $users = importMember($member, $new_board, 'monday');
+                            $userNames[$boarduser["Name"]] = $users[$boarduser["Name"]];
                         }
                     }
                 }
-                if (!empty($card['Subitems']) && $card['Subitems'] !== '') {
-                    $card_subitems = explode(', ', $card['Subitems']);
-                    foreach ($card_subitems as $subitem) {
-                        $i+= 1;
+            }
+            // insert lists
+            if (!empty($board['lists'])) {
+                $i = 0;
+                foreach ($board['lists'] as $list) {
+                    $i+= 1;
+                    if (!in_array($list, $listNames)) {
                         $qry_val_arr = array(
+                            utf8_decode($list) ,
                             $new_board['id'],
-                            $lists[$card['Status']],
-                            utf8_decode($subitem),
-                            $description,
-                            $is_closed,
                             $i,
-                            $date,
-                            $card_user_id,
-                            $created_at,
-                            $updated_at
+                            $user_id
                         );
-                        $_subcard = pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO cards (created, modified, board_id, list_id, name, description, is_archived, position, due_date, user_id) VALUES ($9, $10, $1, $2, $3, $4, $5, $6, $7, $8) RETURNING id', $qry_val_arr));
+                        $_list = pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO lists (created, modified, name, board_id, position, color, user_id) VALUES (now(), now(), $1, $2, $3, NULL, $4) RETURNING id', $qry_val_arr));
+                        $lists[$list] = $_list['id'];
+                        $listNames[$list] = $list;
                     }
                 }
-                if (!empty($card['Tags']) && $card['Tags'] !== '') {
-                    $label_names = explode(', ', $card['Tags']);
-                    if (!empty($label_names)) {
-                        foreach ($label_names as $label) {
+            }
+            //Import cards
+            $i = 0;
+            foreach ($board["cards"] as $key => $card) {
+                if (isset($card['Item ID']) && !empty($card['Item ID'])) {
+                    $i+= 1;
+                    $is_closed = 'false';
+                    $date = (!empty($card['Date']) && $card['Date'] !== '') ? date('Y-m-d H:i:s', strtotime($card['Date'])) : NULL;
+                    if (isset($card['Text']) && !empty($card['Text']) && $card['Text'] !== 'NULL') {
+                        $description = $card['Text'];
+                    } else {
+                        $description = '';
+                    }
+                    $card_user_id = (!empty($card['Creator']) && $card['Creator'] !== "") ? $userNames[$card['Creator']] : $user_id;
+                    $created_at = (!empty($card['Created at']) && $card['Created at'] !== "") ? date('Y-m-d H:i:s', strtotime($card['Created at'])) : date('Y-m-d H:i:s');
+                    $updated_at = (!empty($card['Updated at']) && $card['Updated at'] !== "") ? date('Y-m-d H:i:s', strtotime($card['Updated at'])) : date('Y-m-d H:i:s');
+                    $card_status = (isset($card['Status']) && !empty($card['Status'])) ? $card['Status'] : "Empty"; 
+                    $qry_val_arr = array(
+                        $new_board['id'],
+                        $lists[$card_status],
+                        utf8_decode($card['Name']),
+                        $description,
+                        $is_closed,
+                        $i,
+                        $date,
+                        $card_user_id,
+                        $created_at,
+                        $updated_at
+                    );
+                    $_card = pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO cards (created, modified, board_id, list_id, name, description, is_archived, position, due_date, user_id) VALUES ($9, $10, $1, $2, $3, $4, $5, $6, $7, $8) RETURNING id', $qry_val_arr));
+                    $cards[$card['Item ID']] = $_card['id'];
+                    if (!empty($card_updates) && !empty($card_updates[$card['Item ID']])) {
+                        $mat_path = array();
+                        // Updating comments attachments into card attachments 
+                        foreach ($card_updates[$card['Item ID']] as $cardComment) {
+                            if(!empty($cardComment['Asset IDs'])){
+                                $asset_files = glob(MEDIA_PATH . DS . 'import' . DS . $folder . DS. 'assets'. DS . $cardComment['Asset IDs'].'_*');
+                                if(!empty($asset_files)){
+                                    $attachment_name = str_replace($cardComment['Asset IDs'].'_', '', basename($asset_files[0]));
+                                    $mediadir = MEDIA_PATH . DS . 'Card' . DS . $_card['id'];
+                                    $save_path = 'Card' . DS . $_card['id'];
+                                    $save_path = str_replace('\\', '/', $save_path);
+                                    $writeto = $save_path . DS . $attachment_name;
+                                    if (!file_exists($mediadir)) {
+                                        mkdir($mediadir, 0777, true);
+                                    }
+                                    copy($asset_files[0], $mediadir. DS . $attachment_name);
+                                    $qry_val_arr = array(
+                                        $new_board['id'],
+                                        $lists[$card_status],
+                                        $_card['id'],
+                                        $attachment_name,
+                                        $writeto,
+                                    );
+                                    pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO card_attachments (created, modified, board_id, list_id, card_id, name, path, mimetype) VALUES (now(), now(), $1, $2, $3, $4, $5, NULL) RETURNING id', $qry_val_arr));
+                                }
+                            }
+                            // import comments updates
+                            $comment = $cardComment['Update Content'];
+                            $comment = preg_replace('/[[:^print:]]/', '', $comment);
+                            $comment = utf8_decode($comment);
+                            if (($card['Item ID'] == $cardComment['Item ID']) && !empty($comment)) {
+                                $type = 'add_comment';                            
+    
+                                $comment_user_id = (!empty($cardComment['User']) && $cardComment['User'] !== "") ? $userNames[$cardComment['User']] : $user_id;
+                                
+                                $newdate = date_create_from_format("d/F/Y H:i:s A", $cardComment['Created At']);
+                                $newupdated = date_create_from_format("d/F/Y H:i:s A", $cardComment['Created At']);
+                                $newdate = date_format($newdate, 'Y-m-d H:i:s');
+                                $newupdated = date_format($newupdated, 'Y-m-d H:i:s');
+                                
+                                $created = (!empty($newdate) && $newdate !== "") ? date('Y-m-d H:i:s', strtotime($newdate)) : date('Y-m-d H:i:s');
+                                
+                                $modified = (!empty($newupdated) && $newupdated !== "") ? date('Y-m-d H:i:s', strtotime($newupdated)) : date('Y-m-d H:i:s');
+                                $qry_val_arr = array(
+                                    $created,
+                                    $modified,
+                                    $new_board['id'],
+                                    $lists[$card_status],
+                                    $_card['id'],
+                                    $comment_user_id,
+                                    $type,
+                                    $comment,
+                                    $_GET['token']
+                                );
+                                $activity = pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO activities (created, modified, board_id, list_id, card_id, user_id, type, comment, token) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id', $qry_val_arr));
+                                $card_parent[$cardComment['Post ID']] = $activity['id'];
+                                if (!empty($activity)) {
+                                    $id_converted = base_convert($activity['id'], 10, 36);
+                                    $materialized_path = sprintf("%08s", $id_converted);
+                                    $path = 'P' . $activity['id'];
+                                    $depth = 0;
+                                    $root = $activity['id'];
+                                    $revisions = Null;
+                                    if (!empty($cardComment['Parent Post ID']) && $cardComment['Content Type'] == 'Reply') {
+                                        $path = 'P' . $card_parent[$cardComment['Parent Post ID']] . '.P' . $activity['id'];
+                                        $materialized_path = $mat_path[$cardComment['Parent Post ID']] . '-' . $materialized_path;
+                                        
+                                        $root = $prev_root[$cardComment['Parent Post ID']];
+                                        $depth = $prev_depth[$cardComment['Parent Post ID']] + 1;
+                                        
+                                        $revision['old_value']['comment'] = $comment;
+                                        $revisions = serialize($revision);
+                                    }
+                                    
+                                    $freshness_ts = $created;
+                                    $qry_val_arr = array(
+                                        $materialized_path,
+                                        $path,
+                                        $depth,
+                                        $root,
+                                        $freshness_ts,
+                                        $activity['id'],
+                                        $revisions
+                                    );
+                                    pg_query_params($db_lnk, 'UPDATE activities SET materialized_path = $1, path = $2, depth = $3, root = $4, freshness_ts = $5, revisions = $7 WHERE id = $6', $qry_val_arr);
+                                    $qry_val_arr = array(
+                                        $freshness_ts,
+                                        $root
+                                    );
+                                    pg_query_params($db_lnk, 'UPDATE activities SET freshness_ts = $1 WHERE root = $2', $qry_val_arr);
+                                    $mat_path[$cardComment['Post ID']] = $materialized_path;
+                                    $prev_root[$cardComment['Post ID']] = $root;
+                                    $prev_depth[$cardComment['Post ID']] = $depth;
+                                }
+                            }
+                        }
+                    }
+                    if (!empty($card['Subitems']) && $card['Subitems'] !== '') {
+                        $card_subitems = explode(', ', $card['Subitems']);
+                        foreach ($card_subitems as $subitem) {
+                            $i+= 1;
                             $qry_val_arr = array(
                                 $new_board['id'],
-                                $lists[$card['Status']],
-                                $_card['id'],
-                                $labels[$label]
+                                $lists[$card_status],
+                                utf8_decode($subitem),
+                                $description,
+                                $is_closed,
+                                $i,
+                                $date,
+                                $card_user_id,
+                                $created_at,
+                                $updated_at
                             );
-                            pg_query_params($db_lnk, 'INSERT INTO cards_labels (created, modified, board_id, list_id, card_id, label_id) VALUES (now(), now(), $1, $2, $3, $4)', $qry_val_arr);
+                            $_subcard = pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO cards (created, modified, board_id, list_id, name, description, is_archived, position, due_date, user_id) VALUES ($9, $10, $1, $2, $3, $4, $5, $6, $7, $8) RETURNING id', $qry_val_arr));
                         }
                     }
-                }
-                
-                if (!empty($card['Files']) && $card['Files'] !== '') {
-                    $card_attachments = explode(', ', $card['Files']);
-                    foreach ($card_attachments as $attachment) {
-                        $mediadir = MEDIA_PATH . DS . 'Card' . DS . $_card['id'];
-                        $save_path = 'Card' . DS . $_card['id'];
-                        $save_path = str_replace('\\', '/', $save_path);
-                        $filename = curlExecute($attachment, 'get', $mediadir, 'image');
-                        $path = $save_path . DS . $filename['file_name'];
-                        $qry_val_arr = array(
-                            $new_board['id'],
-                            $lists[$card['Status']],
-                            $_card['id'],
-                            $filename['file_name'],
-                            $path
-                        );
-                        pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO card_attachments (created, modified, board_id, list_id, card_id, name, path, mimetype) VALUES (now(), now(), $1, $2, $3, $4, $5, NULL) RETURNING id', $qry_val_arr));
-                    }
-                }
-                if (!empty($card['People'])) {
-                    $assignees = $card['People'];
-                    $card_assignees = explode(', ', $assignees);
-                    $card_assignees = array_diff($creators,$card_assignees);
-                        foreach ($card_assignees as $cardMember) {
-                            if (empty($users[$cardMember])) {
-                                $member = array(
-                                    'id' => $cardMember,
-                                    'username' => strtolower($cardMember) ,
-                                    'fullName' => $cardMember,
-                                    'avatarUrl' => null,
-                                    'initials' => strtoupper(substr($cardMember, 0, 1))
+                    // Import labels
+                    if (!empty($card['Tags']) && $card['Tags'] !== '') {
+                        $label_names = explode(', ', $card['Tags']);
+                        if (!empty($label_names)) {
+                            foreach ($label_names as $label) {
+                                $qry_val_arr = array(
+                                    $new_board['id'],
+                                    $lists[$card_status],
+                                    $_card['id'],
+                                    $labels[$label]
                                 );
-                                $users = importMember($member, $new_board, 'monday');
-                                $userNames[$cardMember] = $cardMember;
+                                pg_query_params($db_lnk, 'INSERT INTO cards_labels (created, modified, board_id, list_id, card_id, label_id) VALUES (now(), now(), $1, $2, $3, $4)', $qry_val_arr);
                             }
-                            $qry_val_arr = array(
-                                $_card['id'],
-                                $users[$cardMember]
-                            );
-                            pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO cards_users (created, modified, card_id, user_id) VALUES (now(), now(), $1, $2) RETURNING id', $qry_val_arr));
                         }
-                }
-                //voters
-                if (!empty($card['idMembersVoted'])) {
-                    foreach ($card['idMembersVoted'] as $votedMemberId) {
-                        $qry_val_arr = array(
-                            $_card['id'],
-                            $users[$votedMemberId]
-                        );
-                        pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO card_voters (created, modified, card_id, user_id) VALUES (now(), now(), $1, $2) RETURNING id', $qry_val_arr));
+                    }
+                    // import Card attachments
+                    if (!empty($card['Files']) && $card['Files'] !== '') {
+                        $card_attachments = explode(', ', $card['Files']);
+                        foreach ($card_attachments as $attachment) {
+                            $attachment = urldecode(strtolower($attachment));
+                            $attachment_splits = explode('/', $attachment);
+                            $attachment_id = $attachment_splits[count($attachment_splits) -2];
+                            $attachment_name = basename($attachment);
+                            $imagefiles = glob(MEDIA_PATH . DS . 'import' . DS . $folder . DS. 'assets'. DS . $attachment_id.'_*');
+                            if(!empty($attachment_id) && !empty($attachment_name) && !empty($imagefiles)){
+                                $mediadir = MEDIA_PATH . DS . 'Card' . DS . $_card['id'];
+                                $save_path = 'Card' . DS . $_card['id'];
+                                $save_path = str_replace('\\', '/', $save_path);
+                                $writeto = $save_path . DS . $attachment_name;
+                                if (!file_exists($mediadir)) {
+                                    mkdir($mediadir, 0777, true);
+                                }
+                                $fullpath = MEDIA_PATH . DS . 'import' . DS . $folder . DS. 'assets'. DS. $attachment_id."_".$attachment_name;
+                                copy($imagefiles[0], $mediadir. DS . $attachment_name);
+                                $qry_val_arr = array(
+                                    $new_board['id'],
+                                    $lists[$card_status],
+                                    $_card['id'],
+                                    $attachment_name,
+                                    $writeto,
+                                );
+                                pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO card_attachments (created, modified, board_id, list_id, card_id, name, path, mimetype) VALUES (now(), now(), $1, $2, $3, $4, $5, NULL) RETURNING id', $qry_val_arr));
+                            }
+                        }
+                    }
+                    // import card users
+                    if (!empty($card['Assignee'])) {
+                        $assignees = $card['Assignee'];
+                        $card_assignees = explode(', ', $assignees);
+                            foreach ($card_assignees as $cardMember) {
+                                if (empty($users[$cardMember])) {
+                                    $member = array(
+                                        'id' => $cardMember,
+                                        'username' => strtolower($cardMember) ,
+                                        'fullName' => $cardMember,
+                                        'avatarUrl' => null,
+                                        'initials' => strtoupper(substr($cardMember, 0, 1))
+                                    );
+                                    $users = importMember($member, $new_board, 'monday');
+                                    $userNames[$cardMember] = $cardMember;
+                                }
+                                $qry_val_arr = array(
+                                    $_card['id'],
+                                    $users[$cardMember]
+                                );
+                                pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO cards_users (created, modified, card_id, user_id) VALUES (now(), now(), $1, $2) RETURNING id', $qry_val_arr));
+                            }
                     }
                 }
             }
-        }
-        if (!empty($cards)) {
-            foreach ($cards as $value) {
-                $conditions = array(
-                    $value
-                );
-                $activity_count = executeQuery("SELECT COUNT(id) as total_count FROM activities WHERE type = 'add_comment' AND card_id = $1", $conditions);
-                $activity_count = (!empty($activity_count)) ? $activity_count['total_count'] : 0;
-                $qry_val_arr = array(
-                    $activity_count,
-                    $value
-                );
-                pg_query_params($db_lnk, 'UPDATE cards SET comment_count = $1 WHERE id = $2', $qry_val_arr);
+            if (!empty($cards)) {
+                foreach ($cards as $value) {
+                    $conditions = array(
+                        $value
+                    );
+                    $activity_count = executeQuery("SELECT COUNT(id) as total_count FROM activities WHERE type = 'add_comment' AND card_id = $1", $conditions);
+                    $activity_count = (!empty($activity_count)) ? $activity_count['total_count'] : 0;
+                    $qry_val_arr = array(
+                        $activity_count,
+                        $value
+                    );
+                    pg_query_params($db_lnk, 'UPDATE cards SET comment_count = $1 WHERE id = $2', $qry_val_arr);
+                }
             }
         }
-        boardImportMailSend('Monday', $new_board);
-        return $new_board;
     }
+    // update mail for all the imported boards  
+    if(!empty($new_boards)){
+        foreach ($new_boards as $new_board) {
+            if (!empty($new_board)) {
+                boardImportMailSend('Monday', $new_board);
+            }
+        }
+    }
+    return $new_boards;
 }
-
 /**
  * Email to name
  *
