@@ -3407,6 +3407,7 @@ function importMondayBoards($path, $folder)
                                             }
                                         };
                                     } else if ($all_rows[$valKey] =='People' && !empty($val) && $val !== '') {
+                                        $arrResult[$all_rows[$valKey]] = $val;
                                         $temp_people = explode(', ', $val);
                                         foreach ($temp_people as $people) {
                                             if (empty($team_peoples[$people])) {
@@ -3550,6 +3551,11 @@ function importMondayBoards($path, $folder)
                     $created_at = (!empty($card['Created at']) && $card['Created at'] !== "") ? date('Y-m-d H:i:s', strtotime($card['Created at'])) : date('Y-m-d H:i:s');
                     $updated_at = (!empty($card['Updated at']) && $card['Updated at'] !== "") ? date('Y-m-d H:i:s', strtotime($card['Updated at'])) : date('Y-m-d H:i:s');
                     $card_status = (isset($card['Status']) && !empty($card['Status'])) ? $card['Status'] : "Empty"; 
+                    $card_custom_fields = NULL;
+                    if (isset($card['Timeline - Start']) && !empty($card['Timeline - Start'])) {
+                        $custom_fields['start_date'] = $card['Timeline - Start'];
+                        $card_custom_fields = json_encode($custom_fields);
+                    }
                     $qry_val_arr = array(
                         $new_board['id'],
                         $lists[$card_status],
@@ -3560,9 +3566,10 @@ function importMondayBoards($path, $folder)
                         $date,
                         $card_user_id,
                         $created_at,
-                        $updated_at
+                        $updated_at,
+                        $card_custom_fields
                     );
-                    $_card = pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO cards (created, modified, board_id, list_id, name, description, is_archived, position, due_date, user_id) VALUES ($9, $10, $1, $2, $3, $4, $5, $6, $7, $8) RETURNING id', $qry_val_arr));
+                    $_card = pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO cards (created, modified, board_id, list_id, name, description, is_archived, position, due_date, user_id, custom_fields) VALUES ($9, $10, $1, $2, $3, $4, $5, $6, $7, $8, $11) RETURNING id', $qry_val_arr));
                     $cards[$card['Item ID']] = $_card['id'];
                     if (!empty($card_updates) && !empty($card_updates[$card['Item ID']])) {
                         $mat_path = array();
@@ -3592,20 +3599,15 @@ function importMondayBoards($path, $folder)
                             }
                             // import comments updates
                             $comment = $cardComment['Update Content'];
-                            $comment = preg_replace('/[[:^print:]]/', '', $comment);
-                            $comment = utf8_decode($comment);
+                            $comment = ltrim($comment, "'");
                             if (($card['Item ID'] == $cardComment['Item ID']) && !empty($comment)) {
                                 $type = 'add_comment';                            
-    
                                 $comment_user_id = (!empty($cardComment['User']) && $cardComment['User'] !== "") ? $userNames[$cardComment['User']] : $user_id;
-                                
                                 $newdate = date_create_from_format("d/F/Y H:i:s A", $cardComment['Created At']);
                                 $newupdated = date_create_from_format("d/F/Y H:i:s A", $cardComment['Created At']);
                                 $newdate = date_format($newdate, 'Y-m-d H:i:s');
                                 $newupdated = date_format($newupdated, 'Y-m-d H:i:s');
-                                
                                 $created = (!empty($newdate) && $newdate !== "") ? date('Y-m-d H:i:s', strtotime($newdate)) : date('Y-m-d H:i:s');
-                                
                                 $modified = (!empty($newupdated) && $newupdated !== "") ? date('Y-m-d H:i:s', strtotime($newupdated)) : date('Y-m-d H:i:s');
                                 $qry_val_arr = array(
                                     $created,
@@ -3726,8 +3728,8 @@ function importMondayBoards($path, $folder)
                         }
                     }
                     // import card users
-                    if (!empty($card['Assignee'])) {
-                        $assignees = $card['Assignee'];
+                    if (!empty($card['People'])) {
+                        $assignees = $card['People'];
                         $card_assignees = explode(', ', $assignees);
                             foreach ($card_assignees as $cardMember) {
                                 if (empty($users[$cardMember])) {
