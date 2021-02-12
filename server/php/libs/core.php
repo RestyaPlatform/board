@@ -3306,13 +3306,13 @@ function importMondayBoards($path, $folder)
                 if ( $xlsx = SimpleXLSX::parse($value) ) {
                     $all_rows = array();
                     $data = $xlsx->rows();
-                    $arrResult = array();
                     $row = 0;
                     foreach ($data as $key => $value) {
                      if ($row >= 2) {
                             if ($value[0] == '' || $value[0] == 'Name') {
                                 continue;
                             } else {
+                                $arrResult = array();
                                 foreach ($value as $valKey => $val) {
                                         $arrResult[$all_rows[0][$valKey]] = $val;
                                 }
@@ -3337,10 +3337,10 @@ function importMondayBoards($path, $folder)
                 if ( $xlsx = SimpleXLSX::parse($value) ) {
                     $all_rows = array();
                     $data = $xlsx->rows();
-                    $arrResult = array();
                     $row = 0;
                     foreach ($data as $key => $value) {
                      if ($row >= 2) {
+                        $arrResult = array();
                         foreach ($value as $valKey => $val) {
                             $arrResult[$all_rows[$valKey]] = $val;
                         }
@@ -3376,16 +3376,16 @@ function importMondayBoards($path, $folder)
                 } else if ( $xlsx = SimpleXLSX::parse($value)) {
                     $all_rows = array();
                     $data = $xlsx->rows();
-                    $arrResult = array();
-                    $board = array();
+                    $tmpboard = array();
                     $row = 0;
                     foreach ($data as $key => $value) {
                         if ($row == 0) {
-                            $board['name'] = $value[0];
+                            $tmpboard['name'] = $value[0];
                         }else if ($row > 2 && !empty($all_rows)) {
                             if ($value[0] == '' || $value[0] == 'Name') {
                                 continue;
                             } else {
+                                $arrResult = array();
                                 foreach ($value as $valKey => $val) {
                                     if ($all_rows[$valKey] == 'Status') {
                                         $status = $val;
@@ -3394,16 +3394,16 @@ function importMondayBoards($path, $folder)
                                         }
                                         $arrResult[$all_rows[$valKey]] = $status;
                                         if( !empty($status) && $status !== ''){
-                                            if (empty($board['lists'][$status])) {
-                                                $board['lists'][$status] = $status;
+                                            if (empty($tmpboard['lists'][$status])) {
+                                                $tmpboard['lists'][$status] = $status;
                                             }
                                         }
                                     } else if ($all_rows[$valKey] =='Tags' && !empty($val) && $val !== '') {
                                         $arrResult[$all_rows[$valKey]] = $val;
                                         $temp_lables = explode(', ', $val);
                                         foreach ($temp_lables as $tmp_label) {
-                                            if (empty($board['labels'][$tmp_label])) {
-                                                $board['labels'][$tmp_label] = $tmp_label;
+                                            if (empty($tmpboard['labels'][$tmp_label])) {
+                                                $tmpboard['labels'][$tmp_label] = $tmp_label;
                                             }
                                         };
                                     } else if ($all_rows[$valKey] =='People' && !empty($val) && $val !== '') {
@@ -3419,17 +3419,17 @@ function importMondayBoards($path, $folder)
                                         $arrResult[$all_rows[$valKey]] = $val;
                                     }
                                 }
-                                $board['cards'][] = $arrResult;
+                                $tmpboard['cards'][] = $arrResult;
                             }
                         } else if ($row > 0 && $value[0] == 'Name') {
                             $all_rows = $value;
                         }
                         $row++;
                     }
-                    if (empty($board['lists'])) {
-                        $board['lists']['Empty'] = 'Empty';
+                    if (empty($tmpboard['lists'])) {
+                        $tmpboard['lists']['Empty'] = 'Empty';
                     }
-                    $boards[] = $board;
+                    $boards[] = $tmpboard;
                 }
             }
         }
