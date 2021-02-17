@@ -327,6 +327,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
     case '/users/?/activities':
         $condition = '';
         $flag = 0;
+        $assigned_card_ids = $assigned_board_ids = array();
         if (!empty($authUser) && $authUser['role_id'] == 1 && $authUser['id'] == $r_resource_vars['users'] && empty($r_resource_filters['organization_id']) && empty($r_resource_filters['board_id'])) {
             $i = 1;
             if (!empty($r_resource_filters['mode']) && $r_resource_filters['mode'] != 'all') {
@@ -373,6 +374,24 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                     }
                 }
             }
+            // START : check the role for Restricted board user
+            $assigned_board_as_restricted = pg_query_params($db_lnk, 'SELECT board_id FROM boards_users WHERE user_id = $1 AND board_user_role_id = $2', array(
+                $authUser['id'],
+                4
+            ));
+            while ($row = pg_fetch_assoc($assigned_board_as_restricted)) {
+                $assigned_board_ids[] = $row['board_id'];
+            }
+            if ($assigned_board_ids) {
+                $cardsIDS = pg_query_params($db_lnk, 'SELECT c.id, c.board_id, cu.id as card_userid FROM cards c inner join cards_users cu on cu.card_id = c.id WHERE cu.user_id = $1 AND c.board_id = ANY ( $2 )', array(
+                    $authUser['id'],
+                    '{' . implode(',', $assigned_board_ids) . '}'
+                ));
+                while ($row = pg_fetch_assoc($cardsIDS)) {
+                    $assigned_card_ids[] = $row['id'];
+                }
+            }
+            // END : check the role for Restricted board user
             $val_array = array(
                 $r_resource_vars['users']
             );
@@ -415,6 +434,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM activities_listing al WHERE ' . $str . $condition . ' ORDER BY id DESC LIMIT ' . PAGING_COUNT . ') as d';
                 $c_sql = 'SELECT COUNT(*) FROM activities_listing al WHERE ' . $str;
             } else if (!empty($r_resource_filters['type']) && $r_resource_filters['type'] == 'all') {
+                $flag = 1;
                 if (!empty($r_resource_filters['last_activity_id'])) {
                     $condition = ' AND al.id > $4';
                 }
@@ -422,9 +442,20 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 if (!empty($r_resource_filters['direction']) && isset($r_resource_filters['direction'])) {
                     $direction = $r_resource_filters['direction'];
                 }
-                $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM activities_listing al WHERE (board_id = ANY ( $1 ) OR organization_id  = ANY ( $2 ) OR revisions = $3)' . $condition . ' ORDER BY id ' . $direction . ' LIMIT ' . PAGING_COUNT . ') as d';
-                $c_sql = 'SELECT COUNT(*) FROM activities_listing al WHERE (board_id = ANY ( $1 ) OR organization_id  = ANY ( $2 ) OR revisions = $3)' . $condition;
-                array_push($pg_params, '{' . implode(',', $board_ids) . '}', '{' . implode(',', $org_ids) . '}', $authUser['id']);
+                // If Restricted board user
+                if (!empty($assigned_card_ids) || !empty($assigned_board_ids)) {
+                    if (!empty($r_resource_filters['last_activity_id'])) {
+                        $condition = ' AND al.id > $7';
+                    }
+                    $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM activities_listing al WHERE (board_id = ANY ( $1 ) OR organization_id  = ANY ( $2 ) OR revisions = $3 OR type = $8 OR type = $9 OR (card_id = ANY ($4) OR (board_id = ANY($5) AND card_id = $6) ) ) ' . $condition . ' ORDER BY id ' . $direction . ' LIMIT ' . PAGING_COUNT . ') as d';
+                    $c_sql = 'SELECT COUNT(*) FROM activities_listing al WHERE (board_id = ANY ( $1 ) OR organization_id  = ANY ( $2 ) OR revisions = $3 OR type = $8 OR type = $9 OR (card_id = ANY ($4) OR (board_id = ANY($5) AND card_id = $6) ) ) ' . $condition;
+                    $boardIDS = array_diff($board_ids, $assigned_board_ids);
+                    array_push($pg_params, '{' . implode(',', $boardIDS) . '}', '{' . implode(',', $org_ids) . '}', $authUser['id'], '{' . implode(',', $assigned_card_ids) . '}', '{' . implode(',', $assigned_board_ids) . '}', 0);
+                } else {
+                    $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM activities_listing al WHERE (board_id = ANY ( $1 ) OR organization_id  = ANY ( $2 ) OR revisions = $3 OR type = $5 OR type = $6)' . $condition . ' ORDER BY id ' . $direction . ' LIMIT ' . PAGING_COUNT . ') as d';
+                    $c_sql = 'SELECT COUNT(*) FROM activities_listing al WHERE (board_id = ANY ( $1 ) OR organization_id  = ANY ( $2 ) OR revisions = $3 OR type = $5 OR type = $6)' . $condition;
+                    array_push($pg_params, '{' . implode(',', $board_ids) . '}', '{' . implode(',', $org_ids) . '}', $authUser['id']);
+                }
             } else if (!empty($r_resource_filters['board_id']) && $r_resource_filters['board_id'] && $r_resource_filters['type'] == 'board_user_activity') {
                 if (!empty($r_resource_filters['last_activity_id'])) {
                     $condition = ' AND al.id < $3';
@@ -450,6 +481,9 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         }
         if (!empty($r_resource_filters['last_activity_id'])) {
             array_push($pg_params, $r_resource_filters['last_activity_id']);
+        }
+        if (!empty($r_resource_filters['type']) && $r_resource_filters['type'] == 'all' && $flag === 1) {
+            array_push($pg_params, "add_permission", "remove_permission");
         }
         if (!empty($c_sql)) {
             $paging_data = paginate_data($c_sql, $db_lnk, $pg_params, $r_resource_filters);
@@ -1049,11 +1083,26 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         break;
 
     case '/boards/?':
-        $board = array();
+        $board = $assigned_card_ids = array();
         $s_sql = 'SELECT id FROM boards WHERE id =  $1';
         $board[] = $r_resource_vars['boards'];
         $check_board = executeQuery($s_sql, $board);
         if (!empty($check_board)) {
+            // For restricted board user assigned cards
+            $is_restricted_board_user = executeQuery('SELECT board_id FROM boards_users WHERE user_id = $1 AND board_user_role_id = $2 AND board_id = $3', array(
+                $authUser['id'],
+                4,
+                $r_resource_vars['boards']
+            ));
+            if (!empty($is_restricted_board_user)) {
+                $cardsIDS = pg_query_params($db_lnk, 'SELECT c.id, c.board_id FROM cards c left join cards_users cu on cu.card_id = c.id WHERE cu.user_id = $1 AND c.board_id = $2', array(
+                    $authUser['id'],
+                    $r_resource_vars['boards']
+                ));
+                while ($row = pg_fetch_assoc($cardsIDS)) {
+                    $assigned_card_ids[] = $row['id'];
+                }
+            }
             $s_sql = 'SELECT b.board_visibility, bu.user_id FROM boards AS b LEFT JOIN boards_users AS bu ON bu.board_id = b.id WHERE b.id =  $1';
             $arr = array();
             $arr[] = $r_resource_vars['boards'];
@@ -1077,6 +1126,24 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                         while ($row = pg_fetch_row($result)) {
                             $obj = json_decode($row[0], true);
                             global $_server_domain_url;
+                            // Unset unassigned cards for Restricted board user.
+                            if (!empty($assigned_card_ids)) {
+                                foreach ($obj['lists'] as $key => $lists) {
+                                    if (!empty($lists['cards'])) {
+                                        foreach ($lists['cards'] as $card_key => $cards) {
+                                            if (!in_array($cards['id'], $assigned_card_ids)) {
+                                                unset($obj['lists'][$key]['cards'][$card_key]);
+                                            }
+                                        }
+                                    }
+                                }
+                            } else if (!empty($is_restricted_board_user)) {
+                                foreach ($obj['lists'] as $key => $lists) {
+                                    if (!empty($lists['cards'])) {
+                                        $obj['lists'][$key]['cards'] = null;
+                                    }
+                                }
+                            }
                             if (!empty($authUser)) {
                                 $md5_hash = md5(SECURITYSALT . $r_resource_vars['boards'] . $authUser['id']);
                                 $obj['google_syn_url'] = $_server_domain_url . '/ical/' . $r_resource_vars['boards'] . '/' . $authUser['id'] . '/' . $md5_hash . '.ics';
@@ -1377,6 +1444,37 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             if (empty($r_resource_filters['from']) || (!empty($r_resource_filters['from']) && $r_resource_filters['from'] != 'app')) {
                 $c_sql = 'SELECT COUNT(*) FROM activities_listing al WHERE al.board_id = $1' . $condition;
             }
+            // For Restricted board user role
+            if (!isset($r_resource_vars['lists']) && !isset($r_resource_vars['cards'])) {
+                $is_restricted_board_user = executeQuery('SELECT board_id FROM boards_users WHERE user_id = $1 AND board_user_role_id = $2 AND board_id = $3', array(
+                    $authUser['id'],
+                    4,
+                    $r_resource_vars['boards']
+                ));
+                if (!empty($is_restricted_board_user) && !empty($r_resource_filters['mode']) && ($r_resource_filters['mode'] === 'all')) {
+                    $cardsIDS = pg_query_params($db_lnk, 'SELECT c.id FROM cards c left join cards_users cu on cu.card_id = c.id WHERE cu.user_id = $1 AND c.board_id = $2', array(
+                        $authUser['id'],
+                        $r_resource_vars['boards']
+                    ));
+                    while ($row = pg_fetch_assoc($cardsIDS)) {
+                        $assigned_card_ids[] = $row['id'];
+                    }
+                    if (!empty($assigned_card_ids)) {
+                        $sql = 'SELECT row_to_json(d) FROM (SELECT al.*, u.username, u.profile_picture_path, u.initials, u.full_name, c.description, c.name as card_name FROM activities_listing al LEFT JOIN users u ON al.user_id = u.id LEFT JOIN cards c on al.card_id = c.id WHERE al.board_id = $1 AND (al.card_id = ANY ($3) OR al.revisions = $2 )' . $condition . ' ' . $order . ' LIMIT ' . $limit . ' ' . $construct_offset . ') as d ';
+                        if (empty($r_resource_filters['from']) || (!empty($r_resource_filters['from']) && $r_resource_filters['from'] != 'app')) {
+                            $c_sql = 'SELECT COUNT(*) FROM activities_listing al WHERE (al.board_id = $1 AND al.card_id = ANY ($3)) OR al.revisions = $2 ' . $condition;
+                        }
+                        array_push($assigned_card_ids, 0);
+                        array_push($pg_params, $authUser['id'], '{' . implode(',', $assigned_card_ids) . '}');
+                    } else {
+                        $sql = 'SELECT row_to_json(d) FROM (SELECT al.*, u.username, u.profile_picture_path, u.initials, u.full_name, c.description, c.name as card_name FROM activities_listing al LEFT JOIN users u ON al.user_id = u.id LEFT JOIN cards c on al.card_id = c.id WHERE (al.board_id = $1 AND al.card_id = $2) ' . $condition . ' ' . $order . ' LIMIT ' . $limit . ' ' . $construct_offset . ') as d ';
+                        if (empty($r_resource_filters['from']) || (!empty($r_resource_filters['from']) && $r_resource_filters['from'] != 'app')) {
+                            $c_sql = 'SELECT COUNT(*) FROM activities_listing al WHERE al.board_id = $1 AND card_id = $2 ' . $condition;
+                        }
+                        array_push($pg_params, 0);
+                    }
+                }
+            }
             if (!empty($c_sql)) {
                 $paging_data = paginate_data($c_sql, $db_lnk, $pg_params, $r_resource_filters);
                 $sql.= $paging_data['sql'];
@@ -1521,6 +1619,18 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             while ($row = pg_fetch_row($result)) {
                 $obj = json_decode($row[0], true);
                 $data = $obj;
+                if ($r_resource_cmd === "/boards/?/lists/?/cards/?") {
+                    if (is_plugin_enabled('r_custom_fields')) {
+                        require_once PLUGIN_PATH . DS . 'CustomFields' . DS . 'functions.php';
+                        $data['cards_custom_fields'][] = customFieldAfterFetchBoardsListsCards($r_resource_cmd, $r_resource_vars, $r_resource_filters, $data);
+                    }
+                    $attachments = pg_query_params($db_lnk, 'SELECT * FROM card_attachments WHERE card_id = $1 order by created DESC', array(
+                        $r_resource_vars['cards']
+                    ));
+                    while ($attachment = pg_fetch_assoc($attachments)) {
+                        $data['attachments'][] = $attachment;
+                    }
+                }
             }
             echo json_encode($data);
         } else {
@@ -1878,7 +1988,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         while ($row = pg_fetch_assoc($roles_result)) {
             $response['roles'][] = $row;
         }
-        $acl_board_links_sql = 'SELECT row_to_json(d) FROM (SELECT acl_board_links.id,  acl_board_links.name, acl_board_links.group_id, ( SELECT array_to_json(array_agg(row_to_json(alr.*))) AS array_to_json FROM ( SELECT acl_board_links_boards_user_roles.board_user_role_id FROM acl_board_links_boards_user_roles acl_board_links_boards_user_roles WHERE acl_board_links_boards_user_roles.acl_board_link_id = acl_board_links.id ORDER BY acl_board_links_boards_user_roles.board_user_role_id) alr) AS acl_board_links_boards_user_roles, acl_board_links.is_hide FROM acl_board_links acl_board_links ORDER BY group_id ASC, id ASC) as d';
+        $acl_board_links_sql = 'SELECT row_to_json(d) FROM (SELECT acl_board_links.id,  acl_board_links.name, acl_board_links.group_id,acl_board_links.slug, ( SELECT array_to_json(array_agg(row_to_json(alr.*))) AS array_to_json FROM ( SELECT acl_board_links_boards_user_roles.board_user_role_id FROM acl_board_links_boards_user_roles acl_board_links_boards_user_roles WHERE acl_board_links_boards_user_roles.acl_board_link_id = acl_board_links.id ORDER BY acl_board_links_boards_user_roles.board_user_role_id) alr) AS acl_board_links_boards_user_roles, acl_board_links.is_hide FROM acl_board_links acl_board_links ORDER BY group_id ASC, id ASC) as d';
         $acl_board_links_result = pg_query_params($db_lnk, $acl_board_links_sql, array());
         $response['acl_board_links'] = array();
         while ($row = pg_fetch_assoc($acl_board_links_result)) {
@@ -1906,7 +2016,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         break;
 
     case '/settings':
-        $s_sql = pg_query_params($db_lnk, "SELECT name, value FROM settings WHERE name IN ('SITE_NAME', 'SITE_TIMEZONE', 'DROPBOX_APPKEY', 'LABEL_ICON', 'FLICKR_API_KEY', 'DEFAULT_LANGUAGE', 'IS_TWO_FACTOR_AUTHENTICATION_ENABLED', 'IMAP_EMAIL', 'PAGING_COUNT', 'ALLOWED_FILE_EXTENSIONS', 'DEFAULT_CARD_VIEW', 'DEFAULT_CARD_VIEW', 'R_LDAP_LOGIN_HANDLE', 'CALENDAR_VIEW_CARD_COLOR','R_MLDAP_LOGIN_HANDLE','R_MLDAP_SERVERS')", array());
+        $s_sql = pg_query_params($db_lnk, "SELECT name, value FROM settings WHERE name IN ('SITE_NAME', 'SITE_TIMEZONE', 'DROPBOX_APPKEY', 'LABEL_ICON', 'FLICKR_API_KEY', 'UNSPLASH_API_KEY', 'DEFAULT_LANGUAGE', 'IS_TWO_FACTOR_AUTHENTICATION_ENABLED', 'IMAP_EMAIL', 'PAGING_COUNT', 'ALLOWED_FILE_EXTENSIONS', 'DEFAULT_CARD_VIEW', 'DEFAULT_CARD_VIEW', 'R_LDAP_LOGIN_HANDLE', 'R_SAML_ENTITY_NAME', 'CALENDAR_VIEW_CARD_COLOR','R_MLDAP_LOGIN_HANDLE','R_MLDAP_SERVERS')", array());
         while ($row = pg_fetch_assoc($s_sql)) {
             $response[$row['name']] = $row['value'];
         }
@@ -2005,6 +2115,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 $value['is_public'] = false;
                 $value['info'] = $row['description'];
                 $value['value'] = $row['value'];
+                $value['type'] = $row['type'];
                 $value['label'] = $row['label'];
                 $replaceContent = array(
                     '##SITE_NAME##' => SITE_NAME,
@@ -2399,6 +2510,8 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     $default_email_notification = 4;
                 }
             }
+            $activity = executeQuery('SELECT id FROM activities ORDER BY id DESC');
+            $r_post['last_email_notified_activity_id'] = $activity['id'];
             $r_post['is_send_newsletter'] = $default_email_notification;
             $r_post['default_desktop_notification'] = (DEFAULT_DESKTOP_NOTIFICATION === 'Enabled') ? 'true' : 'false';
             $r_post['is_list_notifications_enabled'] = IS_LIST_NOTIFICATIONS_ENABLED;
@@ -2547,6 +2660,8 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             } else if (DEFAULT_EMAIL_NOTIFICATION === 'Weekly') {
                 $default_email_notification = 4;
             }
+            $activity = executeQuery('SELECT id FROM activities ORDER BY id DESC');
+            $r_post['last_email_notified_activity_id'] = $activity['id'];
             $r_post['is_send_newsletter'] = $default_email_notification;
             $r_post['default_desktop_notification'] = (DEFAULT_DESKTOP_NOTIFICATION === 'Enabled') ? 'true' : 'false';
             $r_post['is_list_notifications_enabled'] = IS_LIST_NOTIFICATIONS_ENABLED;
@@ -2639,13 +2754,13 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             $where = 'LOWER(username)=LOWER($1)';
         }
         $log_user = executeQuery('SELECT id, role_id, password, is_ldap::boolean::int FROM users WHERE ' . $where, $val_arr);
-        if (is_plugin_enabled('r_ldap_login')) {
+        if (is_plugin_enabled('r_ldap_login') && (empty($log_user) || $log_user['is_ldap'] == 1)) {
             require_once PLUGIN_PATH . DS . 'LdapLogin' . DS . 'functions.php';
             $ldap_response = ldapUpdateUser($log_user, $r_post);
             $ldap_error = $ldap_response['ldap_error'];
             $user = $ldap_response['user'];
         }
-        if (is_plugin_enabled('r_multiple_ldap_login')) {
+        if (is_plugin_enabled('r_multiple_ldap_login') && (empty($log_user) || $log_user['is_ldap'] == 1)) {
             require_once PLUGIN_PATH . DS . 'MultipleLdapLogin' . DS . 'functions.php';
             $ldap_response = ldapUpdateUser($log_user, $r_post);
             $ldap_error = $ldap_response['ldap_error'];
@@ -6143,19 +6258,65 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 $r_post['acl_link_id'],
                 $r_post['role_id']
             );
-            pg_query_params($db_lnk, 'DELETE FROM ' . $table_name . ' WHERE ' . $colmns[$table_name][0] . ' = $1 AND ' . $colmns[$table_name][1] . ' = $2', $qry_val_arr);
+            $aclLinks = pg_query_params($db_lnk, 'DELETE FROM ' . $table_name . ' WHERE ' . $colmns[$table_name][0] . ' = $1 AND ' . $colmns[$table_name][1] . ' = $2  RETURNING id', $qry_val_arr);
+            $link = pg_fetch_assoc($aclLinks);
+            if ($r_post['slug']) {
+                $foreign_id['id'] = $link['id'];
+                $revisions['old_value']['slug'] = $r_post['slug'];
+                $revisions['old_value']['role_id'] = $r_post['role_id'];
+                $revision = serialize($revisions);
+                $comment = '##USER_NAME## updated the permissions';
+                insertActivity($authUser['id'], $comment, 'remove_permission', $foreign_id, $revision, $link['id']);
+            }
         } else {
             $qry_val_arr = array(
                 $r_post['acl_link_id'],
                 $r_post['role_id']
             );
-            pg_query_params($db_lnk, 'INSERT INTO ' . $table_name . ' (created, modified, ' . $colmns[$table_name][0] . ', ' . $colmns[$table_name][1] . ') VALUES(now(), now(), $1, $2)', $qry_val_arr);
+            $aclLinks = pg_query_params($db_lnk, 'INSERT INTO ' . $table_name . ' (created, modified, ' . $colmns[$table_name][0] . ', ' . $colmns[$table_name][1] . ') VALUES(now(), now(), $1, $2)  RETURNING id', $qry_val_arr);
+            $link = pg_fetch_assoc($aclLinks);
+            if ($r_post['slug']) {
+                $revisions = array();
+                $revisions['new_value']['slug'] = $r_post['slug'];
+                $revisions['new_value']['role_id'] = $r_post['role_id'];
+                $revision = serialize($revisions);
+                $foreign_id['id'] = $link['id'];
+                $comment = '##USER_NAME## updated the permissions';
+                insertActivity($authUser['id'], $comment, 'add_permission', $foreign_id, $revision, $link['id']);
+            }
         }
         echo json_encode($response);
         break;
 
     case '/apps/settings':
         $folder_name = $r_post['folder'];
+        if (($folder_name == 'r_saml_shibboleth_sso') && isset($r_post['R_SAML_FULL_XML']) && isset($r_post['is_saml_post_1st_step'])) {
+            $response['status'] = array();
+            $response['data'] = array();
+            //get Metadata from samlone login
+            require_once PLUGIN_PATH . DS . 'SamlLogin' . DS . 'functions.php';
+            $get_saml_idp_meta_data_responces = getParseMetaData($r_post['R_SAML_FULL_XML']);
+            if ($get_saml_idp_meta_data_responces['status']['code'] == '200' && !empty($get_saml_idp_meta_data_responces['metadata'])) {
+                if ($get_saml_idp_meta_data_responces['metadata'] && $get_saml_idp_meta_data_responces['metadata']['idp']) {
+                    $response['data']['idp'] = (!empty($get_saml_idp_meta_data_responces['metadata']['idp']) ? $get_saml_idp_meta_data_responces['metadata']['idp'] : '');
+                    $response['data']['sp'] = (!empty($get_saml_idp_meta_data_responces['metadata']['sp']) ? $get_saml_idp_meta_data_responces['metadata']['sp'] : '');
+                }
+                $saml_qry_val_arr = array(
+                    $r_post['R_SAML_FULL_XML'],
+                    'R_SAML_FULL_XML'
+                );
+                pg_query_params($db_lnk, "UPDATE settings SET value = $1 WHERE name = $2", $saml_qry_val_arr);
+                $response['status']['code'] = 200;
+                echo json_encode($response);
+                break;
+            } else {
+                $response['status']['code'] = 401;
+                $response['error']['type'] = 'IdP metadata not generated';
+                $response['error']['content'] = 'Please check your IdP metadata XML';
+                echo json_encode($response);
+                break;
+            }
+        }
         unset($r_post['folder']);
         if (isset($r_post['ldap_removed_server'])) {
             $ldap_removed_server = $r_post['ldap_removed_server'];
@@ -6241,6 +6402,23 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     $fh = fopen(APP_PATH . '/client/apps/' . $folder_name . '/app.json', 'w');
                     fwrite($fh, json_encode($app, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
                     fclose($fh);
+                }
+            }
+            if (($folder_name == 'r_saml_shibboleth_sso') && isset($r_post['is_saml_final_step'])) {
+                //get Metadata from samlone login
+                require_once PLUGIN_PATH . DS . 'SamlLogin' . DS . 'functions.php';
+                $get_saml_meta_data_responces = getOwnMetaData();
+                if ($get_saml_meta_data_responces['status']['code'] == '200') {
+                    $saml_qry_val_arr = array(
+                        $get_saml_meta_data_responces['metadata'],
+                        'R_SAML_META_DATA'
+                    );
+                    pg_query_params($db_lnk, "UPDATE settings SET value = $1 WHERE name = $2", $saml_qry_val_arr);
+                } else {
+                    $response['error']['type'] = 'Metadata Error';
+                    $response['error']['content'] = 'Metadata Not Updated';
+                    echo json_encode($response);
+                    break;
                 }
             }
             $response['success'] = 'App updated successfully';
@@ -6765,6 +6943,13 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
                 $comment = '##USER_NAME## disabled card cover image on ##BOARD_NAME## board.';
             }
             $activity_type = 'is_show_image_front_of_card';
+        } else if (isset($r_put['show_pending_checklist_item'])) {
+            if ($r_put['show_pending_checklist_item']) {
+                $comment = '##USER_NAME## enabled show only pending item in checklist on ##BOARD_NAME## board.';
+            } else {
+                $comment = '##USER_NAME## disabled show only pending item in checklist on ##BOARD_NAME## board.';
+            }
+            $activity_type = 'show_pending_checklist_item';
         } else if (isset($r_put['is_expand_image_front_of_card'])) {
             if ($r_put['is_expand_image_front_of_card']) {
                 $comment = '##USER_NAME## enabled expand card cover image on ##BOARD_NAME## board.';
@@ -8037,7 +8222,11 @@ function r_delete($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         $foreign_ids['list_id'] = $r_resource_vars['lists'];
         $foreign_ids['card_id'] = $r_resource_vars['cards'];
         $comment = '##USER_NAME## deleted member from the card ##CARD_LINK##';
-        $response['activity'] = insertActivity($authUser['id'], $comment, 'delete_card_users', $foreign_ids, null, $r_resource_vars['cards_users']);
+        $s_result = pg_query_params($db_lnk, 'SELECT card_id, user_id FROM cards_users_listing WHERE id = $1', array(
+            $r_resource_vars['cards_users']
+        ));
+        $previous_value = pg_fetch_assoc($s_result);
+        $response['activity'] = insertActivity($authUser['id'], $comment, 'delete_card_users', $foreign_ids, $previous_value['user_id'], $r_resource_vars['cards_users']);
         $sql = 'DELETE FROM cards_users WHERE id = $1';
         $qry_val_arr = array(
             $r_resource_vars['cards_users']

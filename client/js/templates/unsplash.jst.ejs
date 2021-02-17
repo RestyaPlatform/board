@@ -1,0 +1,7 @@
+<% if(photo != null){ %> 
+	<div class="clearfix">
+		<a class="pull-left navbar-btn js-unsplash-changebackground" href="javascript:void(0);" target="_blank" data-url="<%= photo.urls.regular %>" data-title="<%= photo.alt_description%>">
+			<img class="img-rounded" title="<%= photo.alt_description%>" alt="[Image: <%= photo.alt_description%>]" src="<%= photo.urls.thumb %>" width="42" height="42">
+		</a>
+	</div>	
+<% } %> 

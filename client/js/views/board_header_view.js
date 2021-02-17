@@ -75,6 +75,7 @@ App.BoardHeaderView = Backbone.View.extend({
         this.model.bind('change:is_show_image_front_of_card', this.showAdditionalSettings, this);
         this.model.bind('change:auto_subscribe_on_board', this.showAdditionalSettings, this);
         this.model.bind('change:auto_subscribe_on_card', this.showAdditionalSettings, this);
+        this.model.bind('change:show_pending_checklist_item', this.showAdditionalSettings, this);
         this.model.bind('change:is_expand_image_front_of_card', this.showAdditionalSettings, this);
         this.model.bind('change:sort_by', this.showAdditionalSettings, this);
         this.model.bind('change:sort_direction', this.showAdditionalSettings, this);
@@ -146,6 +147,7 @@ App.BoardHeaderView = Backbone.View.extend({
         'click .js-change-background-pattern': 'changeBackgroundPattern',
         'click .js-change-custom-background': 'changeCustomBackground',
         'click .js-modal-fliker-trigger': 'modalFlickrTtrigger',
+        'click .js-modal-unsplash-trigger': 'modalUnsplashTrigger',
         'click .js-delete-background-img': 'ClearBackground',
         'click .js-modal-music-trigger': 'modalMusicTtrigger',
         'click .js-music-clear': 'ClearMusic',
@@ -166,6 +168,7 @@ App.BoardHeaderView = Backbone.View.extend({
         'click .js-enable-covers': 'toggleAdditionalSettings',
         'click .js-enable-board-notification': 'toggleBoardNotification',
         'click .js-enable-card-notification': 'toggleCardNotification',
+        'click .js-enable-card-checklist': 'toggleChecklistItemCompleted',
         'click .js-expand-card-cover-image': 'expandCardCoverImage',
         'click .js-computer-open-board-background': 'computerOpenBoardBackground',
         'change #js-custom-background-attachment': 'addBoardBackground',
@@ -838,6 +841,22 @@ App.BoardHeaderView = Backbone.View.extend({
         var modalView = new App.ModalFlickrPhotoView({
             model: this.model,
             type: type
+        });
+        modalView.show();
+        return false;
+    },
+    /**
+     * modalUnsplashTrigger()
+     * display the attachment in the list
+     * @param e
+     * @type Object(DOM event)
+     * @return false
+     *
+     */
+    modalUnsplashTrigger: function(e) {
+        $('#unsplash-modal').remove();
+        var modalView = new App.ModalUnsplashPhotoView({
+            model: this.model
         });
         modalView.show();
         return false;
@@ -2382,6 +2401,36 @@ App.BoardHeaderView = Backbone.View.extend({
             $('.js-is_expand_image_front_of_card-enabled').removeClass('hide');
             $('.js-is_expand_image_front_of_card-enable').addClass('hide');
             this.model.set('is_expand_image_front_of_card', true);
+        }
+        var board = new App.Board();
+        board.url = api_url + 'boards/' + this.model.attributes.id + '.json';
+        board.set('id', this.model.attributes.id);
+        board.save(data);
+        return false;
+    },
+    /**
+     * toggleChecklistItemCompleted()
+     * toggle the visiblity of the completed item in checklist
+     * @param e
+     * @type Object(DOM event)
+     *
+     */
+    toggleChecklistItemCompleted: function(e) {
+        var target = $(e.currentTarget);
+        if (target.hasClass('js-show_pending_checklist_item-enabled')) {
+            data = {
+                'show_pending_checklist_item': false
+            };
+            $('.js-show_pending_checklist_item-enabled').addClass('hide');
+            $('.js-show_pending_checklist_item-enable').removeClass('hide');
+            this.model.set('show_pending_checklist_item', false);
+        } else {
+            data = {
+                'show_pending_checklist_item': true
+            };
+            $('.js-show_pending_checklist_item-enabled').removeClass('hide');
+            $('.js-show_pending_checklist_item-enable').addClass('hide');
+            this.model.set('show_pending_checklist_item', true);
         }
         var board = new App.Board();
         board.url = api_url + 'boards/' + this.model.attributes.id + '.json';

@@ -1487,6 +1487,11 @@
             find "$dir/client/apps" -type f -exec chmod 644 {} \;
             chmod 0777 $dir/client/apps/**/*.json
 		}
+		upgrade-0.6.9-0.7(){
+			if [ -d "$dir/client/apps/r_togetherjs" ]; then
+				rm -rf $dir/client/apps/r_togetherjs/
+			fi
+		}
 
 		update_version()
 		{
