@@ -3283,7 +3283,6 @@ function importpipefyBoard($board = array())
         return $new_board;
     }
 }
-
 /**
  * Import monday board
  *
@@ -3295,26 +3294,25 @@ function importMondayBoards($path, $folder)
 {
     global $r_debug, $db_lnk, $authUser, $_server_domain_url;
     $team_peoples = $boards = $card_updates = $sub_boards_names = $new_boards = array();
-
-    // Reading team files for the peoples 
-    $team_filecount = 0; 
-    $teamfiles = glob($path . 'team'. DS . '*.xlsx');
-    if($teamfiles ) { 
-        $team_filecount = count($teamfiles); 
-        if(!empty($team_filecount)){
+    // Reading team files for the peoples
+    $team_filecount = 0;
+    $teamfiles = glob($path . 'team' . DS . '*.xlsx');
+    if ($teamfiles) {
+        $team_filecount = count($teamfiles);
+        if (!empty($team_filecount)) {
             foreach ($teamfiles as $key => $value) {
-                if ( $xlsx = SimpleXLSX::parse($value) ) {
+                if ($xlsx = SimpleXLSX::parse($value)) {
                     $all_rows = array();
                     $data = $xlsx->rows();
                     $row = 0;
                     foreach ($data as $key => $value) {
-                     if ($row >= 2) {
+                        if ($row >= 2) {
                             if ($value[0] == '' || $value[0] == 'Name') {
                                 continue;
                             } else {
                                 $arrResult = array();
                                 foreach ($value as $valKey => $val) {
-                                        $arrResult[$all_rows[0][$valKey]] = $val;
+                                    $arrResult[$all_rows[0][$valKey]] = $val;
                                 }
                                 $team_peoples[$arrResult["Name"]] = $arrResult;
                             }
@@ -3327,24 +3325,24 @@ function importMondayBoards($path, $folder)
             }
         }
     }
-    // Reading team files for the peoples 
-    $updates_filecount = 0; 
-    $updatesfiles = glob($path . 'updates'. DS . '*.xlsx');
-    if($updatesfiles ) { 
-        $updates_filecount = count($updatesfiles); 
-        if(!empty($updates_filecount)){
+    // Reading team files for the peoples
+    $updates_filecount = 0;
+    $updatesfiles = glob($path . 'updates' . DS . '*.xlsx');
+    if ($updatesfiles) {
+        $updates_filecount = count($updatesfiles);
+        if (!empty($updates_filecount)) {
             foreach ($updatesfiles as $key => $value) {
-                if ( $xlsx = SimpleXLSX::parse($value) ) {
+                if ($xlsx = SimpleXLSX::parse($value)) {
                     $all_rows = array();
                     $data = $xlsx->rows();
                     $row = 0;
                     foreach ($data as $key => $value) {
-                     if ($row >= 2) {
-                        $arrResult = array();
-                        foreach ($value as $valKey => $val) {
-                            $arrResult[$all_rows[$valKey]] = $val;
-                        }
-                        $card_updates[$arrResult['Item ID']][] = $arrResult;
+                        if ($row >= 2) {
+                            $arrResult = array();
+                            foreach ($value as $valKey => $val) {
+                                $arrResult[$all_rows[$valKey]] = $val;
+                            }
+                            $card_updates[$arrResult['Item ID']][] = $arrResult;
                         } else if ($row == 1) {
                             $all_rows = $value;
                         }
@@ -3355,8 +3353,8 @@ function importMondayBoards($path, $folder)
         }
     }
     // Reading sub board files
-    $sub_board_files = glob($path . 'boards'. DS . '*_Subitems of*.xlsx');
-    if(!empty($sub_board_files)){
+    $sub_board_files = glob($path . 'boards' . DS . '*_Subitems of*.xlsx');
+    if (!empty($sub_board_files)) {
         foreach ($sub_board_files as $sub_board_file) {
             if (!empty(basename($sub_board_file))) {
                 $sub_boards_names[] = basename($sub_board_file);
@@ -3364,16 +3362,16 @@ function importMondayBoards($path, $folder)
         }
     }
     // Reading board files
-    $board_filecount = 0; 
-    $boardfiles = glob($path . 'boards'. DS . '*.xlsx');
-    if($boardfiles ) { 
-        $board_filecount = count($boardfiles); 
-        if(!empty($board_filecount)){
+    $board_filecount = 0;
+    $boardfiles = glob($path . 'boards' . DS . '*.xlsx');
+    if ($boardfiles) {
+        $board_filecount = count($boardfiles);
+        if (!empty($board_filecount)) {
             foreach ($boardfiles as $key => $value) {
                 $board_file_name = basename($value);
-                if (array_search($board_file_name, $sub_boards_names) > -1) {
+                if (array_search($board_file_name, $sub_boards_names) > - 1) {
                     continue;
-                } else if ( $xlsx = SimpleXLSX::parse($value)) {
+                } else if ($xlsx = SimpleXLSX::parse($value)) {
                     $all_rows = array();
                     $data = $xlsx->rows();
                     $tmpboard = array();
@@ -3381,7 +3379,7 @@ function importMondayBoards($path, $folder)
                     foreach ($data as $key => $value) {
                         if ($row == 0) {
                             $tmpboard['name'] = $value[0];
-                        }else if ($row > 2 && !empty($all_rows)) {
+                        } else if ($row > 2 && !empty($all_rows)) {
                             if ($value[0] == '' || $value[0] == 'Name') {
                                 continue;
                             } else {
@@ -3389,16 +3387,16 @@ function importMondayBoards($path, $folder)
                                 foreach ($value as $valKey => $val) {
                                     if ($all_rows[$valKey] == 'Status') {
                                         $status = $val;
-                                        if($val == ''){
+                                        if ($val == '') {
                                             $status = 'Empty';
                                         }
                                         $arrResult[$all_rows[$valKey]] = $status;
-                                        if( !empty($status) && $status !== ''){
+                                        if (!empty($status) && $status !== '') {
                                             if (empty($tmpboard['lists'][$status])) {
                                                 $tmpboard['lists'][$status] = $status;
                                             }
                                         }
-                                    } else if ($all_rows[$valKey] =='Tags' && !empty($val) && $val !== '') {
+                                    } else if ($all_rows[$valKey] == 'Tags' && !empty($val) && $val !== '') {
                                         $arrResult[$all_rows[$valKey]] = $val;
                                         $temp_lables = explode(', ', $val);
                                         foreach ($temp_lables as $tmp_label) {
@@ -3406,7 +3404,7 @@ function importMondayBoards($path, $folder)
                                                 $tmpboard['labels'][$tmp_label] = $tmp_label;
                                             }
                                         };
-                                    } else if ($all_rows[$valKey] =='People' && !empty($val) && $val !== '') {
+                                    } else if ($all_rows[$valKey] == 'People' && !empty($val) && $val !== '') {
                                         $arrResult[$all_rows[$valKey]] = $val;
                                         $temp_people = explode(', ', $val);
                                         foreach ($temp_people as $people) {
@@ -3414,9 +3412,9 @@ function importMondayBoards($path, $folder)
                                                 $team_peoples[$people] = ['Name' => $people];
                                             }
                                         }
-                                    }else if($all_rows[$valKey] =='Item ID (auto generated)'){
+                                    } else if ($all_rows[$valKey] == 'Item ID (auto generated)') {
                                         $arrResult['Item ID'] = $val;
-                                    }else {
+                                    } else {
                                         $arrResult[$all_rows[$valKey]] = $val;
                                     }
                                 }
@@ -3437,26 +3435,25 @@ function importMondayBoards($path, $folder)
     }
     $server = strtolower($_SERVER['SERVER_SOFTWARE']);
     if (strpos($server, 'apache') !== false) {
-            ob_end_clean();
-            header("Connection: close\r\n");
-            header("Content-Encoding: none\r\n");
-            ignore_user_abort(true); // optional
-            ob_start();
-            echo json_encode(["msg"=> "Success"]);
-            $size = ob_get_length();
-            header("Content-Length: $size");
-            ob_end_flush(); // Strange behaviour, will not work
-            flush(); // Unless both are called !
-            ob_end_clean();
-        } else {
-            echo json_encode(["msg"=> "Success"]);
-            fastcgi_finish_request();
+        ob_end_clean();
+        header("Connection: close\r\n");
+        header("Content-Encoding: none\r\n");
+        ignore_user_abort(true); // optional
+        ob_start();
+        echo json_encode(["msg" => "Success"]);
+        $size = ob_get_length();
+        header("Content-Length: $size");
+        ob_end_flush(); // Strange behaviour, will not work
+        flush(); // Unless both are called !
+        ob_end_clean();
+    } else {
+        echo json_encode(["msg" => "Success"]);
+        fastcgi_finish_request();
     }
     foreach ($boards as $key => $board) {
         $users = $userNames = $lists = $listNames = $cards = $cardLists = $labels = array();
         if (!empty($board)) {
             $user_id = $authUser['id'];
-            
             // insert new board
             $qry_val_arr = array(
                 $board['name'],
@@ -3502,7 +3499,7 @@ function importMondayBoards($path, $folder)
             // insert board members
             if (!empty($team_peoples)) {
                 foreach ($team_peoples as $boarduser) {
-                    if(empty($boarduser['User Status']) || (!empty($boarduser['User Status']) && $boarduser['User Status'] == "Activated")){
+                    if (empty($boarduser['User Status']) || (!empty($boarduser['User Status']) && $boarduser['User Status'] == "Activated")) {
                         if (empty($users[$boarduser["Name"]])) {
                             $member = array(
                                 'id' => $boarduser["Name"],
@@ -3550,7 +3547,7 @@ function importMondayBoards($path, $folder)
                     $card_user_id = (!empty($card['Creator']) && $card['Creator'] !== "") ? $userNames[$card['Creator']] : $user_id;
                     $created_at = (!empty($card['Created at']) && $card['Created at'] !== "") ? date('Y-m-d H:i:s', strtotime($card['Created at'])) : date('Y-m-d H:i:s');
                     $updated_at = (!empty($card['Updated at']) && $card['Updated at'] !== "") ? date('Y-m-d H:i:s', strtotime($card['Updated at'])) : date('Y-m-d H:i:s');
-                    $card_status = (isset($card['Status']) && !empty($card['Status'])) ? $card['Status'] : "Empty"; 
+                    $card_status = (isset($card['Status']) && !empty($card['Status'])) ? $card['Status'] : "Empty";
                     $card_custom_fields = NULL;
                     if (isset($card['Timeline - Start']) && !empty($card['Timeline - Start'])) {
                         $custom_fields['start_date'] = $card['Timeline - Start'];
@@ -3559,7 +3556,7 @@ function importMondayBoards($path, $folder)
                     $qry_val_arr = array(
                         $new_board['id'],
                         $lists[$card_status],
-                        utf8_decode($card['Name']),
+                        utf8_decode($card['Name']) ,
                         $description,
                         $is_closed,
                         $i,
@@ -3573,12 +3570,12 @@ function importMondayBoards($path, $folder)
                     $cards[$card['Item ID']] = $_card['id'];
                     if (!empty($card_updates) && !empty($card_updates[$card['Item ID']])) {
                         $mat_path = array();
-                        // Updating comments attachments into card attachments 
+                        // Updating comments attachments into card attachments
                         foreach ($card_updates[$card['Item ID']] as $cardComment) {
-                            if(!empty($cardComment['Asset IDs'])){
-                                $asset_files = glob(MEDIA_PATH . DS . 'import' . DS . $folder . DS. 'assets'. DS . $cardComment['Asset IDs'].'_*');
-                                if(!empty($asset_files)){
-                                    $attachment_name = str_replace($cardComment['Asset IDs'].'_', '', basename($asset_files[0]));
+                            if (!empty($cardComment['Asset IDs'])) {
+                                $asset_files = glob(MEDIA_PATH . DS . 'import' . DS . $folder . DS . 'assets' . DS . $cardComment['Asset IDs'] . '_*');
+                                if (!empty($asset_files)) {
+                                    $attachment_name = str_replace($cardComment['Asset IDs'] . '_', '', basename($asset_files[0]));
                                     $mediadir = MEDIA_PATH . DS . 'Card' . DS . $_card['id'];
                                     $save_path = 'Card' . DS . $_card['id'];
                                     $save_path = str_replace('\\', '/', $save_path);
@@ -3586,7 +3583,7 @@ function importMondayBoards($path, $folder)
                                     if (!file_exists($mediadir)) {
                                         mkdir($mediadir, 0777, true);
                                     }
-                                    copy($asset_files[0], $mediadir. DS . $attachment_name);
+                                    copy($asset_files[0], $mediadir . DS . $attachment_name);
                                     $qry_val_arr = array(
                                         $new_board['id'],
                                         $lists[$card_status],
@@ -3601,7 +3598,7 @@ function importMondayBoards($path, $folder)
                             $comment = $cardComment['Update Content'];
                             $comment = ltrim($comment, "'");
                             if (($card['Item ID'] == $cardComment['Item ID']) && !empty($comment)) {
-                                $type = 'add_comment';                            
+                                $type = 'add_comment';
                                 $comment_user_id = (!empty($cardComment['User']) && $cardComment['User'] !== "") ? $userNames[$cardComment['User']] : $user_id;
                                 $newdate = date_create_from_format("d/F/Y H:i:s A", $cardComment['Created At']);
                                 $newupdated = date_create_from_format("d/F/Y H:i:s A", $cardComment['Created At']);
@@ -3632,14 +3629,11 @@ function importMondayBoards($path, $folder)
                                     if (!empty($cardComment['Parent Post ID']) && $cardComment['Content Type'] == 'Reply') {
                                         $path = 'P' . $card_parent[$cardComment['Parent Post ID']] . '.P' . $activity['id'];
                                         $materialized_path = $mat_path[$cardComment['Parent Post ID']] . '-' . $materialized_path;
-                                        
                                         $root = $prev_root[$cardComment['Parent Post ID']];
                                         $depth = $prev_depth[$cardComment['Parent Post ID']] + 1;
-                                        
                                         $revision['old_value']['comment'] = $comment;
                                         $revisions = serialize($revision);
                                     }
-                                    
                                     $freshness_ts = $created;
                                     $qry_val_arr = array(
                                         $materialized_path,
@@ -3670,7 +3664,7 @@ function importMondayBoards($path, $folder)
                             $qry_val_arr = array(
                                 $new_board['id'],
                                 $lists[$card_status],
-                                utf8_decode($subitem),
+                                utf8_decode($subitem) ,
                                 $description,
                                 $is_closed,
                                 $i,
@@ -3703,10 +3697,10 @@ function importMondayBoards($path, $folder)
                         foreach ($card_attachments as $attachment) {
                             $attachment = urldecode(strtolower($attachment));
                             $attachment_splits = explode('/', $attachment);
-                            $attachment_id = $attachment_splits[count($attachment_splits) -2];
+                            $attachment_id = $attachment_splits[count($attachment_splits) - 2];
                             $attachment_name = basename($attachment);
-                            $imagefiles = glob(MEDIA_PATH . DS . 'import' . DS . $folder . DS. 'assets'. DS . $attachment_id.'_*');
-                            if(!empty($attachment_id) && !empty($attachment_name) && !empty($imagefiles)){
+                            $imagefiles = glob(MEDIA_PATH . DS . 'import' . DS . $folder . DS . 'assets' . DS . $attachment_id . '_*');
+                            if (!empty($attachment_id) && !empty($attachment_name) && !empty($imagefiles)) {
                                 $mediadir = MEDIA_PATH . DS . 'Card' . DS . $_card['id'];
                                 $save_path = 'Card' . DS . $_card['id'];
                                 $save_path = str_replace('\\', '/', $save_path);
@@ -3714,8 +3708,8 @@ function importMondayBoards($path, $folder)
                                 if (!file_exists($mediadir)) {
                                     mkdir($mediadir, 0777, true);
                                 }
-                                $fullpath = MEDIA_PATH . DS . 'import' . DS . $folder . DS. 'assets'. DS. $attachment_id."_".$attachment_name;
-                                copy($imagefiles[0], $mediadir. DS . $attachment_name);
+                                $fullpath = MEDIA_PATH . DS . 'import' . DS . $folder . DS . 'assets' . DS . $attachment_id . "_" . $attachment_name;
+                                copy($imagefiles[0], $mediadir . DS . $attachment_name);
                                 $qry_val_arr = array(
                                     $new_board['id'],
                                     $lists[$card_status],
@@ -3731,24 +3725,24 @@ function importMondayBoards($path, $folder)
                     if (!empty($card['People'])) {
                         $assignees = $card['People'];
                         $card_assignees = explode(', ', $assignees);
-                            foreach ($card_assignees as $cardMember) {
-                                if (empty($users[$cardMember])) {
-                                    $member = array(
-                                        'id' => $cardMember,
-                                        'username' => strtolower($cardMember) ,
-                                        'fullName' => $cardMember,
-                                        'avatarUrl' => null,
-                                        'initials' => strtoupper(substr($cardMember, 0, 1))
-                                    );
-                                    $users = importMember($member, $new_board, 'monday');
-                                    $userNames[$cardMember] = $cardMember;
-                                }
-                                $qry_val_arr = array(
-                                    $_card['id'],
-                                    $users[$cardMember]
+                        foreach ($card_assignees as $cardMember) {
+                            if (empty($users[$cardMember])) {
+                                $member = array(
+                                    'id' => $cardMember,
+                                    'username' => strtolower($cardMember) ,
+                                    'fullName' => $cardMember,
+                                    'avatarUrl' => null,
+                                    'initials' => strtoupper(substr($cardMember, 0, 1))
                                 );
-                                pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO cards_users (created, modified, card_id, user_id) VALUES (now(), now(), $1, $2) RETURNING id', $qry_val_arr));
+                                $users = importMember($member, $new_board, 'monday');
+                                $userNames[$cardMember] = $cardMember;
                             }
+                            $qry_val_arr = array(
+                                $_card['id'],
+                                $users[$cardMember]
+                            );
+                            pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO cards_users (created, modified, card_id, user_id) VALUES (now(), now(), $1, $2) RETURNING id', $qry_val_arr));
+                        }
                     }
                 }
             }
@@ -3768,8 +3762,8 @@ function importMondayBoards($path, $folder)
             }
         }
     }
-    // update mail for all the imported boards  
-    if(!empty($new_boards)){
+    // update mail for all the imported boards
+    if (!empty($new_boards)) {
         foreach ($new_boards as $new_board) {
             if (!empty($new_board)) {
                 boardImportMailSend('Monday', $new_board);
@@ -4152,7 +4146,7 @@ function importMember($member, $new_board, $import_type)
             );
             pg_query_params($db_lnk, 'INSERT INTO board_subscribers (created, modified, user_id, board_id, is_subscribed) VALUES (now(), now(), $1, $2, $3)', $qry_val_arr);
         }
-    }    
+    }
     return $users;
 }
 function array_msort($array, $cols)
