@@ -3831,12 +3831,8 @@ App.FooterView = Backbone.View.extend({
             },
             success: function(model, response) {
                 $('#js-board-import-monday-loader', '.js-show-board-import-monday-form').addClass('hide');
-                if (!_.isUndefined(response.id)) {
-                    app.navigate('#/board/' + response.id, {
-                        trigger: true,
-                        replace: true
-                    });
-                    self.flash('info', i18next.t('Board is been currently imported. Based on the size of file, it may take few seconds to minutes. Please refresh or check after some time..'), 1800000);
+                if (!_.isUndefined(response.msg)) {
+                    self.flash('info', i18next.t('Boards is been currently imported. Based on the size of file, it may take few seconds to minutes. Please refresh or check after some time..'), 1800000);
                 } else {
                     if (response.error) {
                         self.flash('danger', i18next.t(response.error));

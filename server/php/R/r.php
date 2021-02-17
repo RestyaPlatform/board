@@ -3399,64 +3399,39 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 $response['error'] = 'Unable to import. please try again.';
             }
         } elseif (!empty($_FILES['board_import_monday'])) {
-            if ( $xlsx = SimpleXLSX::parse($_FILES['board_import_monday']['tmp_name']) ) {
-                
-                $all_rows = array();
-                $data_updates = $xlsx->rows(1);
-                $data = $xlsx->rows();
-                
-                // getting updates
-                $card_updates = array();
-                if (!empty($data_updates)) {
-                    $row = 0;
-                    foreach ($data_updates as $update_key => $update_value) {
-                        if ($row > 1) {
-                            $Result = array();
-                            foreach ($update_value as $valKey => $val) {
-                                if ($update_rows[0][$valKey] == 'Content Type' && $val == '') {
-                                    continue;
-                                } else {
-                                    $Result[$update_rows[0][$valKey]] = $val;
-                                }
-                            }
-                            $card_updates[] = $Result;
-                            
-                        } else if ($row == 1) {
-                            $update_rows[] = $update_value;
-                        }
-                        $row++;
+            $tmp_name = $_FILES['board_import_monday']['tmp_name'];
+            $filename = $_FILES['board_import_monday']['name'];
+            $type = $_FILES['board_import_monday']['type']; 
+            $name = explode('.', $filename); 
+            $accepted_types = array('application/zip'); // Ensures that the correct file was chosen
+            $mime_type_exist =  array_search($type, $accepted_types);
+            $okay = strtolower($name[1]) == 'zip' ? true: false; //Safari and Chrome don't register zip mime types. Something better could be used here.
+            $time = time();
+            if(!$okay || $mime_type_exist < 0) {
+                $response['error'] = 'Invalid file format. Upload zip file';
+            }else {
+                $zip = new ZipArchive;
+                $res = $zip->open($tmp_name);
+                if ($res === TRUE) {
+                    $mediadir =  MEDIA_PATH . DS . 'import' . DS . $time . '/';
+                    mkdir($mediadir, 0777, true);
+                    // Extract file  
+                    $zip->extractTo($mediadir);
+                    $zip->close();
+                    $filecount = 0; 
+                    $files = glob($mediadir . 'boards'. DS . '*');
+                    if( $files ) { 
+                        $filecount = count($files); 
                     }
-                }
-                $row = 0;
-                foreach ($data as $key => $value) {
-                    if ($row == 0) {
-                        $boardName = $value[0];
-                    } else if ($row > 2) {
-                        $arrResult = array();
-                        if ($value[0] == '' || $value[0] == 'Name') {
-                            continue;
-                        } else {
-                            foreach ($value as $valKey => $val) {
-                                if ($all_rows[0][$valKey] == 'Status' && $val == '') {
-                                    $arrResult[$all_rows[0][$valKey]] = 'Empty';
-                                } else {
-                                    $arrResult[$all_rows[0][$valKey]] = $val;
-                                }
-                            }
-                            $imported_board[] = $arrResult;
-                        }
-                        
-                    } else if ($row == 2) {
-                        $all_rows[] = $value;
+                    if(!empty($filecount)){
+                        $board = importMondayBoards($mediadir, $time);
+                        $response["msg"] = "Success";
+                    }else{
+                        $response['error'] = 'Kindly upload valid zip file, no boards found.';
+                    } 
+                    } else {
+                        $response['error'] = 'Invalid file format. Upload zip file';
                     }
-                    $row++;
-                }
-                if (!empty($imported_board)) {
-                    $board = importMondayBoard($imported_board, $boardName, $card_updates);
-                    $response['id'] = $board['id'];
-                }
-            } else {
-                $response['error'] = SimpleXLSX::parseError();
             }
         } else {
             $table_name = 'boards';
