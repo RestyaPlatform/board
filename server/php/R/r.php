@@ -2825,13 +2825,13 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             $where = 'LOWER(username)=LOWER($1)';
         }
         $log_user = executeQuery('SELECT id, role_id, password, is_ldap::boolean::int FROM users WHERE ' . $where, $val_arr);
-        if (is_plugin_enabled('r_ldap_login')) {
+        if (is_plugin_enabled('r_ldap_login') && (empty($log_user) || $log_user['is_ldap'] == 1)) {
             require_once PLUGIN_PATH . DS . 'LdapLogin' . DS . 'functions.php';
             $ldap_response = ldapUpdateUser($log_user, $r_post);
             $ldap_error = $ldap_response['ldap_error'];
             $user = $ldap_response['user'];
         }
-        if (is_plugin_enabled('r_multiple_ldap_login')) {
+        if (is_plugin_enabled('r_multiple_ldap_login') && (empty($log_user) || $log_user['is_ldap'] == 1)) {
             require_once PLUGIN_PATH . DS . 'MultipleLdapLogin' . DS . 'functions.php';
             $ldap_response = ldapUpdateUser($log_user, $r_post);
             $ldap_error = $ldap_response['ldap_error'];
