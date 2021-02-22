@@ -361,6 +361,7 @@ CREATE OR REPLACE VIEW "user_push_tokens_listing" AS
  SELECT user_push_tokens.id,
     to_char(user_push_tokens.created, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS created,
     to_char(user_push_tokens.modified, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS modified,
+    user_push_tokens.user_id,
     user_push_tokens.token,
     user_push_tokens.device_serial,
     user_push_tokens.device_modal,
