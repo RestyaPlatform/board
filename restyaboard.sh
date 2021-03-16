@@ -1764,65 +1764,33 @@
 			install_postfix
 			
 			echo "Changing permission..."
-			echo "Do you want to Setup Protected Permisssion (y/n)?"
-			read -r answer
-			set -x
-			case "${answer}" in
-				[Yy])
-				useradd restyaboard
-				passwd restyaboard
-				if ([ "$OS_REQUIREMENT" = "Ubuntu" ] || [ "$OS_REQUIREMENT" = "Debian" ] || [ "$OS_REQUIREMENT" = "LinuxMint" ] || [ "$OS_REQUIREMENT" = "Raspbian" ])
-				then
-					cat > /etc/php/7.4/fpm/restyaboard.com.conf <<- "EOF"
-					listen = /var/run/php-fpm/restyaboard.com.sock
-					listen.owner = restyaboard
-					listen.group = restyaboard
-					listen.mode = 0660
-					user = restyaboard
-					group = restyaboard
-					EOF
-					user www-data;
-					usermod -a -G restyaboard www-data
-					cp /etc/php/7.4/fpm/pool.d/www.conf /etc/php/7.4/fpm/pool.d/www.conf.1
-					sed -i "s/\[www\]/restyaboard/g" /etc/php/7.4/fpm/pool.d/www.conf
-					sed -i "s/user\s*=\s*www-data/user = restyaboard/g" /etc/php/7.4/fpm/pool.d/www.conf
-					sed -i "0,/group\s*=\s*www-data/s//group = restyaboard/g" /etc/php/7.4/fpm/pool.d/www.conf
-				else
-					cat > /etc/php-fpm.d/restyaboard.com.conf <<- "EOF"
-					listen = /var/run/php-fpm/restyaboard.com.sock
-					listen.owner = restyaboard
-					listen.group = restyaboard
-					listen.mode = 0660
-					user = restyaboard
-					group = restyaboard
-					EOF
-					user nginx;
-					usermod -a -G restyaboard nginx
-					cp /etc/php/7.4/fpm/pool.d/www.conf /etc/php/7.4/fpm/pool.d/www.conf.1
-					sed -i "s/\[www\]/restyaboard/g" /etc/php/7.4/fpm/pool.d/www.conf
-					sed -i "s/user\s*=\s*www-data/user = restyaboard/g" /etc/php/7.4/fpm/pool.d/www.conf
-					sed -i "0,/group\s*=\s*www-data/s//group = restyaboard/g" /etc/php/7.4/fpm/pool.d/www.conf
-				fi
-				chown -R restyaboard:restyaboard $dir
-				chmod -R u=rwX,g=rX,o= $dir
-				chown -R restyaboard:restyaboard "$dir/media"
-				chmod -R u=rwX,g=rX,o= $dir/media;
-				chown -R restyaboard:restyaboard "$dir/client/img"
-				chmod -R u=rwX,g=rX,o= $dir/client/img;
-				chown -R restyaboard:restyaboard "$dir/tmp/cache"
-				chmod -R u=rwX,g=rX,o= $dir/tmp/cache;
-				chmod +x $dir/server/php/shell/main.sh
-			esac
-			case "${answer}" in
-				[Nn])
-				find $dir -type d -exec chmod 755 {} \;
-				find $dir -type f -exec chmod 644 {} \;
-				chmod -R go+w "$dir/media"
-				chmod -R go+w "$dir/client/img"
-				chmod -R go+w "$dir/tmp/cache"
-				chmod +x $dir/server/php/shell/main.sh
-				change_permission
-			esac
+			useradd restyaboard
+			passwd restyaboard
+			if ([ "$OS_REQUIREMENT" = "Ubuntu" ] || [ "$OS_REQUIREMENT" = "Debian" ] || [ "$OS_REQUIREMENT" = "LinuxMint" ] || [ "$OS_REQUIREMENT" = "Raspbian" ])
+			then
+				user www-data;
+				usermod -a -G restyaboard www-data
+				sed -i "s/\[www\]/[restyaboard] group=restyaboard/g" /etc/php/7.4/fpm/pool.d/www.conf
+				sed -i "s/user\s*=\s*www-data/user = restyaboard/g" /etc/php/7.4/fpm/pool.d/www.conf
+				sed -i "0,/group\s*=\s*www-data/s//group = restyaboard/g" /etc/php/7.4/fpm/pool.d/www.conf
+			else
+				user nginx;
+				usermod -a -G restyaboard nginx
+				sed -i "s/\[www\]/restyaboard/g" /etc/php/7.4/fpm/pool.d/www.conf
+				sed -i "s/user\s*=\s*www-data/user = restyaboard/g" /etc/php/7.4/fpm/pool.d/www.conf
+				sed -i "0,/group\s*=\s*www-data/s//group = restyaboard/g" /etc/php/7.4/fpm/pool.d/www.conf
+			fi
+			chown -R restyaboard:restyaboard $dir
+			chmod -R u=rwX,g=rX,o= $dir
+			chown -R restyaboard:restyaboard "$dir/media"
+			chmod -R u=rwX,g=rX,o= $dir/media;
+			chown -R restyaboard:restyaboard "$dir/client/img"
+			chmod -R u=rwX,g=rX,o= $dir/client/img;
+			chown -R restyaboard:restyaboard "$dir/tmp/cache"
+			chmod -R u=rwX,g=rX,o= $dir/tmp/cache;
+			chmod +x $dir/server/php/shell/main.sh
+			change_permission
+
 			psql_connect
 			
 			echo "Changing PostgreSQL database name, user and password..."
@@ -1849,48 +1817,39 @@
 					install_jq
 				fi
 				mkdir "$dir/client/apps"
-				echo "Do you want to Setup Protected Permisssion (y/n)?"
-				read -r answer
-				set -x
-				case "${answer}" in
-					[Yy])
-					chown -R restyaboard:restyaboard "$dir/client/apps"
-					chmod -R u=rwX,g=rX,o= "$dir/client/apps"
-					curl -v -L -G -o /tmp/apps.json https://raw.githubusercontent.com/RestyaPlatform/board-apps/master/apps.json
-					chown -R restyaboard:restyaboard "/tmp/apps.json"
-					for fid in `jq -r '.[] | .id + "-v" + .version + "#" + .price' /tmp/apps.json`
-					do
-						app_name=$(echo ${fid} | cut -d"#" -f1)
-						app_price=$(echo ${fid} | cut -d"#" -f2)
-						if ([ "$app_price" = "Free" ])
-						then
-							curl -v -L -G -o /tmp/$app_name.zip https://github.com/RestyaPlatform/board-apps/releases/download/v1/$app_name.zip
-							unzip /tmp/$app_name.zip -d "$dir/client/apps"
-						fi
-					done
-					chown -R restyaboard:restyaboard "$dir/client/apps"
-					chmod -R u=rwX,g=rX,o= "$dir/client/apps"
-				esac
-				case "${answer}" in
-					[Nn])
-					chmod -R go+w "$dir/client/apps"
-					curl -v -L -G -o /tmp/apps.json https://raw.githubusercontent.com/RestyaPlatform/board-apps/master/apps.json
-					chmod -R go+w "/tmp/apps.json"
-					for fid in `jq -r '.[] | .id + "-v" + .version + "#" + .price' /tmp/apps.json`
-					do
-						app_name=$(echo ${fid} | cut -d"#" -f1)
-						app_price=$(echo ${fid} | cut -d"#" -f2)
-						if ([ "$app_price" = "Free" ])
-						then
-							curl -v -L -G -o /tmp/$app_name.zip https://github.com/RestyaPlatform/board-apps/releases/download/v1/$app_name.zip
-							unzip /tmp/$app_name.zip -d "$dir/client/apps"
-						fi
-					done
-					find "$dir/client/apps" -type d -exec chmod 755 {} \;
-					find "$dir/client/apps" -type f -exec chmod 644 {} \;
-					chmod 0777 $dir/client/apps/**/*.json
-				esac
+				chown -R restyaboard:restyaboard "$dir/client/apps"
+				chmod -R u=rwX,g=rX,o= "$dir/client/apps"
+				curl -v -L -G -o /tmp/apps.json https://raw.githubusercontent.com/RestyaPlatform/board-apps/master/apps.json
+				chown -R restyaboard:restyaboard "/tmp/apps.json"
+				for fid in `jq -r '.[] | .id + "-v" + .version + "#" + .price' /tmp/apps.json`
+				do
+					app_name=$(echo ${fid} | cut -d"#" -f1)
+					app_price=$(echo ${fid} | cut -d"#" -f2)
+					if ([ "$app_price" = "Free" ])
+					then
+						curl -v -L -G -o /tmp/$app_name.zip https://github.com/RestyaPlatform/board-apps/releases/download/v1/$app_name.zip
+						unzip /tmp/$app_name.zip -d "$dir/client/apps"
+					fi
+				done
+				chown -R restyaboard:restyaboard "$dir/client/apps"
+				chmod -R u=rwX,g=rX,o= "$dir/client/apps"
+				chmod -R u=rwX,g=rX,o= $dir/client/apps/**/*.json
 			esac
+			if ([ "$OS_REQUIREMENT" = "Ubuntu" ] || [ "$OS_REQUIREMENT" = "Debian" ] || [ "$OS_REQUIREMENT" = "LinuxMint" ] || [ "$OS_REQUIREMENT" = "Raspbian" ])
+			then
+				service nginx restart
+				service php7.4-fpm restart
+			else
+				if [ -f "/bin/systemctl" ]; then
+					echo "Starting services with systemd..."
+					systemctl restart nginx
+					systemctl restart php-fpm
+				else
+					echo "Starting services..."
+					/etc/init.d/php-fpm restart
+					/etc/init.d/nginx restart
+				fi
+			fi
 			set_db_connection
 		esac
 		/bin/echo "$RESTYABOARD_VERSION" > ${DOWNLOAD_DIR}/release
