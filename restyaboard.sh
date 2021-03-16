@@ -1776,9 +1776,9 @@
 			else
 				user nginx;
 				usermod -a -G restyaboard nginx
-				sed -i "s/\[www\]/restyaboard/g" /etc/php/7.4/fpm/pool.d/www.conf
-				sed -i "s/user\s*=\s*www-data/user = restyaboard/g" /etc/php/7.4/fpm/pool.d/www.conf
-				sed -i "0,/group\s*=\s*www-data/s//group = restyaboard/g" /etc/php/7.4/fpm/pool.d/www.conf
+				sed -i "s/\[www\]/[restyaboard] group=restyaboard/g" /etc/php-fpm.d/www.conf
+				sed -i "s/user\s*=\s*apache/user = restyaboard/g" /etc/php-fpm.d/www.conf
+				sed -i "0,/group\s*=\s*apache/s//group = restyaboard/g" /etc/php-fpm.d/www.conf
 			fi
 			chown -R restyaboard:restyaboard $dir
 			chmod -R u=rwX,g=rX,o= $dir
