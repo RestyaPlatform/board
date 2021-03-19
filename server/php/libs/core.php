@@ -695,7 +695,7 @@ function sendPushNotification($user_id, $user_device_tokens = [], $profile_pictu
             $payload = array(
                 'service' => 'apns',
                 'headers' => ["apns-priority" => 10,
-                // "apns-topic"=> "com.shove.app",
+                "apns-topic"=> "com.restya.board",
                 ],
                 "payload" => $apns_push_message,
                 "token" => $value->token
