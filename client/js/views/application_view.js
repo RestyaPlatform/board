@@ -700,23 +700,40 @@ App.ApplicationView = Backbone.View.extend({
         var fragment = Backbone.history.fragment.split('?');
         fragment = fragment['0'];
         if ((App.boards === undefined || load_boards) && !_.isUndefined(authuser.user)) {
-            var boards = new App.BoardCollection();
-            boards.url = api_url + 'boards.json?type=simple';
-            boards.fetch({
-                cache: false,
-                abortPending: true,
-                success: function(model, response) {
-                    App.boards = boards;
-                    page.populateLists();
-                    page.populateCards();
-                    page.populateBoardStarred();
-                    var organizations = new App.OrganizationCollection();
-                    organizations.url = api_url + 'organizations.json?type=simple';
-                    organizations.fetch({
-                        cache: false,
-                        abortPending: true,
-                        success: function(collections, response) {
-                            auth_user_organizations = organizations;
+            if (!_.isEmpty(role_links.where({
+                    slug: 'view_board_listing'
+                }))) {
+                var boards = new App.BoardCollection();
+                boards.url = api_url + 'boards.json?type=simple';
+                boards.fetch({
+                    cache: false,
+                    abortPending: true,
+                    success: function(model, response) {
+                        App.boards = boards;
+                        page.populateLists();
+                        page.populateCards();
+                        page.populateBoardStarred();
+                        if (!_.isEmpty(role_links.where({
+                                slug: 'view_organization_listing'
+                            }))) {
+                            var organizations = new App.OrganizationCollection();
+                            organizations.url = api_url + 'organizations.json?type=simple';
+                            organizations.fetch({
+                                cache: false,
+                                abortPending: true,
+                                success: function(collections, response) {
+                                    auth_user_organizations = organizations;
+                                    if ((_.indexOf(adminUrl, fragment) >= 0 && !_.isEmpty(authuser.user) && authuser.user.role_id == 1) || _.indexOf(adminUrl, fragment) < 0) {
+                                        page.callback();
+                                    } else {
+                                        app.navigate('#/boards', {
+                                            trigger: true,
+                                            replace: true
+                                        });
+                                    }
+                                }
+                            });
+                        } else {
                             if ((_.indexOf(adminUrl, fragment) >= 0 && !_.isEmpty(authuser.user) && authuser.user.role_id == 1) || _.indexOf(adminUrl, fragment) < 0) {
                                 page.callback();
                             } else {
@@ -726,9 +743,13 @@ App.ApplicationView = Backbone.View.extend({
                                 });
                             }
                         }
-                    });
+                    }
+                });
+            } else {
+                if ((_.indexOf(adminUrl, fragment) >= 0 && !_.isEmpty(authuser.user) && authuser.user.role_id == 1) || _.indexOf(adminUrl, fragment) < 0) {
+                    page.callback();
                 }
-            });
+            }
         } else {
             if ((_.indexOf(adminUrl, fragment) >= 0 && !_.isEmpty(authuser.user) && authuser.user.role_id == 1) || _.indexOf(adminUrl, fragment) < 0) {
                 page.callback();
