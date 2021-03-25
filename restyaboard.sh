@@ -1834,6 +1834,10 @@
 				chown -R restyaboard:restyaboard "$dir/client/apps"
 				chmod -R u=rwX,g=rX,o= "$dir/client/apps"
 				chmod -R u=rwX,g=rX,o= $dir/client/apps/**/*.json
+				if ([ "$OS_REQUIREMENT" = "CentOS" ])
+				then
+					chcon -R -t httpd_sys_rw_content_t $dir/client/apps/**/*.json
+				fi
 			esac
 			if ([ "$OS_REQUIREMENT" = "Ubuntu" ] || [ "$OS_REQUIREMENT" = "Debian" ] || [ "$OS_REQUIREMENT" = "LinuxMint" ] || [ "$OS_REQUIREMENT" = "Raspbian" ])
 			then
