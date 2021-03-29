@@ -29,6 +29,7 @@ require_once '../libs/vendors/GoogleAuthenticator.php';
 require_once '../libs/core.php';
 require_once '../libs/vendors/OAuth2/Autoloader.php';
 require_once '../libs/ActivityHandler.php';
+require_once '../libs/XLSXReader.php';
 $j_username = $j_password = '';
 require_once '../bootstrap.php';
 global $jabberHost, $jaxlDebug;
@@ -3396,6 +3397,43 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 }
             } else {
                 $response['error'] = 'Unable to import. please try again.';
+            }
+        } elseif (!empty($_FILES['board_import_monday'])) {
+            $tmp_name = $_FILES['board_import_monday']['tmp_name'];
+            $filename = $_FILES['board_import_monday']['name'];
+            $type = $_FILES['board_import_monday']['type'];
+            $name = explode('.', $filename);
+            $accepted_types = array(
+                'application/zip'
+            ); // Ensures that the correct file was chosen
+            $mime_type_exist = array_search($type, $accepted_types);
+            $okay = strtolower($name[1]) == 'zip' ? true : false; //Safari and Chrome don't register zip mime types. Something better could be used here.
+            $time = time();
+            if (!$okay || $mime_type_exist < 0) {
+                $response['error'] = 'Invalid file format. Upload zip file';
+            } else {
+                $zip = new ZipArchive;
+                $res = $zip->open($tmp_name);
+                if ($res === true) {
+                    $mediadir = MEDIA_PATH . DS . 'import' . DS . $time . '/';
+                    mkdir($mediadir, 0777, true);
+                    // Extract file
+                    $zip->extractTo($mediadir);
+                    $zip->close();
+                    $filecount = 0;
+                    $files = glob($mediadir . 'boards' . DS . '*');
+                    if ($files) {
+                        $filecount = count($files);
+                    }
+                    if (!empty($filecount)) {
+                        $board = importMondayBoards($mediadir, $time);
+                        $response["msg"] = "Success";
+                    } else {
+                        $response['error'] = 'Kindly upload valid zip file, no boards found.';
+                    }
+                } else {
+                    $response['error'] = 'Invalid file format. Upload zip file';
+                }
             }
         } else {
             $table_name = 'boards';
