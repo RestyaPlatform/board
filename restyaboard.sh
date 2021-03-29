@@ -1268,24 +1268,34 @@
 				echo "SSL connectivity cannot be set for IP address"
 			else
 				set +x
-				echo "Do you want to set up SSL connectivity for your domain and your domain should be  publicly accessible Restyaboard instance, Note: If you're trying to set SSL  for Non-publicly accessible instance, then your Restyaboard will not work (y/n)?"
+				echo "Do you want to set up SSL connectivity for your domain and your domain should be  publicly accessible Restyaboard instance and your domain should be mappped to this Restyaboard Server, Note: If you're trying to set SSL  for Non-publicly accessible instance, then your Restyaboard will not work (y/n)?"
 				read -r answer
 				set -x
 				case "${answer}" in
 					[Yy])
-					cd /opt/
-					wget https://github.com/certbot/certbot/archive/master.zip -O certbot-master.zip
-					unzip certbot-master.zip
-					cd /opt/certbot-master/
-					sudo -H ./certbot-auto certonly --webroot --no-bootstrap -d $webdir -w "$dir/client"
-					sed -i "s/restya\.com/$webdir/g" ${DOWNLOAD_DIR}/restyaboard-ssl.conf
-
-					sed -i "/client_max_body_size 300M;/r ${DOWNLOAD_DIR}/restyaboard-ssl.conf"  /etc/nginx/conf.d/restyaboard.conf
 					if ([ "$OS_REQUIREMENT" = "Ubuntu" ] || [ "$OS_REQUIREMENT" = "Debian" ] || [ "$OS_REQUIREMENT" = "LinuxMint" ] || [ "$OS_REQUIREMENT" = "Raspbian" ])
 					then
+						apt install certbot python3-certbot-nginx -y
 						service nginx restart
 						service php7.4-fpm restart
+						certbot --nginx
 					else
+						if ([ "$OS_REQUIREMENT" = "CentOS" ] && [ "$OS_VERSION" = "8" ])
+						then
+							dnf install epel-release
+							dnf install certbot python3-certbot-nginx
+							certbot --nginx
+						else
+							yum install -y epel-release
+							yum install certbot-nginx
+							certbot --nginx
+						fi
+						error_code=$?
+						if [ ${error_code} != 0 ]
+						then
+							echo "SSL installation failed with error code ${error_code} (php installation failed with error code 20)"
+							return 20
+						fi
 						if [ -f "/bin/systemctl" ]; then
 							echo "Starting services with systemd..."
 							systemctl restart nginx
@@ -1754,11 +1764,30 @@
 			install_postfix
 			
 			echo "Changing permission..."
-			find $dir -type d -exec chmod 755 {} \;
-			find $dir -type f -exec chmod 644 {} \;
-			chmod -R go+w "$dir/media"
-			chmod -R go+w "$dir/client/img"
-			chmod -R go+w "$dir/tmp/cache"
+			useradd restyaboard
+			passwd restyaboard
+			if ([ "$OS_REQUIREMENT" = "Ubuntu" ] || [ "$OS_REQUIREMENT" = "Debian" ] || [ "$OS_REQUIREMENT" = "LinuxMint" ] || [ "$OS_REQUIREMENT" = "Raspbian" ])
+			then
+				user www-data;
+				usermod -a -G restyaboard www-data
+				sed -i "s/\[www\]/[restyaboard] group=restyaboard/g" /etc/php/7.4/fpm/pool.d/www.conf
+				sed -i "s/user\s*=\s*www-data/user = restyaboard/g" /etc/php/7.4/fpm/pool.d/www.conf
+				sed -i "0,/group\s*=\s*www-data/s//group = restyaboard/g" /etc/php/7.4/fpm/pool.d/www.conf
+			else
+				user nginx;
+				usermod -a -G restyaboard nginx
+				sed -i "s/\[www\]/[restyaboard] group=restyaboard/g" /etc/php-fpm.d/www.conf
+				sed -i "s/user\s*=\s*apache/user = restyaboard/g" /etc/php-fpm.d/www.conf
+				sed -i "0,/group\s*=\s*apache/s//group = restyaboard/g" /etc/php-fpm.d/www.conf
+			fi
+			chown -R restyaboard:restyaboard $dir
+			chmod -R u=rwX,g=rX,o= $dir
+			chown -R restyaboard:restyaboard "$dir/media"
+			chmod -R u=rwX,g=rX,o= $dir/media;
+			chown -R restyaboard:restyaboard "$dir/client/img"
+			chmod -R u=rwX,g=rX,o= $dir/client/img;
+			chown -R restyaboard:restyaboard "$dir/tmp/cache"
+			chmod -R u=rwX,g=rX,o= $dir/tmp/cache;
 			chmod +x $dir/server/php/shell/main.sh
 			change_permission
 
@@ -1788,9 +1817,10 @@
 					install_jq
 				fi
 				mkdir "$dir/client/apps"
-				chmod -R go+w "$dir/client/apps"
+				chown -R restyaboard:restyaboard "$dir/client/apps"
+				chmod -R u=rwX,g=rX,o= "$dir/client/apps"
 				curl -v -L -G -o /tmp/apps.json https://raw.githubusercontent.com/RestyaPlatform/board-apps/master/apps.json
-				chmod -R go+w "/tmp/apps.json"
+				chown -R restyaboard:restyaboard "/tmp/apps.json"
 				for fid in `jq -r '.[] | .id + "-v" + .version + "#" + .price' /tmp/apps.json`
 				do
 					app_name=$(echo ${fid} | cut -d"#" -f1)
@@ -1801,10 +1831,29 @@
 						unzip /tmp/$app_name.zip -d "$dir/client/apps"
 					fi
 				done
-				find "$dir/client/apps" -type d -exec chmod 755 {} \;
-				find "$dir/client/apps" -type f -exec chmod 644 {} \;
-				chmod 0777 $dir/client/apps/**/*.json
+				chown -R restyaboard:restyaboard "$dir/client/apps"
+				chmod -R u=rwX,g=rX,o= "$dir/client/apps"
+				chmod -R u=rwX,g=rX,o= $dir/client/apps/**/*.json
+				if ([ "$OS_REQUIREMENT" = "CentOS" ])
+				then
+					chcon -R -t httpd_sys_rw_content_t $dir/client/apps/**/*.json
+				fi
 			esac
+			if ([ "$OS_REQUIREMENT" = "Ubuntu" ] || [ "$OS_REQUIREMENT" = "Debian" ] || [ "$OS_REQUIREMENT" = "LinuxMint" ] || [ "$OS_REQUIREMENT" = "Raspbian" ])
+			then
+				service nginx restart
+				service php7.4-fpm restart
+			else
+				if [ -f "/bin/systemctl" ]; then
+					echo "Starting services with systemd..."
+					systemctl restart nginx
+					systemctl restart php-fpm
+				else
+					echo "Starting services..."
+					/etc/init.d/php-fpm restart
+					/etc/init.d/nginx restart
+				fi
+			fi
 			set_db_connection
 		esac
 		/bin/echo "$RESTYABOARD_VERSION" > ${DOWNLOAD_DIR}/release
