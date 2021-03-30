@@ -324,6 +324,64 @@ INSERT INTO "acl_board_links_boards_user_roles" ("created", "modified", "acl_boa
 (now(), now(), (select id from acl_board_links where slug='add_third_party_background'), '1'),
 (now(), now(), (select id from acl_board_links where slug='add_third_party_background'), '2');
 
+--
+-- Name: user_push_tokens_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE user_push_tokens_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+--
+-- Name: user_push_tokens; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE user_push_tokens (
+    id bigint DEFAULT nextval('user_push_tokens_id_seq'::regclass) NOT NULL,
+    created timestamp NOT NULL,
+    modified timestamp NOT NULL,
+    user_id bigint DEFAULT (0)::bigint NOT NULL,
+    token character varying(255) NOT NULL,
+    device_serial character varying(255) DEFAULT NULL,
+    device_modal character varying(255) NOT NULL,
+    device_brand character varying(255) NOT NULL,
+    device_manufacturer character varying(255) NOT NULL,
+    device_version character varying(255) NOT NULL,
+    app_version character varying(255) NOT NULL,
+    device_os character varying(255) NOT NULL,
+    appname character varying(255) NOT NULL,
+    last_push_notified timestamp DEFAULT NULL,
+    is_active boolean NOT NULL DEFAULT true
+);
+
+CREATE OR REPLACE VIEW "user_push_tokens_listing" AS
+ SELECT user_push_tokens.id,
+    to_char(user_push_tokens.created, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS created,
+    to_char(user_push_tokens.modified, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS modified,
+    user_push_tokens.user_id,
+    user_push_tokens.token,
+    user_push_tokens.device_serial,
+    user_push_tokens.device_modal,
+    user_push_tokens.device_brand,
+    user_push_tokens.device_manufacturer,
+    user_push_tokens.device_version,
+    user_push_tokens.app_version,
+    user_push_tokens.device_os,
+    user_push_tokens.appname,
+    users.username,
+    users.email,
+    users.role_id,
+    users.profile_picture_path,
+    users.initials,
+    users.full_name,
+    to_char(user_push_tokens.last_push_notified, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS last_push_notified,
+    (user_push_tokens.is_active)::integer AS is_active
+   FROM ((user_push_tokens
+     LEFT JOIN users ON ((users.id = user_push_tokens.user_id))));
+
 ALTER TABLE "users"
 ADD "is_saml" boolean NOT NULL DEFAULT 'false';
 
@@ -444,3 +502,5 @@ SELECT pg_catalog.setval('acl_links_roles_roles_id_seq', (SELECT MAX(id) FROM ac
 
 INSERT INTO "acl_links_roles" ("created", "modified", "acl_link_id", "role_id") VALUES 
 (now(), now(), (select id from acl_links where slug='users_login'), '3');
+
+INSERT INTO "setting_categories" ("created", "modified", "parent_id", "name", "description", "order") VALUES (now(), now(), NULL, 'Mobile App', NULL, '8');

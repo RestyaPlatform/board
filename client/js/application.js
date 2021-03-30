@@ -367,6 +367,8 @@ var AppRouter = Backbone.Router.extend({
         'users': 'users_index',
         'user_logins?page=:page': 'user_logins_index',
         'user_logins': 'user_logins_index',
+        'push_devices?page=:page': 'push_devices_index',
+        'push_devices': 'push_devices_index',
         'boards/list?query_param': 'admin_boards_index',
         'boards/list': 'admin_boards_index',
         'user/:id': 'user_view',
@@ -501,6 +503,7 @@ var AppRouter = Backbone.Router.extend({
                 $.removeCookie('chat_initialize');
                 $.removeCookie('filter');
                 $.removeCookie('activities_filter');
+                $.removeCookie('push_tokens');
                 localforage.clear();
                 api_token = '';
                 authuser = new App.User();
@@ -625,6 +628,12 @@ var AppRouter = Backbone.Router.extend({
     user_logins_index: function(page) {
         new App.ApplicationView({
             model: 'user_logins_index',
+            page: page
+        });
+    },
+    push_devices_index: function(page) {
+        new App.ApplicationView({
+            model: 'push_devices_index',
             page: page
         });
     },

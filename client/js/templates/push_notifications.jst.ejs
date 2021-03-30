@@ -1,0 +1,133 @@
+<td>
+	<div class="user-table-width">
+		<div class="row">
+			<div class="col-xs-12">
+				<div class="clearfix"> 
+					<a  title="<%- user.attributes.full_name%> (<%- user.attributes.username%>)" class="small-user pull-left show" href="#/user/<%- user.attributes.user_id%>">
+						<% if(!_.isEmpty(user.attributes.profile_picture_path)){ 
+							var profile_picture_path = user.showImage('User', user.attributes.user_id, 'small_thumb' );
+						%>
+							<img class="avatar-sm" src="<%- profile_picture_path %>" alt="[Images: <%- user.attributes.username%>]" title="<%- user.attributes.full_name %> (<%- user.attributes.username%>)" />
+							<% }else{ %>
+									<i class="avatar avatar-color-194 img-rounded avatar-sm" title="<%- user.attributes.full_name%> (<%- user.attributes.username%>)"><%- user.attributes.initials%></i>
+							<%  } %> 
+					</a>
+				<a class="col-xs-10 htruncate left-mar-sm js-board-name-truncate js-user-view" data-user_id="<%- user.attributes.user_id%>" href="#/user/<%- user.attributes.user_id%>"><%- user.attributes.full_name%></a>
+						
+				</div>
+				<div class="clearfix navbar-btn">
+					<span class="col-xs-12 htruncate nav"><%- user.attributes.email%></span>
+				</div>
+			</div>
+		</div>
+		</div>
+</td>
+<td class="text-center">
+	<div class="htruncate js-pushNotification-token">
+		<%- user.attributes.token %>
+	</div>
+</td>
+<td class="text-center">
+		<% setInterval(function() { %>
+			<% parse_date(user.get('created'), authuser, 'js-timeago-user3-'+user.attributes.id); %>
+		<% }, 10000); %>
+		<span class="js-timeago-user3-<%- user.attributes.id %>"><%= parse_date(user.get('created'), authuser, 'js-timeago-user3-'+user.attributes.id, true) %></span>
+</td>
+<td class="text-center">
+	<% if (!_.isUndefined(user.attributes.last_push_notified) && !_.isEmpty(user.attributes.last_push_notified) && user.attributes.last_push_notified !== null) { %>
+	<% setInterval(function() { %>
+		<% parse_date(user.get('last_push_notified'), authuser, 'js-timeago-user4-'+user.attributes.id); %>
+	<% }, 10000); %>
+	<span class="js-timeago-user3-<%- user.attributes.id %>"><%= parse_date(user.get('last_push_notified'), authuser, 'js-timeago-user4-'+user.attributes.id, true) %></span>
+	<% } else { %>  
+		-
+	<% } %>
+</td>
+<td class="text-center">
+	<span class="show">
+        <% if (!_.isUndefined(user.attributes.device_serial) && !_.isEmpty(user.attributes.device_serial) && user.attributes.device_serial !== null && user.attributes.device_serial !== 'unknown') { %>
+            <%- user.attributes.device_serial%>
+        <% } else { %>  
+            -
+        <% } %>
+	</span>
+</td>
+<td class="text-center">
+	<span class="show">
+        <% if (!_.isUndefined(user.attributes.device_modal) && !_.isEmpty(user.attributes.device_modal) && user.attributes.device_modal !== null && user.attributes.device_modal !== 'unknown') { %>
+            <%- user.attributes.device_modal%>
+        <% } else { %>  
+            -
+        <% } %>
+	</span>
+</td>
+<td class="text-center">
+	<span class="show">
+        <% if (!_.isUndefined(user.attributes.device_brand) && !_.isEmpty(user.attributes.device_brand) && user.attributes.device_brand !== null && user.attributes.device_brand !== 'unknown') { %>
+            <%- user.attributes.device_brand%>
+        <% } else { %>  
+            -
+        <% } %>
+	</span>
+</td>
+<td class="text-center">
+	<span class="show">
+        <% if (!_.isUndefined(user.attributes.device_manufacturer) && !_.isEmpty(user.attributes.device_manufacturer) && user.attributes.device_manufacturer !== null && user.attributes.device_manufacturer !== 'unknown') { %>
+            <%- user.attributes.device_manufacturer%>
+        <% } else { %>  
+            -
+        <% } %>
+	</span>
+</td>
+<td class="text-center">
+	<span class="show">
+        <% if (!_.isUndefined(user.attributes.device_os) && user.attributes.device_os !== null && user.attributes.device_os !== 'unknown') { %>
+            <%- user.attributes.device_os%>
+        <% } else { %>  
+            -
+        <% } %>
+	</span>
+</td>
+<td class="text-center">
+	<span class="show">
+        <% if (!_.isUndefined(user.attributes.device_version) && user.attributes.device_version !== null && user.attributes.device_version !== 'unknown') { %>
+            <%- user.attributes.device_version%>
+        <% } else { %>  
+            -
+        <% } %>
+	</span>
+</td>
+<td class="text-center">
+	<span class="show">
+        <% if (!_.isUndefined(user.attributes.appname) && !_.isEmpty(user.attributes.appname) && user.attributes.appname !== null && user.attributes.appname !== 'unknown') { %>
+            <%- user.attributes.appname%>
+        <% } else { %>  
+            -
+        <% } %>
+	</span>
+</td>
+<td class="text-center">
+	<span class="show">
+        <% if (!_.isUndefined(user.attributes.app_version) && user.attributes.app_version !== null && user.attributes.app_version !== 'unknown') { %>
+            <%- user.attributes.app_version%>
+        <% } else { %>  
+            -
+        <% } %>
+	</span>
+</td>
+<td>
+	<ul class="list-inline list-group-item-text">
+		<li class="navbar-btn js-user-push-token-<%- user.attributes.id %>">
+			<a href="javascript:void(0);" class="btn btn-default btn-xs <%if(parseInt(user.attributes.is_active) === 1){%>js-block-user<%}else{%>js-unblock-user<%}%>"
+			 title="<%if(parseInt(user.attributes.is_active) === 1){%><%- i18next.t('Disable') %><%}else{%><%- i18next.t('Enable') %><%}%>">
+				<i class="icon-exclamation"></i>
+				<span>
+					<%if(parseInt(user.attributes.is_active) === 1){%>
+					<%- i18next.t("Disable") %>
+					<%}else{%>
+					<%- i18next.t("Enable") %>
+					<%}%>
+				</span></a>
+		</li>
+	</ul>
+</td>

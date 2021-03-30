@@ -9,7 +9,7 @@ if (typeof App === 'undefined') {
 }
 var loginExceptionUrl = ['register', 'login', 'forgotpassword', 'user_activation', 'aboutus', 'saml_authentication'];
 var adminUrl = ['roles', 'activities', 'users', 'boards/list', 'oauth_clients', 'apps', 'user_logins', 'settings', 'email_templates', 'user_logins'];
-var adminUrlModels = ['role_settings', 'activity_index', 'users_index', 'admin_boards_index', 'oauth_clients', 'apps', 'user_logins_index', 'settings', 'email_template_type', 'user_logins_index'];
+var adminUrlModels = ['role_settings', 'activity_index', 'users_index', 'admin_boards_index', 'oauth_clients', 'apps', 'user_logins_index', 'push_devices_index', 'settings', 'email_template_type', 'user_logins_index'];
 var exceptionAppPage = ['r_wikipages'];
 /**
  * Application View
@@ -360,6 +360,9 @@ App.ApplicationView = Backbone.View.extend({
         }
         if (this.model == 'user_logins_index') {
             changeTitle(i18next.t('User Logins'));
+        }
+        if (this.model == 'push_devices_index') {
+            changeTitle(i18next.t('Push Devices'));
         }
         if (this.model == 'admin_boards_index') {
             changeTitle(i18next.t('Boards'));
@@ -757,7 +760,7 @@ App.ApplicationView = Backbone.View.extend({
                 });
             }
         }
-        if (page.model !== 'boards_view' && page.model !== 'users_index' && page.model !== 'user_logins_index' && page.model !== 'admin_boards_index' && page.model !== 'boards_index') {
+        if (page.model !== 'boards_view' && page.model !== 'users_index' && page.model !== 'user_logins_index' && page.model !== 'push_devices_index' && page.model !== 'admin_boards_index' && page.model !== 'boards_index') {
             if (page.model == 'app_page') {
                 if (!_.isEmpty(page.options.name) && !_.isUndefined(page.options.name)) {
                     var page_name = page.options.name + '' + page.options.page;
@@ -1223,6 +1226,11 @@ App.ApplicationView = Backbone.View.extend({
             } else if (page.model == 'user_logins_index') {
                 changeTitle(i18next.t('Users Logins'));
                 new App.AdminUserLoginView({
+                    page: page.options.page
+                });
+            } else if (page.model == 'push_devices_index') {
+                changeTitle(i18next.t('Push Devices'));
+                new App.AdminPushNotifictaionView({
                     page: page.options.page
                 });
             } else if (page.model == 'admin_boards_index') {

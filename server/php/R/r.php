@@ -312,6 +312,71 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         }
         break;
 
+    case '/user_push_tokens':
+        $response['users'] = array();
+        $order_by = 'id';
+        $direction = 'desc';
+        $filter_condition = '';
+        $_metadata = array();
+        if (!empty($r_resource_filters['sort'])) {
+            $order_by = $r_resource_filters['sort'];
+            $direction = $r_resource_filters['direction'];
+        } else if (!empty($r_resource_filters['filter'])) {
+            $filter_condition = 'WHERE ';
+            if ($r_resource_filters['filter'] == 'inactive') {
+                $filter_condition.= 'is_active = 0';
+            } else {
+                $filter_condition.= 'is_active = 1';
+            }
+        } else if (!empty($r_resource_filters['search'])) {
+            $filter_condition = "WHERE LOWER(full_name) LIKE '%" . strtolower($r_resource_filters['search']) . "%' OR LOWER(email) LIKE '%" . strtolower($r_resource_filters['search']) . "%' ";
+        }
+        $c_sql = 'SELECT COUNT(*) FROM user_push_tokens_listing ul ';
+        if (!empty($r_resource_filters['search']) || !empty($r_resource_filters['filter'])) {
+            $c_sql = 'SELECT COUNT(*) FROM user_push_tokens_listing ul ' . $filter_condition;
+        }
+        if (!empty($c_sql)) {
+            $paging_data = paginate_data($c_sql, $db_lnk, $pg_params, $r_resource_filters);
+            $_metadata = $paging_data['_metadata'];
+        }
+        $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM user_push_tokens_listing ul ' . $filter_condition . ' ORDER BY ' . $order_by . ' ' . $direction . ' limit ' . $_metadata['limit'] . ' offset ' . $_metadata['offset'] . ') as d ';
+        $filter_count = array();
+        $val_array = array(
+            true
+        );
+        $active_count = executeQuery('SELECT count(*) FROM user_push_tokens WHERE is_active = $1', $val_array);
+        $filter_count['active'] = $active_count['count'];
+        $val_array = array(
+            0
+        );
+        $inactive_count = executeQuery('SELECT count(*) FROM user_push_tokens WHERE is_active = $1', $val_array);
+        $filter_count['inactive'] = $inactive_count['count'];
+        $val_array = array(
+            true
+        );
+        if (!empty($sql)) {
+            if ($result = pg_query_params($db_lnk, $sql, $pg_params)) {
+                $data = array();
+                $board_lists = array();
+                while ($row = pg_fetch_row($result)) {
+                    $obj = json_decode($row[0], true);
+                    $data['data'][] = $obj;
+                }
+                if (!empty($_metadata) && !empty($filter_count)) {
+                    $data['filter_count'] = $filter_count;
+                }
+                if (!empty($_metadata)) {
+                    $data['_metadata'] = $_metadata;
+                }
+                echo json_encode($data);
+            } else {
+                $r_debug.= __LINE__ . ': ' . pg_last_error($db_lnk) . '\n';
+            }
+        } else {
+            echo json_encode($response);
+        }
+        break;
+
     case '/users/logout':
         $response['user'] = array();
         if (!empty($_GET['token'])) {
@@ -601,6 +666,13 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                         $obj['qr_code_url'] = $ga->getQRCodeGoogleUrl($obj['full_name'] . ' (' . $obj['email'] . ')', $obj['two_factor_authentication_hash']);
                     }
                     $data = $obj;
+                }
+                $qry_val_array = array(
+                    $r_resource_vars['users']
+                );
+                $user_push_tokens_result = pg_query_params($db_lnk, 'SELECT id,device_modal,last_push_notified,is_active FROM user_push_tokens WHERE user_id = $1 ORDER BY id DESC', $qry_val_array);
+                while ($row = pg_fetch_assoc($user_push_tokens_result)) {
+                    $data['user_push_tokens'][] = $row;
                 }
                 if ($data['id'] != $authUser['id'] && $authUser['role_id'] != 1) {
                     $jsonArr = array(
@@ -2847,6 +2919,21 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     $user = array_merge($user, $notify_count);
                     $response['user'] = $user;
                     $response['user']['organizations'] = json_decode($user['organizations'], true);
+                    if (!empty($r_post['push_tokens'])) {
+                        $r_post['push_tokens'] = json_decode(base64_decode($r_post['push_tokens']));
+                        $qry_val_array = array(
+                            $user['id'],
+                            $r_post['push_tokens']->token,
+                        );
+                        $user_push_tokens = executeQuery('SELECT * FROM user_push_tokens WHERE user_id = $1 AND token = $2', $qry_val_array);
+                        if (empty($user_push_tokens)) {
+                            $table_name = 'user_push_tokens';
+                            $r_post['push_tokens']->user_id = $user['id'];
+                            $push_token = json_decode(json_encode($r_post['push_tokens']) , true);
+                            $post = getbindValues($table_name, $push_token);
+                            $result = pg_execute_insert($table_name, $post);
+                        }
+                    }
                 } else {
                     $response = array(
                         'code' => 'verification_code',
@@ -3144,7 +3231,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                             }
                         }
                     }
-                    if (isset($diff)) {
+                    if (isset($diff) && !empty($diff)) {
                         $response['activity']['difference'] = $diff;
                     }
                 }
@@ -3213,6 +3300,13 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     );
                     pg_query_params($db_lnk, 'UPDATE oauth_access_tokens set user_id = $1 WHERE user_id= $2', $conditions);
                     pg_query_params($db_lnk, 'UPDATE oauth_refresh_tokens set user_id = $1 WHERE user_id= $2', $conditions);
+                }
+                if (isset($r_post['user_push_token_is_active']) && isset($r_post['user_push_token_id'])) {
+                    $qry_val_array = array(
+                        $r_post['user_push_token_id'],
+                        $r_post['user_push_token_is_active']
+                    );
+                    pg_query_params($db_lnk, 'UPDATE user_push_tokens SET is_active = $2  WHERE id = $1', $qry_val_array);
                 }
                 if (!empty($response['activity']['id'])) {
                     $qry_val_arr = array(
@@ -6686,6 +6780,13 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
                     'error' => 'Entered verification code is wrong. Please try again.'
                 );
             }
+        }
+        if (isset($r_put['user_push_token_is_active']) && isset($r_put['user_push_token_id'])) {
+            $qry_val_array = array(
+                $r_put['user_push_token_id'],
+                $r_put['user_push_token_is_active']
+            );
+            pg_query_params($db_lnk, 'UPDATE user_push_tokens SET is_active = $2  WHERE id = $1', $qry_val_array);
         }
         if (isset($r_put['password'])) {
             unset($r_put['password']);

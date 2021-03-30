@@ -629,6 +629,90 @@ function sendMail($template, $replace_content, $to, $reply_to_mail = '')
     }
 }
 /**
+ * Execute CURL Request For Push Notification
+ *
+ * @param string $url    URL
+ * @param mixed  $payload   optional CURL Values default value : array ()
+ *
+ * @return mixed
+ */
+function PushNotificationCurlExecute($url, $payload)
+{
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($ch, CURLOPT_POST, 1);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
+    $headers = array();
+    $headers[] = 'Content-Type: application/x-www-form-urlencoded';
+    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+    $result = curl_exec($ch);
+    if (curl_errno($ch)) {
+        echo 'Error:' . curl_error($ch);
+    }
+    curl_close($ch);
+}
+/**
+ * Common method to send push notification
+ *
+ * @param string $user_id               Notification User ID
+ * @param array  $user_device_tokens    User device token array
+ * @param string $profile_picture_path  Notification user Avatar
+ * @param string $title                 Notification title
+ * @param string $comment               Notification Comment
+ * @param string $additional_info       Notification Additional Information
+ *
+ *
+ * @return void
+ */
+function sendPushNotification($user_id, $user_device_tokens = [], $profile_picture_path, $title, $comment, $additional_info)
+{
+    global $db_lnk;
+    $andriod_push_message = array(
+        "body" => $comment,
+        "title" => $title,
+        "ttl" => 3600,
+        "largeIcon" => "ic_launcher",
+        "largeIconUrl" => $profile_picture_path,
+        "smallIcon" => "ic_notification",
+        "icon" => $profile_picture_path,
+        "sound" => "default",
+    );
+    $apns_push_message = array(
+        "aps" => ["alert" => $comment],
+    );
+    $andriod_device_tokens = array();
+    $ios_device_tokens = array();
+    $device_tokens = json_decode($user_device_tokens);
+    foreach ($device_tokens as $value) {
+        if ($value->device_os === 'Android') {
+            $payload = array(
+                'to' => $value->token,
+                'data' => $andriod_push_message
+            );
+            PushNotificationCurlExecute('http://push.restya.com:8322/api/push/fcm', $payload);
+        } else {
+            $payload = array(
+                'service' => 'apns',
+                'headers' => ["apns-priority" => 10,
+                "apns-topic" => "com.restya.board",
+                ],
+                "payload" => $apns_push_message,
+                "token" => $value->token
+            );
+            PushNotificationCurlExecute('http://push.restya.com:8322/api/push/apns', $payload);
+        }
+    }
+    if (!empty($user_id)) {
+        $qry_val_array = array(
+            $user_id,
+            'now()',
+            'true',
+        );
+        pg_query_params($db_lnk, 'UPDATE user_push_tokens SET last_push_notified = $2 WHERE user_id = $1 AND is_active = $3', $qry_val_array);
+    }
+}
+/**
  * Insert current access ip address into IPs table
  *
  * @return int IP id
@@ -4267,7 +4351,7 @@ function sendMailNotification($notification_type)
         'add_card_voter',
         'add_comment'
     );
-    $users_result = pg_query_params($db_lnk, 'SELECT users.id, users.username, users.email, users.full_name, users.last_email_notified_activity_id, users.timezone, users.language, (SELECT array_to_json(array_agg(row_to_json(d))) FROM (SELECT bs.board_id FROM board_subscribers bs WHERE bs.user_id = users.id AND bs.is_subscribed = \'t\') d) AS board_ids, (SELECT array_to_json(array_agg(row_to_json(d))) FROM (SELECT ls.list_id, l.board_id FROM list_subscribers ls, lists l WHERE ls.user_id = users.id AND l.id = ls.list_id AND ls.is_subscribed = \'t\') d) AS list_ids,(SELECT array_to_json(array_agg(row_to_json(d))) FROM (SELECT cs.card_id, c.list_id, c.board_id FROM card_subscribers cs, cards c WHERE cs.user_id = users.id AND c.id = cs.card_id AND cs.is_subscribed = \'t\') d) AS card_ids FROM users WHERE is_send_newsletter = $1', $qry_val_arr);
+    $users_result = pg_query_params($db_lnk, 'SELECT users.id, users.username, users.email, users.full_name, users.last_email_notified_activity_id, users.timezone, users.language, (SELECT array_to_json(array_agg(row_to_json(d))) FROM (SELECT bs.board_id FROM board_subscribers bs WHERE bs.user_id = users.id AND bs.is_subscribed = \'t\') d) AS board_ids, (SELECT array_to_json(array_agg(row_to_json(d))) FROM (SELECT ls.list_id, l.board_id FROM list_subscribers ls, lists l WHERE ls.user_id = users.id AND l.id = ls.list_id AND ls.is_subscribed = \'t\') d) AS list_ids,(SELECT array_to_json(array_agg(row_to_json(d))) FROM (SELECT cs.card_id, c.list_id, c.board_id FROM card_subscribers cs, cards c WHERE cs.user_id = users.id AND c.id = cs.card_id AND cs.is_subscribed = \'t\') d) AS card_ids, (SELECT array_to_json(array_agg(row_to_json(d))) FROM (SELECT ts.token, ts.device_os FROM user_push_tokens ts WHERE ts.user_id = users.id AND is_active = \'t\') d) AS user_push_tokens FROM users WHERE is_send_newsletter = $1', $qry_val_arr);
     while ($user = pg_fetch_assoc($users_result)) {
         $board_ids = $list_ids = $card_ids = array();
         $board_arr = (!empty($user['board_ids'])) ? array_filter(json_decode($user['board_ids'], true)) : '';
@@ -4313,6 +4397,7 @@ function sendMailNotification($notification_type)
                     $user_avatar = '<img style="margin-right: 10px;vertical-align: middle;" src="' . $profile_picture_path . '" alt="[Image: ' . $activity['full_name'] . ']" class="img-rounded img-responsive">' . "\n";
                 } else if (!empty($activity['initials'])) {
                     $user_avatar = '<i style="border-radius:4px;text-shadow:#6f6f6f 0.02em 0.02em 0.02em;width:32px;height:32px;line-height:32px;font-size:16px;display:inline-block;font-style:normal;text-align:center;text-transform:uppercase;color:#f47564 !important;background-color:#ffffff !important;border:1px solid #d7d9db;margin-right: 10px;">' . $activity['initials'] . '</i>' . "\n";
+                    $profile_picture_path = "https://ui-avatars.com/api/?background=fff&color=f47564&name=" . $activity['initials'] . "@&size=32";
                 }
                 if (empty($i)) {
                     $activity_id[] = $activity['id'];
@@ -4460,6 +4545,10 @@ function sendMailNotification($notification_type)
                     $mail_content.= '</div>' . "\n";
                     $mail_content.= $br . "\n";
                 }
+                $push_message_title = (!empty($activity['full_name']) ? $activity['full_name'] : 'Deleted account');
+                if (!empty($user['user_push_tokens'])) {
+                    sendPushNotification($user['id'], $user['user_push_tokens'], $profile_picture_path, $push_message_title, strip_tags($comment) , $reply_to);
+                }
                 $notification_count++;
             }
         }
@@ -4479,6 +4568,7 @@ function sendMailNotification($notification_type)
                     $user_avatar = '<img style="margin-right: 10px;vertical-align: middle;" src="' . $profile_picture_path . '" alt="[Image: ' . $activity['full_name'] . ']" class="img-rounded img-responsive">' . "\n";
                 } else if (!empty($activity['initials'])) {
                     $user_avatar = '<i style="border-radius:4px;text-shadow:#6f6f6f 0.02em 0.02em 0.02em;width:32px;height:32px;line-height:32px;font-size:16px;display:inline-block;font-style:normal;text-align:center;text-transform:uppercase;color:#f47564 !important;background-color:#ffffff !important;border:1px solid #d7d9db;margin-right: 10px;">' . $activity['initials'] . '</i>' . "\n";
+                    $profile_picture_path = "https://ui-avatars.com/api/?background=fff&color=f47564&name=" . $activity['initials'] . "@&size=32";
                 }
                 if (empty($i)) {
                     $activity_id[] = $activity['id'];
@@ -4625,6 +4715,10 @@ function sendMailNotification($notification_type)
                     $mail_content.= '<div>' . $comment . $reply_to . '</div>' . "\n";
                     $mail_content.= '</div>' . "\n";
                     $mail_content.= $br . "\n";
+                }
+                $push_message_title = (!empty($activity['full_name']) ? $activity['full_name'] : 'Deleted account');
+                if (!empty($user['user_push_tokens'])) {
+                    sendPushNotification($user['id'], $user['user_push_tokens'], $profile_picture_path, $push_message_title, strip_tags($comment) , $reply_to);
                 }
                 $notification_count++;
             }
@@ -4645,6 +4739,7 @@ function sendMailNotification($notification_type)
                     $user_avatar = '<img style="margin-right: 10px;vertical-align: middle;" src="' . $profile_picture_path . '" alt="[Image: ' . $activity['full_name'] . ']" class="img-rounded img-responsive">' . "\n";
                 } else if (!empty($activity['initials'])) {
                     $user_avatar = '<i style="border-radius:4px;text-shadow:#6f6f6f 0.02em 0.02em 0.02em;width:32px;height:32px;line-height:32px;font-size:16px;display:inline-block;font-style:normal;text-align:center;text-transform:uppercase;color:#02aff1 !important;background-color:#ffffff !important;border:1px solid #d7d9db;margin-right: 10px;">' . $activity['initials'] . '</i>' . "\n";
+                    $profile_picture_path = "https://ui-avatars.com/api/?background=fff&color=f47564&name=" . $activity['initials'] . "@&size=32";
                 }
                 if (empty($i)) {
                     $activity_id[] = $activity['id'];
@@ -4791,6 +4886,10 @@ function sendMailNotification($notification_type)
                     $mail_content.= '<div>' . $comment . $reply_to . '</div>' . "\n";
                     $mail_content.= '</div>' . "\n";
                     $mail_content.= $br . "\n";
+                }
+                $push_message_title = (!empty($activity['full_name']) ? $activity['full_name'] : 'Deleted account');
+                if (!empty($user['user_push_tokens'])) {
+                    sendPushNotification($user['id'], $user['user_push_tokens'], $profile_picture_path, $push_message_title, strip_tags($comment) , $reply_to);
                 }
                 $notification_count++;
             }

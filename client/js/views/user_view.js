@@ -37,7 +37,8 @@ App.UserView = Backbone.View.extend({
         'click .js-enable-twoFactor-authentication': 'enableAuthentication',
         'click .js-disable-twoFactor-authentication': 'disableAuthentication',
         'click #js-profile_tab_trigger': 'TriggerSettingtab',
-
+        'click .js-block-notification': 'blockNotification',
+        'click .js-unblock-notification': 'unBlockNotification'
     },
     /**
      * Constructor
@@ -750,5 +751,52 @@ App.UserView = Backbone.View.extend({
                 }
             });
         }
+    },
+    /**
+     * blockNotification()
+     * @param e
+     * @type Object(DOM event)
+     */
+    blockNotification: function(e) {
+        e.preventDefault();
+        var target = $(e.target);
+        var push_token_id = $(target).data('id');
+        var data = {};
+        data.user_push_token_is_active = 0;
+        data.user_push_token_id = push_token_id;
+        this.model.url = api_url + 'users/' + this.model.attributes.id + '.json';
+        this.model.save(data, {
+            type: 'POST',
+            patch: true,
+            success: function(model, response) {
+                $('.js-push-notification-' + push_token_id).attr('title', i18next.t("Enable"));
+                $('.js-push-notification-' + push_token_id).html('<i class="icon-exclamation"></i><span data-id="' + push_token_id + '">' + i18next.t('Enable') + '</span>');
+                $('.js-push-notification-' + push_token_id).addClass('js-unblock-notification').removeClass('js-block-notification');
+            }
+        });
+    },
+    /**
+     * unBlockNotification()
+     * @param e
+     * @type Object(DOM event)
+     */
+    unBlockNotification: function(e) {
+        e.preventDefault();
+        var target = $(e.target);
+        var push_token_id = $(target).data('id');
+        var data = {};
+        data.user_push_token_is_active = 1;
+        data.user_push_token_id = push_token_id;
+        this.model.url = api_url + 'users/' + this.model.attributes.id + '.json';
+        this.model.save(data, {
+            type: 'POST',
+            patch: true,
+            success: function(model, response) {
+                $('.js-push-notification-' + push_token_id).attr('title', i18next.t("Disable"));
+                $('.js-push-notification-' + push_token_id).html('<i class="icon-exclamation"></i><span data-id="' + push_token_id + '">' + i18next.t('Disable') + '</span>');
+                $('.js-push-notification-' + push_token_id).addClass('js-block-notification').removeClass('js-unblock-notification');
+
+            }
+        });
     }
 });
