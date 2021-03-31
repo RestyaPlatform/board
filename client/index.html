@@ -46,19 +46,22 @@
   var api_url = './api/v1/';
   var template_url = './client/';
   </script>
-  <script>
-        window.addEventListener('load', function(e) {
-            if(window.applicationCache){
-                window.applicationCache.addEventListener('updateready', function(e) {
-                if (window.applicationCache.status == window.applicationCache.UPDATEREADY) {
-                    if (confirm('A new version of this site is available. Load it?')) {
-                        window.location.reload();
-                    }
-                }
-            }, false);
-          }
-        }, false);
-    </script>
+  <script type="module">
+    import {init} from '../node_modules/appcache-polyfill-window/build/index.modern.js';
+
+    window.setupComplete = (async () => {
+      const callbacks = [];
+
+      await init({
+        cachePopulatedCallback: (...args) => {
+          callbacks.push(args);
+        },
+      });
+      await navigator.serviceWorker.register('sw.js');
+
+      return callbacks;
+    })();
+  </script>
   <!-- build:js js/default.cache.js -->
   <script src="./js/libs/snuggsi.min.js"></script>
   <script src="./js/libs/jquery-1.8.3.js"></script>
