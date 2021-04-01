@@ -1267,6 +1267,7 @@ App.ListView = Backbone.View.extend({
                         App.sortable.previous_offset_horizontal = 0;
                         App.sortable.previous_offset_vertical = 0;
                         App.sortable.is_create_setinterval_mobile = true;
+                        App.sortable.is_moving_top = false;
                         App.sortable.previous_offset_mobile = 0;
                         clearInterval(App.sortable.setintervalidMobile);
                         App.sortable.is_moving_right_mobile = 0;
@@ -1415,6 +1416,9 @@ App.ListView = Backbone.View.extend({
                                         }, 10);
                                     }, 100);
                                     App.sortable.is_create_setinterval_vertical = false;
+                                } else {
+                                    clearInterval(App.sortable.setintervalid_vertical);
+                                    App.sortable.is_create_setinterval_vertical = true;
                                 }
                             } else if (App.sortable.is_moving_top === false && ui.offset.top < (additional_top - 20)) {
                                 if (App.sortable.is_create_setinterval_vertical) {
