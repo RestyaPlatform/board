@@ -5469,16 +5469,16 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                             $r_post['list_id'],
                             $r_post['board_id'],
                             $mimetypeStore,
-                            'NULL'
+                            NULL
                         );
                     }else{
                         $qry_val_arr = array(
                             $r_post['card_id'],
                             $r_post['name'],
-                            'NULL',
+                            NULL,
                             $r_post['list_id'],
                             $r_post['board_id'],
-                            'NULL',
+                            NULL,
                             $r_post['link']
                         );
                     }
@@ -5520,16 +5520,16 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                         $r_post['list_id'],
                         $r_post['board_id'],
                         $mimetypeStore,
-                        'NULL'
+                        NULL
                     );
                 }else{
                     $qry_val_arr = array(
                         $r_post['card_id'],
                         $r_post['name'],
-                        'NULL',
+                        NULL,
                         $r_post['list_id'],
                         $r_post['board_id'],
-                        'NULL',
+                        NULL,
                         $r_post['link']
                     ); 
                 }
