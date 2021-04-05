@@ -1396,6 +1396,9 @@ App.ListView = Backbone.View.extend({
                                 decrease_height = parseInt(list_height) - parseInt(ui.placeholder.height());
                             }
                             var total_top1 = (parseInt($('#js-board-lists').position().top) + parseInt(ui.placeholder.position().top)) - decrease_height;
+                            if (App.sortable.previous_offset_vertical === 0 && ui.offset.top > 0) {
+                                App.sortable.is_moving_top = true;
+                            }
                             if (App.sortable.previous_offset_vertical !== 0) {
                                 if (App.sortable.previous_offset_vertical > ui.offset.top) {
                                     App.sortable.is_moving_top = false;
