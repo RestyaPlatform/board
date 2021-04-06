@@ -5447,9 +5447,9 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 $i = 0;
                 foreach ($r_post['image_link'] as $image_link) {
                     $r_post['name'] = $r_post['link'] = $image_link;
-                    $image_type_check  = getimagesize($r_post['image_link']);
+                    $image_type_check = getimagesize($r_post['image_link']);
                     $qry_val_arr = array();
-                    if (!empty($image_type_check)){
+                    if (!empty($image_type_check)) {
                         $mediadir = MEDIA_PATH . DS . 'Card' . DS . $r_post['card_id'];
                         $save_path = 'Card' . DS . $r_post['card_id'];
                         $save_path = str_replace('\\', '/', $save_path);
@@ -5471,7 +5471,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                             $mimetypeStore,
                             NULL
                         );
-                    }else{
+                    } else {
                         $qry_val_arr = array(
                             $r_post['card_id'],
                             $r_post['name'],
@@ -5494,9 +5494,9 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             } else {
                 $sql = true;
                 $r_post['name'] = $r_post['link'] = $r_post['image_link'];
-                $image_type_check  = getimagesize($r_post['image_link']);
+                $image_type_check = getimagesize($r_post['image_link']);
                 $qry_val_arr = array();
-                if (!empty($image_type_check)){
+                if (!empty($image_type_check)) {
                     $mediadir = MEDIA_PATH . DS . 'Card' . DS . $r_post['card_id'];
                     if (!file_exists($mediadir)) {
                         mkdir($mediadir, 0777, true);
@@ -5522,7 +5522,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                         $mimetypeStore,
                         NULL
                     );
-                }else{
+                } else {
                     $qry_val_arr = array(
                         $r_post['card_id'],
                         $r_post['name'],
@@ -5531,7 +5531,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                         $r_post['board_id'],
                         NULL,
                         $r_post['link']
-                    ); 
+                    );
                 }
                 $s_result = pg_query_params($db_lnk, 'INSERT INTO card_attachments (created, modified, card_id, name, path, list_id, board_id, mimetype, link) VALUES (now(), now(), $1, $2, $3, $4, $5, $6, $7) RETURNING *', $qry_val_arr);
                 $response['card_attachments'][0] = pg_fetch_assoc($s_result);
