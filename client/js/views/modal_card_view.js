@@ -4121,6 +4121,7 @@ App.ModalCardView = Backbone.View.extend({
             var card_id = current_card.attributes.card_id;
             var data = $(e.target).serializeObject();
             $('.js-activity-' + activity_id).html('<div class="panel no-mar"><div class="panel-body github-markdown">' + makeLink(this.converter.makeHtml(data.comment)) + '</div></div>');
+            $('.js-list-activity-' + activity_id).removeClass('edit-comment');
             $('.js-acticity-action-' + activity_id).removeClass('hide');
             $('.js-timeago-' + activity_id).removeClass('hide');
             //Update in list table
@@ -4172,6 +4173,7 @@ App.ModalCardView = Backbone.View.extend({
         parse_date(current_card.attributes.created, authuser, 'js-timeago-' + current_card.attributes.id);
         var html_content = '<div class="panel no-mar"><div class="panel-body github-markdown">' + makeLink(this.converter.makeHtml(current_card.attributes.comment), current_card.attributes.board_id) + '</div></div>';
         this.$el.find('.js-hide-edit-comment-form').parents('div.js-activity-' + activity_id).html(html_content);
+        $('.js-list-activity-' + activity_id).removeClass('edit-comment');
         $('.js-acticity-action-' + activity_id).removeClass('hide');
         $('.js-timeago-' + activity_id).removeClass('hide');
         emojify.run();
