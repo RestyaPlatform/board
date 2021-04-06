@@ -2090,7 +2090,7 @@ CREATE TABLE public.card_attachments (
     modified timestamp without time zone NOT NULL,
     card_id bigint,
     name character varying(255) NOT NULL,
-    path character varying(255) NOT NULL,
+    path character varying(255),
     list_id bigint,
     board_id bigint DEFAULT 1,
     mimetype character varying(255),
@@ -3636,6 +3636,71 @@ CREATE VIEW public.user_logins_listing AS
 
 
 --
+-- Name: user_push_tokens_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.user_push_tokens_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: user_push_tokens; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.user_push_tokens (
+    id bigint DEFAULT nextval('public.user_push_tokens_id_seq'::regclass) NOT NULL,
+    created timestamp without time zone NOT NULL,
+    modified timestamp without time zone NOT NULL,
+    user_id bigint DEFAULT (0)::bigint NOT NULL,
+    token character varying(255) NOT NULL,
+    device_serial character varying(255) DEFAULT NULL::character varying,
+    device_modal character varying(255) NOT NULL,
+    device_brand character varying(255) NOT NULL,
+    device_manufacturer character varying(255) NOT NULL,
+    device_version character varying(255) NOT NULL,
+    app_version character varying(255) NOT NULL,
+    device_os character varying(255) NOT NULL,
+    appname character varying(255) NOT NULL,
+    last_push_notified timestamp without time zone,
+    is_active boolean DEFAULT true NOT NULL
+);
+
+
+--
+-- Name: user_push_tokens_listing; Type: VIEW; Schema: public; Owner: -
+--
+
+CREATE VIEW public.user_push_tokens_listing AS
+ SELECT user_push_tokens.id,
+    to_char(user_push_tokens.created, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS created,
+    to_char(user_push_tokens.modified, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS modified,
+    user_push_tokens.user_id,
+    user_push_tokens.token,
+    user_push_tokens.device_serial,
+    user_push_tokens.device_modal,
+    user_push_tokens.device_brand,
+    user_push_tokens.device_manufacturer,
+    user_push_tokens.device_version,
+    user_push_tokens.app_version,
+    user_push_tokens.device_os,
+    user_push_tokens.appname,
+    users.username,
+    users.email,
+    users.role_id,
+    users.profile_picture_path,
+    users.initials,
+    users.full_name,
+    to_char(user_push_tokens.last_push_notified, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS last_push_notified,
+    (user_push_tokens.is_active)::integer AS is_active
+   FROM (public.user_push_tokens
+     LEFT JOIN public.users ON ((users.id = user_push_tokens.user_id)));
+
+
+--
 -- Name: users_cards_listing; Type: VIEW; Schema: public; Owner: -
 --
 
@@ -3953,6 +4018,31 @@ COPY public.acl_board_links (id, created, modified, name, url, method, slug, gro
 90	2021-01-07 18:56:35.929284	2021-01-07 18:56:35.929284	Gantt View	/boards/?/lists/?/cards	GET	get_gantt_view	5	0
 91	2021-01-07 18:56:35.929284	2021-01-07 18:56:35.929284	Spent Time Tracking	/boards/?/lists/?/cards	GET	get_spent_time	5	0
 92	2021-01-07 18:56:35.954343	2021-01-07 18:56:35.954343	Upload third party background image to board	/boards/?	PUT	add_third_party_background	2	0
+93	2021-04-06 19:42:29.851734	2021-04-06 19:42:29.851734	Title	/boards/?/lists/?/cards	GET	get_card_title	5	0
+94	2021-04-06 19:42:29.851734	2021-04-06 19:42:29.851734	Description	/boards/?/lists/?/cards	GET	get_card_description	5	0
+95	2021-04-06 19:42:29.851734	2021-04-06 19:42:29.851734	Due Date	/boards/?/lists/?/cards	GET	get_card_due_date	5	0
+96	2021-04-06 19:42:29.851734	2021-04-06 19:42:29.851734	Member	/boards/?/lists/?/cards	GET	get_card_member	5	0
+97	2021-04-06 19:42:29.851734	2021-04-06 19:42:29.851734	Labels	/boards/?/lists/?/cards	GET	get_card_labels	5	0
+98	2021-04-06 19:42:29.851734	2021-04-06 19:42:29.851734	Vote	/boards/?/lists/?/cards	GET	get_card_vote	5	0
+99	2021-04-06 19:42:29.851734	2021-04-06 19:42:29.851734	Color	/boards/?/lists/?/cards	GET	get_card_color	5	0
+100	2021-04-06 19:42:29.851734	2021-04-06 19:42:29.851734	Move	/boards/?/lists/?/cards/?	PUT	move_card	5	0
+101	2021-04-06 19:42:29.851734	2021-04-06 19:42:29.851734	Copy	/boards/?/lists/?/cards/?/copy	POST	copy_cards	5	0
+102	2021-04-06 19:42:29.851734	2021-04-06 19:42:29.851734	Subscribe	/boards/?/lists/?/cards/?/card_subscribers	POST	subscribe_cards	5	0
+103	2021-04-06 19:42:29.851734	2021-04-06 19:42:29.851734	Archive	/boards/?/lists/?/cards/?	PUT	archive_cards	5	0
+104	2021-04-06 19:42:29.851734	2021-04-06 19:42:29.851734	Delete	/boards/?/lists/?/cards/?	PUT	delete_cards	5	0
+105	2021-04-06 19:42:29.851734	2021-04-06 19:42:29.851734	Attachment	/boards/?/lists/?/cards	GET	get_card_attachment	5	0
+106	2021-04-06 19:42:29.851734	2021-04-06 19:42:29.851734	Attachment Downloader	/boards/?/lists/?/cards	GET	get_attachment_downloader	5	0
+107	2021-04-06 19:42:29.851734	2021-04-06 19:42:29.851734	Activity Feed - Display	/boards/?/lists/?/cards/?/activities	GET	view_card_activity_feed	5	0
+108	2021-04-06 19:42:29.851734	2021-04-06 19:42:29.851734	Comment	/boards/?/lists/?/cards/?/comments	GET	get_card_comments	5	0
+109	2021-04-06 19:42:29.851734	2021-04-06 19:42:29.851734	Canned Response	/boards/?/lists/?/cards	GET	get_canned_response	5	0
+110	2021-04-06 19:42:29.851734	2021-04-06 19:42:29.851734	Checklist	/boards/?/lists/?/cards	GET	get_card_checklist	5	0
+111	2021-04-06 19:42:29.851734	2021-04-06 19:42:29.851734	Checklist Item	/boards/?/lists/?/cards	GET	get_card_checklist_item	5	0
+112	2021-04-06 19:42:29.851734	2021-04-06 19:42:29.851734	Card Template	/boards/?/lists/?/cards	GET	get_card_template	5	0
+113	2021-04-06 19:42:29.851734	2021-04-06 19:42:29.851734	Add Custom Field	/boards/?/lists/?/cards	GET	get_custom_field	5	0
+114	2021-04-06 19:42:29.851734	2021-04-06 19:42:29.851734	Estimated Time Tracking	/boards/?/lists/?/cards	GET	get_estimated_time	5	0
+115	2021-04-06 19:42:29.851734	2021-04-06 19:42:29.851734	Gantt View	/boards/?/lists/?/cards	GET	get_gantt_view	5	0
+116	2021-04-06 19:42:29.851734	2021-04-06 19:42:29.851734	Spent Time Tracking	/boards/?/lists/?/cards	GET	get_spent_time	5	0
+117	2021-04-06 19:42:29.873866	2021-04-06 19:42:29.873866	Upload third party background image to board	/boards/?	PUT	add_third_party_background	2	0
 \.
 
 
@@ -4195,7 +4285,7 @@ SELECT pg_catalog.setval('public.acl_board_links_boards_user_roles_seq', 235, tr
 -- Name: acl_board_links_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.acl_board_links_seq', 92, true);
+SELECT pg_catalog.setval('public.acl_board_links_seq', 117, true);
 
 
 --
@@ -4272,7 +4362,7 @@ COPY public.acl_links (id, created, modified, name, url, method, slug, group_id,
 156	2019-12-16 21:44:29.491548	2019-12-16 21:44:29.491548	Allow to unsubscribe card in public board	/boards/?/lists/?/cards/?/card_subscribers/?	POST	unsubscribe_card	2	1	0	0	0	f
 157	2020-06-12 19:03:13.498349	2020-06-12 19:03:13.498349	Card search with Custom Field	/cards/search	GET	view_card_search_custom_field	3	1	0	1	0	f
 158	2020-06-12 19:21:43.506093	2020-06-12 19:21:43.506093	Card search with Custom Field	/cards/search	GET	view_card_search_custom_field	3	1	0	1	0	f
-159	2021-01-07 18:56:36.58843	2021-01-07 18:56:36.58843	Login	/users/login	POST	users_login	1	0	1	0	0	f
+159	2021-04-06 19:42:29.994582	2021-04-06 19:42:29.994582	Login	/users/login	POST	users_login	1	0	1	0	0	f
 \.
 
 
@@ -4424,7 +4514,7 @@ COPY public.acl_links_roles (id, created, modified, acl_link_id, role_id) FROM s
 1278	2019-12-16 21:44:29.517313	2019-12-16 21:44:29.517313	156	2
 1279	2020-06-12 19:03:13.573564	2020-06-12 19:03:13.573564	157	1
 1280	2020-06-12 19:03:13.573564	2020-06-12 19:03:13.573564	157	2
-1281	2021-01-07 18:56:36.605177	2021-01-07 18:56:36.605177	159	3
+1281	2021-04-06 19:42:30.011378	2021-04-06 19:42:30.011378	159	3
 \.
 
 
@@ -5702,6 +5792,7 @@ COPY public.setting_categories (id, created, modified, parent_id, name, descript
 14	2017-08-30 17:59:02.929467	2017-08-30 17:59:02.929467	\N	Notifications	\N	4
 15	2018-10-29 19:23:34.416581	2018-10-29 19:23:34.416581	\N	Board	\N	6
 16	2018-10-29 19:23:34.423174	2018-10-29 19:23:34.423174	\N	User	\N	7
+17	2021-04-06 19:42:30.019679	2021-04-06 19:42:30.019679	\N	Mobile App	\N	8
 \.
 
 
@@ -5709,7 +5800,7 @@ COPY public.setting_categories (id, created, modified, parent_id, name, descript
 -- Name: setting_categories_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.setting_categories_id_seq', 16, true);
+SELECT pg_catalog.setval('public.setting_categories_id_seq', 17, true);
 
 
 --
@@ -5755,7 +5846,7 @@ COPY public.settings (id, setting_category_id, setting_category_parent_id, name,
 -- Name: settings_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.settings_id_seq', 73, true);
+SELECT pg_catalog.setval('public.settings_id_seq', 74, true);
 
 
 --
@@ -6059,6 +6150,21 @@ COPY public.user_logins (id, created, modified, user_id, ip_id, user_agent, is_l
 --
 
 SELECT pg_catalog.setval('public.user_logins_id_seq', 3, true);
+
+
+--
+-- Data for Name: user_push_tokens; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.user_push_tokens (id, created, modified, user_id, token, device_serial, device_modal, device_brand, device_manufacturer, device_version, app_version, device_os, appname, last_push_notified, is_active) FROM stdin;
+\.
+
+
+--
+-- Name: user_push_tokens_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.user_push_tokens_id_seq', 1, false);
 
 
 --
@@ -7227,853 +7333,6 @@ ALTER TABLE ONLY public.cities
 
 ALTER TABLE ONLY public.states
     ADD CONSTRAINT states_country_id_fkey FOREIGN KEY (country_id) REFERENCES public.countries(id) ON DELETE CASCADE;
-
-
---
--- Name: SEQUENCE acl_board_links_seq; Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON SEQUENCE public.acl_board_links_seq TO restya;
-
-
---
--- Name: TABLE acl_board_links; Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON TABLE public.acl_board_links TO restya;
-
-
---
--- Name: SEQUENCE acl_board_links_boards_user_roles_seq; Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON SEQUENCE public.acl_board_links_boards_user_roles_seq TO restya;
-
-
---
--- Name: TABLE acl_board_links_boards_user_roles; Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON TABLE public.acl_board_links_boards_user_roles TO restya;
-
-
---
--- Name: TABLE acl_board_links_listing; Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON TABLE public.acl_board_links_listing TO restya;
-
-
---
--- Name: SEQUENCE acl_links_id_seq; Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON SEQUENCE public.acl_links_id_seq TO restya;
-
-
---
--- Name: TABLE acl_links; Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON TABLE public.acl_links TO restya;
-
-
---
--- Name: SEQUENCE acl_links_roles_roles_id_seq; Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON SEQUENCE public.acl_links_roles_roles_id_seq TO restya;
-
-
---
--- Name: TABLE acl_links_roles; Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON TABLE public.acl_links_roles TO restya;
-
-
---
--- Name: TABLE acl_links_listing; Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON TABLE public.acl_links_listing TO restya;
-
-
---
--- Name: SEQUENCE acl_organization_links_seq; Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON SEQUENCE public.acl_organization_links_seq TO restya;
-
-
---
--- Name: TABLE acl_organization_links; Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON TABLE public.acl_organization_links TO restya;
-
-
---
--- Name: SEQUENCE acl_organization_links_organizations_user_roles_seq; Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON SEQUENCE public.acl_organization_links_organizations_user_roles_seq TO restya;
-
-
---
--- Name: TABLE acl_organization_links_organizations_user_roles; Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON TABLE public.acl_organization_links_organizations_user_roles TO restya;
-
-
---
--- Name: TABLE acl_organization_links_listing; Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON TABLE public.acl_organization_links_listing TO restya;
-
-
---
--- Name: SEQUENCE activities_id_seq; Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON SEQUENCE public.activities_id_seq TO restya;
-
-
---
--- Name: TABLE activities; Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON TABLE public.activities TO restya;
-
-
---
--- Name: SEQUENCE boards_id_seq; Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON SEQUENCE public.boards_id_seq TO restya;
-
-
---
--- Name: TABLE boards; Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON TABLE public.boards TO restya;
-
-
---
--- Name: SEQUENCE cards_id_seq; Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON SEQUENCE public.cards_id_seq TO restya;
-
-
---
--- Name: TABLE cards; Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON TABLE public.cards TO restya;
-
-
---
--- Name: SEQUENCE checklist_items_id_seq; Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON SEQUENCE public.checklist_items_id_seq TO restya;
-
-
---
--- Name: TABLE checklist_items; Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON TABLE public.checklist_items TO restya;
-
-
---
--- Name: SEQUENCE checklists_id_seq; Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON SEQUENCE public.checklists_id_seq TO restya;
-
-
---
--- Name: TABLE checklists; Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON TABLE public.checklists TO restya;
-
-
---
--- Name: SEQUENCE labels_id_seq; Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON SEQUENCE public.labels_id_seq TO restya;
-
-
---
--- Name: TABLE labels; Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON TABLE public.labels TO restya;
-
-
---
--- Name: SEQUENCE lists_id_seq; Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON SEQUENCE public.lists_id_seq TO restya;
-
-
---
--- Name: TABLE lists; Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON TABLE public.lists TO restya;
-
-
---
--- Name: SEQUENCE organizations_id_seq; Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON SEQUENCE public.organizations_id_seq TO restya;
-
-
---
--- Name: TABLE organizations; Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON TABLE public.organizations TO restya;
-
-
---
--- Name: SEQUENCE users_id_seq; Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON SEQUENCE public.users_id_seq TO restya;
-
-
---
--- Name: TABLE users; Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON TABLE public.users TO restya;
-
-
---
--- Name: TABLE activities_listing; Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON TABLE public.activities_listing TO restya;
-
-
---
--- Name: SEQUENCE boards_users_id_seq; Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON SEQUENCE public.boards_users_id_seq TO restya;
-
-
---
--- Name: TABLE boards_users; Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON TABLE public.boards_users TO restya;
-
-
---
--- Name: TABLE boards_users_listing; Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON TABLE public.boards_users_listing TO restya;
-
-
---
--- Name: TABLE admin_boards_listing; Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON TABLE public.admin_boards_listing TO restya;
-
-
---
--- Name: TABLE cities; Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON TABLE public.cities TO restya;
-
-
---
--- Name: TABLE countries; Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON TABLE public.countries TO restya;
-
-
---
--- Name: SEQUENCE ips_id_seq; Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON SEQUENCE public.ips_id_seq TO restya;
-
-
---
--- Name: TABLE ips; Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON TABLE public.ips TO restya;
-
-
---
--- Name: SEQUENCE login_types_id_seq; Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON SEQUENCE public.login_types_id_seq TO restya;
-
-
---
--- Name: TABLE login_types; Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON TABLE public.login_types TO restya;
-
-
---
--- Name: TABLE states; Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON TABLE public.states TO restya;
-
-
---
--- Name: TABLE admin_users_listing; Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON TABLE public.admin_users_listing TO restya;
-
-
---
--- Name: SEQUENCE attachments_id_seq; Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON SEQUENCE public.attachments_id_seq TO restya;
-
-
---
--- Name: SEQUENCE boards_stars_id_seq; Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON SEQUENCE public.boards_stars_id_seq TO restya;
-
-
---
--- Name: TABLE board_stars; Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON TABLE public.board_stars TO restya;
-
-
---
--- Name: SEQUENCE boards_subscribers_id_seq; Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON SEQUENCE public.boards_subscribers_id_seq TO restya;
-
-
---
--- Name: TABLE board_subscribers; Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON TABLE public.board_subscribers TO restya;
-
-
---
--- Name: SEQUENCE board_user_roles_seq; Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON SEQUENCE public.board_user_roles_seq TO restya;
-
-
---
--- Name: TABLE board_user_roles; Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON TABLE public.board_user_roles TO restya;
-
-
---
--- Name: SEQUENCE cards_labels_id_seq; Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON SEQUENCE public.cards_labels_id_seq TO restya;
-
-
---
--- Name: TABLE cards_labels; Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON TABLE public.cards_labels TO restya;
-
-
---
--- Name: TABLE boards_labels_listing; Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON TABLE public.boards_labels_listing TO restya;
-
-
---
--- Name: SEQUENCE card_attachments_id_seq; Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON SEQUENCE public.card_attachments_id_seq TO restya;
-
-
---
--- Name: TABLE card_attachments; Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON TABLE public.card_attachments TO restya;
-
-
---
--- Name: SEQUENCE cards_subscribers_id_seq; Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON SEQUENCE public.cards_subscribers_id_seq TO restya;
-
-
---
--- Name: TABLE card_subscribers; Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON TABLE public.card_subscribers TO restya;
-
-
---
--- Name: SEQUENCE card_voters_id_seq; Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON SEQUENCE public.card_voters_id_seq TO restya;
-
-
---
--- Name: TABLE card_voters; Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON TABLE public.card_voters TO restya;
-
-
---
--- Name: TABLE card_voters_listing; Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON TABLE public.card_voters_listing TO restya;
-
-
---
--- Name: TABLE cards_labels_listing; Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON TABLE public.cards_labels_listing TO restya;
-
-
---
--- Name: SEQUENCE cards_users_id_seq; Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON SEQUENCE public.cards_users_id_seq TO restya;
-
-
---
--- Name: TABLE cards_users; Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON TABLE public.cards_users TO restya;
-
-
---
--- Name: TABLE cards_users_listing; Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON TABLE public.cards_users_listing TO restya;
-
-
---
--- Name: TABLE checklists_listing; Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON TABLE public.checklists_listing TO restya;
-
-
---
--- Name: TABLE cards_listing; Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON TABLE public.cards_listing TO restya;
-
-
---
--- Name: SEQUENCE lists_subscribers_id_seq; Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON SEQUENCE public.lists_subscribers_id_seq TO restya;
-
-
---
--- Name: TABLE list_subscribers; Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON TABLE public.list_subscribers TO restya;
-
-
---
--- Name: TABLE lists_listing; Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON TABLE public.lists_listing TO restya;
-
-
---
--- Name: TABLE boards_listing; Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON TABLE public.boards_listing TO restya;
-
-
---
--- Name: TABLE cards_elasticsearch_listing; Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON TABLE public.cards_elasticsearch_listing TO restya;
-
-
---
--- Name: TABLE checklist_add_listing; Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON TABLE public.checklist_add_listing TO restya;
-
-
---
--- Name: SEQUENCE cities_id_seq; Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON SEQUENCE public.cities_id_seq TO restya;
-
-
---
--- Name: SEQUENCE cities_id_seq1; Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON SEQUENCE public.cities_id_seq1 TO restya;
-
-
---
--- Name: SEQUENCE countries_id_seq; Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON SEQUENCE public.countries_id_seq TO restya;
-
-
---
--- Name: SEQUENCE countries_id_seq1; Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON SEQUENCE public.countries_id_seq1 TO restya;
-
-
---
--- Name: TABLE created_cards_listing; Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON TABLE public.created_cards_listing TO restya;
-
-
---
--- Name: SEQUENCE email_templates_id_seq; Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON SEQUENCE public.email_templates_id_seq TO restya;
-
-
---
--- Name: TABLE email_templates; Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON TABLE public.email_templates TO restya;
-
-
---
--- Name: TABLE gadget_users_listing; Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON TABLE public.gadget_users_listing TO restya;
-
-
---
--- Name: SEQUENCE languages_id_seq; Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON SEQUENCE public.languages_id_seq TO restya;
-
-
---
--- Name: TABLE languages; Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON TABLE public.languages TO restya;
-
-
---
--- Name: SEQUENCE list_subscribers_id_seq; Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON SEQUENCE public.list_subscribers_id_seq TO restya;
-
-
---
--- Name: TABLE oauth_access_tokens; Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON TABLE public.oauth_access_tokens TO restya;
-
-
---
--- Name: TABLE oauth_authorization_codes; Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON TABLE public.oauth_authorization_codes TO restya;
-
-
---
--- Name: TABLE oauth_clients; Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON TABLE public.oauth_clients TO restya;
-
-
---
--- Name: SEQUENCE oauth_clients_id_seq; Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON SEQUENCE public.oauth_clients_id_seq TO restya;
-
-
---
--- Name: SEQUENCE oauth_clients_id_seq1; Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON SEQUENCE public.oauth_clients_id_seq1 TO restya;
-
-
---
--- Name: TABLE oauth_jwt; Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON TABLE public.oauth_jwt TO restya;
-
-
---
--- Name: TABLE oauth_refresh_tokens; Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON TABLE public.oauth_refresh_tokens TO restya;
-
-
---
--- Name: TABLE oauth_scopes; Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON TABLE public.oauth_scopes TO restya;
-
-
---
--- Name: SEQUENCE organizations_users_id_seq; Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON SEQUENCE public.organizations_users_id_seq TO restya;
-
-
---
--- Name: TABLE organizations_users; Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON TABLE public.organizations_users TO restya;
-
-
---
--- Name: TABLE organizations_users_listing; Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON TABLE public.organizations_users_listing TO restya;
-
-
---
--- Name: TABLE organization_listing; Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON TABLE public.organization_listing TO restya;
-
-
---
--- Name: SEQUENCE organization_user_roles_seq; Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON SEQUENCE public.organization_user_roles_seq TO restya;
-
-
---
--- Name: TABLE organization_user_roles; Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON TABLE public.organization_user_roles TO restya;
-
-
---
--- Name: TABLE organizations_listing; Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON TABLE public.organizations_listing TO restya;
-
-
---
--- Name: SEQUENCE roles_id_seq; Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON SEQUENCE public.roles_id_seq TO restya;
-
-
---
--- Name: TABLE roles; Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON TABLE public.roles TO restya;
-
-
---
--- Name: TABLE role_links_listing; Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON TABLE public.role_links_listing TO restya;
-
-
---
--- Name: TABLE setting_categories; Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON TABLE public.setting_categories TO restya;
-
-
---
--- Name: SEQUENCE setting_categories_id_seq; Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON SEQUENCE public.setting_categories_id_seq TO restya;
-
-
---
--- Name: SEQUENCE settings_id_seq; Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON SEQUENCE public.settings_id_seq TO restya;
-
-
---
--- Name: TABLE settings; Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON TABLE public.settings TO restya;
-
-
---
--- Name: TABLE settings_listing; Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON TABLE public.settings_listing TO restya;
-
-
---
--- Name: TABLE simple_board_listing; Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON TABLE public.simple_board_listing TO restya;
-
-
---
--- Name: SEQUENCE states_id_seq; Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON SEQUENCE public.states_id_seq TO restya;
-
-
---
--- Name: SEQUENCE states_id_seq1; Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON SEQUENCE public.states_id_seq1 TO restya;
-
-
---
--- Name: SEQUENCE timezones_id_seq; Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON SEQUENCE public.timezones_id_seq TO restya;
-
-
---
--- Name: TABLE timezones; Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON TABLE public.timezones TO restya;
-
-
---
--- Name: TABLE user_logins; Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON TABLE public.user_logins TO restya;
-
-
---
--- Name: SEQUENCE user_logins_id_seq; Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON SEQUENCE public.user_logins_id_seq TO restya;
-
-
---
--- Name: TABLE user_logins_listing; Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON TABLE public.user_logins_listing TO restya;
-
-
---
--- Name: TABLE users_cards_listing; Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON TABLE public.users_cards_listing TO restya;
-
-
---
--- Name: TABLE users_listing; Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON TABLE public.users_listing TO restya;
-
-
---
--- Name: SEQUENCE webhooks_id_seq; Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON SEQUENCE public.webhooks_id_seq TO restya;
-
-
---
--- Name: TABLE webhooks; Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON TABLE public.webhooks TO restya;
 
 
 --
