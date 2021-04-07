@@ -338,10 +338,10 @@
         					then
 								echo "Note: For the latest version of PHP, we're going to download https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm and https://rpms.remirepo.net/enterprise/remi-release-8.rpm."
 								echo "Installing PHP..."
-								dnf install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
-								dnf install https://rpms.remirepo.net/enterprise/remi-release-8.rpm
+								dnf -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
+								dnf -y install https://rpms.remirepo.net/enterprise/remi-release-8.rpm
 								dnf module enable php:remi-7.4
-								dnf install php php-cli php-common
+								dnf -y install php php-cli php-common
 							else
 								yum install -y epel-release
 								echo "Note: For the latest version of PHP, we're going to download http://rpms.famillecollet.com/enterprise/remi-release-${OS_VERSION}.rpm."
@@ -375,7 +375,7 @@
 				then
 					if ([ "$OS_REQUIREMENT" = "CentOS" ] && [ "$OS_VERSION" = "8" ])
         			then
-						dnf install php-fpm php-devel php-opcache
+						dnf -y install php-fpm php-devel php-opcache
 					else
 						yum --enablerepo=remi-php74 install -y php-fpm php-devel php-cli php-opcache
 					fi
@@ -413,7 +413,7 @@
 					then
 						if ([ "$OS_REQUIREMENT" = "CentOS" ] && [ "$OS_VERSION" = "8" ])
 						then
-							dnf install php-curl
+							dnf -y install php-curl
 						else
 							yum --enablerepo=remi-php74 install -y php-curl
 						fi
@@ -446,7 +446,7 @@
 					then
 						if ([ "$OS_REQUIREMENT" = "CentOS" ] && [ "$OS_VERSION" = "8" ])
 						then
-							dnf install php-pgsql
+							dnf -y install php-pgsql
 						else
 							yum --enablerepo=remi-php74 install -y php-pgsql
 						fi
@@ -478,7 +478,7 @@
 					then
 						if ([ "$OS_REQUIREMENT" = "CentOS" ] && [ "$OS_VERSION" = "8" ])
 						then
-							dnf install php-mbstring
+							dnf -y install php-mbstring
 						else
 							yum --enablerepo=remi-php74 install -y php-mbstring
 						fi
@@ -510,7 +510,7 @@
 					then
 						if ([ "$OS_REQUIREMENT" = "CentOS" ] && [ "$OS_VERSION" = "8" ])
 						then
-							dnf install php-ldap
+							dnf -y install php-ldap
 						else
 							yum --enablerepo=remi-php74 install -y php-ldap
 						fi
@@ -557,8 +557,8 @@
 						yum install -y ImageM* netpbm gd gd-* libjpeg libexif gcc coreutils make
 						if ([ "$OS_REQUIREMENT" = "CentOS" ] && [ "$OS_VERSION" = "8" ])
 						then
-							dnf install php-pear
-							dnf install php-gd
+							dnf -y install php-pear
+							dnf -y install php-gd
 						else
 							yum --enablerepo=remi-php74 install -y php-pear
 							yum --enablerepo=remi-php74 install -y php-gd
@@ -602,7 +602,7 @@
 					then
 						if ([ "$OS_REQUIREMENT" = "CentOS" ] && [ "$OS_VERSION" = "8" ])
 						then
-							dnf install php-imap
+							dnf -y install php-imap
 						else
 							yum --enablerepo=remi-php74 install -y php-imap
 						fi
@@ -634,7 +634,7 @@
 					then
 						if ([ "$OS_REQUIREMENT" = "CentOS" ] && [ "$OS_VERSION" = "8" ])
 						then
-							dnf install php-xml
+							dnf -y install php-xml
 						else
 							yum --enablerepo=remi-php74 install -y php-xml
 						fi
@@ -779,7 +779,7 @@
 						if ([ "$OS_REQUIREMENT" = "CentOS" ] && [ "$OS_VERSION" = "8" ])
 						then
 							dnf module enable postgresql:9.6
-							dnf install postgresql-server postgresql-contrib postgresql-libs
+							dnf -y install postgresql-server postgresql-contrib postgresql-libs
 						else
 							yum install -y postgresql96 postgresql96-server postgresql96-contrib postgresql96-libs	
 						fi
@@ -811,7 +811,7 @@
 						if ([ "$OS_REQUIREMENT" = "CentOS" ] && [ "$OS_VERSION" = "8" ])
 						then
 							dnf module enable postgresql:9.6
-							dnf install postgresql-server postgresql-contrib postgresql-libs
+							dnf -y install postgresql-server postgresql-contrib postgresql-libs
 						else
 							yum install -y postgresql96 postgresql96-server postgresql96-contrib postgresql96-libs
 						fi
@@ -1282,8 +1282,8 @@
 					else
 						if ([ "$OS_REQUIREMENT" = "CentOS" ] && [ "$OS_VERSION" = "8" ])
 						then
-							dnf install epel-release
-							dnf install certbot python3-certbot-nginx
+							dnf -y install epel-release
+							dnf -y install certbot python3-certbot-nginx
 							certbot --nginx
 						else
 							yum install -y epel-release
