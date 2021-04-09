@@ -1073,7 +1073,18 @@
 					echo "postfix installation failed with error code ${error_code} (postfix installation failed with error code 16)"
 				fi
 				PHP_VERSION=$(php --version | head -n 1 | cut -d " " -f 2 | grep --only-matching --perl-regexp "^\\d\.\\d+")
-				echo "sendmail_path = \"/usr/sbin/sendmail -t -i\"" >> /etc/php/${PHP_VERSION}/fpm/php.ini
+				if [ -f "/etc/php/${PHP_VERSION}/fpm/php.ini" ] 
+				then
+					sed -i "s/;sendmail_path =/sendmail_path = \"\/usr\/sbin\/sendmail -t -i\"/g" /etc/php/${PHP_VERSION}/fpm/php.ini
+				fi
+				if [ -f "/etc/php/${PHP_VERSION}/cli/php.ini" ] 
+				then
+					sed -i "s/;sendmail_path =/sendmail_path = \"\/usr\/sbin\/sendmail -t -i\"/g" /etc/php/${PHP_VERSION}/cli/php.ini
+				fi
+				if [ -f "/etc/php.ini" ] 
+				then
+					sed -i "s/;sendmail_path =/sendmail_path = \"\/usr\/sbin\/sendmail -t -i\"/g" /etc/php.ini
+				fi
 			fi
 		}
 		change_permission()
