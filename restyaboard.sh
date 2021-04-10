@@ -763,20 +763,13 @@
 					case "${answer}" in
 						[Yy])
 						echo "Installing PostgreSQL..."
-						if [ $(getconf LONG_BIT) = "32" ]; then
-							if [[ $OS_REQUIREMENT = "Fedora" ]]; then
-								rpm -Uvh "https://download.postgresql.org/pub/repos/yum/9.6/fedora/fedora-${OS_VERSION}-i386/pgdg-fedora-repo-latest.noarch.rpm"
-							else
-								rpm -Uvh "https://download.postgresql.org/pub/repos/yum/9.6/redhat/rhel-${OS_VERSION}-i386/pgdg-redhat-repo-latest.noarch.rpm"
-							fi
-						fi
 						if [ $(getconf LONG_BIT) = "64" ]; then
 							if [[ $OS_REQUIREMENT = "Fedora" ]]; then
-								rpm -Uvh "https://download.postgresql.org/pub/repos/yum/9.6/fedora/fedora-${OS_VERSION}-x86_64/pgdg-fedora-repo-latest.noarch.rpm"
+								dnf install -y "https://download.postgresql.org/pub/repos/yum/reporpms/F-${OS_VERSION}-x86_64/pgdg-fedora-repo-latest.noarch.rpm"
 							else
 								if ([ "$OS_REQUIREMENT" = "CentOS" ] && [ "$OS_VERSION" != "8" ])
 								then
-									rpm -Uvh "https://download.postgresql.org/pub/repos/yum/9.6/redhat/rhel-${OS_VERSION}-x86_64/pgdg-redhat-repo-latest.noarch.rpm"
+									yum install -y "https://download.postgresql.org/pub/repos/yum/reporpms/EL-${OS_VERSION}-x86_64/pgdg-redhat-repo-latest.noarch.rpm"
 								fi
 							fi
 						fi
@@ -787,12 +780,12 @@
 							dnf module enable postgresql:13
 							dnf -y install postgresql13-server postgresql13-contrib postgresql13-libs
 						else
-							yum install -y postgresql96 postgresql96-server postgresql96-contrib postgresql96-libs	
+							yum install -y postgresql13 postgresql13-server postgresql13-contrib postgresql13-libs	
 						fi
 						error_code=$?
 						if [ ${error_code} != 0 ]
 						then
-							echo "postgresql96 installation failed with error code ${error_code} (postgresql96 installation failed with error code 29)"
+							echo "postgresql13 installation failed with error code ${error_code} (postgresql13 installation failed with error code 29)"
 							return 29
 						fi
 					esac
@@ -801,17 +794,14 @@
 					if [[ $PSQL_VERSION < 9.3 ]]; then
 						set +x
 						echo "Restyaboard will not work in your PostgreSQL version (i.e. less than 9.3). So script going to update PostgreSQL version 9.6"
-						if [ $(getconf LONG_BIT) = "32" ]; then
+						if [ $(getconf LONG_BIT) = "64" ]; then
 							if [[ $OS_REQUIREMENT = "Fedora" ]]; then
-								rpm -Uvh "https://download.postgresql.org/pub/repos/yum/9.6/fedora/fedora-${OS_VERSION}-i386/pgdg-fedora-repo-latest.noarch.rpm"
+								dnf install -y "https://download.postgresql.org/pub/repos/yum/reporpms/F-${OS_VERSION}-x86_64/pgdg-fedora-repo-latest.noarch.rpm"
 							else
-								rpm -Uvh "https://download.postgresql.org/pub/repos/yum/9.6/redhat/rhel-${OS_VERSION}-i386/pgdg-redhat-repo-latest.noarch.rpm"
-							fi
-						else
-							if [[ $OS_REQUIREMENT = "Fedora" ]]; then
-								rpm -Uvh "https://download.postgresql.org/pub/repos/yum/9.6/fedora/fedora-${OS_VERSION}-x86_64/pgdg-fedora-repo-latest.noarch.rpm"
-							else
-								rpm -Uvh "https://download.postgresql.org/pub/repos/yum/9.6/redhat/rhel-${OS_VERSION}-x86_64/pgdg-redhat-repo-latest.noarch.rpm"
+								if ([ "$OS_REQUIREMENT" = "CentOS" ] && [ "$OS_VERSION" != "8" ])
+								then
+									yum install -y "https://download.postgresql.org/pub/repos/yum/reporpms/EL-${OS_VERSION}-x86_64/pgdg-redhat-repo-latest.noarch.rpm"
+								fi
 							fi
 						fi
 						if ([ "$OS_REQUIREMENT" = "CentOS" ] && [ "$OS_VERSION" = "8" ])
@@ -821,7 +811,7 @@
 							dnf module enable postgresql:13
 							dnf -y install postgresql13-server postgresql13-contrib postgresql13-libs
 						else
-							yum install -y postgresql96 postgresql96-server postgresql96-contrib postgresql96-libs
+							yum install -y postgresql13 postgresql13-server postgresql13-contrib postgresql13-libs
 						fi
 						error_code=$?
 						if [ ${error_code} != 0 ]
@@ -836,14 +826,7 @@
 					PSQL_VERSION=13
 				fi
 				PSQL_FOLDER=$(echo ${PSQL_VERSION} | sed 's/\.//')
-				if ([ "$OS_REQUIREMENT" = "CentOS" ] && [ "$OS_VERSION" = "8" ])
-				then
-					"/usr/pgsql-13/bin/postgresql-13-setup" initdb
-				else
-					if [ -f "/usr/pgsql-${PSQL_VERSION}/bin/postgresql${PSQL_FOLDER}-setup" ]; then
-						"/usr/pgsql-${PSQL_VERSION}/bin/postgresql${PSQL_FOLDER}-setup" initdb
-					fi
-				fi
+				"/usr/pgsql-${PSQL_VERSION}/bin/postgresql-${PSQL_VERSION}-setup" initdb
 				if ([ "$OS_REQUIREMENT" = "CentOS" ] && [ "$OS_VERSION" = "8" ])
 				then
 					systemctl enable postgresql-13
@@ -1503,6 +1486,23 @@
 		upgrade-0.6.9-0.7(){
 			if [ -d "$dir/client/apps/r_togetherjs" ]; then
 				rm -rf $dir/client/apps/r_togetherjs/
+			fi
+			if [ -d "$dir/client/apps" ]; then
+				chmod -R go+w "$dir/client/apps"
+			else 
+				mkdir "$dir/client/apps"
+				chmod -R go+w "$dir/client/apps"
+			fi
+			curl -v -L -G -o /tmp/r_codenames-v0.1.5.zip  https://github.com/RestyaPlatform/board-apps/releases/download/v1/r_codenames-v0.1.5.zip
+			unzip /tmp/r_codenames-v0.1.5.zip -d "$dir/client/apps"
+			curl -v -L -G -o /tmp/r_gmail_addon-v0.1.2.zip https://github.com/RestyaPlatform/board-apps/releases/download/v1/r_gmail_addon-v0.1.2.zip
+			unzip /tmp/r_gmail_addon-v0.1.2.zip -d "$dir/client/apps"
+			chown -R restyaboard:restyaboard "$dir/client/apps"
+			chmod -R u=rwX,g=rX,o= "$dir/client/apps"
+			chmod -R u=rwX,g=rX,o= $dir/client/apps/**/*.json
+			if ([ "$OS_REQUIREMENT" = "CentOS" ])
+			then
+				chcon -R -t httpd_sys_rw_content_t $dir/client/apps/**/*.json
 			fi
 		}
 
