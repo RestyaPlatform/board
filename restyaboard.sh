@@ -376,6 +376,7 @@
 					if ([ "$OS_REQUIREMENT" = "CentOS" ] && [ "$OS_VERSION" = "8" ])
         			then
 						dnf -y install php-fpm php-devel php-opcache
+						dnf -y install php-json
 					else
 						yum --enablerepo=remi-php74 install -y php-fpm php-devel php-cli php-opcache
 					fi
@@ -773,13 +774,18 @@
 							if [[ $OS_REQUIREMENT = "Fedora" ]]; then
 								rpm -Uvh "https://download.postgresql.org/pub/repos/yum/9.6/fedora/fedora-${OS_VERSION}-x86_64/pgdg-fedora-repo-latest.noarch.rpm"
 							else
-								rpm -Uvh "https://download.postgresql.org/pub/repos/yum/9.6/redhat/rhel-${OS_VERSION}-x86_64/pgdg-redhat-repo-latest.noarch.rpm"
+								if ([ "$OS_REQUIREMENT" = "CentOS" ] && [ "$OS_VERSION" != "8" ])
+								then
+									rpm -Uvh "https://download.postgresql.org/pub/repos/yum/9.6/redhat/rhel-${OS_VERSION}-x86_64/pgdg-redhat-repo-latest.noarch.rpm"
+								fi
 							fi
 						fi
 						if ([ "$OS_REQUIREMENT" = "CentOS" ] && [ "$OS_VERSION" = "8" ])
 						then
-							dnf module enable postgresql:9.6
-							dnf -y install postgresql-server postgresql-contrib postgresql-libs
+							sudo dnf install -y https://download.postgresql.org/pub/repos/yum/reporpms/EL-8-x86_64/pgdg-redhat-repo-latest.noarch.rpm
+							sudo dnf -qy module disable postgresql
+							dnf module enable postgresql:13
+							dnf -y install postgresql13-server postgresql13-contrib postgresql13-libs
 						else
 							yum install -y postgresql96 postgresql96-server postgresql96-contrib postgresql96-libs	
 						fi
@@ -810,8 +816,10 @@
 						fi
 						if ([ "$OS_REQUIREMENT" = "CentOS" ] && [ "$OS_VERSION" = "8" ])
 						then
-							dnf module enable postgresql:9.6
-							dnf -y install postgresql-server postgresql-contrib postgresql-libs
+							sudo dnf install -y https://download.postgresql.org/pub/repos/yum/reporpms/EL-8-x86_64/pgdg-redhat-repo-latest.noarch.rpm
+							sudo dnf -qy module disable postgresql
+							dnf module enable postgresql:13
+							dnf -y install postgresql13-server postgresql13-contrib postgresql13-libs
 						else
 							yum install -y postgresql96 postgresql96-server postgresql96-contrib postgresql96-libs
 						fi
@@ -824,10 +832,13 @@
 					fi
 				fi
 				PSQL_VERSION=$(psql --version | egrep -o '[0-9]{1,}\.[0-9]{1,}')
+				if [[ ${PSQL_VERSION} =~ ^13\.[0-9]{1,}$ ]]; then
+					PSQL_VERSION=13
+				fi
 				PSQL_FOLDER=$(echo ${PSQL_VERSION} | sed 's/\.//')
 				if ([ "$OS_REQUIREMENT" = "CentOS" ] && [ "$OS_VERSION" = "8" ])
 				then
-					postgresql-setup --initdb
+					"/usr/pgsql-13/bin/postgresql-13-setup" initdb
 				else
 					if [ -f "/usr/pgsql-${PSQL_VERSION}/bin/postgresql${PSQL_FOLDER}-setup" ]; then
 						"/usr/pgsql-${PSQL_VERSION}/bin/postgresql${PSQL_FOLDER}-setup" initdb
@@ -835,8 +846,8 @@
 				fi
 				if ([ "$OS_REQUIREMENT" = "CentOS" ] && [ "$OS_VERSION" = "8" ])
 				then
-					systemctl start postgresql
-					systemctl enable postgresql
+					systemctl enable postgresql-13
+					systemctl start postgresql-13
 				else
 					if [ -f "/bin/systemctl" ]; then
 						systemctl start "postgresql-${PSQL_VERSION}.service"
@@ -846,21 +857,13 @@
 						chkconfig --levels 35 "postgresql-${PSQL_VERSION}" on
 					fi
 				fi
+				sed -e 's/peer/trust/g' -e 's/ident/trust/g' < "/var/lib/pgsql/${PSQL_VERSION}/data/pg_hba.conf" > "/var/lib/pgsql/${PSQL_VERSION}/data/pg_hba.conf.1"
+				cd "/var/lib/pgsql/${PSQL_VERSION}/data" || exit
+				mv pg_hba.conf pg_hba.conf_old
+				mv pg_hba.conf.1 pg_hba.conf
 				if ([ "$OS_REQUIREMENT" = "CentOS" ] && [ "$OS_VERSION" = "8" ])
 				then
-					sed -e 's/peer/trust/g' -e 's/ident/trust/g' < "/var/lib/pgsql/data/pg_hba.conf" > "/var/lib/pgsql/data/pg_hba.conf.1"
-					cd "/var/lib/pgsql/data" || exit
-					mv pg_hba.conf pg_hba.conf_old
-					mv pg_hba.conf.1 pg_hba.conf
-				else
-					sed -e 's/peer/trust/g' -e 's/ident/trust/g' < "/var/lib/pgsql/${PSQL_VERSION}/data/pg_hba.conf" > "/var/lib/pgsql/${PSQL_VERSION}/data/pg_hba.conf.1"
-					cd "/var/lib/pgsql/${PSQL_VERSION}/data" || exit
-					mv pg_hba.conf pg_hba.conf_old
-					mv pg_hba.conf.1 pg_hba.conf
-				fi
-				if ([ "$OS_REQUIREMENT" = "CentOS" ] && [ "$OS_VERSION" = "8" ])
-				then
-					systemctl restart postgresql
+					systemctl restart postgresql-13
 				else
 					if [ -f "/bin/systemctl" ]; then
 						systemctl restart "postgresql-${PSQL_VERSION}.service"
@@ -1805,8 +1808,12 @@
 			sed -i "s/^.*'R_DB_PORT'.*$/define('R_DB_PORT', '${POSTGRES_DBPORT}');/g" "$dir/server/php/config.inc.php"
 			
 			echo "Setting up cron for every 5 minutes.."
-			echo "*/5 * * * * $dir/server/php/shell/main.sh > /dev/null 2> /dev/null" >> /var/spool/cron/crontabs/root
-
+			if ([ "$OS_REQUIREMENT" = "Ubuntu" ] || [ "$OS_REQUIREMENT" = "Debian" ] || [ "$OS_REQUIREMENT" = "LinuxMint" ] || [ "$OS_REQUIREMENT" = "Raspbian" ])
+			then
+				echo "*/5 * * * * $dir/server/php/shell/main.sh > /dev/null 2> /dev/null" >> /var/spool/cron/crontabs/root
+			else
+				echo "*/5 * * * * $dir/server/php/shell/main.sh > /dev/null 2> /dev/null" >> /var/spool/cron/root
+			fi
 			php_fpm_reset
 
 			set +x
