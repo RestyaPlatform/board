@@ -1878,6 +1878,10 @@
 				ssl_connectivity
 			fi
 		fi
+		if ([ "$OS_REQUIREMENT" = "CentOS" ] && [ "$OS_VERSION" = "8" ])
+        then
+			semanage permissive -a httpd_t
+		fi
 		set +x
 		echo "Checking Hosting..."
 		response=$(curl -H Metadata:true http://169.254.169.254/metadata/instance?api-version=2017-04-02 --write-out %{http_code} --connect-timeout 10 --max-time 10 --silent --output /dev/null)
