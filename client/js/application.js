@@ -193,6 +193,7 @@ callbackTranslator = {
                                     Auth.refresh_token = response.refresh_token;
                                     api_token = response.access_token;
                                     $.cookie('auth', JSON.stringify(Auth));
+                                    authuser.access_token = response.access_token;
                                     if (from_url !== 'board_view') {
                                         Backbone.history.loadUrl(Backbone.history.fragment);
                                     } else {
