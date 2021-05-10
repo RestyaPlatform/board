@@ -201,8 +201,10 @@ function CheckFieldExists(board, field_name, field_value, return_type, plugin_na
 
 function CheckFieldPermission(board, board_user_role_id, permission) {
     var checked_permission = false;
-    if (!_.isUndefined(authuser) && !_.isUndefined(authuser.user) && !_.isUndefined(board) && !_.isEmpty(board) && !_.isUndefined(board.acl_links) && !_.isEmpty(board.acl_links)) {
-        if (!_.isEmpty(board.acl_links.where({
+    if (!_.isUndefined(authuser) && !_.isUndefined(authuser.user) && !_.isUndefined(board) && !_.isEmpty(board) && (authuser.user.role_id == 1 || (!_.isUndefined(board.acl_links) && !_.isEmpty(board.acl_links)))) {
+        if (authuser.user.role_id == 1) {
+            checked_permission = true;
+        } else if (!_.isEmpty(board.acl_links.where({
                 slug: permission,
                 board_user_role_id: parseInt(board_user_role_id)
             }))) {
