@@ -1,4 +1,18 @@
-#Gmail add-on
+# Gmail add-on
+
+## Introduction
+
+[Restyaboard](https://restya.com/board) is an open source alternative to Trello, but with smart additional features like offline sync, diff /revisions, nested comments, multiple view layouts, chat, and more. And since it is self-hosted, data, privacy, and IP security can be guaranteed.
+
+Restyaboard is more like an electronic sticky note for organizing tasks and todos. Apart from this, it is ideal for Kanban, Agile, Gemba board and business process/workflow management. It can be extended with [productive plugins](https://restya.com/board/apps "productive plugins")
+
+Today, several universities, automobile companies, government organizations, etc from across Europe take advantage of Restyaboard.
+
+This document contains information about how to install the Restyaboard Gmail Add-on in your mail.
+
+### What you'll learn
+
+*   How install the Restyaboard Gmail Add-on in your mail
 
 ## Overview
 
@@ -84,16 +98,16 @@
 ## Installation Steps
 
 **Installation Steps**
-* Give us your url by contact us
 
-[https://restya.com/contact](Contact us)
+*   Give us your url by contact us
 
-* Purchase Gmail Add-on.
-* Contact us to get a quote.
+[https://restya.com/contact](https://restya.com/contact)
+
+*   Download [Gmail Add-on app](https://restya.com/board/apps/r_gmail_addon "Gmail Add-on app").
 
 ## FAQs
 
 **FAQs**
 
 * Can I set up custom field for a particular card?
-  - The options will be added in future.
+  *   The options will be added in the future.
