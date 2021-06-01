@@ -1161,11 +1161,13 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         $check_board = executeQuery($s_sql, $board);
         if (!empty($check_board)) {
             // For restricted board user assigned cards
-            $is_restricted_board_user = executeQuery('SELECT board_id FROM boards_users WHERE user_id = $1 AND board_user_role_id = $2 AND board_id = $3', array(
-                $authUser['id'],
-                4,
-                $r_resource_vars['boards']
-            ));
+            if (!empty($authUser)) {
+                $is_restricted_board_user = executeQuery('SELECT board_id FROM boards_users WHERE user_id = $1 AND board_user_role_id = $2 AND board_id = $3', array(
+                    $authUser['id'],
+                    4,
+                    $r_resource_vars['boards']
+                ));
+            }
             if (!empty($is_restricted_board_user)) {
                 $cardsIDS = pg_query_params($db_lnk, 'SELECT c.id, c.board_id FROM cards c left join cards_users cu on cu.card_id = c.id WHERE cu.user_id = $1 AND c.board_id = $2', array(
                     $authUser['id'],
