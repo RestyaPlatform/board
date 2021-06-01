@@ -28,7 +28,7 @@ App.popupView = Backbone.View.extend({
         var expirationDate = communityEditionPopup.date.replace('T', ' ');
         expirationDate = new Date(expirationDate);
         expirationDate.setDate(expirationDate.getDate() + parseInt(30));
-        var currentDate = new Date('2021-08-01 16:56:23');
+        var currentDate = new Date();
         if ((currentDate.getTime() > expirationDate.getTime()) && !communityEditionPopup.is_skipped) {
             this.$el.dockmodal({
                 height: 300,
@@ -154,23 +154,6 @@ App.popupView = Backbone.View.extend({
                             }
                         }
                     });
-                    /* var data = {};
-
-                    data.is_intro_video_skipped = true;
-
-                    $('.action-close', ('.dockmodal-header')).trigger('click');
-                    var introvideo = new App.intro_view_model();
-                    introvideo.url = api_url + 'users/' + authuser.user.id + '.json';
-                    introvideo.save(data, {
-                        success: function(response) {
-                            if (!_.isEmpty(response.attributes.success)) {
-                                var Auth = JSON.parse($.cookie('auth'));
-                                Auth.user.is_intro_video_skipped = response.attributes.is_intro_video_skipped;
-                                $.cookie('auth', JSON.stringify(Auth));
-                                authuser = Auth;
-                            }
-                        }
-                    }); */
                 }
             });
             this.$el.html(this.template);
