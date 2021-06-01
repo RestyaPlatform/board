@@ -1,22 +1,21 @@
 /**
- * intro_video View
- * @class introvideoview
+ * popup View
+ * @class popupView
  * @constructor
  * @extends Backbone.View
  */
 
-App.intro_video_view = Backbone.View.extend({
+App.popupView = Backbone.View.extend({
     /**
      * Constructor
      * initialize default values and actions
      */
     initialize: function() {
-        var field = $('#content').attr('class');
-        if (field.indexOf("container-fluid") !== -1) {
+        if (window.location.hash === "#/boards") {
             this.render();
         }
     },
-    template: JST['templates/intro_video'],
+    template: JST['templates/popup'],
     /**
      * render()
      * populate the html to the dom
@@ -25,15 +24,17 @@ App.intro_video_view = Backbone.View.extend({
      *
      */
     render: function() {
-        if (!$('#content').hasClass("intro_video")) {
-            $('#content').addClass("intro_video");
-        }
-        if (authuser.user.is_intro_video_skipped === "f" || authuser.user.is_intro_video_skipped === null) {
+        var communityEditionPopup = JSON.parse(authuser.user.community_edition_popup);
+        var expirationDate = communityEditionPopup.date.replace('T', ' ');
+        expirationDate = new Date(expirationDate);
+        expirationDate.setDate(expirationDate.getDate() + parseInt(30));
+        var currentDate = new Date('2021-08-01 16:56:23');
+        if ((currentDate.getTime() > expirationDate.getTime()) && !communityEditionPopup.is_skipped) {
             this.$el.dockmodal({
                 height: 300,
                 width: 200,
                 animationSpeed: ANIMATION_SPEED,
-                title: "<div class='col-xs-12'><div class='text-center'><strong>What's New in Restyaboard v0.7 (Scorpions)</strong></div></div>",
+                title: "<div class='col-xs-12'><div class='text-center'><strong>" + i18next.t('Upgrade to Enterprise Edition') + "</strong></div></div>",
                 beforePopout: function(event) {
                     if ($(window).width() < 1400) {
                         $('.editor').resizable({
@@ -137,8 +138,25 @@ App.intro_video_view = Backbone.View.extend({
                 },
                 close: function(event, dialog) {
                     var data = {};
+                    data.date = communityEditionPopup.date;
+                    data.is_skipped = true;
+                    var formdata = {};
+                    formdata.community_edition_popup = JSON.stringify(data);
+                    var user = new App.User();
+                    user.url = api_url + 'users/' + authuser.user.id + '.json';
+                    user.save(formdata, {
+                        success: function(response) {
+                            if (!_.isEmpty(response.attributes.success)) {
+                                var Auth = JSON.parse($.cookie('auth'));
+                                Auth.user.community_edition_popup = JSON.stringify(data);
+                                $.cookie('auth', JSON.stringify(Auth));
+                                authuser = Auth;
+                            }
+                        }
+                    });
+                    /* var data = {};
 
-                    data.is_intro_video_skipped = 1;
+                    data.is_intro_video_skipped = true;
 
                     $('.action-close', ('.dockmodal-header')).trigger('click');
                     var introvideo = new App.intro_view_model();
@@ -152,15 +170,10 @@ App.intro_video_view = Backbone.View.extend({
                                 authuser = Auth;
                             }
                         }
-                    });
-                    /*The popupView has been called here*/
-                    var popupView = new App.popupView();
+                    }); */
                 }
             });
             this.$el.html(this.template);
-        } else {
-            /*The popupView has been called here*/
-            var popupView = new App.popupView();
         }
         return this;
     }

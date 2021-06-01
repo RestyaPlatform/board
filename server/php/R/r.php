@@ -3286,6 +3286,13 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     );
                     pg_query_params($db_lnk, 'UPDATE users SET is_intro_video_skipped= $1 WHERE id = $2', $qry_val_arr);
                 }
+                if (!empty($r_post['community_edition_popup'])) {
+                    $qry_val_arr = array(
+                        $r_post['community_edition_popup'],
+                        $r_resource_vars['users']
+                    );
+                    pg_query_params($db_lnk, 'UPDATE users SET community_edition_popup= $1 WHERE id = $2', $qry_val_arr);
+                }
                 if (!empty($_POST['username'])) {
                     $qry_val_arr = array(
                         $r_resource_vars['users']
