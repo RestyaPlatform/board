@@ -607,8 +607,8 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 $r_resource_vars['users']
             );
             $user = executeQuery('SELECT id, next_community_edition_popup_on FROM users_listing WHERE id = $1', $val_array);
-            if ($user['next_community_edition_popup_on'] <= date('Y-m-d H:i:s')) {
-                $next_community_edition_popup_on = date('Y-m-d H:i:s', strtotime('+1 day'));
+            if ($user['next_community_edition_popup_on'] <= date('Y-m-d')) {
+                $next_community_edition_popup_on = date('Y-m-d', strtotime('+1 day'));
                 $community_edition_val_arr = array(
                     $next_community_edition_popup_on,
                     $user['id']
@@ -2907,14 +2907,14 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     );
                     if (!ENTERPRISE_VERSION) {
                         if (empty($user['next_community_edition_popup_on'])) {
-                            $next_community_edition_popup_on = date('Y-m-d H:i:s', strtotime('+30 days'));
+                            $next_community_edition_popup_on = date('Y-m-d', strtotime('+30 days'));
                             $community_edition_val_arr = array(
                                 $next_community_edition_popup_on,
                                 $user['id']
                             );
                             pg_query_params($db_lnk, 'UPDATE users SET next_community_edition_popup_on = $1 WHERE id = $2', $community_edition_val_arr);
-                        } else if ($user['next_community_edition_popup_on'] <= date('Y-m-d H:i:s')) {
-                            $next_community_edition_popup_on = date('Y-m-d H:i:s', strtotime('+1 day'));
+                        } else if($user['next_community_edition_popup_on'] <= date('Y-m-d')) {
+                            $next_community_edition_popup_on = date('Y-m-d', strtotime('+1 day'));
                             $community_edition_val_arr = array(
                                 $next_community_edition_popup_on,
                                 $user['id']
