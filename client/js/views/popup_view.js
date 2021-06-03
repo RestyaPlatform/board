@@ -26,7 +26,7 @@ App.popupView = Backbone.View.extend({
     render: function() {
         if (authuser.user.is_show_community_edition_popup === "t") {
             this.$el.dockmodal({
-                height: 300,
+                height: 500,
                 width: 200,
                 animationSpeed: ANIMATION_SPEED,
                 title: "<div class='col-xs-12'><div class='text-center'><strong>" + i18next.t('Upgrade to Enterprise Edition') + "</strong></div></div>",
@@ -130,6 +130,7 @@ App.popupView = Backbone.View.extend({
                             $('.action-close', $('.dockmodal.active')).trigger('click');
                         }
                     });
+                    $('.dockmodal').css('height', '500');
                 },
                 close: function(event, dialog) {
                     var data = {};
