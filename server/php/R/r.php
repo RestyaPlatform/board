@@ -602,6 +602,20 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 $r_debug.= __LINE__ . ': ' . pg_last_error($db_lnk) . '\n';
             }
         }
+        if (!ENTERPRISE_VERSION) {
+            $val_array = array(
+                $r_resource_vars['users']
+            );
+            $user = executeQuery('SELECT id, next_community_edition_popup_on FROM users_listing WHERE id = $1', $val_array);
+            if ($user['next_community_edition_popup_on'] <= date('Y-m-d H:i:s')) {
+                $next_community_edition_popup_on = date('Y-m-d H:i:s', strtotime('+1 day'));
+                $community_edition_val_arr = array(
+                    $next_community_edition_popup_on,
+                    $user['id']
+                );
+                pg_query_params($db_lnk, 'UPDATE users SET next_community_edition_popup_on = $1, is_show_community_edition_popup = true WHERE id = $2', $community_edition_val_arr);
+            }
+        }
         break;
 
     case '/users/search':
@@ -2891,6 +2905,24 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     $conditions = array(
                         true
                     );
+                    if (!ENTERPRISE_VERSION) {
+                        if (empty($user['next_community_edition_popup_on'])) {
+                            $next_community_edition_popup_on = date('Y-m-d H:i:s', strtotime('+30 days'));
+                            $community_edition_val_arr = array(
+                                $next_community_edition_popup_on,
+                                $user['id']
+                            );
+                            pg_query_params($db_lnk, 'UPDATE users SET next_community_edition_popup_on = $1 WHERE id = $2', $community_edition_val_arr);
+                        } else if ($user['next_community_edition_popup_on'] <= date('Y-m-d H:i:s')) {
+                            $next_community_edition_popup_on = date('Y-m-d H:i:s', strtotime('+1 day'));
+                            $community_edition_val_arr = array(
+                                $next_community_edition_popup_on,
+                                $user['id']
+                            );
+                            pg_query_params($db_lnk, 'UPDATE users SET next_community_edition_popup_on = $1, is_show_community_edition_popup = true WHERE id = $2', $community_edition_val_arr);
+                            $user['is_show_community_edition_popup'] = 't';
+                        }
+                    }
                     $role_val_arr = array(
                         $user['role_id']
                     );
@@ -3286,12 +3318,12 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     );
                     pg_query_params($db_lnk, 'UPDATE users SET is_intro_video_skipped= $1 WHERE id = $2', $qry_val_arr);
                 }
-                if (!empty($r_post['community_edition_popup'])) {
+                if (isset($r_post['is_show_community_edition_popup'])) {
                     $qry_val_arr = array(
-                        $r_post['community_edition_popup'],
+                        $r_post['is_show_community_edition_popup'],
                         $r_resource_vars['users']
                     );
-                    pg_query_params($db_lnk, 'UPDATE users SET community_edition_popup= $1 WHERE id = $2', $qry_val_arr);
+                    pg_query_params($db_lnk, 'UPDATE users SET is_show_community_edition_popup= $1 WHERE id = $2', $qry_val_arr);
                 }
                 if (!empty($_POST['username'])) {
                     $qry_val_arr = array(

@@ -110,7 +110,8 @@ App.SAMLAuthenticationView = Backbone.View.extend({
                                 auth_response.user.is_ldap = response.user.is_ldap;
                                 auth_response.user.is_saml = response.user.is_saml;
                                 auth_response.user.is_intro_video_skipped = response.user.is_intro_video_skipped;
-                                auth_response.user.community_edition_popup = response.user.community_edition_popup;
+                                auth_response.user.next_community_edition_popup_on = response.user.next_community_edition_popup_on;
+                                auth_response.user.is_show_community_edition_popup = response.user.is_show_community_edition_popup;
                                 auth_response.user.is_google_authenticator_enabled = response.user.is_google_authenticator_enabled;
                                 $.cookie('auth', JSON.stringify(auth_response));
                                 $.removeCookie('push_tokens');
@@ -136,25 +137,6 @@ App.SAMLAuthenticationView = Backbone.View.extend({
                                 }
                                 auth_user_organizations.add(authuser.user.organizations);
                                 self.changeFavicon(response.user.notify_count);
-                                if (_.isUndefined(authuser.user.community_edition_popup) || _.isEmpty(authuser.user.community_edition_popup) || authuser.user.community_edition_popup == null) {
-                                    var userdata = {};
-                                    userdata.date = moment(new Date()).format('YYYY-MM-DD HH:mm:ss').split(' ').join('T');
-                                    userdata.is_skipped = false;
-                                    var formdata = {};
-                                    formdata.community_edition_popup = JSON.stringify(userdata);
-                                    var user = new App.User();
-                                    user.url = api_url + 'users/' + authuser.user.id + '.json';
-                                    user.save(formdata, {
-                                        success: function(response) {
-                                            if (!_.isEmpty(response.attributes.success)) {
-                                                var Auth = JSON.parse($.cookie('auth'));
-                                                Auth.user.community_edition_popup = JSON.stringify(userdata);
-                                                $.cookie('auth', JSON.stringify(Auth));
-                                                authuser = Auth;
-                                            }
-                                        }
-                                    });
-                                }
                                 this.headerView = new App.HeaderView({
                                     model: model
                                 });

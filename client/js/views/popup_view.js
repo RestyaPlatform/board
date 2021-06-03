@@ -24,12 +24,7 @@ App.popupView = Backbone.View.extend({
      *
      */
     render: function() {
-        var communityEditionPopup = JSON.parse(authuser.user.community_edition_popup);
-        var expirationDate = communityEditionPopup.date.replace('T', ' ');
-        expirationDate = new Date(expirationDate);
-        expirationDate.setDate(expirationDate.getDate() + parseInt(30));
-        var currentDate = new Date();
-        if ((currentDate.getTime() > expirationDate.getTime()) && !communityEditionPopup.is_skipped) {
+        if (authuser.user.is_show_community_edition_popup === "t") {
             this.$el.dockmodal({
                 height: 300,
                 width: 200,
@@ -138,17 +133,14 @@ App.popupView = Backbone.View.extend({
                 },
                 close: function(event, dialog) {
                     var data = {};
-                    data.date = communityEditionPopup.date;
-                    data.is_skipped = true;
-                    var formdata = {};
-                    formdata.community_edition_popup = JSON.stringify(data);
+                    data.is_show_community_edition_popup = 0;
                     var user = new App.User();
                     user.url = api_url + 'users/' + authuser.user.id + '.json';
-                    user.save(formdata, {
+                    user.save(data, {
                         success: function(response) {
                             if (!_.isEmpty(response.attributes.success)) {
                                 var Auth = JSON.parse($.cookie('auth'));
-                                Auth.user.community_edition_popup = JSON.stringify(data);
+                                Auth.user.is_show_community_edition_popup = 0;
                                 $.cookie('auth', JSON.stringify(Auth));
                                 authuser = Auth;
                             }

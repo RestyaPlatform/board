@@ -395,9 +395,19 @@ $$;
 DO $$ 
    BEGIN
         BEGIN
-            ALTER TABLE "users" ADD COLUMN "community_edition_popup" text NULL;
+            ALTER TABLE "users" ADD COLUMN "next_community_edition_popup_on" timestamp NULL;
         EXCEPTION
-            WHEN duplicate_column THEN RAISE NOTICE 'column community_edition_popup already exists in users';
+            WHEN duplicate_column THEN RAISE NOTICE 'column next_community_edition_popup_on already exists in users';
+        END;  
+  END;
+$$;
+
+DO $$ 
+   BEGIN
+        BEGIN
+            ALTER TABLE "users" ADD COLUMN "is_show_community_edition_popup" boolean NOT NULL DEFAULT 'false';
+        EXCEPTION
+            WHEN duplicate_column THEN RAISE NOTICE 'column is_show_community_edition_popup already exists in users';
         END;  
   END;
 $$;
@@ -496,7 +506,8 @@ CREATE OR REPLACE VIEW users_listing AS
     users.is_two_factor_authentication_enabled,
     users.persist_card_divider_position,
     (users.is_saml)::integer AS is_saml,
-    users.community_edition_popup
+    users.next_community_edition_popup_on,
+    users.is_show_community_edition_popup
    FROM (((((((((users users
      LEFT JOIN ips i ON ((i.id = users.ip_id)))
      LEFT JOIN cities rci ON ((rci.id = i.city_id)))
