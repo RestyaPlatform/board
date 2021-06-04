@@ -1814,7 +1814,7 @@ App.ListView = Backbone.View.extend({
             var tmp_card = new App.Card();
             tmp_card.set('is_offline', true);
             var tmp_position;
-            _.each(list_cards.models, function (card) {
+            _.each(list_cards.models, function(card) {
                 if (_.isUndefined(tmp_position)) {
                     tmp_position = parseFloat(card.attributes.position);
                 } else if (tmp_position < parseFloat(card.attributes.position)) {
