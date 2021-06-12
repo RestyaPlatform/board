@@ -18,7 +18,7 @@ This document contains information about how to install Restyaboard in CentOS us
 
 For step-by-step instructions on Installation in CentOS using shell script, refer [YouTube video](https://youtu.be/hcnIHZnS1o8 "Watch video on Installation in CentOS using shell script")
 
-[![[Installation in CentOS using shell script](centos_installation.png "Installation in CentOS using shell script")](https://youtu.be/hcnIHZnS1o8 "Watch video on Installation in CentOS using shell script")
+[![Installation in CentOS using shell script](centos_installation.png)](https://youtu.be/hcnIHZnS1o8 "Watch video on Installation in CentOS using shell script")
 
 ## Installation in CentOS using shell script
 

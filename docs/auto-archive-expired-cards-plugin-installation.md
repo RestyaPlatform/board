@@ -23,8 +23,6 @@ For step-by-step instructions about Auto Archive Expired Cards Plugin Installati
 
 ## How to install Auto Archive Expired Cards Plugin?
 
-[![How to configure auto archive expired cards plugin](auto_archive_expired_cards.png)](http://www.youtube.com/watch?v=dVmgj_EzFsY)
-
 1.  Download [Auto Archive Expired Cards app](https://restya.com/board/apps/r_auto_archive_expired_cards "Auto Archive Expired Cards app")
 2.  Goto your Restyaboard installation root directory. e.g., directory: `/usr/share/nginx/html/restyaboard/`
 3.  Extract/unzip the downloaded plugin zip into the Restyaboard installation path. e.g., `/usr/share/nginx/html/restyaboard/`
