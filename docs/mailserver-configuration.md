@@ -1,4 +1,4 @@
-# Troubleshooting
+# Mail server configuration
 
 ## Introduction
 
