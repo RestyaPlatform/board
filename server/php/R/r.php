@@ -2913,7 +2913,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                                 $user['id']
                             );
                             pg_query_params($db_lnk, 'UPDATE users SET next_community_edition_popup_on = $1 WHERE id = $2', $community_edition_val_arr);
-                        } else if($user['next_community_edition_popup_on'] <= date('Y-m-d')) {
+                        } else if ($user['next_community_edition_popup_on'] <= date('Y-m-d')) {
                             $next_community_edition_popup_on = date('Y-m-d', strtotime('+1 day'));
                             $community_edition_val_arr = array(
                                 $next_community_edition_popup_on,

@@ -17,6 +17,13 @@ App.popupView = Backbone.View.extend({
     },
     template: JST['templates/popup'],
     /**
+     * Events
+     * functions to fire on events (Mouse events, Keyboard Events, Frame/Object Events, Form Events, Drag Events, etc...)
+     */
+    events: {
+        'click .js-close-popover': 'closePopup',
+    },
+    /**
      * render()
      * populate the html to the dom
      * @param NULL
@@ -152,5 +159,9 @@ App.popupView = Backbone.View.extend({
             this.$el.html(this.template);
         }
         return this;
+    },
+    closePopup: function(e) {
+        e.preventDefault();
+        $('.action-close', $('.dockmodal.active')).trigger('click');
     }
 });
