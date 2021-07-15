@@ -500,9 +500,6 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 $c_sql = 'SELECT COUNT(*) FROM activities_listing al WHERE ' . $str;
             } else if (!empty($r_resource_filters['type']) && $r_resource_filters['type'] == 'all') {
                 $flag = 1;
-                if (!empty($r_resource_filters['last_activity_id'])) {
-                    $condition = ' AND al.id > $4';
-                }
                 $direction = 'DESC';
                 if (!empty($r_resource_filters['direction']) && isset($r_resource_filters['direction'])) {
                     $direction = $r_resource_filters['direction'];
@@ -517,8 +514,11 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                     $boardIDS = array_diff($board_ids, $assigned_board_ids);
                     array_push($pg_params, '{' . implode(',', $boardIDS) . '}', '{' . implode(',', $org_ids) . '}', $authUser['id'], '{' . implode(',', $assigned_card_ids) . '}', '{' . implode(',', $assigned_board_ids) . '}', 0);
                 } else {
-                    $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM activities_listing al WHERE (board_id = ANY ( $1 ) OR organization_id  = ANY ( $2 ) OR revisions = $3 OR type = $5 OR type = $6)' . $condition . ' ORDER BY id ' . $direction . ' LIMIT ' . PAGING_COUNT . ') as d';
-                    $c_sql = 'SELECT COUNT(*) FROM activities_listing al WHERE (board_id = ANY ( $1 ) OR organization_id  = ANY ( $2 ) OR revisions = $3 OR type = $5 OR type = $6)' . $condition;
+                    if (!empty($r_resource_filters['last_activity_id'])) {
+                        $condition = ' AND al.id > $6';
+                    }
+                    $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM activities_listing al WHERE (board_id = ANY ( $1 ) OR organization_id  = ANY ( $2 ) OR revisions = $3 OR type = $4 OR type = $5)' . $condition . ' ORDER BY id ' . $direction . ' LIMIT ' . PAGING_COUNT . ') as d';
+                    $c_sql = 'SELECT COUNT(*) FROM activities_listing al WHERE (board_id = ANY ( $1 ) OR organization_id  = ANY ( $2 ) OR revisions = $3 OR type = $4 OR type = $5)' . $condition;
                     array_push($pg_params, '{' . implode(',', $board_ids) . '}', '{' . implode(',', $org_ids) . '}', $authUser['id']);
                 }
             } else if (!empty($r_resource_filters['board_id']) && $r_resource_filters['board_id'] && $r_resource_filters['type'] == 'board_user_activity') {
@@ -544,11 +544,11 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 array_push($pg_params, '{' . implode(',', $board_ids) . '}', '{' . implode(',', $org_ids) . '}');
             }
         }
-        if (!empty($r_resource_filters['last_activity_id'])) {
-            array_push($pg_params, $r_resource_filters['last_activity_id']);
-        }
         if (!empty($r_resource_filters['type']) && $r_resource_filters['type'] == 'all' && $flag === 1) {
             array_push($pg_params, "add_permission", "remove_permission");
+        }
+        if (!empty($r_resource_filters['last_activity_id'])) {
+            array_push($pg_params, $r_resource_filters['last_activity_id']);
         }
         if (!empty($c_sql)) {
             $paging_data = paginate_data($c_sql, $db_lnk, $pg_params, $r_resource_filters);
