@@ -1,15 +1,18 @@
 <div id="js-navbar-default" class="navbar navbar-default" role="navigation">
   <div class="container-fluid">
-	<div class="navbar-left navbar-btn">
-	  <div class="clearfix navbar-btn">
-		<h2 class="pull-left navbar-btn"><span class="pull-left"><a href="#/boards" title="<%- SITE_NAME %>"><img src="img/logo.png" alt="[Image: <%- SITE_NAME %>]" title="<%- SITE_NAME %>" class="img-responsive center-block"/></a></span></h2>
-		<ul class="list-inline pull-left h3 navbar-btn navbar-form">
-			 <li class="navbar-btn text-muted"><span class="h5">/</span></li>
-			<li><span class="h4"><%- user.attributes.full_name %> (<%- user.attributes.username %>)</span></li>
-		</ul>
-	  </div>
+	<div class="row">
+		<div class="pull-left">
+			<div class="clearfix">
+				<h2 class="pull-left navbar-btn list-group-item-text"><span class="pull-left"><a href="#/boards" title="<%- SITE_NAME %>"><img src="img/logo.png" alt="[Image: <%- SITE_NAME %>]" title="<%- SITE_NAME %>" class="img-responsive center-block"/></a></span>
+					<ul class="list-inline pull-left h3 navbar-btn text-center">
+						<li class="navbar-btn text-muted"><span class="h5">&nbsp;/&nbsp;</span></li>
+						<li><span class="h4"><%- user.attributes.full_name %> (<%- user.attributes.username %>)</span></li>
+					</ul>
+				</h2>
+			</div>
+		</div>
 	</div>
-	</div>
+  </div>
 </div>
 <% if (!_.isUndefined(user)) { %>
 <div class="broadcast-section container-fluid">
