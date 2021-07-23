@@ -532,6 +532,7 @@ SELECT pg_catalog.setval('acl_links_roles_roles_id_seq', (SELECT MAX(id) FROM ac
 INSERT INTO "acl_links_roles" ("created", "modified", "acl_link_id", "role_id") VALUES 
 (now(), now(), (select id from acl_links where slug='users_login'), '3');
 
+DELETE FROM "setting_categories" WHERE "name" = 'Mobile App';
 INSERT INTO "setting_categories" ("created", "modified", "parent_id", "name", "description", "order") VALUES (now(), now(), NULL, 'Mobile App', NULL, '8');
 
 CREATE OR REPLACE VIEW boards_listing AS
