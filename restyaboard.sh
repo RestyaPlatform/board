@@ -1510,6 +1510,33 @@
 			unzip /tmp/r_codenames-v0.1.5.zip -d "$dir/client/apps"
 			curl -v -L -G -o /tmp/r_gmail_addon-v0.1.2.zip https://github.com/RestyaPlatform/board-apps/releases/download/v1/r_gmail_addon-v0.1.2.zip
 			unzip /tmp/r_gmail_addon-v0.1.2.zip -d "$dir/client/apps"
+			
+			echo "Applying permission..."
+			useradd restyaboard
+			passwd restyaboard
+			if ([ "$OS_REQUIREMENT" = "Ubuntu" ] || [ "$OS_REQUIREMENT" = "Debian" ] || [ "$OS_REQUIREMENT" = "LinuxMint" ] || [ "$OS_REQUIREMENT" = "Raspbian" ])
+			then
+				user www-data;
+				usermod -a -G restyaboard www-data
+				sed -i "s/\[www\]/[restyaboard] group=restyaboard/g" /etc/php/7.4/fpm/pool.d/www.conf
+				sed -i "s/user\s*=\s*www-data/user = restyaboard/g" /etc/php/7.4/fpm/pool.d/www.conf
+				sed -i "0,/group\s*=\s*www-data/s//group = restyaboard/g" /etc/php/7.4/fpm/pool.d/www.conf
+			else
+				user nginx;
+				usermod -a -G restyaboard nginx
+				sed -i "s/\[www\]/[restyaboard] group=restyaboard/g" /etc/php-fpm.d/www.conf
+				sed -i "s/user\s*=\s*apache/user = restyaboard/g" /etc/php-fpm.d/www.conf
+				sed -i "0,/group\s*=\s*apache/s//group = restyaboard/g" /etc/php-fpm.d/www.conf
+			fi
+			chown -R restyaboard:restyaboard $dir
+			chmod -R u=rwX,g=rX,o= $dir
+			chown -R restyaboard:restyaboard "$dir/media"
+			chmod -R u=rwX,g=rX,o= $dir/media;
+			chown -R restyaboard:restyaboard "$dir/client/img"
+			chmod -R u=rwX,g=rX,o= $dir/client/img;
+			chown -R restyaboard:restyaboard "$dir/tmp/cache"
+			chmod -R u=rwX,g=rX,o= $dir/tmp/cache;
+			chmod +x $dir/server/php/shell/main.sh
 			chown -R restyaboard:restyaboard "$dir/client/apps"
 			chmod -R u=rwX,g=rX,o= "$dir/client/apps"
 			chmod -R u=rwX,g=rX,o= $dir/client/apps/**/*.json
