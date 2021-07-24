@@ -18,6 +18,8 @@ DO $$
   END;
 $$;
 
+UPDATE "users" SET "is_intro_video_skipped" = '0';
+
 CREATE OR REPLACE VIEW boards_listing AS
  SELECT board.id,
     board.name,
