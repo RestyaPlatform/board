@@ -775,10 +775,8 @@
 						fi
 						if ([ "$OS_REQUIREMENT" = "CentOS" ] && [ "$OS_VERSION" = "8" ])
 						then
-							sudo dnf install -y https://download.postgresql.org/pub/repos/yum/reporpms/EL-8-x86_64/pgdg-redhat-repo-latest.noarch.rpm
-							sudo dnf -qy module disable postgresql
 							dnf module enable postgresql:13
-							dnf -y install postgresql13-server postgresql13-contrib postgresql13-libs
+							dnf -y install postgresql-server postgresql-contrib postgresql-libs
 						else
 							yum install -y postgresql13 postgresql13-server postgresql13-contrib postgresql13-libs	
 						fi
@@ -806,10 +804,8 @@
 						fi
 						if ([ "$OS_REQUIREMENT" = "CentOS" ] && [ "$OS_VERSION" = "8" ])
 						then
-							sudo dnf install -y https://download.postgresql.org/pub/repos/yum/reporpms/EL-8-x86_64/pgdg-redhat-repo-latest.noarch.rpm
-							sudo dnf -qy module disable postgresql
 							dnf module enable postgresql:13
-							dnf -y install postgresql13-server postgresql13-contrib postgresql13-libs
+							dnf -y install postgresql-server postgresql-contrib postgresql-libs
 						else
 							yum install -y postgresql13 postgresql13-server postgresql13-contrib postgresql13-libs
 						fi
@@ -826,11 +822,16 @@
 					PSQL_VERSION=13
 				fi
 				PSQL_FOLDER=$(echo ${PSQL_VERSION} | sed 's/\.//')
-				"/usr/pgsql-${PSQL_VERSION}/bin/postgresql-${PSQL_VERSION}-setup" initdb
 				if ([ "$OS_REQUIREMENT" = "CentOS" ] && [ "$OS_VERSION" = "8" ])
 				then
-					systemctl enable postgresql-13
-					systemctl start postgresql-13
+					postgresql-setup --initdb
+				else
+					"/usr/pgsql-${PSQL_VERSION}/bin/postgresql-${PSQL_VERSION}-setup" initdb
+				fi
+				if ([ "$OS_REQUIREMENT" = "CentOS" ] && [ "$OS_VERSION" = "8" ])
+				then
+					systemctl enable postgresql
+					systemctl start postgresql
 				else
 					if [ -f "/bin/systemctl" ]; then
 						systemctl start "postgresql-${PSQL_VERSION}.service"
@@ -840,13 +841,19 @@
 						chkconfig --levels 35 "postgresql-${PSQL_VERSION}" on
 					fi
 				fi
-				sed -e 's/peer/trust/g' -e 's/ident/trust/g' < "/var/lib/pgsql/${PSQL_VERSION}/data/pg_hba.conf" > "/var/lib/pgsql/${PSQL_VERSION}/data/pg_hba.conf.1"
-				cd "/var/lib/pgsql/${PSQL_VERSION}/data" || exit
+				if ([ "$OS_REQUIREMENT" = "CentOS" ] && [ "$OS_VERSION" = "8" ])
+				then
+					sed -e 's/peer/trust/g' -e 's/ident/trust/g' < "/var/lib/pgsql/data/pg_hba.conf" > "/var/lib/pgsql/data/pg_hba.conf.1"
+					cd "/var/lib/pgsql/data" || exit
+				else
+					sed -e 's/peer/trust/g' -e 's/ident/trust/g' < "/var/lib/pgsql/${PSQL_VERSION}/data/pg_hba.conf" > "/var/lib/pgsql/${PSQL_VERSION}/data/pg_hba.conf.1"
+					cd "/var/lib/pgsql/${PSQL_VERSION}/data" || exit
+				fi
 				mv pg_hba.conf pg_hba.conf_old
 				mv pg_hba.conf.1 pg_hba.conf
 				if ([ "$OS_REQUIREMENT" = "CentOS" ] && [ "$OS_VERSION" = "8" ])
 				then
-					systemctl restart postgresql-13
+					systemctl restart postgresql
 				else
 					if [ -f "/bin/systemctl" ]; then
 						systemctl restart "postgresql-${PSQL_VERSION}.service"
