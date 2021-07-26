@@ -1972,7 +1972,7 @@ App.ListView = Backbone.View.extend({
                     }
                     var list = App.boards.get(card.attributes.board_id).lists.get(card.attributes.list_id);
                     if (!_.isUndefined(list)) {
-                        list.set('card_count', parseInt(cards_count) + 1);
+                        list.set('card_count', parseInt(response.list.card_count));
                     }
                     _(function() {
                         if (!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && $.inArray('r_agile_wip', APPS.enabled_apps) !== -1) {
