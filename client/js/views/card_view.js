@@ -484,7 +484,7 @@ App.CardView = Backbone.View.extend({
             if (filter_count < total_filter && (query_params)) {
                 if (_.isUndefined(ops) && ops !== null) {
                     this.model.set('is_filtered', true);
-                    this.$el.css('display', 'none');
+                    this.$el.addClass('hide');
                 }
             }
             if (!_.isUndefined(this.model.attributes.name) && this.model.attributes.name !== '') {
@@ -587,7 +587,7 @@ App.CardView = Backbone.View.extend({
                     this.model.set('is_filtered', true, {
                         silent: true
                     });
-                    this.$el.css('display', 'none');
+                    this.$el.addClass('hide');
                 }
             }
         } else if (self.model === null) {
@@ -605,9 +605,9 @@ App.CardView = Backbone.View.extend({
             }
         }
         if (self.model !== null && !_.isUndefined(self.model) && self.model.get('is_filtered')) {
-            self.$el.hide();
+            self.$el.addClass('hide');
         } else {
-            self.$el.show();
+            self.$el.removeClass('hide');
         }
         _(function() {
             if (self.model !== null && !_.isUndefined(self.model) && !_.isEmpty(self.model)) {
