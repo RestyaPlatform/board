@@ -1813,7 +1813,15 @@ App.ListView = Backbone.View.extend({
             var tmp_created_date = currentdate.getFullYear() + '-' + (((currentdate.getMonth() + 1) < 10) ? '0' + (currentdate.getMonth() + 1) : (currentdate.getMonth() + 1)) + '-' + ((currentdate.getDate() < 10) ? '0' + currentdate.getDate() : currentdate.getDate()) + 'T' + currentdate.getHours() + ':' + (currentdate.getMinutes() < 10 ? '0' : '') + currentdate.getMinutes() + ':' + (currentdate.getSeconds() < 10 ? '0' : '') + currentdate.getSeconds();
             var tmp_card = new App.Card();
             tmp_card.set('is_offline', true);
-            tmp_card.set('position', list_cards.length + 1);
+            var tmp_position;
+            _.each(list_cards.models, function(card) {
+                if (_.isUndefined(tmp_position)) {
+                    tmp_position = parseFloat(card.attributes.position);
+                } else if (tmp_position < parseFloat(card.attributes.position)) {
+                    tmp_position = parseFloat(card.attributes.position);
+                }
+            });
+            tmp_card.set('position', tmp_position + 1);
             tmp_card.set('checklist_item_completed_count', 0);
             if (!_.isEmpty(data.cards_checklist_item_count)) {
                 tmp_card.set('checklist_item_count', parseInt(data.cards_checklist_item_count));
@@ -1964,7 +1972,7 @@ App.ListView = Backbone.View.extend({
                     }
                     var list = App.boards.get(card.attributes.board_id).lists.get(card.attributes.list_id);
                     if (!_.isUndefined(list)) {
-                        list.set('card_count', parseInt(cards_count) + 1);
+                        list.set('card_count', parseInt(response.list.card_count));
                     }
                     _(function() {
                         if (!_.isUndefined(APPS) && APPS !== null && !_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null && $.inArray('r_agile_wip', APPS.enabled_apps) !== -1) {

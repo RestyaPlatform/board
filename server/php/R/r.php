@@ -4746,7 +4746,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 $qry_val_arr = array(
                     $r_post['list_id']
                 );
-                $s_result = pg_query_params($db_lnk, 'SELECT name FROM lists WHERE id = $1', $qry_val_arr);
+                $s_result = pg_query_params($db_lnk, 'SELECT name, card_count FROM lists WHERE id = $1', $qry_val_arr);
                 $list = pg_fetch_assoc($s_result);
                 $foreign_ids['board_id'] = $r_post['board_id'];
                 $foreign_ids['card_id'] = $response['id'];
@@ -5037,6 +5037,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                         $response['cards_custom_fields'][] = $custom_field;
                     }
                 }
+                $response['list']['card_count'] = $list['card_count'];
             }
         }
         echo json_encode($response);

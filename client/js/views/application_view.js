@@ -696,6 +696,8 @@ App.ApplicationView = Backbone.View.extend({
             if (_.isUndefined(App.boards.get(parseInt(page.id)))) {
                 load_boards = true;
             }
+        } else if (_.isUndefined(App.boards) && page.model == 'boards_view') {
+            load_boards = true;
         }
         var fragment = Backbone.history.fragment.split('?');
         fragment = fragment['0'];

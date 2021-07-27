@@ -290,12 +290,12 @@ App.FooterView = Backbone.View.extend({
                     });
                     if ($('#js-card-' + card.id).length !== 0) {
                         if (filter) {
-                            $('#js-card-' + card.id).css('display', 'none');
+                            $('#js-card-' + card.id).addClass('hide');
                         } else {
                             if (!_.isUndefined(get_match_url['3']) && get_match_url['3'].indexOf("list") !== -1) {
-                                $('#js-card-' + card.id).css('display', 'table-row');
+                                $('#js-card-' + card.id).removeClass('hide');
                             } else {
-                                $('#js-card-' + card.id).css('display', 'block');
+                                $('#js-card-' + card.id).removeClass('hide');
                             }
                         }
                     }
