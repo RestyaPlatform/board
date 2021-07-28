@@ -1503,7 +1503,7 @@
             find "$dir/client/apps" -type f -exec chmod 644 {} \;
             chmod 0777 $dir/client/apps/**/*.json
 		}
-		upgrade-0.6.9-0.7(){
+		upgrade-0.6.9-1.7(){
 			if [ -d "$dir/client/apps/r_togetherjs" ]; then
 				rm -rf $dir/client/apps/r_togetherjs/
 			fi
@@ -1671,9 +1671,9 @@
 				then
 					upgrade+=("upgrade-0.6.8-0.6.9")
 				fi	
-				if [[ $version < "v0.7" ]];
+				if [[ $version < "v1.7" ]];
 				then
-					upgrade+=("upgrade-0.6.9-0.7")
+					upgrade+=("upgrade-0.6.9-1.7")
 				fi
 				# use for loop to read all values and indexes
 				for i in "${upgrade[@]}"
