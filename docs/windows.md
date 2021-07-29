@@ -60,7 +60,7 @@ Please skip the steps below, if you have already installed XAMPP server, Postgre
     
 ## Manual Installation of Restyaboard in XAMPP
 
-1.  Download script from `https://github.com/RestyaPlatform/board/releases`, and choose the latest version. e.g., `https://github.com/RestyaPlatform/board/releases/download/v0.6.9/board-v0.6.9.zip`
+1.  Download script from `https://github.com/RestyaPlatform/board/releases`, and choose the latest version. e.g., `https://github.com/RestyaPlatform/board/releases/download/v1.7/board-v1.7.zip`
 2.  Extract the zip into your apache server root folder. e.g., `C:\xampp\htdocs\`
 3.  Create database using the command
     
