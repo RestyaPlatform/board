@@ -1521,13 +1521,14 @@
 			echo "Applying permission..."
 			useradd restyaboard
 			passwd restyaboard
+			PHP_VERSION=$(php --version | head -n 1 | cut -d " " -f 2 | grep --only-matching --perl-regexp "^\\d\.\\d+")
 			if ([ "$OS_REQUIREMENT" = "Ubuntu" ] || [ "$OS_REQUIREMENT" = "Debian" ] || [ "$OS_REQUIREMENT" = "LinuxMint" ] || [ "$OS_REQUIREMENT" = "Raspbian" ])
 			then
 				user www-data;
 				usermod -a -G restyaboard www-data
-				sed -i "s/\[www\]/[restyaboard] group=restyaboard/g" /etc/php/7.4/fpm/pool.d/www.conf
-				sed -i "s/user\s*=\s*www-data/user = restyaboard/g" /etc/php/7.4/fpm/pool.d/www.conf
-				sed -i "0,/group\s*=\s*www-data/s//group = restyaboard/g" /etc/php/7.4/fpm/pool.d/www.conf
+				sed -i "s/\[www\]/[restyaboard] group=restyaboard/g" /etc/php/${PHP_VERSION}/fpm/pool.d/www.conf
+				sed -i "s/user\s*=\s*www-data/user = restyaboard/g" /etc/php/${PHP_VERSION}/fpm/pool.d/www.conf
+				sed -i "0,/group\s*=\s*www-data/s//group = restyaboard/g" /etc/php/${PHP_VERSION}/fpm/pool.d/www.conf
 			else
 				user nginx;
 				usermod -a -G restyaboard nginx
