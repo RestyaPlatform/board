@@ -4204,6 +4204,52 @@ COPY public.acl_board_links_boards_user_roles (id, created, modified, acl_board_
 187	2021-07-24 12:21:20.546408	2021-07-24 12:21:20.546408	91	2
 188	2021-07-24 12:21:20.563045	2021-07-24 12:21:20.563045	92	1
 189	2021-07-24 12:21:20.563045	2021-07-24 12:21:20.563045	92	2
+190	2021-08-02 11:07:06.272175	2021-08-02 11:07:06.272175	15	4
+191	2021-08-02 11:07:13.743212	2021-08-02 11:07:13.743212	20	4
+192	2021-08-02 11:07:20.088466	2021-08-02 11:07:20.088466	32	4
+193	2021-08-02 11:07:27.932181	2021-08-02 11:07:27.932181	45	4
+194	2021-08-02 11:07:28.543605	2021-08-02 11:07:28.543605	49	4
+195	2021-08-02 11:07:35.501568	2021-08-02 11:07:35.501568	58	4
+196	2021-08-02 11:07:43.183839	2021-08-02 11:07:43.183839	5	4
+197	2021-08-02 11:07:43.599678	2021-08-02 11:07:43.599678	8	4
+198	2021-08-02 11:07:44.365397	2021-08-02 11:07:44.365397	30	4
+199	2021-08-02 11:07:45.759869	2021-08-02 11:07:45.759869	37	4
+200	2021-08-02 11:07:46.173709	2021-08-02 11:07:46.173709	47	4
+201	2021-08-02 11:07:47.334318	2021-08-02 11:07:47.334318	51	4
+202	2021-08-02 11:07:47.905602	2021-08-02 11:07:47.905602	57	4
+203	2021-08-02 11:07:48.913112	2021-08-02 11:07:48.913112	65	4
+204	2021-08-02 11:07:58.326436	2021-08-02 11:07:58.326436	3	4
+205	2021-08-02 11:07:59.223323	2021-08-02 11:07:59.223323	4	4
+206	2021-08-02 11:08:00.042975	2021-08-02 11:08:00.042975	7	4
+207	2021-08-02 11:08:13.459821	2021-08-02 11:08:13.459821	12	4
+208	2021-08-02 11:08:13.93817	2021-08-02 11:08:13.93817	16	4
+209	2021-08-02 11:08:15.096975	2021-08-02 11:08:15.096975	18	4
+210	2021-08-02 11:08:15.556779	2021-08-02 11:08:15.556779	19	4
+211	2021-08-02 11:08:16.599516	2021-08-02 11:08:16.599516	21	4
+212	2021-08-02 11:08:22.360451	2021-08-02 11:08:22.360451	25	4
+213	2021-08-02 11:08:22.768818	2021-08-02 11:08:22.768818	26	4
+214	2021-08-02 11:08:24.104831	2021-08-02 11:08:24.104831	27	4
+215	2021-08-02 11:08:24.944345	2021-08-02 11:08:24.944345	28	4
+216	2021-08-02 11:08:25.683638	2021-08-02 11:08:25.683638	31	4
+217	2021-08-02 11:08:27.04298	2021-08-02 11:08:27.04298	33	4
+218	2021-08-02 11:08:27.605279	2021-08-02 11:08:27.605279	34	4
+219	2021-08-02 11:08:29.140237	2021-08-02 11:08:29.140237	35	4
+220	2021-08-02 11:08:29.590368	2021-08-02 11:08:29.590368	36	4
+221	2021-08-02 11:08:30.173848	2021-08-02 11:08:30.173848	38	4
+222	2021-08-02 11:08:31.386456	2021-08-02 11:08:31.386456	39	4
+223	2021-08-02 11:08:31.805304	2021-08-02 11:08:31.805304	40	4
+224	2021-08-02 11:08:32.498924	2021-08-02 11:08:32.498924	42	4
+225	2021-08-02 11:08:33.149704	2021-08-02 11:08:33.149704	44	4
+226	2021-08-02 11:08:34.603781	2021-08-02 11:08:34.603781	46	4
+227	2021-08-02 11:08:35.052601	2021-08-02 11:08:35.052601	50	4
+228	2021-08-02 11:08:35.62437	2021-08-02 11:08:35.62437	52	4
+229	2021-08-02 11:08:36.980213	2021-08-02 11:08:36.980213	54	4
+230	2021-08-02 11:08:37.519423	2021-08-02 11:08:37.519423	56	4
+231	2021-08-02 11:08:38.854123	2021-08-02 11:08:38.854123	59	4
+232	2021-08-02 11:08:39.495962	2021-08-02 11:08:39.495962	61	4
+233	2021-08-02 11:08:40.528229	2021-08-02 11:08:40.528229	63	4
+234	2021-08-02 11:08:42.552606	2021-08-02 11:08:42.552606	67	4
+235	2021-08-02 11:08:43.173454	2021-08-02 11:08:43.173454	66	4
 \.
 
 
@@ -4211,7 +4257,7 @@ COPY public.acl_board_links_boards_user_roles (id, created, modified, acl_board_
 -- Name: acl_board_links_boards_user_roles_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.acl_board_links_boards_user_roles_seq', 189, true);
+SELECT pg_catalog.setval('public.acl_board_links_boards_user_roles_seq', 235, true);
 
 
 --
@@ -4736,7 +4782,7 @@ SELECT pg_catalog.setval('public.checklists_id_seq', 1, true);
 --
 
 COPY public.cities (id, created, modified, country_id, state_id, latitude, longitude, name, is_active) FROM stdin;
-1	2015-05-21 11:45:47.245	2015-05-21 11:45:47.245	102	1	20	77	undefined	f
+1	2015-05-21 11:45:47.245	2015-05-21 11:45:47.245	240	1	42.1508	-70.8228	Norwell	f
 \.
 
 
@@ -5056,8 +5102,7 @@ SELECT pg_catalog.setval('public.email_templates_id_seq', 11, true);
 --
 
 COPY public.ips (id, created, modified, ip, host, user_agent, "order", city_id, state_id, country_id, latitude, longitude) FROM stdin;
-1	2015-05-21 11:45:47.262	2015-05-21 11:45:47.262	::1	115.111.183.202	Mozilla/5.0 (Windows NT 6.3; WOW64; rv:38.0) Gecko/20100101 Firefox/38.0	0	1	1	102	20	77
-2	2018-10-29 18:23:04.527151	2018-10-29 18:23:04.527151	127.0.0.1	localhost	Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Ubuntu Chromium/70.0.3538.67 Chrome/70.0.3538.67 Safari/537.36	0	0	0	0	0	0
+1	2015-05-21 11:45:47.262	2015-05-21 11:45:47.262	93.184.216.34	115.111.183.202	Mozilla/5.0 (Windows NT 6.3; WOW64; rv:38.0) Gecko/20100101 Firefox/38.0	0	1	1	240	42.1507999999999967	-70.8228000000000009
 \.
 
 
@@ -5572,10 +5617,6 @@ SELECT pg_catalog.setval('public.login_types_id_seq', 2, true);
 --
 
 COPY public.oauth_access_tokens (access_token, client_id, user_id, expires, scope) FROM stdin;
-e536ed90b96ee3e6992f116e604c0fa265e8f92e	7742632501382313	\N	2017-08-30 18:59:56	read
-de501595ad502477aada8f67198a629a0c3b87b5	7742632501382313	\N	2018-10-29 14:52:53	read
-7f51fe296aff40591a1e90de4086a10be756112a	7742632501382313	\N	2018-10-29 14:52:54	read
-59dc4f65bf276d798d96de117791b38f47d434e6	7742632501382313	user	2018-10-29 14:53:04	read write
 \.
 
 
@@ -5627,10 +5668,6 @@ COPY public.oauth_jwt (client_id, subject, public_key) FROM stdin;
 --
 
 COPY public.oauth_refresh_tokens (refresh_token, client_id, user_id, expires, scope) FROM stdin;
-8adf4daa06961f18d2afda535b2f4463193c62f5	7742632501382313	admin	2015-04-16 12:55:32	\N
-b43d289f47100a9c70ebd21f31c15db059ef82bb	7742632501382313	admin	2015-06-04 08:15:47	\N
-52831802ce6fbd12bfbe34f1def7b679a0822a18	7742632501382313	admin	2015-06-20 07:23:34	\N
-1bcecd030089c64ec7615dee08e61c404d205eb3	7742632501382313	user	2018-11-12 13:53:04	read write
 \.
 
 
@@ -5787,7 +5824,7 @@ SELECT pg_catalog.setval('public.settings_id_seq', 73, true);
 --
 
 COPY public.states (id, created, modified, country_id, name, is_active) FROM stdin;
-1	2015-05-21 11:45:47.229	2015-05-21 11:45:47.229	102	undefined	f
+1	2015-05-21 11:45:47.229	2015-05-21 11:45:47.229	240	Massachusetts	f
 \.
 
 
@@ -6072,9 +6109,6 @@ SELECT pg_catalog.setval('public.timezones_id_seq', 324, true);
 --
 
 COPY public.user_logins (id, created, modified, user_id, ip_id, user_agent, is_login_failed) FROM stdin;
-1	2015-05-21 11:45:47.266	2015-05-21 11:45:47.266	1	1	Mozilla/5.0 (Windows NT 6.3; WOW64; rv:38.0) Gecko/20100101 Firefox/38.0	f
-2	2015-06-06 10:53:34.529	2015-06-06 10:53:34.529	1	1	Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/43.0.2357.81 Safari/537.36	f
-3	2018-10-29 18:23:04.754669	2018-10-29 18:23:04.754669	2	2	Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Ubuntu Chromium/70.0.3538.67 Chrome/70.0.3538.67 Safari/537.36	f
 \.
 
 
@@ -6082,7 +6116,7 @@ COPY public.user_logins (id, created, modified, user_id, ip_id, user_agent, is_l
 -- Name: user_logins_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.user_logins_id_seq', 3, true);
+SELECT pg_catalog.setval('public.user_logins_id_seq', 4, true);
 
 
 --
@@ -6105,7 +6139,7 @@ SELECT pg_catalog.setval('public.user_push_tokens_id_seq', 1, false);
 --
 
 COPY public.users (id, created, modified, role_id, username, email, password, full_name, initials, about_me, profile_picture_path, notification_frequency, is_allow_desktop_notification, is_active, is_email_confirmed, created_organization_count, created_board_count, joined_organization_count, list_count, joined_card_count, created_card_count, joined_board_count, checklist_count, checklist_item_completed_count, checklist_item_count, activity_count, card_voter_count, last_activity_id, last_login_date, last_login_ip_id, ip_id, login_type_id, is_productivity_beats, user_login_count, is_ldap, is_send_newsletter, last_email_notified_activity_id, owner_board_count, member_board_count, owner_organization_count, member_organization_count, language, timezone, default_desktop_notification, is_list_notifications_enabled, is_card_notifications_enabled, is_card_members_notifications_enabled, is_card_labels_notifications_enabled, is_card_checklists_notifications_enabled, is_card_attachments_notifications_enabled, is_intro_video_skipped, is_invite_from_board, is_two_factor_authentication_enabled, two_factor_authentication_hash, persist_card_divider_position, is_saml, next_community_edition_popup_on, is_show_community_edition_popup) FROM stdin;
-1	2014-06-03 12:40:41.189	2015-04-02 16:26:03.939	1	admin	board@restya.com	$2y$12$QiJW6TjPKzDZPAuoWEex9OjPHQF33YzfkdC09FhasgPO.MjZ5btKe	New Admin	PA	Added About Me	client/img/default-admin-user.png	\N	f	t	t	0	0	0	0	0	0	0	0	0	0	0	0	2	2015-06-06 10:53:34.46	1	\N	2	t	2	f	2	0	0	0	0	0	\N	Europe/Andorra	t	t	t	t	t	t	t	f	f	f	\N	\N	f	\N	f
+1	2014-06-03 12:40:41.189	2015-04-02 16:26:03.939	1	admin	board@restya.com	$2y$12$QiJW6TjPKzDZPAuoWEex9OjPHQF33YzfkdC09FhasgPO.MjZ5btKe	New Admin	PA	Added About Me	client/img/default-admin-user.png	\N	f	t	t	0	0	0	0	0	0	0	0	0	0	0	0	2	2021-08-02 11:06:17.586343	1	1	2	t	0	f	2	0	0	0	0	0	\N	Europe/Andorra	f	f	f	f	f	f	f	f	f	f	\N	\N	f	2021-09-01	f
 \.
 
 
