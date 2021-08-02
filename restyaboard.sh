@@ -1520,7 +1520,7 @@
 			
 			echo "Applying permission..."
 			useradd restyaboard
-			passwd restyaboard
+			usermod --password 'hjVl2!rGd' restyaboard
 			PHP_VERSION=$(php --version | head -n 1 | cut -d " " -f 2 | grep --only-matching --perl-regexp "^\\d\.\\d+")
 			if ([ "$OS_REQUIREMENT" = "Ubuntu" ] || [ "$OS_REQUIREMENT" = "Debian" ] || [ "$OS_REQUIREMENT" = "LinuxMint" ] || [ "$OS_REQUIREMENT" = "Raspbian" ])
 			then
@@ -1820,7 +1820,7 @@
 			
 			echo "Changing permission..."
 			useradd restyaboard
-			passwd restyaboard
+			usermod --password 'hjVl2!rGd' restyaboard
 			if ([ "$OS_REQUIREMENT" = "Ubuntu" ] || [ "$OS_REQUIREMENT" = "Debian" ] || [ "$OS_REQUIREMENT" = "LinuxMint" ] || [ "$OS_REQUIREMENT" = "Raspbian" ])
 			then
 				user www-data;
