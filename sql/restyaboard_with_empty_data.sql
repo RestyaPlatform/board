@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 9.6.18
--- Dumped by pg_dump version 9.6.18
+-- Dumped from database version 9.6.22
+-- Dumped by pg_dump version 9.6.22
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -1572,6 +1572,8 @@ CREATE TABLE public.users (
     two_factor_authentication_hash character varying(16),
     persist_card_divider_position character varying(255),
     is_saml boolean DEFAULT false NOT NULL,
+    next_community_edition_popup_on date,
+    is_show_community_edition_popup boolean DEFAULT false NOT NULL,
     CONSTRAINT password CHECK ((char_length((password)::text) > 0)),
     CONSTRAINT username CHECK ((char_length((username)::text) > 0))
 );
@@ -2090,7 +2092,7 @@ CREATE TABLE public.card_attachments (
     modified timestamp without time zone NOT NULL,
     card_id bigint,
     name character varying(255) NOT NULL,
-    path character varying(255) NOT NULL,
+    path character varying(255),
     list_id bigint,
     board_id bigint DEFAULT 1,
     mimetype character varying(255),
@@ -3636,6 +3638,71 @@ CREATE VIEW public.user_logins_listing AS
 
 
 --
+-- Name: user_push_tokens_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.user_push_tokens_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: user_push_tokens; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.user_push_tokens (
+    id bigint DEFAULT nextval('public.user_push_tokens_id_seq'::regclass) NOT NULL,
+    created timestamp without time zone NOT NULL,
+    modified timestamp without time zone NOT NULL,
+    user_id bigint DEFAULT (0)::bigint NOT NULL,
+    token character varying(255) NOT NULL,
+    device_serial character varying(255) DEFAULT NULL::character varying,
+    device_modal character varying(255) NOT NULL,
+    device_brand character varying(255) NOT NULL,
+    device_manufacturer character varying(255) NOT NULL,
+    device_version character varying(255) NOT NULL,
+    app_version character varying(255) NOT NULL,
+    device_os character varying(255) NOT NULL,
+    appname character varying(255) NOT NULL,
+    last_push_notified timestamp without time zone,
+    is_active boolean DEFAULT true NOT NULL
+);
+
+
+--
+-- Name: user_push_tokens_listing; Type: VIEW; Schema: public; Owner: -
+--
+
+CREATE VIEW public.user_push_tokens_listing AS
+ SELECT user_push_tokens.id,
+    to_char(user_push_tokens.created, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS created,
+    to_char(user_push_tokens.modified, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS modified,
+    user_push_tokens.user_id,
+    user_push_tokens.token,
+    user_push_tokens.device_serial,
+    user_push_tokens.device_modal,
+    user_push_tokens.device_brand,
+    user_push_tokens.device_manufacturer,
+    user_push_tokens.device_version,
+    user_push_tokens.app_version,
+    user_push_tokens.device_os,
+    user_push_tokens.appname,
+    users.username,
+    users.email,
+    users.role_id,
+    users.profile_picture_path,
+    users.initials,
+    users.full_name,
+    to_char(user_push_tokens.last_push_notified, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS last_push_notified,
+    (user_push_tokens.is_active)::integer AS is_active
+   FROM (public.user_push_tokens
+     LEFT JOIN public.users ON ((users.id = user_push_tokens.user_id)));
+
+
+--
 -- Name: users_cards_listing; Type: VIEW; Schema: public; Owner: -
 --
 
@@ -3769,7 +3836,9 @@ CREATE VIEW public.users_listing AS
     users.is_invite_from_board,
     users.is_two_factor_authentication_enabled,
     users.persist_card_divider_position,
-    (users.is_saml)::integer AS is_saml
+    (users.is_saml)::integer AS is_saml,
+    users.next_community_edition_popup_on,
+    users.is_show_community_edition_popup
    FROM (((((((((public.users users
      LEFT JOIN public.ips i ON ((i.id = users.ip_id)))
      LEFT JOIN public.cities rci ON ((rci.id = i.city_id)))
@@ -3928,31 +3997,31 @@ COPY public.acl_board_links (id, created, modified, name, url, method, slug, gro
 65	2019-04-19 19:34:07.684147	2019-04-19 19:34:07.684147	Get Board Lists	/boards/?/lists	GET	get_board_lists	3	0
 66	2019-04-19 19:34:07.750578	2019-04-19 19:34:07.750578	Get Board Lists	/boards/?/lists/?/cards/?	GET	view_card_isting	4	0
 67	2019-04-19 19:34:07.792192	2019-04-19 19:34:07.792192	Boards labels listing	/boards/?/labels	GET	view_board_label_isting	4	0
-68	2021-01-07 18:56:35.929284	2021-01-07 18:56:35.929284	Title	/boards/?/lists/?/cards	GET	get_card_title	5	0
-69	2021-01-07 18:56:35.929284	2021-01-07 18:56:35.929284	Description	/boards/?/lists/?/cards	GET	get_card_description	5	0
-70	2021-01-07 18:56:35.929284	2021-01-07 18:56:35.929284	Due Date	/boards/?/lists/?/cards	GET	get_card_due_date	5	0
-71	2021-01-07 18:56:35.929284	2021-01-07 18:56:35.929284	Member	/boards/?/lists/?/cards	GET	get_card_member	5	0
-72	2021-01-07 18:56:35.929284	2021-01-07 18:56:35.929284	Labels	/boards/?/lists/?/cards	GET	get_card_labels	5	0
-73	2021-01-07 18:56:35.929284	2021-01-07 18:56:35.929284	Vote	/boards/?/lists/?/cards	GET	get_card_vote	5	0
-74	2021-01-07 18:56:35.929284	2021-01-07 18:56:35.929284	Color	/boards/?/lists/?/cards	GET	get_card_color	5	0
-75	2021-01-07 18:56:35.929284	2021-01-07 18:56:35.929284	Move	/boards/?/lists/?/cards/?	PUT	move_card	5	0
-76	2021-01-07 18:56:35.929284	2021-01-07 18:56:35.929284	Copy	/boards/?/lists/?/cards/?/copy	POST	copy_cards	5	0
-77	2021-01-07 18:56:35.929284	2021-01-07 18:56:35.929284	Subscribe	/boards/?/lists/?/cards/?/card_subscribers	POST	subscribe_cards	5	0
-78	2021-01-07 18:56:35.929284	2021-01-07 18:56:35.929284	Archive	/boards/?/lists/?/cards/?	PUT	archive_cards	5	0
-79	2021-01-07 18:56:35.929284	2021-01-07 18:56:35.929284	Delete	/boards/?/lists/?/cards/?	PUT	delete_cards	5	0
-80	2021-01-07 18:56:35.929284	2021-01-07 18:56:35.929284	Attachment	/boards/?/lists/?/cards	GET	get_card_attachment	5	0
-81	2021-01-07 18:56:35.929284	2021-01-07 18:56:35.929284	Attachment Downloader	/boards/?/lists/?/cards	GET	get_attachment_downloader	5	0
-82	2021-01-07 18:56:35.929284	2021-01-07 18:56:35.929284	Activity Feed - Display	/boards/?/lists/?/cards/?/activities	GET	view_card_activity_feed	5	0
-83	2021-01-07 18:56:35.929284	2021-01-07 18:56:35.929284	Comment	/boards/?/lists/?/cards/?/comments	GET	get_card_comments	5	0
-84	2021-01-07 18:56:35.929284	2021-01-07 18:56:35.929284	Canned Response	/boards/?/lists/?/cards	GET	get_canned_response	5	0
-85	2021-01-07 18:56:35.929284	2021-01-07 18:56:35.929284	Checklist	/boards/?/lists/?/cards	GET	get_card_checklist	5	0
-86	2021-01-07 18:56:35.929284	2021-01-07 18:56:35.929284	Checklist Item	/boards/?/lists/?/cards	GET	get_card_checklist_item	5	0
-87	2021-01-07 18:56:35.929284	2021-01-07 18:56:35.929284	Card Template	/boards/?/lists/?/cards	GET	get_card_template	5	0
-88	2021-01-07 18:56:35.929284	2021-01-07 18:56:35.929284	Add Custom Field	/boards/?/lists/?/cards	GET	get_custom_field	5	0
-89	2021-01-07 18:56:35.929284	2021-01-07 18:56:35.929284	Estimated Time Tracking	/boards/?/lists/?/cards	GET	get_estimated_time	5	0
-90	2021-01-07 18:56:35.929284	2021-01-07 18:56:35.929284	Gantt View	/boards/?/lists/?/cards	GET	get_gantt_view	5	0
-91	2021-01-07 18:56:35.929284	2021-01-07 18:56:35.929284	Spent Time Tracking	/boards/?/lists/?/cards	GET	get_spent_time	5	0
-92	2021-01-07 18:56:35.954343	2021-01-07 18:56:35.954343	Upload third party background image to board	/boards/?	PUT	add_third_party_background	2	0
+68	2021-07-24 12:21:20.529557	2021-07-24 12:21:20.529557	Title	/boards/?/lists/?/cards	GET	get_card_title	5	0
+69	2021-07-24 12:21:20.529557	2021-07-24 12:21:20.529557	Description	/boards/?/lists/?/cards	GET	get_card_description	5	0
+70	2021-07-24 12:21:20.529557	2021-07-24 12:21:20.529557	Due Date	/boards/?/lists/?/cards	GET	get_card_due_date	5	0
+71	2021-07-24 12:21:20.529557	2021-07-24 12:21:20.529557	Member	/boards/?/lists/?/cards	GET	get_card_member	5	0
+72	2021-07-24 12:21:20.529557	2021-07-24 12:21:20.529557	Labels	/boards/?/lists/?/cards	GET	get_card_labels	5	0
+73	2021-07-24 12:21:20.529557	2021-07-24 12:21:20.529557	Vote	/boards/?/lists/?/cards	GET	get_card_vote	5	0
+74	2021-07-24 12:21:20.529557	2021-07-24 12:21:20.529557	Color	/boards/?/lists/?/cards	GET	get_card_color	5	0
+75	2021-07-24 12:21:20.529557	2021-07-24 12:21:20.529557	Move	/boards/?/lists/?/cards/?	PUT	move_card	5	0
+76	2021-07-24 12:21:20.529557	2021-07-24 12:21:20.529557	Copy	/boards/?/lists/?/cards/?/copy	POST	copy_cards	5	0
+77	2021-07-24 12:21:20.529557	2021-07-24 12:21:20.529557	Subscribe	/boards/?/lists/?/cards/?/card_subscribers	POST	subscribe_cards	5	0
+78	2021-07-24 12:21:20.529557	2021-07-24 12:21:20.529557	Archive	/boards/?/lists/?/cards/?	PUT	archive_cards	5	0
+79	2021-07-24 12:21:20.529557	2021-07-24 12:21:20.529557	Delete	/boards/?/lists/?/cards/?	PUT	delete_cards	5	0
+80	2021-07-24 12:21:20.529557	2021-07-24 12:21:20.529557	Attachment	/boards/?/lists/?/cards	GET	get_card_attachment	5	0
+81	2021-07-24 12:21:20.529557	2021-07-24 12:21:20.529557	Attachment Downloader	/boards/?/lists/?/cards	GET	get_attachment_downloader	5	0
+82	2021-07-24 12:21:20.529557	2021-07-24 12:21:20.529557	Activity Feed - Display	/boards/?/lists/?/cards/?/activities	GET	view_card_activity_feed	5	0
+83	2021-07-24 12:21:20.529557	2021-07-24 12:21:20.529557	Comment	/boards/?/lists/?/cards/?/comments	GET	get_card_comments	5	0
+84	2021-07-24 12:21:20.529557	2021-07-24 12:21:20.529557	Canned Response	/boards/?/lists/?/cards	GET	get_canned_response	5	0
+85	2021-07-24 12:21:20.529557	2021-07-24 12:21:20.529557	Checklist	/boards/?/lists/?/cards	GET	get_card_checklist	5	0
+86	2021-07-24 12:21:20.529557	2021-07-24 12:21:20.529557	Checklist Item	/boards/?/lists/?/cards	GET	get_card_checklist_item	5	0
+87	2021-07-24 12:21:20.529557	2021-07-24 12:21:20.529557	Card Template	/boards/?/lists/?/cards	GET	get_card_template	5	0
+88	2021-07-24 12:21:20.529557	2021-07-24 12:21:20.529557	Add Custom Field	/boards/?/lists/?/cards	GET	get_custom_field	5	0
+89	2021-07-24 12:21:20.529557	2021-07-24 12:21:20.529557	Estimated Time Tracking	/boards/?/lists/?/cards	GET	get_estimated_time	5	0
+90	2021-07-24 12:21:20.529557	2021-07-24 12:21:20.529557	Gantt View	/boards/?/lists/?/cards	GET	get_gantt_view	5	0
+91	2021-07-24 12:21:20.529557	2021-07-24 12:21:20.529557	Spent Time Tracking	/boards/?/lists/?/cards	GET	get_spent_time	5	0
+92	2021-07-24 12:21:20.554838	2021-07-24 12:21:20.554838	Upload third party background image to board	/boards/?	PUT	add_third_party_background	2	0
 \.
 
 
@@ -4085,102 +4154,102 @@ COPY public.acl_board_links_boards_user_roles (id, created, modified, acl_board_
 137	2019-04-19 19:34:07.775468	2019-04-19 19:34:07.775468	66	2
 138	2019-04-19 19:34:07.808949	2019-04-19 19:34:07.808949	67	1
 139	2019-04-19 19:34:07.817227	2019-04-19 19:34:07.817227	67	2
-140	2020-08-11 13:04:01.749072	2020-08-11 13:04:01.749072	15	4
-141	2020-08-11 13:04:02.431161	2020-08-11 13:04:02.431161	20	4
-142	2020-08-11 13:04:04.91128	2020-08-11 13:04:04.91128	32	4
-143	2020-08-11 13:04:06.326835	2020-08-11 13:04:06.326835	45	4
-144	2020-08-11 13:04:17.043455	2020-08-11 13:04:17.043455	49	4
-145	2020-08-11 13:04:19.942915	2020-08-11 13:04:19.942915	58	4
-146	2020-08-11 13:04:26.627172	2020-08-11 13:04:26.627172	5	4
-147	2020-08-11 13:04:27.713814	2020-08-11 13:04:27.713814	8	4
-148	2020-08-11 13:04:28.958727	2020-08-11 13:04:28.958727	30	4
-149	2020-08-11 13:04:30.047113	2020-08-11 13:04:30.047113	37	4
-150	2020-08-11 13:04:31.738373	2020-08-11 13:04:31.738373	47	4
-151	2020-08-11 13:04:32.356364	2020-08-11 13:04:32.356364	51	4
-152	2020-08-11 13:04:34.395114	2020-08-11 13:04:34.395114	57	4
-153	2020-08-11 13:04:35.603125	2020-08-11 13:04:35.603125	65	4
-154	2020-08-11 13:04:38.131038	2020-08-11 13:04:38.131038	3	4
-155	2020-08-11 13:04:39.482909	2020-08-11 13:04:39.482909	4	4
-156	2020-08-11 13:04:40.354651	2020-08-11 13:04:40.354651	7	4
-157	2020-08-11 13:04:41.739465	2020-08-11 13:04:41.739465	12	4
-158	2020-08-11 13:04:42.364583	2020-08-11 13:04:42.364583	16	4
-159	2020-08-11 13:04:43.911053	2020-08-11 13:04:43.911053	18	4
-160	2020-08-11 13:04:44.395432	2020-08-11 13:04:44.395432	19	4
-161	2020-08-11 13:04:45.678792	2020-08-11 13:04:45.678792	21	4
-162	2020-08-11 13:04:47.306594	2020-08-11 13:04:47.306594	25	4
-163	2020-08-11 13:04:48.330679	2020-08-11 13:04:48.330679	26	4
-164	2020-08-11 13:04:49.631274	2020-08-11 13:04:49.631274	27	4
-165	2020-08-11 13:04:51.17602	2020-08-11 13:04:51.17602	28	4
-166	2020-08-11 13:04:51.666659	2020-08-11 13:04:51.666659	31	4
-167	2020-08-11 13:04:52.640803	2020-08-11 13:04:52.640803	33	4
-168	2020-08-11 13:04:54.059624	2020-08-11 13:04:54.059624	34	4
-169	2020-08-11 13:04:54.978907	2020-08-11 13:04:54.978907	35	4
-170	2020-08-11 13:04:55.465016	2020-08-11 13:04:55.465016	36	4
-171	2020-08-11 13:04:58.214274	2020-08-11 13:04:58.214274	38	4
-172	2020-08-11 13:04:59.339038	2020-08-11 13:04:59.339038	39	4
-173	2020-08-11 13:04:59.993509	2020-08-11 13:04:59.993509	40	4
-174	2020-08-11 13:05:01.144169	2020-08-11 13:05:01.144169	42	4
-175	2020-08-11 13:05:02.667371	2020-08-11 13:05:02.667371	44	4
-176	2020-08-11 13:05:03.260447	2020-08-11 13:05:03.260447	46	4
-177	2020-08-11 13:05:04.202755	2020-08-11 13:05:04.202755	50	4
-178	2020-08-11 13:05:05.266915	2020-08-11 13:05:05.266915	52	4
-179	2020-08-11 13:05:06.99149	2020-08-11 13:05:06.99149	54	4
-180	2020-08-11 13:05:07.762718	2020-08-11 13:05:07.762718	56	4
-181	2020-08-11 13:05:08.825545	2020-08-11 13:05:08.825545	59	4
-182	2020-08-11 13:05:10.643089	2020-08-11 13:05:10.643089	61	4
-183	2020-08-11 13:05:11.6761	2020-08-11 13:05:11.6761	63	4
-184	2020-08-11 13:05:13.091307	2020-08-11 13:05:13.091307	66	4
-185	2020-08-11 13:05:13.994899	2020-08-11 13:05:13.994899	67	4
-186	2021-01-07 18:56:35.945819	2021-01-07 18:56:35.945819	68	1
-187	2021-01-07 18:56:35.945819	2021-01-07 18:56:35.945819	68	2
-188	2021-01-07 18:56:35.945819	2021-01-07 18:56:35.945819	69	1
-189	2021-01-07 18:56:35.945819	2021-01-07 18:56:35.945819	69	2
-190	2021-01-07 18:56:35.945819	2021-01-07 18:56:35.945819	70	1
-191	2021-01-07 18:56:35.945819	2021-01-07 18:56:35.945819	70	2
-192	2021-01-07 18:56:35.945819	2021-01-07 18:56:35.945819	71	1
-193	2021-01-07 18:56:35.945819	2021-01-07 18:56:35.945819	71	2
-194	2021-01-07 18:56:35.945819	2021-01-07 18:56:35.945819	72	1
-195	2021-01-07 18:56:35.945819	2021-01-07 18:56:35.945819	72	2
-196	2021-01-07 18:56:35.945819	2021-01-07 18:56:35.945819	73	1
-197	2021-01-07 18:56:35.945819	2021-01-07 18:56:35.945819	73	2
-198	2021-01-07 18:56:35.945819	2021-01-07 18:56:35.945819	80	1
-199	2021-01-07 18:56:35.945819	2021-01-07 18:56:35.945819	80	2
-200	2021-01-07 18:56:35.945819	2021-01-07 18:56:35.945819	74	1
-201	2021-01-07 18:56:35.945819	2021-01-07 18:56:35.945819	74	2
-202	2021-01-07 18:56:35.945819	2021-01-07 18:56:35.945819	85	1
-203	2021-01-07 18:56:35.945819	2021-01-07 18:56:35.945819	85	2
-204	2021-01-07 18:56:35.945819	2021-01-07 18:56:35.945819	86	1
-205	2021-01-07 18:56:35.945819	2021-01-07 18:56:35.945819	86	2
-206	2021-01-07 18:56:35.945819	2021-01-07 18:56:35.945819	75	1
-207	2021-01-07 18:56:35.945819	2021-01-07 18:56:35.945819	75	2
-208	2021-01-07 18:56:35.945819	2021-01-07 18:56:35.945819	76	1
-209	2021-01-07 18:56:35.945819	2021-01-07 18:56:35.945819	76	2
-210	2021-01-07 18:56:35.945819	2021-01-07 18:56:35.945819	77	1
-211	2021-01-07 18:56:35.945819	2021-01-07 18:56:35.945819	77	2
-212	2021-01-07 18:56:35.945819	2021-01-07 18:56:35.945819	78	1
-213	2021-01-07 18:56:35.945819	2021-01-07 18:56:35.945819	78	2
-214	2021-01-07 18:56:35.945819	2021-01-07 18:56:35.945819	79	1
-215	2021-01-07 18:56:35.945819	2021-01-07 18:56:35.945819	79	2
-216	2021-01-07 18:56:35.945819	2021-01-07 18:56:35.945819	82	1
-217	2021-01-07 18:56:35.945819	2021-01-07 18:56:35.945819	82	2
-218	2021-01-07 18:56:35.945819	2021-01-07 18:56:35.945819	83	1
-219	2021-01-07 18:56:35.945819	2021-01-07 18:56:35.945819	83	2
-220	2021-01-07 18:56:35.945819	2021-01-07 18:56:35.945819	81	1
-221	2021-01-07 18:56:35.945819	2021-01-07 18:56:35.945819	81	2
-222	2021-01-07 18:56:35.945819	2021-01-07 18:56:35.945819	84	1
-223	2021-01-07 18:56:35.945819	2021-01-07 18:56:35.945819	84	2
-224	2021-01-07 18:56:35.945819	2021-01-07 18:56:35.945819	87	1
-225	2021-01-07 18:56:35.945819	2021-01-07 18:56:35.945819	87	2
-226	2021-01-07 18:56:35.945819	2021-01-07 18:56:35.945819	88	1
-227	2021-01-07 18:56:35.945819	2021-01-07 18:56:35.945819	88	2
-228	2021-01-07 18:56:35.945819	2021-01-07 18:56:35.945819	89	1
-229	2021-01-07 18:56:35.945819	2021-01-07 18:56:35.945819	89	2
-230	2021-01-07 18:56:35.945819	2021-01-07 18:56:35.945819	90	1
-231	2021-01-07 18:56:35.945819	2021-01-07 18:56:35.945819	90	2
-232	2021-01-07 18:56:35.945819	2021-01-07 18:56:35.945819	91	1
-233	2021-01-07 18:56:35.945819	2021-01-07 18:56:35.945819	91	2
-234	2021-01-07 18:56:35.962569	2021-01-07 18:56:35.962569	92	1
-235	2021-01-07 18:56:35.962569	2021-01-07 18:56:35.962569	92	2
+140	2021-07-24 12:21:20.546408	2021-07-24 12:21:20.546408	68	1
+141	2021-07-24 12:21:20.546408	2021-07-24 12:21:20.546408	68	2
+142	2021-07-24 12:21:20.546408	2021-07-24 12:21:20.546408	69	1
+143	2021-07-24 12:21:20.546408	2021-07-24 12:21:20.546408	69	2
+144	2021-07-24 12:21:20.546408	2021-07-24 12:21:20.546408	70	1
+145	2021-07-24 12:21:20.546408	2021-07-24 12:21:20.546408	70	2
+146	2021-07-24 12:21:20.546408	2021-07-24 12:21:20.546408	71	1
+147	2021-07-24 12:21:20.546408	2021-07-24 12:21:20.546408	71	2
+148	2021-07-24 12:21:20.546408	2021-07-24 12:21:20.546408	72	1
+149	2021-07-24 12:21:20.546408	2021-07-24 12:21:20.546408	72	2
+150	2021-07-24 12:21:20.546408	2021-07-24 12:21:20.546408	73	1
+151	2021-07-24 12:21:20.546408	2021-07-24 12:21:20.546408	73	2
+152	2021-07-24 12:21:20.546408	2021-07-24 12:21:20.546408	80	1
+153	2021-07-24 12:21:20.546408	2021-07-24 12:21:20.546408	80	2
+154	2021-07-24 12:21:20.546408	2021-07-24 12:21:20.546408	74	1
+155	2021-07-24 12:21:20.546408	2021-07-24 12:21:20.546408	74	2
+156	2021-07-24 12:21:20.546408	2021-07-24 12:21:20.546408	85	1
+157	2021-07-24 12:21:20.546408	2021-07-24 12:21:20.546408	85	2
+158	2021-07-24 12:21:20.546408	2021-07-24 12:21:20.546408	86	1
+159	2021-07-24 12:21:20.546408	2021-07-24 12:21:20.546408	86	2
+160	2021-07-24 12:21:20.546408	2021-07-24 12:21:20.546408	75	1
+161	2021-07-24 12:21:20.546408	2021-07-24 12:21:20.546408	75	2
+162	2021-07-24 12:21:20.546408	2021-07-24 12:21:20.546408	76	1
+163	2021-07-24 12:21:20.546408	2021-07-24 12:21:20.546408	76	2
+164	2021-07-24 12:21:20.546408	2021-07-24 12:21:20.546408	77	1
+165	2021-07-24 12:21:20.546408	2021-07-24 12:21:20.546408	77	2
+166	2021-07-24 12:21:20.546408	2021-07-24 12:21:20.546408	78	1
+167	2021-07-24 12:21:20.546408	2021-07-24 12:21:20.546408	78	2
+168	2021-07-24 12:21:20.546408	2021-07-24 12:21:20.546408	79	1
+169	2021-07-24 12:21:20.546408	2021-07-24 12:21:20.546408	79	2
+170	2021-07-24 12:21:20.546408	2021-07-24 12:21:20.546408	82	1
+171	2021-07-24 12:21:20.546408	2021-07-24 12:21:20.546408	82	2
+172	2021-07-24 12:21:20.546408	2021-07-24 12:21:20.546408	83	1
+173	2021-07-24 12:21:20.546408	2021-07-24 12:21:20.546408	83	2
+174	2021-07-24 12:21:20.546408	2021-07-24 12:21:20.546408	81	1
+175	2021-07-24 12:21:20.546408	2021-07-24 12:21:20.546408	81	2
+176	2021-07-24 12:21:20.546408	2021-07-24 12:21:20.546408	84	1
+177	2021-07-24 12:21:20.546408	2021-07-24 12:21:20.546408	84	2
+178	2021-07-24 12:21:20.546408	2021-07-24 12:21:20.546408	87	1
+179	2021-07-24 12:21:20.546408	2021-07-24 12:21:20.546408	87	2
+180	2021-07-24 12:21:20.546408	2021-07-24 12:21:20.546408	88	1
+181	2021-07-24 12:21:20.546408	2021-07-24 12:21:20.546408	88	2
+182	2021-07-24 12:21:20.546408	2021-07-24 12:21:20.546408	89	1
+183	2021-07-24 12:21:20.546408	2021-07-24 12:21:20.546408	89	2
+184	2021-07-24 12:21:20.546408	2021-07-24 12:21:20.546408	90	1
+185	2021-07-24 12:21:20.546408	2021-07-24 12:21:20.546408	90	2
+186	2021-07-24 12:21:20.546408	2021-07-24 12:21:20.546408	91	1
+187	2021-07-24 12:21:20.546408	2021-07-24 12:21:20.546408	91	2
+188	2021-07-24 12:21:20.563045	2021-07-24 12:21:20.563045	92	1
+189	2021-07-24 12:21:20.563045	2021-07-24 12:21:20.563045	92	2
+190	2021-08-02 11:07:06.272175	2021-08-02 11:07:06.272175	15	4
+191	2021-08-02 11:07:13.743212	2021-08-02 11:07:13.743212	20	4
+192	2021-08-02 11:07:20.088466	2021-08-02 11:07:20.088466	32	4
+193	2021-08-02 11:07:27.932181	2021-08-02 11:07:27.932181	45	4
+194	2021-08-02 11:07:28.543605	2021-08-02 11:07:28.543605	49	4
+195	2021-08-02 11:07:35.501568	2021-08-02 11:07:35.501568	58	4
+196	2021-08-02 11:07:43.183839	2021-08-02 11:07:43.183839	5	4
+197	2021-08-02 11:07:43.599678	2021-08-02 11:07:43.599678	8	4
+198	2021-08-02 11:07:44.365397	2021-08-02 11:07:44.365397	30	4
+199	2021-08-02 11:07:45.759869	2021-08-02 11:07:45.759869	37	4
+200	2021-08-02 11:07:46.173709	2021-08-02 11:07:46.173709	47	4
+201	2021-08-02 11:07:47.334318	2021-08-02 11:07:47.334318	51	4
+202	2021-08-02 11:07:47.905602	2021-08-02 11:07:47.905602	57	4
+203	2021-08-02 11:07:48.913112	2021-08-02 11:07:48.913112	65	4
+204	2021-08-02 11:07:58.326436	2021-08-02 11:07:58.326436	3	4
+205	2021-08-02 11:07:59.223323	2021-08-02 11:07:59.223323	4	4
+206	2021-08-02 11:08:00.042975	2021-08-02 11:08:00.042975	7	4
+207	2021-08-02 11:08:13.459821	2021-08-02 11:08:13.459821	12	4
+208	2021-08-02 11:08:13.93817	2021-08-02 11:08:13.93817	16	4
+209	2021-08-02 11:08:15.096975	2021-08-02 11:08:15.096975	18	4
+210	2021-08-02 11:08:15.556779	2021-08-02 11:08:15.556779	19	4
+211	2021-08-02 11:08:16.599516	2021-08-02 11:08:16.599516	21	4
+212	2021-08-02 11:08:22.360451	2021-08-02 11:08:22.360451	25	4
+213	2021-08-02 11:08:22.768818	2021-08-02 11:08:22.768818	26	4
+214	2021-08-02 11:08:24.104831	2021-08-02 11:08:24.104831	27	4
+215	2021-08-02 11:08:24.944345	2021-08-02 11:08:24.944345	28	4
+216	2021-08-02 11:08:25.683638	2021-08-02 11:08:25.683638	31	4
+217	2021-08-02 11:08:27.04298	2021-08-02 11:08:27.04298	33	4
+218	2021-08-02 11:08:27.605279	2021-08-02 11:08:27.605279	34	4
+219	2021-08-02 11:08:29.140237	2021-08-02 11:08:29.140237	35	4
+220	2021-08-02 11:08:29.590368	2021-08-02 11:08:29.590368	36	4
+221	2021-08-02 11:08:30.173848	2021-08-02 11:08:30.173848	38	4
+222	2021-08-02 11:08:31.386456	2021-08-02 11:08:31.386456	39	4
+223	2021-08-02 11:08:31.805304	2021-08-02 11:08:31.805304	40	4
+224	2021-08-02 11:08:32.498924	2021-08-02 11:08:32.498924	42	4
+225	2021-08-02 11:08:33.149704	2021-08-02 11:08:33.149704	44	4
+226	2021-08-02 11:08:34.603781	2021-08-02 11:08:34.603781	46	4
+227	2021-08-02 11:08:35.052601	2021-08-02 11:08:35.052601	50	4
+228	2021-08-02 11:08:35.62437	2021-08-02 11:08:35.62437	52	4
+229	2021-08-02 11:08:36.980213	2021-08-02 11:08:36.980213	54	4
+230	2021-08-02 11:08:37.519423	2021-08-02 11:08:37.519423	56	4
+231	2021-08-02 11:08:38.854123	2021-08-02 11:08:38.854123	59	4
+232	2021-08-02 11:08:39.495962	2021-08-02 11:08:39.495962	61	4
+233	2021-08-02 11:08:40.528229	2021-08-02 11:08:40.528229	63	4
+234	2021-08-02 11:08:42.552606	2021-08-02 11:08:42.552606	67	4
+235	2021-08-02 11:08:43.173454	2021-08-02 11:08:43.173454	66	4
 \.
 
 
@@ -4272,7 +4341,7 @@ COPY public.acl_links (id, created, modified, name, url, method, slug, group_id,
 156	2019-12-16 21:44:29.491548	2019-12-16 21:44:29.491548	Allow to unsubscribe card in public board	/boards/?/lists/?/cards/?/card_subscribers/?	POST	unsubscribe_card	2	1	0	0	0	f
 157	2020-06-12 19:03:13.498349	2020-06-12 19:03:13.498349	Card search with Custom Field	/cards/search	GET	view_card_search_custom_field	3	1	0	1	0	f
 158	2020-06-12 19:21:43.506093	2020-06-12 19:21:43.506093	Card search with Custom Field	/cards/search	GET	view_card_search_custom_field	3	1	0	1	0	f
-159	2021-01-07 18:56:36.58843	2021-01-07 18:56:36.58843	Login	/users/login	POST	users_login	1	0	1	0	0	f
+159	2021-07-24 12:21:21.858991	2021-07-24 12:21:21.858991	Login	/users/login	POST	users_login	1	0	1	0	0	f
 \.
 
 
@@ -4424,7 +4493,7 @@ COPY public.acl_links_roles (id, created, modified, acl_link_id, role_id) FROM s
 1278	2019-12-16 21:44:29.517313	2019-12-16 21:44:29.517313	156	2
 1279	2020-06-12 19:03:13.573564	2020-06-12 19:03:13.573564	157	1
 1280	2020-06-12 19:03:13.573564	2020-06-12 19:03:13.573564	157	2
-1281	2021-01-07 18:56:36.605177	2021-01-07 18:56:36.605177	159	3
+1281	2021-07-24 12:21:21.875677	2021-07-24 12:21:21.875677	159	3
 \.
 
 
@@ -4713,7 +4782,7 @@ SELECT pg_catalog.setval('public.checklists_id_seq', 1, true);
 --
 
 COPY public.cities (id, created, modified, country_id, state_id, latitude, longitude, name, is_active) FROM stdin;
-1	2015-05-21 11:45:47.245	2015-05-21 11:45:47.245	102	1	20	77	undefined	f
+1	2015-05-21 11:45:47.245	2015-05-21 11:45:47.245	240	1	42.1508	-70.8228	Norwell	f
 \.
 
 
@@ -5033,8 +5102,7 @@ SELECT pg_catalog.setval('public.email_templates_id_seq', 11, true);
 --
 
 COPY public.ips (id, created, modified, ip, host, user_agent, "order", city_id, state_id, country_id, latitude, longitude) FROM stdin;
-1	2015-05-21 11:45:47.262	2015-05-21 11:45:47.262	::1	115.111.183.202	Mozilla/5.0 (Windows NT 6.3; WOW64; rv:38.0) Gecko/20100101 Firefox/38.0	0	1	1	102	20	77
-2	2018-10-29 18:23:04.527151	2018-10-29 18:23:04.527151	127.0.0.1	localhost	Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Ubuntu Chromium/70.0.3538.67 Chrome/70.0.3538.67 Safari/537.36	0	0	0	0	0	0
+1	2015-05-21 11:45:47.262	2015-05-21 11:45:47.262	93.184.216.34	115.111.183.202	Mozilla/5.0 (Windows NT 6.3; WOW64; rv:38.0) Gecko/20100101 Firefox/38.0	0	1	1	240	42.1507999999999967	-70.8228000000000009
 \.
 
 
@@ -5549,10 +5617,6 @@ SELECT pg_catalog.setval('public.login_types_id_seq', 2, true);
 --
 
 COPY public.oauth_access_tokens (access_token, client_id, user_id, expires, scope) FROM stdin;
-e536ed90b96ee3e6992f116e604c0fa265e8f92e	7742632501382313	\N	2017-08-30 18:59:56	read
-de501595ad502477aada8f67198a629a0c3b87b5	7742632501382313	\N	2018-10-29 14:52:53	read
-7f51fe296aff40591a1e90de4086a10be756112a	7742632501382313	\N	2018-10-29 14:52:54	read
-59dc4f65bf276d798d96de117791b38f47d434e6	7742632501382313	user	2018-10-29 14:53:04	read write
 \.
 
 
@@ -5604,10 +5668,6 @@ COPY public.oauth_jwt (client_id, subject, public_key) FROM stdin;
 --
 
 COPY public.oauth_refresh_tokens (refresh_token, client_id, user_id, expires, scope) FROM stdin;
-8adf4daa06961f18d2afda535b2f4463193c62f5	7742632501382313	admin	2015-04-16 12:55:32	\N
-b43d289f47100a9c70ebd21f31c15db059ef82bb	7742632501382313	admin	2015-06-04 08:15:47	\N
-52831802ce6fbd12bfbe34f1def7b679a0822a18	7742632501382313	admin	2015-06-20 07:23:34	\N
-1bcecd030089c64ec7615dee08e61c404d205eb3	7742632501382313	user	2018-11-12 13:53:04	read write
 \.
 
 
@@ -5702,6 +5762,7 @@ COPY public.setting_categories (id, created, modified, parent_id, name, descript
 14	2017-08-30 17:59:02.929467	2017-08-30 17:59:02.929467	\N	Notifications	\N	4
 15	2018-10-29 19:23:34.416581	2018-10-29 19:23:34.416581	\N	Board	\N	6
 16	2018-10-29 19:23:34.423174	2018-10-29 19:23:34.423174	\N	User	\N	7
+17	2021-07-24 12:21:21.884956	2021-07-24 12:21:21.884956	\N	Mobile App	\N	8
 \.
 
 
@@ -5709,7 +5770,7 @@ COPY public.setting_categories (id, created, modified, parent_id, name, descript
 -- Name: setting_categories_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.setting_categories_id_seq', 16, true);
+SELECT pg_catalog.setval('public.setting_categories_id_seq', 17, true);
 
 
 --
@@ -5763,7 +5824,7 @@ SELECT pg_catalog.setval('public.settings_id_seq', 73, true);
 --
 
 COPY public.states (id, created, modified, country_id, name, is_active) FROM stdin;
-1	2015-05-21 11:45:47.229	2015-05-21 11:45:47.229	102	undefined	f
+1	2015-05-21 11:45:47.229	2015-05-21 11:45:47.229	240	Massachusetts	f
 \.
 
 
@@ -6048,9 +6109,6 @@ SELECT pg_catalog.setval('public.timezones_id_seq', 324, true);
 --
 
 COPY public.user_logins (id, created, modified, user_id, ip_id, user_agent, is_login_failed) FROM stdin;
-1	2015-05-21 11:45:47.266	2015-05-21 11:45:47.266	1	1	Mozilla/5.0 (Windows NT 6.3; WOW64; rv:38.0) Gecko/20100101 Firefox/38.0	f
-2	2015-06-06 10:53:34.529	2015-06-06 10:53:34.529	1	1	Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/43.0.2357.81 Safari/537.36	f
-3	2018-10-29 18:23:04.754669	2018-10-29 18:23:04.754669	2	2	Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Ubuntu Chromium/70.0.3538.67 Chrome/70.0.3538.67 Safari/537.36	f
 \.
 
 
@@ -6058,15 +6116,30 @@ COPY public.user_logins (id, created, modified, user_id, ip_id, user_agent, is_l
 -- Name: user_logins_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.user_logins_id_seq', 3, true);
+SELECT pg_catalog.setval('public.user_logins_id_seq', 4, true);
+
+
+--
+-- Data for Name: user_push_tokens; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.user_push_tokens (id, created, modified, user_id, token, device_serial, device_modal, device_brand, device_manufacturer, device_version, app_version, device_os, appname, last_push_notified, is_active) FROM stdin;
+\.
+
+
+--
+-- Name: user_push_tokens_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.user_push_tokens_id_seq', 1, false);
 
 
 --
 -- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.users (id, created, modified, role_id, username, email, password, full_name, initials, about_me, profile_picture_path, notification_frequency, is_allow_desktop_notification, is_active, is_email_confirmed, created_organization_count, created_board_count, joined_organization_count, list_count, joined_card_count, created_card_count, joined_board_count, checklist_count, checklist_item_completed_count, checklist_item_count, activity_count, card_voter_count, last_activity_id, last_login_date, last_login_ip_id, ip_id, login_type_id, is_productivity_beats, user_login_count, is_ldap, is_send_newsletter, last_email_notified_activity_id, owner_board_count, member_board_count, owner_organization_count, member_organization_count, language, timezone, default_desktop_notification, is_list_notifications_enabled, is_card_notifications_enabled, is_card_members_notifications_enabled, is_card_labels_notifications_enabled, is_card_checklists_notifications_enabled, is_card_attachments_notifications_enabled, is_intro_video_skipped, is_invite_from_board, is_two_factor_authentication_enabled, two_factor_authentication_hash, persist_card_divider_position, is_saml) FROM stdin;
-1	2014-06-03 12:40:41.189	2015-04-02 16:26:03.939	1	admin	board@restya.com	$2y$12$QiJW6TjPKzDZPAuoWEex9OjPHQF33YzfkdC09FhasgPO.MjZ5btKe	New Admin	PA	Added About Me	client/img/default-admin-user.png	\N	f	t	t	0	0	0	0	0	0	0	0	0	0	0	0	2	2015-06-06 10:53:34.46	1	\N	2	t	2	f	2	0	0	0	0	0	\N	Europe/Andorra	t	t	t	t	t	t	t	f	f	f	\N	\N	f
+COPY public.users (id, created, modified, role_id, username, email, password, full_name, initials, about_me, profile_picture_path, notification_frequency, is_allow_desktop_notification, is_active, is_email_confirmed, created_organization_count, created_board_count, joined_organization_count, list_count, joined_card_count, created_card_count, joined_board_count, checklist_count, checklist_item_completed_count, checklist_item_count, activity_count, card_voter_count, last_activity_id, last_login_date, last_login_ip_id, ip_id, login_type_id, is_productivity_beats, user_login_count, is_ldap, is_send_newsletter, last_email_notified_activity_id, owner_board_count, member_board_count, owner_organization_count, member_organization_count, language, timezone, default_desktop_notification, is_list_notifications_enabled, is_card_notifications_enabled, is_card_members_notifications_enabled, is_card_labels_notifications_enabled, is_card_checklists_notifications_enabled, is_card_attachments_notifications_enabled, is_intro_video_skipped, is_invite_from_board, is_two_factor_authentication_enabled, two_factor_authentication_hash, persist_card_divider_position, is_saml, next_community_edition_popup_on, is_show_community_edition_popup) FROM stdin;
+1	2014-06-03 12:40:41.189	2015-04-02 16:26:03.939	1	admin	board@restya.com	$2y$12$QiJW6TjPKzDZPAuoWEex9OjPHQF33YzfkdC09FhasgPO.MjZ5btKe	New Admin	PA	Added About Me	client/img/default-admin-user.png	\N	f	t	t	0	0	0	0	0	0	0	0	0	0	0	0	2	2021-08-02 11:06:17.586343	1	1	2	t	0	f	2	0	0	0	0	0	\N	Europe/Andorra	f	f	f	f	f	f	f	f	f	f	\N	\N	f	2021-09-01	f
 \.
 
 

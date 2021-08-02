@@ -8,7 +8,7 @@
  * @package    REST
  * @subpackage Core
  * @author     Restya <info@restya.com>
- * @copyright  2014-2019 Restya
+ * @copyright  2014-2021 Restya
  * @license    http://restya.com/ Restya Licence
  * @link       http://restya.com/
  * @todo       Fix code duplication & make it really lightweight
@@ -500,9 +500,6 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 $c_sql = 'SELECT COUNT(*) FROM activities_listing al WHERE ' . $str;
             } else if (!empty($r_resource_filters['type']) && $r_resource_filters['type'] == 'all') {
                 $flag = 1;
-                if (!empty($r_resource_filters['last_activity_id'])) {
-                    $condition = ' AND al.id > $4';
-                }
                 $direction = 'DESC';
                 if (!empty($r_resource_filters['direction']) && isset($r_resource_filters['direction'])) {
                     $direction = $r_resource_filters['direction'];
@@ -517,8 +514,11 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                     $boardIDS = array_diff($board_ids, $assigned_board_ids);
                     array_push($pg_params, '{' . implode(',', $boardIDS) . '}', '{' . implode(',', $org_ids) . '}', $authUser['id'], '{' . implode(',', $assigned_card_ids) . '}', '{' . implode(',', $assigned_board_ids) . '}', 0);
                 } else {
-                    $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM activities_listing al WHERE (board_id = ANY ( $1 ) OR organization_id  = ANY ( $2 ) OR revisions = $3 OR type = $5 OR type = $6)' . $condition . ' ORDER BY id ' . $direction . ' LIMIT ' . PAGING_COUNT . ') as d';
-                    $c_sql = 'SELECT COUNT(*) FROM activities_listing al WHERE (board_id = ANY ( $1 ) OR organization_id  = ANY ( $2 ) OR revisions = $3 OR type = $5 OR type = $6)' . $condition;
+                    if (!empty($r_resource_filters['last_activity_id'])) {
+                        $condition = ' AND al.id > $6';
+                    }
+                    $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM activities_listing al WHERE (board_id = ANY ( $1 ) OR organization_id  = ANY ( $2 ) OR revisions = $3 OR type = $4 OR type = $5)' . $condition . ' ORDER BY id ' . $direction . ' LIMIT ' . PAGING_COUNT . ') as d';
+                    $c_sql = 'SELECT COUNT(*) FROM activities_listing al WHERE (board_id = ANY ( $1 ) OR organization_id  = ANY ( $2 ) OR revisions = $3 OR type = $4 OR type = $5)' . $condition;
                     array_push($pg_params, '{' . implode(',', $board_ids) . '}', '{' . implode(',', $org_ids) . '}', $authUser['id']);
                 }
             } else if (!empty($r_resource_filters['board_id']) && $r_resource_filters['board_id'] && $r_resource_filters['type'] == 'board_user_activity') {
@@ -544,11 +544,11 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 array_push($pg_params, '{' . implode(',', $board_ids) . '}', '{' . implode(',', $org_ids) . '}');
             }
         }
-        if (!empty($r_resource_filters['last_activity_id'])) {
-            array_push($pg_params, $r_resource_filters['last_activity_id']);
-        }
         if (!empty($r_resource_filters['type']) && $r_resource_filters['type'] == 'all' && $flag === 1) {
             array_push($pg_params, "add_permission", "remove_permission");
+        }
+        if (!empty($r_resource_filters['last_activity_id'])) {
+            array_push($pg_params, $r_resource_filters['last_activity_id']);
         }
         if (!empty($c_sql)) {
             $paging_data = paginate_data($c_sql, $db_lnk, $pg_params, $r_resource_filters);
@@ -600,6 +600,20 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 echo json_encode($data);
             } else {
                 $r_debug.= __LINE__ . ': ' . pg_last_error($db_lnk) . '\n';
+            }
+        }
+        if (!ENTERPRISE_VERSION) {
+            $val_array = array(
+                $r_resource_vars['users']
+            );
+            $user = executeQuery('SELECT id, next_community_edition_popup_on FROM users_listing WHERE id = $1', $val_array);
+            if ($user['next_community_edition_popup_on'] <= date('Y-m-d')) {
+                $next_community_edition_popup_on = date('Y-m-d', strtotime('+1 day'));
+                $community_edition_val_arr = array(
+                    $next_community_edition_popup_on,
+                    $user['id']
+                );
+                pg_query_params($db_lnk, 'UPDATE users SET next_community_edition_popup_on = $1, is_show_community_edition_popup = true WHERE id = $2', $community_edition_val_arr);
             }
         }
         break;
@@ -1161,11 +1175,13 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         $check_board = executeQuery($s_sql, $board);
         if (!empty($check_board)) {
             // For restricted board user assigned cards
-            $is_restricted_board_user = executeQuery('SELECT board_id FROM boards_users WHERE user_id = $1 AND board_user_role_id = $2 AND board_id = $3', array(
-                $authUser['id'],
-                4,
-                $r_resource_vars['boards']
-            ));
+            if (!empty($authUser)) {
+                $is_restricted_board_user = executeQuery('SELECT board_id FROM boards_users WHERE user_id = $1 AND board_user_role_id = $2 AND board_id = $3', array(
+                    $authUser['id'],
+                    4,
+                    $r_resource_vars['boards']
+                ));
+            }
             if (!empty($is_restricted_board_user)) {
                 $cardsIDS = pg_query_params($db_lnk, 'SELECT c.id, c.board_id FROM cards c left join cards_users cu on cu.card_id = c.id WHERE cu.user_id = $1 AND c.board_id = $2', array(
                     $authUser['id'],
@@ -2889,6 +2905,24 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     $conditions = array(
                         true
                     );
+                    if (!ENTERPRISE_VERSION) {
+                        if (empty($user['next_community_edition_popup_on'])) {
+                            $next_community_edition_popup_on = date('Y-m-d', strtotime('+30 days'));
+                            $community_edition_val_arr = array(
+                                $next_community_edition_popup_on,
+                                $user['id']
+                            );
+                            pg_query_params($db_lnk, 'UPDATE users SET next_community_edition_popup_on = $1 WHERE id = $2', $community_edition_val_arr);
+                        } else if ($user['next_community_edition_popup_on'] <= date('Y-m-d')) {
+                            $next_community_edition_popup_on = date('Y-m-d', strtotime('+1 day'));
+                            $community_edition_val_arr = array(
+                                $next_community_edition_popup_on,
+                                $user['id']
+                            );
+                            pg_query_params($db_lnk, 'UPDATE users SET next_community_edition_popup_on = $1, is_show_community_edition_popup = true WHERE id = $2', $community_edition_val_arr);
+                            $user['is_show_community_edition_popup'] = 't';
+                        }
+                    }
                     $role_val_arr = array(
                         $user['role_id']
                     );
@@ -3283,6 +3317,13 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                         $r_resource_vars['users']
                     );
                     pg_query_params($db_lnk, 'UPDATE users SET is_intro_video_skipped= $1 WHERE id = $2', $qry_val_arr);
+                }
+                if (isset($r_post['is_show_community_edition_popup'])) {
+                    $qry_val_arr = array(
+                        $r_post['is_show_community_edition_popup'],
+                        $r_resource_vars['users']
+                    );
+                    pg_query_params($db_lnk, 'UPDATE users SET is_show_community_edition_popup= $1 WHERE id = $2', $qry_val_arr);
                 }
                 if (!empty($_POST['username'])) {
                     $qry_val_arr = array(

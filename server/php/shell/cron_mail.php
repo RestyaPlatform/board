@@ -10,7 +10,7 @@
  * @package    Restyaboard
  * @subpackage Core
  * @author     Restya <info@restya.com>
- * @copyright  2014-2019 Restya
+ * @copyright  2014-2021 Restya
  * @license    http://restya.com/ Restya Licence
  * @link       http://restya.com/
  */
@@ -38,7 +38,7 @@ if (!empty($argv) && !empty($argv[1])) {
             }
             $headers.= "MIME-Version: 1.0" . PHP_EOL;
             $headers.= "Content-Type: text/html; charset=UTF-8" . PHP_EOL;
-            $headers.= "X-Mailer: Restyaboard (0.6.9; +http://restya.com/board)" . PHP_EOL;
+            $headers.= "X-Mailer: Restyaboard (1.7; +http://restya.com/board)" . PHP_EOL;
             $headers.= "X-Auto-Response-Suppress: All" . PHP_EOL;
             $result = mail($to_email, $subject, $message, $headers, '-f' . $from_email);
             if (R_DEBUG) {

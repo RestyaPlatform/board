@@ -121,6 +121,8 @@ App.LoginView = Backbone.View.extend({
                                 auth_response.user.is_ldap = response.user.is_ldap;
                                 auth_response.user.is_saml = response.user.is_saml;
                                 auth_response.user.is_intro_video_skipped = response.user.is_intro_video_skipped;
+                                auth_response.user.next_community_edition_popup_on = response.user.next_community_edition_popup_on;
+                                auth_response.user.is_show_community_edition_popup = response.user.is_show_community_edition_popup;
                                 auth_response.user.is_two_factor_authentication_enabled = response.user.is_two_factor_authentication_enabled;
                                 $.cookie('auth', JSON.stringify(auth_response));
                                 $.removeCookie('push_tokens');

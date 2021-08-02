@@ -8,7 +8,7 @@
  * @package    Restyaboard
  * @subpackage Core
  * @author     Restya <info@restya.com>
- * @copyright  2014-2019 Restya
+ * @copyright  2014-2021 Restya
  * @license    http://restya.com/ Restya Licence
  * @link       http://restya.com/
  */
@@ -60,6 +60,7 @@ if (getenv('PLATFORM_RELATIONSHIPS')) {
     define('R_DB_NAME', 'restyaboard');
     define('R_DB_PORT', 5432);
 }
+define('ENTERPRISE_VERSION', 0);
 define('SECURITYSALT', 'e9a556134534545ab47c6c81c14f06c0b8sdfsdf');
 define('SITE_LICENSE_KEY', 'REPLACE YOUR LICENCE HERE');
 if (!defined('STDIN') && !file_exists(SITE_URL_FOR_SHELL) && !empty($_server_domain_url)) {
