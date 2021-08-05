@@ -7,9 +7,9 @@
 if (typeof App === 'undefined') {
     App = {};
 }
-var loginExceptionUrl = ['register', 'login', 'forgotpassword', 'user_activation', 'aboutus'];
+var loginExceptionUrl = ['register', 'login', 'forgotpassword', 'user_activation', 'aboutus', 'saml_authentication'];
 var adminUrl = ['roles', 'activities', 'users', 'boards/list', 'oauth_clients', 'apps', 'user_logins', 'settings', 'email_templates', 'user_logins'];
-var adminUrlModels = ['role_settings', 'activity_index', 'users_index', 'admin_boards_index', 'oauth_clients', 'apps', 'user_logins_index', 'settings', 'email_template_type', 'user_logins_index'];
+var adminUrlModels = ['role_settings', 'activity_index', 'users_index', 'admin_boards_index', 'oauth_clients', 'apps', 'user_logins_index', 'push_devices_index', 'settings', 'email_template_type', 'user_logins_index'];
 var exceptionAppPage = ['r_wikipages'];
 /**
  * Application View
@@ -107,6 +107,7 @@ App.ApplicationView = Backbone.View.extend({
                                 SITE_NAME = settings_response.SITE_NAME;
                                 page.set_page_title();
                                 FLICKR_API_KEY = settings_response.FLICKR_API_KEY;
+                                UNSPLASH_API_KEY = settings_response.UNSPLASH_API_KEY;
                                 DROPBOX_APPKEY = settings_response.DROPBOX_APPKEY;
                                 LABEL_ICON = settings_response.LABEL_ICON;
                                 SITE_TIMEZONE = settings_response.SITE_TIMEZONE;
@@ -115,6 +116,7 @@ App.ApplicationView = Backbone.View.extend({
                                 PAGING_COUNT = settings_response.PAGING_COUNT;
                                 ALLOWED_FILE_EXTENSIONS = settings_response.ALLOWED_FILE_EXTENSIONS;
                                 R_LDAP_LOGIN_HANDLE = settings_response.R_LDAP_LOGIN_HANDLE;
+                                R_SAML_ENTITY_NAME = settings_response.R_SAML_ENTITY_NAME;
                                 R_MLDAP_LOGIN_HANDLE = settings_response.R_MLDAP_LOGIN_HANDLE;
                                 R_MLDAP_SERVERS = settings_response.R_MLDAP_SERVERS;
                                 APPS = settings_response.apps;
@@ -222,6 +224,7 @@ App.ApplicationView = Backbone.View.extend({
                             }
                             page.set_page_title();
                             FLICKR_API_KEY = settings_response.FLICKR_API_KEY;
+                            UNSPLASH_API_KEY = settings_response.UNSPLASH_API_KEY;
                             DROPBOX_APPKEY = settings_response.DROPBOX_APPKEY;
                             LABEL_ICON = settings_response.LABEL_ICON;
                             SITE_TIMEZONE = settings_response.SITE_TIMEZONE;
@@ -230,6 +233,7 @@ App.ApplicationView = Backbone.View.extend({
                             PAGING_COUNT = settings_response.PAGING_COUNT;
                             ALLOWED_FILE_EXTENSIONS = settings_response.ALLOWED_FILE_EXTENSIONS;
                             R_LDAP_LOGIN_HANDLE = settings_response.R_LDAP_LOGIN_HANDLE;
+                            R_SAML_ENTITY_NAME = settings_response.R_SAML_ENTITY_NAME;
                             R_MLDAP_LOGIN_HANDLE = settings_response.R_MLDAP_LOGIN_HANDLE;
                             R_MLDAP_SERVERS = settings_response.R_MLDAP_SERVERS;
                             APPS = settings_response.apps;
@@ -357,6 +361,9 @@ App.ApplicationView = Backbone.View.extend({
         if (this.model == 'user_logins_index') {
             changeTitle(i18next.t('User Logins'));
         }
+        if (this.model == 'push_devices_index') {
+            changeTitle(i18next.t('Push Devices'));
+        }
         if (this.model == 'admin_boards_index') {
             changeTitle(i18next.t('Boards'));
         }
@@ -389,6 +396,9 @@ App.ApplicationView = Backbone.View.extend({
         }
         if (this.model == 'activity_index') {
             changeTitle(i18next.t('Activities'));
+        }
+        if (this.model == 'saml_authentication') {
+            changeTitle(i18next.t('SAML Authentication'));
         }
     },
     /**
@@ -686,27 +696,46 @@ App.ApplicationView = Backbone.View.extend({
             if (_.isUndefined(App.boards.get(parseInt(page.id)))) {
                 load_boards = true;
             }
+        } else if (_.isUndefined(App.boards) && page.model == 'boards_view') {
+            load_boards = true;
         }
         var fragment = Backbone.history.fragment.split('?');
         fragment = fragment['0'];
         if ((App.boards === undefined || load_boards) && !_.isUndefined(authuser.user)) {
-            var boards = new App.BoardCollection();
-            boards.url = api_url + 'boards.json?type=simple';
-            boards.fetch({
-                cache: false,
-                abortPending: true,
-                success: function(model, response) {
-                    App.boards = boards;
-                    page.populateLists();
-                    page.populateCards();
-                    page.populateBoardStarred();
-                    var organizations = new App.OrganizationCollection();
-                    organizations.url = api_url + 'organizations.json?type=simple';
-                    organizations.fetch({
-                        cache: false,
-                        abortPending: true,
-                        success: function(collections, response) {
-                            auth_user_organizations = organizations;
+            if (!_.isEmpty(role_links.where({
+                    slug: 'view_board_listing'
+                }))) {
+                var boards = new App.BoardCollection();
+                boards.url = api_url + 'boards.json?type=simple';
+                boards.fetch({
+                    cache: false,
+                    abortPending: true,
+                    success: function(model, response) {
+                        App.boards = boards;
+                        page.populateLists();
+                        page.populateCards();
+                        page.populateBoardStarred();
+                        if (!_.isEmpty(role_links.where({
+                                slug: 'view_organization_listing'
+                            }))) {
+                            var organizations = new App.OrganizationCollection();
+                            organizations.url = api_url + 'organizations.json?type=simple';
+                            organizations.fetch({
+                                cache: false,
+                                abortPending: true,
+                                success: function(collections, response) {
+                                    auth_user_organizations = organizations;
+                                    if ((_.indexOf(adminUrl, fragment) >= 0 && !_.isEmpty(authuser.user) && authuser.user.role_id == 1) || _.indexOf(adminUrl, fragment) < 0) {
+                                        page.callback();
+                                    } else {
+                                        app.navigate('#/boards', {
+                                            trigger: true,
+                                            replace: true
+                                        });
+                                    }
+                                }
+                            });
+                        } else {
                             if ((_.indexOf(adminUrl, fragment) >= 0 && !_.isEmpty(authuser.user) && authuser.user.role_id == 1) || _.indexOf(adminUrl, fragment) < 0) {
                                 page.callback();
                             } else {
@@ -716,9 +745,13 @@ App.ApplicationView = Backbone.View.extend({
                                 });
                             }
                         }
-                    });
+                    }
+                });
+            } else {
+                if ((_.indexOf(adminUrl, fragment) >= 0 && !_.isEmpty(authuser.user) && authuser.user.role_id == 1) || _.indexOf(adminUrl, fragment) < 0) {
+                    page.callback();
                 }
-            });
+            }
         } else {
             if ((_.indexOf(adminUrl, fragment) >= 0 && !_.isEmpty(authuser.user) && authuser.user.role_id == 1) || _.indexOf(adminUrl, fragment) < 0) {
                 page.callback();
@@ -729,7 +762,7 @@ App.ApplicationView = Backbone.View.extend({
                 });
             }
         }
-        if (page.model !== 'boards_view' && page.model !== 'users_index' && page.model !== 'user_logins_index' && page.model !== 'admin_boards_index' && page.model !== 'boards_index') {
+        if (page.model !== 'boards_view' && page.model !== 'users_index' && page.model !== 'user_logins_index' && page.model !== 'push_devices_index' && page.model !== 'admin_boards_index' && page.model !== 'boards_index') {
             if (page.model == 'app_page') {
                 if (!_.isEmpty(page.options.name) && !_.isUndefined(page.options.name)) {
                     var page_name = page.options.name + '' + page.options.page;
@@ -870,6 +903,15 @@ App.ApplicationView = Backbone.View.extend({
                     model: ChangePasswordUser
                 });
                 $('#content').html(this.pageView.el);
+            } else if (page.model == 'saml_authentication') {
+                changeTitle(i18next.t('SAML Authentication'));
+                $('.company').removeClass('hide');
+                var SAMLAuthenticationUser = new App.User();
+                this.pageView = new App.SAMLAuthenticationView({
+                    model: SAMLAuthenticationUser,
+                    id: page.id
+                });
+                $('#content').html(this.pageView.el);
             } else if (page.model == 'aboutus') {
                 changeTitle(i18next.t('About'));
                 this.pageView = new App.AboutusView();
@@ -900,7 +942,6 @@ App.ApplicationView = Backbone.View.extend({
                             cache: false,
                             abortPending: true,
                             success: function(board_model, board_response) {
-                                App.boards = boards;
                                 $('#header').html(page.headerView.el);
                                 this.headerView = new App.BoardIndexHeaderView({
                                     model: page_title,
@@ -1186,6 +1227,11 @@ App.ApplicationView = Backbone.View.extend({
             } else if (page.model == 'user_logins_index') {
                 changeTitle(i18next.t('Users Logins'));
                 new App.AdminUserLoginView({
+                    page: page.options.page
+                });
+            } else if (page.model == 'push_devices_index') {
+                changeTitle(i18next.t('Push Devices'));
+                new App.AdminPushNotifictaionView({
                     page: page.options.page
                 });
             } else if (page.model == 'admin_boards_index') {

@@ -1,4 +1,19 @@
-#Hangouts Chat bot
+# Hangouts Chat bot
+
+## Introduction
+
+[Restyaboard](https://restya.com/board) is an open source alternative to Trello, but with smart additional features like offline sync, diff /revisions, nested comments, multiple view layouts, chat, and more. And since it is self-hosted, data, privacy, and IP security can be guaranteed.
+
+Restyaboard is more like an electronic sticky note for organizing tasks and todos. Apart from this, it is ideal for Kanban, Agile, Gemba board and business process/workflow management. It can be extended with [productive plugins](https://restya.com/board/apps "productive plugins")
+
+Today, several universities, automobile companies, government organizations, etc from across Europe take advantage of Restyaboard.
+
+This document contains information about how to install and use the Restyaboard Hangouts Chat bot.
+
+### What you'll learn
+
+*   How to install the Restyaboard Hangouts Chat bot
+*   How to use the Restyaboard Hangouts Chat bot
 
 ## Overview
 
@@ -127,14 +142,13 @@
 
 **Installation Steps**
 
-* Purchase Hangouts Chat bot.
-* Contact us to get a quote.
-
-[https://restya.com/contact](Contact us)
+*   Download [Hangouts Chat bot](https://restya.com/board/apps/r_hangouts_chat_bot).
+*   [Contact us](https://restya.com/contact) to get a quote.
 
 ## FAQs
 
 **FAQs**
 
-* Can I post comment for a card in a board?
-  - The options will be added in future.
+*   Can I post a comment for a card in a board?
+
+The options will be added in the future.

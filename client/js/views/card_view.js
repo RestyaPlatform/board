@@ -97,6 +97,9 @@ App.CardView = Backbone.View.extend({
             if (!_.isUndefined(this.model.board)) {
                 this.model.board.bind('change:board_custom_fields', this.render);
             }
+            if (!_.isUndefined(this.model.board)) {
+                this.model.board.bind('change:is_expand_image_front_of_card', this.render);
+            }
             this.model.cards_subscribers.bind('remove', this.render);
             this.model.card_voters.bind('add', this.render);
             this.model.card_voters.bind('remove', this.render);
@@ -481,11 +484,14 @@ App.CardView = Backbone.View.extend({
             if (filter_count < total_filter && (query_params)) {
                 if (_.isUndefined(ops) && ops !== null) {
                     this.model.set('is_filtered', true);
-                    this.$el.css('display', 'none');
+                    this.$el.addClass('hide');
                 }
             }
             if (!_.isUndefined(this.model.attributes.name) && this.model.attributes.name !== '') {
-                this.$el.addClass('panel js-show-modal-card-view js-board-list-card non-select cur').removeAttr('id').attr('data-toggle', 'modal').attr('data-target', '#myModal').attr('data-card_id', this.model.id).attr('id', 'js-card-' + this.model.id).css("border-left-color", this.model.attributes.color).css("border-left-width", "8px");
+                this.$el.addClass('panel js-show-modal-card-view js-board-list-card non-select cur').removeAttr('id').attr('data-toggle', 'modal').attr('data-target', '#myModal').attr('data-card_id', this.model.id).attr('id', 'js-card-' + this.model.id).css("border-left-color", this.model.attributes.color);
+                if (!_.isUndefined(this.model.attributes.color) && !_.isEmpty(this.model.attributes.color) && this.model.attributes.color !== null) {
+                    this.$el.css("border-left-width", "8px");
+                }
             }
         } else if (self.model !== null && !_.isEmpty(self.model) && !_.isUndefined(self.model.attributes.id) && !_.isUndefined(this.model.list) && !_.isUndefined(this.model.list.collection)) {
             filter_count = 0;
@@ -581,7 +587,7 @@ App.CardView = Backbone.View.extend({
                     this.model.set('is_filtered', true, {
                         silent: true
                     });
-                    this.$el.css('display', 'none');
+                    this.$el.addClass('hide');
                 }
             }
         } else if (self.model === null) {
@@ -599,9 +605,9 @@ App.CardView = Backbone.View.extend({
             }
         }
         if (self.model !== null && !_.isUndefined(self.model) && self.model.get('is_filtered')) {
-            self.$el.hide();
+            self.$el.addClass('hide');
         } else {
-            self.$el.show();
+            self.$el.removeClass('hide');
         }
         _(function() {
             if (self.model !== null && !_.isUndefined(self.model) && !_.isEmpty(self.model)) {
@@ -896,10 +902,10 @@ App.CardView = Backbone.View.extend({
             model: this.model
         }).el);
         this.showTooltip();
-        var selected_memebers = $('.js-card-user-ids').val();
-        var selected_memebers_arr = selected_memebers.split(",");
-        for (i = 0; i < selected_memebers_arr.length; i++) {
-            target = $('.js-add-card-member[data-user-id="' + selected_memebers_arr[i] + '"]');
+        var selected_members = $('.js-card-user-ids').val();
+        var selected_members_arr = selected_members.split(",");
+        for (i = 0; i < selected_members_arr.length; i++) {
+            target = $('.js-add-card-member[data-user-id="' + selected_members_arr[i] + '"]');
             target.removeClass('js-add-card-member').addClass('js-remove-card-member');
             target.append('<i class="icon-ok"></i>');
         }

@@ -1,4 +1,5 @@
 <% if(!_.isEmpty(activity) && activity != null){  %> 
+	<% if(activity.attributes.type !== 'add_permission'&& activity.attributes.type !== 'remove_permission') { %>
 	<%			activity.attributes.card_name = (activity.attributes.card_name !== null) ? activity.attributes.card_name : i18next.t("[deleted]");
 				activity.attributes.board_name = (activity.attributes.board_name !== null) ? activity.attributes.board_name : i18next.t("[deleted]");
 				activity.attributes.organization_name = (activity.attributes.organization_name !== null) ? activity.attributes.organization_name : i18next.t("[deleted]");
@@ -68,11 +69,21 @@
 				if(activity.attributes.comment.indexOf('##CHECKLIST_NAME##') != -1){
 					activity.attributes.comment = activity.attributes.comment.replace('##CHECKLIST_NAME##', _.escape(activity.attributes.checklist_name));
 				}
-			} else if(activity.attributes.type != 'edit_comment'){
+			} else if (activity.attributes.type != 'edit_comment') {
 				var comment = filterXSS(activity.attributes.full_name) + ' commented in card ' + cardLink;
-				var patt = /@\w+/g;
-				if(patt.test(activity.attributes.comment)) {
-					comment = filterXSS(activity.attributes.full_name) + ' mentioned you in card ' + cardLink;
+				var matches = activity.attributes.comment.match(/@([^ ]*)/g);
+				var _username = [];
+				_.each(matches, function(match) {
+					_username.push(match.substr(1));
+				});
+				if (!_.isEmpty(_username) && !_.isUndefined(authuser.user)) {
+					if (_.contains(_username, authuser.user.username)) {
+						comment = filterXSS(activity.attributes.full_name) + ' has mentioned you in card ' + cardLink;
+					} else if (_.contains(_username, 'card')) {
+						comment = filterXSS(activity.attributes.full_name) + ' mentioned all the members in the card ' + cardLink;
+					} else if (_.contains(_username, 'board')) {
+						comment = filterXSS(activity.attributes.full_name) + ' mentioned all the board members in the card ' + cardLink;
+					}
 				}
 			}
 		%>   
@@ -150,6 +161,7 @@
 			</li>
 			<li><hr></li>
 		</ul>
+		<% } %>
 <% }else{ %>
 	<span id="js-no-activities" class="alert alert-info col-xs-12"><%- i18next.t('No %s available.', { postProcess: 'sprintf', sprintf: [i18next.t('activities')] }) %></span>
 <% } %>

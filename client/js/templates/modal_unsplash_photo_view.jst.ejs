@@ -1,0 +1,52 @@
+<div class="modal fade" id="modalUnsplashPhoto" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close js-close-popover" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+				<h4 id="myModalLabel" class="modal-title">
+					<strong>
+						<%- i18next.t('Background Photo') %>
+					</strong>
+				</h4>
+			</div>
+			<div class="modal-body clearfix">
+				<div class="hide js-unsplash-update">
+					<p class="alert alert-info text-center">
+						<% if (!_.isUndefined(authuser.user) && parseInt(authuser.user.role_id) === 1) { %><a href="#" class="js-unsplash-modal-close"><%- i18next.t('Click here') %></a><% } else { %><%- i18next.t('Ask admin') %><% } %> <%- i18next.t('to configure Unsplash API key.') %>
+					</p>
+				</div>
+				<div class="navbar-btn col-xs-4 nav js-unsplash-search-block">
+					<div class="input-group">
+						<input type="text" class="form-control input-sm js-unsplash-search" placeholder="<%- i18next.t('Search') %>" title="<%- i18next.t('Search') %>">
+						<span class="input-group-btn">
+							<button class="btn btn-primary input-sm btn-sm js-unsplash-search-box" type="button">
+								<i class="icon-search cur"></i>
+							</button>
+						</span>
+					</div>
+				</div>
+				<div class="pull-right h4">
+					<small class="navbar-btn">
+						<%- i18next.t('Powered by') %>
+							<a href="https://www.unsplash.com/" target="_blank" title="Unsplash">
+								<strong class="text-primary">Unsplash</strong>
+							</a>
+					</small>
+				</div>
+				<div class="col-xs-12 h4">
+					<ul class="list-inline clearfix col-xs-offset-0" id="js-unsplash-background-photos">
+
+					</ul>
+				</div>
+				<div class="h4 btn-block pull-left text-center js-unsplash-loader-and-more">
+					<a href="javascript:void(0);" class="btn-link js-unsplash-loadmore">
+						<%- i18next.t('Load More') %>
+					</a>
+				</div>
+			</div>
+		</div>
+		<!-- /.modal-content -->
+	</div>
+</div>

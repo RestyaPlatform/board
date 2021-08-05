@@ -2,11 +2,12 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 9.5.21
--- Dumped by pg_dump version 9.5.21
+-- Dumped from database version 9.6.22
+-- Dumped by pg_dump version 9.6.22
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
 SET client_encoding = 'UTF8';
 SET standard_conforming_strings = on;
 SELECT pg_catalog.set_config('search_path', '', false);
@@ -30,7 +31,7 @@ COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
 
 
 --
--- Name: label_card_count_update(); Type: FUNCTION; Schema: public; Owner: restya
+-- Name: label_card_count_update(); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION public.label_card_count_update() RETURNS trigger
@@ -75,7 +76,7 @@ $$;
 
 
 --
--- Name: update_board_count(); Type: FUNCTION; Schema: public; Owner: restya
+-- Name: update_board_count(); Type: FUNCTION; Schema: public; Owner: -
 --
 
 CREATE FUNCTION public.update_board_count() RETURNS trigger
@@ -1291,6 +1292,8 @@ CREATE TABLE public.boards (
     sort_direction character varying(255),
     support_list_id bigint,
     support_custom_fields text,
+    is_expand_image_front_of_card boolean DEFAULT false NOT NULL,
+    show_pending_checklist_item boolean DEFAULT false NOT NULL,
     CONSTRAINT name CHECK ((char_length(name) > 0))
 );
 
@@ -1568,6 +1571,9 @@ CREATE TABLE public.users (
     is_two_factor_authentication_enabled boolean DEFAULT false NOT NULL,
     two_factor_authentication_hash character varying(16),
     persist_card_divider_position character varying(255),
+    is_saml boolean DEFAULT false NOT NULL,
+    next_community_edition_popup_on date,
+    is_show_community_edition_popup boolean DEFAULT false NOT NULL,
     CONSTRAINT password CHECK ((char_length((password)::text) > 0)),
     CONSTRAINT username CHECK ((char_length((username)::text) > 0))
 );
@@ -2086,7 +2092,7 @@ CREATE TABLE public.card_attachments (
     modified timestamp without time zone NOT NULL,
     card_id bigint,
     name character varying(255) NOT NULL,
-    path character varying(255) NOT NULL,
+    path character varying(255),
     list_id bigint,
     board_id bigint DEFAULT 1,
     mimetype character varying(255),
@@ -2614,7 +2620,9 @@ CREATE VIEW public.boards_listing AS
     board.sort_by,
     board.sort_direction,
     board.support_list_id,
-    board.support_custom_fields
+    board.support_custom_fields,
+    board.is_expand_image_front_of_card,
+    board.show_pending_checklist_item
    FROM ((public.boards board
      LEFT JOIN public.users users ON ((users.id = board.user_id)))
      LEFT JOIN public.organizations organizations ON ((organizations.id = board.organization_id)));
@@ -3630,6 +3638,71 @@ CREATE VIEW public.user_logins_listing AS
 
 
 --
+-- Name: user_push_tokens_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.user_push_tokens_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: user_push_tokens; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.user_push_tokens (
+    id bigint DEFAULT nextval('public.user_push_tokens_id_seq'::regclass) NOT NULL,
+    created timestamp without time zone NOT NULL,
+    modified timestamp without time zone NOT NULL,
+    user_id bigint DEFAULT (0)::bigint NOT NULL,
+    token character varying(255) NOT NULL,
+    device_serial character varying(255) DEFAULT NULL::character varying,
+    device_modal character varying(255) NOT NULL,
+    device_brand character varying(255) NOT NULL,
+    device_manufacturer character varying(255) NOT NULL,
+    device_version character varying(255) NOT NULL,
+    app_version character varying(255) NOT NULL,
+    device_os character varying(255) NOT NULL,
+    appname character varying(255) NOT NULL,
+    last_push_notified timestamp without time zone,
+    is_active boolean DEFAULT true NOT NULL
+);
+
+
+--
+-- Name: user_push_tokens_listing; Type: VIEW; Schema: public; Owner: -
+--
+
+CREATE VIEW public.user_push_tokens_listing AS
+ SELECT user_push_tokens.id,
+    to_char(user_push_tokens.created, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS created,
+    to_char(user_push_tokens.modified, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS modified,
+    user_push_tokens.user_id,
+    user_push_tokens.token,
+    user_push_tokens.device_serial,
+    user_push_tokens.device_modal,
+    user_push_tokens.device_brand,
+    user_push_tokens.device_manufacturer,
+    user_push_tokens.device_version,
+    user_push_tokens.app_version,
+    user_push_tokens.device_os,
+    user_push_tokens.appname,
+    users.username,
+    users.email,
+    users.role_id,
+    users.profile_picture_path,
+    users.initials,
+    users.full_name,
+    to_char(user_push_tokens.last_push_notified, 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS last_push_notified,
+    (user_push_tokens.is_active)::integer AS is_active
+   FROM (public.user_push_tokens
+     LEFT JOIN public.users ON ((users.id = user_push_tokens.user_id)));
+
+
+--
 -- Name: users_cards_listing; Type: VIEW; Schema: public; Owner: -
 --
 
@@ -3762,7 +3835,10 @@ CREATE VIEW public.users_listing AS
     users.is_intro_video_skipped,
     users.is_invite_from_board,
     users.is_two_factor_authentication_enabled,
-    users.persist_card_divider_position
+    users.persist_card_divider_position,
+    (users.is_saml)::integer AS is_saml,
+    users.next_community_edition_popup_on,
+    users.is_show_community_edition_popup
    FROM (((((((((public.users users
      LEFT JOIN public.ips i ON ((i.id = users.ip_id)))
      LEFT JOIN public.cities rci ON ((rci.id = i.city_id)))
@@ -3815,42 +3891,42 @@ COMMENT ON COLUMN public.webhooks.type IS 'Mattermost, Default';
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: cities id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.cities ALTER COLUMN id SET DEFAULT nextval('public.cities_id_seq1'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: countries id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.countries ALTER COLUMN id SET DEFAULT nextval('public.countries_id_seq1'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: oauth_clients id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.oauth_clients ALTER COLUMN id SET DEFAULT nextval('public.oauth_clients_id_seq1'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: setting_categories id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.setting_categories ALTER COLUMN id SET DEFAULT nextval('public.setting_categories_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: states id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.states ALTER COLUMN id SET DEFAULT nextval('public.states_id_seq1'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: user_logins id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.user_logins ALTER COLUMN id SET DEFAULT nextval('public.user_logins_id_seq'::regclass);
@@ -3921,6 +3997,31 @@ COPY public.acl_board_links (id, created, modified, name, url, method, slug, gro
 65	2019-04-19 19:34:07.684147	2019-04-19 19:34:07.684147	Get Board Lists	/boards/?/lists	GET	get_board_lists	3	0
 66	2019-04-19 19:34:07.750578	2019-04-19 19:34:07.750578	Get Board Lists	/boards/?/lists/?/cards/?	GET	view_card_isting	4	0
 67	2019-04-19 19:34:07.792192	2019-04-19 19:34:07.792192	Boards labels listing	/boards/?/labels	GET	view_board_label_isting	4	0
+68	2021-07-24 12:21:20.529557	2021-07-24 12:21:20.529557	Title	/boards/?/lists/?/cards	GET	get_card_title	5	0
+69	2021-07-24 12:21:20.529557	2021-07-24 12:21:20.529557	Description	/boards/?/lists/?/cards	GET	get_card_description	5	0
+70	2021-07-24 12:21:20.529557	2021-07-24 12:21:20.529557	Due Date	/boards/?/lists/?/cards	GET	get_card_due_date	5	0
+71	2021-07-24 12:21:20.529557	2021-07-24 12:21:20.529557	Member	/boards/?/lists/?/cards	GET	get_card_member	5	0
+72	2021-07-24 12:21:20.529557	2021-07-24 12:21:20.529557	Labels	/boards/?/lists/?/cards	GET	get_card_labels	5	0
+73	2021-07-24 12:21:20.529557	2021-07-24 12:21:20.529557	Vote	/boards/?/lists/?/cards	GET	get_card_vote	5	0
+74	2021-07-24 12:21:20.529557	2021-07-24 12:21:20.529557	Color	/boards/?/lists/?/cards	GET	get_card_color	5	0
+75	2021-07-24 12:21:20.529557	2021-07-24 12:21:20.529557	Move	/boards/?/lists/?/cards/?	PUT	move_card	5	0
+76	2021-07-24 12:21:20.529557	2021-07-24 12:21:20.529557	Copy	/boards/?/lists/?/cards/?/copy	POST	copy_cards	5	0
+77	2021-07-24 12:21:20.529557	2021-07-24 12:21:20.529557	Subscribe	/boards/?/lists/?/cards/?/card_subscribers	POST	subscribe_cards	5	0
+78	2021-07-24 12:21:20.529557	2021-07-24 12:21:20.529557	Archive	/boards/?/lists/?/cards/?	PUT	archive_cards	5	0
+79	2021-07-24 12:21:20.529557	2021-07-24 12:21:20.529557	Delete	/boards/?/lists/?/cards/?	PUT	delete_cards	5	0
+80	2021-07-24 12:21:20.529557	2021-07-24 12:21:20.529557	Attachment	/boards/?/lists/?/cards	GET	get_card_attachment	5	0
+81	2021-07-24 12:21:20.529557	2021-07-24 12:21:20.529557	Attachment Downloader	/boards/?/lists/?/cards	GET	get_attachment_downloader	5	0
+82	2021-07-24 12:21:20.529557	2021-07-24 12:21:20.529557	Activity Feed - Display	/boards/?/lists/?/cards/?/activities	GET	view_card_activity_feed	5	0
+83	2021-07-24 12:21:20.529557	2021-07-24 12:21:20.529557	Comment	/boards/?/lists/?/cards/?/comments	GET	get_card_comments	5	0
+84	2021-07-24 12:21:20.529557	2021-07-24 12:21:20.529557	Canned Response	/boards/?/lists/?/cards	GET	get_canned_response	5	0
+85	2021-07-24 12:21:20.529557	2021-07-24 12:21:20.529557	Checklist	/boards/?/lists/?/cards	GET	get_card_checklist	5	0
+86	2021-07-24 12:21:20.529557	2021-07-24 12:21:20.529557	Checklist Item	/boards/?/lists/?/cards	GET	get_card_checklist_item	5	0
+87	2021-07-24 12:21:20.529557	2021-07-24 12:21:20.529557	Card Template	/boards/?/lists/?/cards	GET	get_card_template	5	0
+88	2021-07-24 12:21:20.529557	2021-07-24 12:21:20.529557	Add Custom Field	/boards/?/lists/?/cards	GET	get_custom_field	5	0
+89	2021-07-24 12:21:20.529557	2021-07-24 12:21:20.529557	Estimated Time Tracking	/boards/?/lists/?/cards	GET	get_estimated_time	5	0
+90	2021-07-24 12:21:20.529557	2021-07-24 12:21:20.529557	Gantt View	/boards/?/lists/?/cards	GET	get_gantt_view	5	0
+91	2021-07-24 12:21:20.529557	2021-07-24 12:21:20.529557	Spent Time Tracking	/boards/?/lists/?/cards	GET	get_spent_time	5	0
+92	2021-07-24 12:21:20.554838	2021-07-24 12:21:20.554838	Upload third party background image to board	/boards/?	PUT	add_third_party_background	2	0
 \.
 
 
@@ -4053,6 +4154,102 @@ COPY public.acl_board_links_boards_user_roles (id, created, modified, acl_board_
 137	2019-04-19 19:34:07.775468	2019-04-19 19:34:07.775468	66	2
 138	2019-04-19 19:34:07.808949	2019-04-19 19:34:07.808949	67	1
 139	2019-04-19 19:34:07.817227	2019-04-19 19:34:07.817227	67	2
+140	2021-07-24 12:21:20.546408	2021-07-24 12:21:20.546408	68	1
+141	2021-07-24 12:21:20.546408	2021-07-24 12:21:20.546408	68	2
+142	2021-07-24 12:21:20.546408	2021-07-24 12:21:20.546408	69	1
+143	2021-07-24 12:21:20.546408	2021-07-24 12:21:20.546408	69	2
+144	2021-07-24 12:21:20.546408	2021-07-24 12:21:20.546408	70	1
+145	2021-07-24 12:21:20.546408	2021-07-24 12:21:20.546408	70	2
+146	2021-07-24 12:21:20.546408	2021-07-24 12:21:20.546408	71	1
+147	2021-07-24 12:21:20.546408	2021-07-24 12:21:20.546408	71	2
+148	2021-07-24 12:21:20.546408	2021-07-24 12:21:20.546408	72	1
+149	2021-07-24 12:21:20.546408	2021-07-24 12:21:20.546408	72	2
+150	2021-07-24 12:21:20.546408	2021-07-24 12:21:20.546408	73	1
+151	2021-07-24 12:21:20.546408	2021-07-24 12:21:20.546408	73	2
+152	2021-07-24 12:21:20.546408	2021-07-24 12:21:20.546408	80	1
+153	2021-07-24 12:21:20.546408	2021-07-24 12:21:20.546408	80	2
+154	2021-07-24 12:21:20.546408	2021-07-24 12:21:20.546408	74	1
+155	2021-07-24 12:21:20.546408	2021-07-24 12:21:20.546408	74	2
+156	2021-07-24 12:21:20.546408	2021-07-24 12:21:20.546408	85	1
+157	2021-07-24 12:21:20.546408	2021-07-24 12:21:20.546408	85	2
+158	2021-07-24 12:21:20.546408	2021-07-24 12:21:20.546408	86	1
+159	2021-07-24 12:21:20.546408	2021-07-24 12:21:20.546408	86	2
+160	2021-07-24 12:21:20.546408	2021-07-24 12:21:20.546408	75	1
+161	2021-07-24 12:21:20.546408	2021-07-24 12:21:20.546408	75	2
+162	2021-07-24 12:21:20.546408	2021-07-24 12:21:20.546408	76	1
+163	2021-07-24 12:21:20.546408	2021-07-24 12:21:20.546408	76	2
+164	2021-07-24 12:21:20.546408	2021-07-24 12:21:20.546408	77	1
+165	2021-07-24 12:21:20.546408	2021-07-24 12:21:20.546408	77	2
+166	2021-07-24 12:21:20.546408	2021-07-24 12:21:20.546408	78	1
+167	2021-07-24 12:21:20.546408	2021-07-24 12:21:20.546408	78	2
+168	2021-07-24 12:21:20.546408	2021-07-24 12:21:20.546408	79	1
+169	2021-07-24 12:21:20.546408	2021-07-24 12:21:20.546408	79	2
+170	2021-07-24 12:21:20.546408	2021-07-24 12:21:20.546408	82	1
+171	2021-07-24 12:21:20.546408	2021-07-24 12:21:20.546408	82	2
+172	2021-07-24 12:21:20.546408	2021-07-24 12:21:20.546408	83	1
+173	2021-07-24 12:21:20.546408	2021-07-24 12:21:20.546408	83	2
+174	2021-07-24 12:21:20.546408	2021-07-24 12:21:20.546408	81	1
+175	2021-07-24 12:21:20.546408	2021-07-24 12:21:20.546408	81	2
+176	2021-07-24 12:21:20.546408	2021-07-24 12:21:20.546408	84	1
+177	2021-07-24 12:21:20.546408	2021-07-24 12:21:20.546408	84	2
+178	2021-07-24 12:21:20.546408	2021-07-24 12:21:20.546408	87	1
+179	2021-07-24 12:21:20.546408	2021-07-24 12:21:20.546408	87	2
+180	2021-07-24 12:21:20.546408	2021-07-24 12:21:20.546408	88	1
+181	2021-07-24 12:21:20.546408	2021-07-24 12:21:20.546408	88	2
+182	2021-07-24 12:21:20.546408	2021-07-24 12:21:20.546408	89	1
+183	2021-07-24 12:21:20.546408	2021-07-24 12:21:20.546408	89	2
+184	2021-07-24 12:21:20.546408	2021-07-24 12:21:20.546408	90	1
+185	2021-07-24 12:21:20.546408	2021-07-24 12:21:20.546408	90	2
+186	2021-07-24 12:21:20.546408	2021-07-24 12:21:20.546408	91	1
+187	2021-07-24 12:21:20.546408	2021-07-24 12:21:20.546408	91	2
+188	2021-07-24 12:21:20.563045	2021-07-24 12:21:20.563045	92	1
+189	2021-07-24 12:21:20.563045	2021-07-24 12:21:20.563045	92	2
+190	2021-08-02 11:07:06.272175	2021-08-02 11:07:06.272175	15	4
+191	2021-08-02 11:07:13.743212	2021-08-02 11:07:13.743212	20	4
+192	2021-08-02 11:07:20.088466	2021-08-02 11:07:20.088466	32	4
+193	2021-08-02 11:07:27.932181	2021-08-02 11:07:27.932181	45	4
+194	2021-08-02 11:07:28.543605	2021-08-02 11:07:28.543605	49	4
+195	2021-08-02 11:07:35.501568	2021-08-02 11:07:35.501568	58	4
+196	2021-08-02 11:07:43.183839	2021-08-02 11:07:43.183839	5	4
+197	2021-08-02 11:07:43.599678	2021-08-02 11:07:43.599678	8	4
+198	2021-08-02 11:07:44.365397	2021-08-02 11:07:44.365397	30	4
+199	2021-08-02 11:07:45.759869	2021-08-02 11:07:45.759869	37	4
+200	2021-08-02 11:07:46.173709	2021-08-02 11:07:46.173709	47	4
+201	2021-08-02 11:07:47.334318	2021-08-02 11:07:47.334318	51	4
+202	2021-08-02 11:07:47.905602	2021-08-02 11:07:47.905602	57	4
+203	2021-08-02 11:07:48.913112	2021-08-02 11:07:48.913112	65	4
+204	2021-08-02 11:07:58.326436	2021-08-02 11:07:58.326436	3	4
+205	2021-08-02 11:07:59.223323	2021-08-02 11:07:59.223323	4	4
+206	2021-08-02 11:08:00.042975	2021-08-02 11:08:00.042975	7	4
+207	2021-08-02 11:08:13.459821	2021-08-02 11:08:13.459821	12	4
+208	2021-08-02 11:08:13.93817	2021-08-02 11:08:13.93817	16	4
+209	2021-08-02 11:08:15.096975	2021-08-02 11:08:15.096975	18	4
+210	2021-08-02 11:08:15.556779	2021-08-02 11:08:15.556779	19	4
+211	2021-08-02 11:08:16.599516	2021-08-02 11:08:16.599516	21	4
+212	2021-08-02 11:08:22.360451	2021-08-02 11:08:22.360451	25	4
+213	2021-08-02 11:08:22.768818	2021-08-02 11:08:22.768818	26	4
+214	2021-08-02 11:08:24.104831	2021-08-02 11:08:24.104831	27	4
+215	2021-08-02 11:08:24.944345	2021-08-02 11:08:24.944345	28	4
+216	2021-08-02 11:08:25.683638	2021-08-02 11:08:25.683638	31	4
+217	2021-08-02 11:08:27.04298	2021-08-02 11:08:27.04298	33	4
+218	2021-08-02 11:08:27.605279	2021-08-02 11:08:27.605279	34	4
+219	2021-08-02 11:08:29.140237	2021-08-02 11:08:29.140237	35	4
+220	2021-08-02 11:08:29.590368	2021-08-02 11:08:29.590368	36	4
+221	2021-08-02 11:08:30.173848	2021-08-02 11:08:30.173848	38	4
+222	2021-08-02 11:08:31.386456	2021-08-02 11:08:31.386456	39	4
+223	2021-08-02 11:08:31.805304	2021-08-02 11:08:31.805304	40	4
+224	2021-08-02 11:08:32.498924	2021-08-02 11:08:32.498924	42	4
+225	2021-08-02 11:08:33.149704	2021-08-02 11:08:33.149704	44	4
+226	2021-08-02 11:08:34.603781	2021-08-02 11:08:34.603781	46	4
+227	2021-08-02 11:08:35.052601	2021-08-02 11:08:35.052601	50	4
+228	2021-08-02 11:08:35.62437	2021-08-02 11:08:35.62437	52	4
+229	2021-08-02 11:08:36.980213	2021-08-02 11:08:36.980213	54	4
+230	2021-08-02 11:08:37.519423	2021-08-02 11:08:37.519423	56	4
+231	2021-08-02 11:08:38.854123	2021-08-02 11:08:38.854123	59	4
+232	2021-08-02 11:08:39.495962	2021-08-02 11:08:39.495962	61	4
+233	2021-08-02 11:08:40.528229	2021-08-02 11:08:40.528229	63	4
+234	2021-08-02 11:08:42.552606	2021-08-02 11:08:42.552606	67	4
+235	2021-08-02 11:08:43.173454	2021-08-02 11:08:43.173454	66	4
 \.
 
 
@@ -4060,14 +4257,14 @@ COPY public.acl_board_links_boards_user_roles (id, created, modified, acl_board_
 -- Name: acl_board_links_boards_user_roles_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.acl_board_links_boards_user_roles_seq', 139, true);
+SELECT pg_catalog.setval('public.acl_board_links_boards_user_roles_seq', 235, true);
 
 
 --
 -- Name: acl_board_links_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.acl_board_links_seq', 67, true);
+SELECT pg_catalog.setval('public.acl_board_links_seq', 92, true);
 
 
 --
@@ -4083,7 +4280,6 @@ COPY public.acl_links (id, created, modified, name, url, method, slug, group_id,
 8	2016-02-09 16:51:25.779	2016-02-09 16:51:25.779	Delete webhooks	/webhooks/?	DELETE	delete_webhook	2	1	0	0	0	f
 10	2016-02-09 16:51:25.779	2016-02-09 16:51:25.779	Edit webhooks	/webhooks/?	PUT	edit_webhook	2	1	0	0	0	f
 11	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Forgot password	/users/forgotpassword	POST	users_forgotpassword	1	0	1	0	0	f
-13	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Login	/users/login	POST	users_login	1	0	1	0	1	f
 15	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Organization visibility	/organizations/?/visibility	GET	view_organization_visibility	2	1	0	0	0	f
 16	2016-02-09 16:51:26.139	2016-02-09 16:51:26.139	Post oauth token	/oauth/token	POST	post_oauth_token	1	0	1	0	0	f
 17	2014-08-25 13:14:18.247	2014-08-25 13:14:18.247	Register	/users/register	POST	users_register	1	0	1	0	0	f
@@ -4145,6 +4341,7 @@ COPY public.acl_links (id, created, modified, name, url, method, slug, group_id,
 156	2019-12-16 21:44:29.491548	2019-12-16 21:44:29.491548	Allow to unsubscribe card in public board	/boards/?/lists/?/cards/?/card_subscribers/?	POST	unsubscribe_card	2	1	0	0	0	f
 157	2020-06-12 19:03:13.498349	2020-06-12 19:03:13.498349	Card search with Custom Field	/cards/search	GET	view_card_search_custom_field	3	1	0	1	0	f
 158	2020-06-12 19:21:43.506093	2020-06-12 19:21:43.506093	Card search with Custom Field	/cards/search	GET	view_card_search_custom_field	3	1	0	1	0	f
+159	2021-07-24 12:21:21.858991	2021-07-24 12:21:21.858991	Login	/users/login	POST	users_login	1	0	1	0	0	f
 \.
 
 
@@ -4152,7 +4349,7 @@ COPY public.acl_links (id, created, modified, name, url, method, slug, group_id,
 -- Name: acl_links_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.acl_links_id_seq', 158, true);
+SELECT pg_catalog.setval('public.acl_links_id_seq', 159, true);
 
 
 --
@@ -4206,7 +4403,6 @@ COPY public.acl_links_roles (id, created, modified, acl_link_id, role_id) FROM s
 45	2016-02-20 19:07:47.43	2016-02-20 19:07:47.43	4	2
 46	2016-02-20 19:07:39.589	2016-02-20 19:07:39.589	12	1
 47	2016-02-20 19:07:38.318	2016-02-20 19:07:38.318	6	1
-48	2016-02-22 10:59:06.81	2016-02-22 10:59:06.81	13	3
 49	2016-02-20 19:07:48.396	2016-02-20 19:07:48.396	14	2
 50	2016-02-20 19:07:48.396	2016-02-20 19:07:48.396	14	1
 51	2016-02-20 19:07:45.001	2016-02-20 19:07:45.001	29	2
@@ -4297,6 +4493,7 @@ COPY public.acl_links_roles (id, created, modified, acl_link_id, role_id) FROM s
 1278	2019-12-16 21:44:29.517313	2019-12-16 21:44:29.517313	156	2
 1279	2020-06-12 19:03:13.573564	2020-06-12 19:03:13.573564	157	1
 1280	2020-06-12 19:03:13.573564	2020-06-12 19:03:13.573564	157	2
+1281	2021-07-24 12:21:21.875677	2021-07-24 12:21:21.875677	159	3
 \.
 
 
@@ -4304,7 +4501,7 @@ COPY public.acl_links_roles (id, created, modified, acl_link_id, role_id) FROM s
 -- Name: acl_links_roles_roles_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.acl_links_roles_roles_id_seq', 1280, true);
+SELECT pg_catalog.setval('public.acl_links_roles_roles_id_seq', 1281, true);
 
 
 --
@@ -4405,6 +4602,7 @@ COPY public.board_user_roles (id, created, modified, name, description) FROM std
 1	2016-02-22 17:39:17.68	2016-02-22 17:39:17.68	Owner	Can view and edit cards, remove members, and change settings for the board.
 2	2016-02-22 17:39:17.68	2016-02-22 17:39:17.68	Editor	Can view and edit cards, remove members, but not change settings.
 3	2016-02-22 17:39:17.68	2016-02-22 17:39:17.68	Viewer	Can view only.
+4	2020-08-11 13:03:57.053261	2020-08-11 13:03:57.053261	Restricted	Can view and edit cards, remove members, but not add cards and change settings.
 \.
 
 
@@ -4419,7 +4617,7 @@ SELECT pg_catalog.setval('public.board_user_roles_seq', 4, false);
 -- Data for Name: boards; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.boards (id, created, modified, user_id, organization_id, name, board_visibility, background_color, background_picture_url, commenting_permissions, voting_permissions, inivitation_permissions, is_closed, is_allow_organization_members_to_join, boards_user_count, list_count, card_count, boards_subscriber_count, background_pattern_url, boards_star_count, is_show_image_front_of_card, background_picture_path, music_name, music_content, archived_list_count, archived_card_count, default_email_list_id, is_default_email_position_as_bottom, custom_fields, auto_subscribe_on_board, auto_subscribe_on_card, sort_by, sort_direction, support_list_id, support_custom_fields) FROM stdin;
+COPY public.boards (id, created, modified, user_id, organization_id, name, board_visibility, background_color, background_picture_url, commenting_permissions, voting_permissions, inivitation_permissions, is_closed, is_allow_organization_members_to_join, boards_user_count, list_count, card_count, boards_subscriber_count, background_pattern_url, boards_star_count, is_show_image_front_of_card, background_picture_path, music_name, music_content, archived_list_count, archived_card_count, default_email_list_id, is_default_email_position_as_bottom, custom_fields, auto_subscribe_on_board, auto_subscribe_on_card, sort_by, sort_direction, support_list_id, support_custom_fields, is_expand_image_front_of_card, show_pending_checklist_item) FROM stdin;
 \.
 
 
@@ -4584,7 +4782,7 @@ SELECT pg_catalog.setval('public.checklists_id_seq', 1, true);
 --
 
 COPY public.cities (id, created, modified, country_id, state_id, latitude, longitude, name, is_active) FROM stdin;
-1	2015-05-21 11:45:47.245	2015-05-21 11:45:47.245	102	1	20	77	undefined	f
+1	2015-05-21 11:45:47.245	2015-05-21 11:45:47.245	240	1	42.1508	-70.8228	Norwell	f
 \.
 
 
@@ -4904,8 +5102,7 @@ SELECT pg_catalog.setval('public.email_templates_id_seq', 11, true);
 --
 
 COPY public.ips (id, created, modified, ip, host, user_agent, "order", city_id, state_id, country_id, latitude, longitude) FROM stdin;
-1	2015-05-21 11:45:47.262	2015-05-21 11:45:47.262	::1	115.111.183.202	Mozilla/5.0 (Windows NT 6.3; WOW64; rv:38.0) Gecko/20100101 Firefox/38.0	0	1	1	102	20	77
-2	2018-10-29 18:23:04.527151	2018-10-29 18:23:04.527151	127.0.0.1	localhost	Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Ubuntu Chromium/70.0.3538.67 Chrome/70.0.3538.67 Safari/537.36	0	0	0	0	0	0
+1	2015-05-21 11:45:47.262	2015-05-21 11:45:47.262	93.184.216.34	115.111.183.202	Mozilla/5.0 (Windows NT 6.3; WOW64; rv:38.0) Gecko/20100101 Firefox/38.0	0	1	1	240	42.1507999999999967	-70.8228000000000009
 \.
 
 
@@ -5420,10 +5617,6 @@ SELECT pg_catalog.setval('public.login_types_id_seq', 2, true);
 --
 
 COPY public.oauth_access_tokens (access_token, client_id, user_id, expires, scope) FROM stdin;
-e536ed90b96ee3e6992f116e604c0fa265e8f92e	7742632501382313	\N	2017-08-30 18:59:56	read
-de501595ad502477aada8f67198a629a0c3b87b5	7742632501382313	\N	2018-10-29 14:52:53	read
-7f51fe296aff40591a1e90de4086a10be756112a	7742632501382313	\N	2018-10-29 14:52:54	read
-59dc4f65bf276d798d96de117791b38f47d434e6	7742632501382313	user	2018-10-29 14:53:04	read write
 \.
 
 
@@ -5475,10 +5668,6 @@ COPY public.oauth_jwt (client_id, subject, public_key) FROM stdin;
 --
 
 COPY public.oauth_refresh_tokens (refresh_token, client_id, user_id, expires, scope) FROM stdin;
-8adf4daa06961f18d2afda535b2f4463193c62f5	7742632501382313	admin	2015-04-16 12:55:32	\N
-b43d289f47100a9c70ebd21f31c15db059ef82bb	7742632501382313	admin	2015-06-04 08:15:47	\N
-52831802ce6fbd12bfbe34f1def7b679a0822a18	7742632501382313	admin	2015-06-20 07:23:34	\N
-1bcecd030089c64ec7615dee08e61c404d205eb3	7742632501382313	user	2018-11-12 13:53:04	read write
 \.
 
 
@@ -5573,6 +5762,7 @@ COPY public.setting_categories (id, created, modified, parent_id, name, descript
 14	2017-08-30 17:59:02.929467	2017-08-30 17:59:02.929467	\N	Notifications	\N	4
 15	2018-10-29 19:23:34.416581	2018-10-29 19:23:34.416581	\N	Board	\N	6
 16	2018-10-29 19:23:34.423174	2018-10-29 19:23:34.423174	\N	User	\N	7
+17	2021-07-24 12:21:21.884956	2021-07-24 12:21:21.884956	\N	Mobile App	\N	8
 \.
 
 
@@ -5580,7 +5770,7 @@ COPY public.setting_categories (id, created, modified, parent_id, name, descript
 -- Name: setting_categories_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.setting_categories_id_seq', 16, true);
+SELECT pg_catalog.setval('public.setting_categories_id_seq', 17, true);
 
 
 --
@@ -5618,6 +5808,7 @@ COPY public.settings (id, setting_category_id, setting_category_parent_id, name,
 19	15	0	LABEL_ICON	icon-circle	<a href="https://fontawesome.com/v3.2.1/icons/" target="_blank">Font\nAwesome</a> class name. Recommended: icon-circle, icon-bullhorn,\nicon-tag, icon-bookmark, icon-pushpin, icon-star	text	\N	Label Icon	1
 72	15	0	CALENDAR_VIEW_CARD_COLOR	Default Color	\N	select	Past Present Future colors based on Due Date, Card Color, Color of first Label	Calendar View Card Color 	4
 63	14	0	DEFAULT_EMAIL_NOTIFICATION	Instantly		select	Never,Periodically,Instantly,Daily,Weekly	Default Email Notification	3
+73	6	0	UNSPLASH_API_KEY		Get the Unsplash API Key  by visiting <a href="https://unsplash.com/developers" target="_blank">https://unsplash.com/developers</a>	text	\N	Unsplash API Key	2
 \.
 
 
@@ -5625,7 +5816,7 @@ COPY public.settings (id, setting_category_id, setting_category_parent_id, name,
 -- Name: settings_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.settings_id_seq', 72, true);
+SELECT pg_catalog.setval('public.settings_id_seq', 73, true);
 
 
 --
@@ -5633,7 +5824,7 @@ SELECT pg_catalog.setval('public.settings_id_seq', 72, true);
 --
 
 COPY public.states (id, created, modified, country_id, name, is_active) FROM stdin;
-1	2015-05-21 11:45:47.229	2015-05-21 11:45:47.229	102	undefined	f
+1	2015-05-21 11:45:47.229	2015-05-21 11:45:47.229	240	Massachusetts	f
 \.
 
 
@@ -5918,9 +6109,6 @@ SELECT pg_catalog.setval('public.timezones_id_seq', 324, true);
 --
 
 COPY public.user_logins (id, created, modified, user_id, ip_id, user_agent, is_login_failed) FROM stdin;
-1	2015-05-21 11:45:47.266	2015-05-21 11:45:47.266	1	1	Mozilla/5.0 (Windows NT 6.3; WOW64; rv:38.0) Gecko/20100101 Firefox/38.0	f
-2	2015-06-06 10:53:34.529	2015-06-06 10:53:34.529	1	1	Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/43.0.2357.81 Safari/537.36	f
-3	2018-10-29 18:23:04.754669	2018-10-29 18:23:04.754669	2	2	Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Ubuntu Chromium/70.0.3538.67 Chrome/70.0.3538.67 Safari/537.36	f
 \.
 
 
@@ -5928,15 +6116,30 @@ COPY public.user_logins (id, created, modified, user_id, ip_id, user_agent, is_l
 -- Name: user_logins_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.user_logins_id_seq', 3, true);
+SELECT pg_catalog.setval('public.user_logins_id_seq', 4, true);
+
+
+--
+-- Data for Name: user_push_tokens; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.user_push_tokens (id, created, modified, user_id, token, device_serial, device_modal, device_brand, device_manufacturer, device_version, app_version, device_os, appname, last_push_notified, is_active) FROM stdin;
+\.
+
+
+--
+-- Name: user_push_tokens_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.user_push_tokens_id_seq', 1, false);
 
 
 --
 -- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.users (id, created, modified, role_id, username, email, password, full_name, initials, about_me, profile_picture_path, notification_frequency, is_allow_desktop_notification, is_active, is_email_confirmed, created_organization_count, created_board_count, joined_organization_count, list_count, joined_card_count, created_card_count, joined_board_count, checklist_count, checklist_item_completed_count, checklist_item_count, activity_count, card_voter_count, last_activity_id, last_login_date, last_login_ip_id, ip_id, login_type_id, is_productivity_beats, user_login_count, is_ldap, is_send_newsletter, last_email_notified_activity_id, owner_board_count, member_board_count, owner_organization_count, member_organization_count, language, timezone, default_desktop_notification, is_list_notifications_enabled, is_card_notifications_enabled, is_card_members_notifications_enabled, is_card_labels_notifications_enabled, is_card_checklists_notifications_enabled, is_card_attachments_notifications_enabled, is_intro_video_skipped, is_invite_from_board, is_two_factor_authentication_enabled, two_factor_authentication_hash, persist_card_divider_position) FROM stdin;
-1	2014-06-03 12:40:41.189	2015-04-02 16:26:03.939	1	admin	board@restya.com	$2y$12$QiJW6TjPKzDZPAuoWEex9OjPHQF33YzfkdC09FhasgPO.MjZ5btKe	New Admin	PA	Added About Me	client/img/default-admin-user.png	\N	f	t	t	0	0	0	0	0	0	0	0	0	0	0	0	2	2015-06-06 10:53:34.46	1	\N	2	t	2	f	2	0	0	0	0	0	\N	Europe/Andorra	t	t	t	t	t	t	t	f	f	f	\N	\N
+COPY public.users (id, created, modified, role_id, username, email, password, full_name, initials, about_me, profile_picture_path, notification_frequency, is_allow_desktop_notification, is_active, is_email_confirmed, created_organization_count, created_board_count, joined_organization_count, list_count, joined_card_count, created_card_count, joined_board_count, checklist_count, checklist_item_completed_count, checklist_item_count, activity_count, card_voter_count, last_activity_id, last_login_date, last_login_ip_id, ip_id, login_type_id, is_productivity_beats, user_login_count, is_ldap, is_send_newsletter, last_email_notified_activity_id, owner_board_count, member_board_count, owner_organization_count, member_organization_count, language, timezone, default_desktop_notification, is_list_notifications_enabled, is_card_notifications_enabled, is_card_members_notifications_enabled, is_card_labels_notifications_enabled, is_card_checklists_notifications_enabled, is_card_attachments_notifications_enabled, is_intro_video_skipped, is_invite_from_board, is_two_factor_authentication_enabled, two_factor_authentication_hash, persist_card_divider_position, is_saml, next_community_edition_popup_on, is_show_community_edition_popup) FROM stdin;
+1	2014-06-03 12:40:41.189	2015-04-02 16:26:03.939	1	admin	board@restya.com	$2y$12$QiJW6TjPKzDZPAuoWEex9OjPHQF33YzfkdC09FhasgPO.MjZ5btKe	New Admin	PA	Added About Me	client/img/default-admin-user.png	\N	f	t	t	0	0	0	0	0	0	0	0	0	0	0	0	2	2021-08-02 11:06:17.586343	1	1	2	t	0	f	2	0	0	0	0	0	\N	Europe/Andorra	f	f	f	f	f	f	f	f	f	f	\N	\N	f	2021-09-01	f
 \.
 
 
@@ -5963,7 +6166,7 @@ SELECT pg_catalog.setval('public.webhooks_id_seq', 1, false);
 
 
 --
--- Name: acl_board_links_boards_user_roles_id; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: acl_board_links_boards_user_roles acl_board_links_boards_user_roles_id; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.acl_board_links_boards_user_roles
@@ -5971,7 +6174,7 @@ ALTER TABLE ONLY public.acl_board_links_boards_user_roles
 
 
 --
--- Name: acl_board_links_id; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: acl_board_links acl_board_links_id; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.acl_board_links
@@ -5979,7 +6182,7 @@ ALTER TABLE ONLY public.acl_board_links
 
 
 --
--- Name: acl_links_roles_id; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: acl_links_roles acl_links_roles_id; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.acl_links_roles
@@ -5987,7 +6190,7 @@ ALTER TABLE ONLY public.acl_links_roles
 
 
 --
--- Name: acl_organization_links_id; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: acl_organization_links acl_organization_links_id; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.acl_organization_links
@@ -5995,7 +6198,7 @@ ALTER TABLE ONLY public.acl_organization_links
 
 
 --
--- Name: acl_organization_links_organizations_user_roles_id; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: acl_organization_links_organizations_user_roles acl_organization_links_organizations_user_roles_id; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.acl_organization_links_organizations_user_roles
@@ -6003,7 +6206,7 @@ ALTER TABLE ONLY public.acl_organization_links_organizations_user_roles
 
 
 --
--- Name: activities_id; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: activities activities_id; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.activities
@@ -6011,7 +6214,7 @@ ALTER TABLE ONLY public.activities
 
 
 --
--- Name: board_stars_id; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: board_stars board_stars_id; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.board_stars
@@ -6019,7 +6222,7 @@ ALTER TABLE ONLY public.board_stars
 
 
 --
--- Name: board_subscribers_id; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: board_subscribers board_subscribers_id; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.board_subscribers
@@ -6027,7 +6230,7 @@ ALTER TABLE ONLY public.board_subscribers
 
 
 --
--- Name: board_user_roles_id; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: board_user_roles board_user_roles_id; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.board_user_roles
@@ -6035,7 +6238,7 @@ ALTER TABLE ONLY public.board_user_roles
 
 
 --
--- Name: board_users_id; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: boards_users board_users_id; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.boards_users
@@ -6043,7 +6246,7 @@ ALTER TABLE ONLY public.boards_users
 
 
 --
--- Name: boards_id; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: boards boards_id; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.boards
@@ -6051,7 +6254,7 @@ ALTER TABLE ONLY public.boards
 
 
 --
--- Name: card_attachments_id; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: card_attachments card_attachments_id; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.card_attachments
@@ -6059,7 +6262,7 @@ ALTER TABLE ONLY public.card_attachments
 
 
 --
--- Name: card_subscribers_id; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: card_subscribers card_subscribers_id; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.card_subscribers
@@ -6067,7 +6270,7 @@ ALTER TABLE ONLY public.card_subscribers
 
 
 --
--- Name: card_users_id; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: cards_users card_users_id; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.cards_users
@@ -6075,7 +6278,7 @@ ALTER TABLE ONLY public.cards_users
 
 
 --
--- Name: card_voters_id; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: card_voters card_voters_id; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.card_voters
@@ -6083,7 +6286,7 @@ ALTER TABLE ONLY public.card_voters
 
 
 --
--- Name: cards_id; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: cards cards_id; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.cards
@@ -6091,7 +6294,7 @@ ALTER TABLE ONLY public.cards
 
 
 --
--- Name: cards_labels_id; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: cards_labels cards_labels_id; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.cards_labels
@@ -6099,7 +6302,7 @@ ALTER TABLE ONLY public.cards_labels
 
 
 --
--- Name: checklist_items_id; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: checklist_items checklist_items_id; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.checklist_items
@@ -6107,7 +6310,7 @@ ALTER TABLE ONLY public.checklist_items
 
 
 --
--- Name: checklists_id; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: checklists checklists_id; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.checklists
@@ -6115,7 +6318,7 @@ ALTER TABLE ONLY public.checklists
 
 
 --
--- Name: cities_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: cities cities_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.cities
@@ -6123,7 +6326,7 @@ ALTER TABLE ONLY public.cities
 
 
 --
--- Name: countries_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: countries countries_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.countries
@@ -6131,7 +6334,7 @@ ALTER TABLE ONLY public.countries
 
 
 --
--- Name: email_templates_id; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: email_templates email_templates_id; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.email_templates
@@ -6139,7 +6342,7 @@ ALTER TABLE ONLY public.email_templates
 
 
 --
--- Name: ips_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: ips ips_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.ips
@@ -6147,7 +6350,7 @@ ALTER TABLE ONLY public.ips
 
 
 --
--- Name: labels_id; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: labels labels_id; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.labels
@@ -6155,7 +6358,7 @@ ALTER TABLE ONLY public.labels
 
 
 --
--- Name: lists_id; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: lists lists_id; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.lists
@@ -6163,7 +6366,7 @@ ALTER TABLE ONLY public.lists
 
 
 --
--- Name: lists_subscribers_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: list_subscribers lists_subscribers_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.list_subscribers
@@ -6171,7 +6374,7 @@ ALTER TABLE ONLY public.list_subscribers
 
 
 --
--- Name: login_types_id; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: login_types login_types_id; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.login_types
@@ -6179,7 +6382,7 @@ ALTER TABLE ONLY public.login_types
 
 
 --
--- Name: oauth_access_tokens_access_token; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: oauth_access_tokens oauth_access_tokens_access_token; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.oauth_access_tokens
@@ -6187,7 +6390,7 @@ ALTER TABLE ONLY public.oauth_access_tokens
 
 
 --
--- Name: oauth_authorization_codes_authorization_code; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: oauth_authorization_codes oauth_authorization_codes_authorization_code; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.oauth_authorization_codes
@@ -6195,7 +6398,7 @@ ALTER TABLE ONLY public.oauth_authorization_codes
 
 
 --
--- Name: oauth_clients_client_id; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: oauth_clients oauth_clients_client_id; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.oauth_clients
@@ -6203,7 +6406,7 @@ ALTER TABLE ONLY public.oauth_clients
 
 
 --
--- Name: oauth_jwt_client_id; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: oauth_jwt oauth_jwt_client_id; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.oauth_jwt
@@ -6211,7 +6414,7 @@ ALTER TABLE ONLY public.oauth_jwt
 
 
 --
--- Name: oauth_refresh_tokens_refresh_token; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: oauth_refresh_tokens oauth_refresh_tokens_refresh_token; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.oauth_refresh_tokens
@@ -6219,7 +6422,7 @@ ALTER TABLE ONLY public.oauth_refresh_tokens
 
 
 --
--- Name: organization_user_roles_id; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: organization_user_roles organization_user_roles_id; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.organization_user_roles
@@ -6227,7 +6430,7 @@ ALTER TABLE ONLY public.organization_user_roles
 
 
 --
--- Name: organization_users_id; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: organizations_users organization_users_id; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.organizations_users
@@ -6235,7 +6438,7 @@ ALTER TABLE ONLY public.organizations_users
 
 
 --
--- Name: organizations_id; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: organizations organizations_id; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.organizations
@@ -6243,7 +6446,7 @@ ALTER TABLE ONLY public.organizations
 
 
 --
--- Name: roles_id; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: roles roles_id; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.roles
@@ -6251,7 +6454,7 @@ ALTER TABLE ONLY public.roles
 
 
 --
--- Name: setting_categories_id; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: setting_categories setting_categories_id; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.setting_categories
@@ -6259,7 +6462,7 @@ ALTER TABLE ONLY public.setting_categories
 
 
 --
--- Name: settings_id; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: settings settings_id; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.settings
@@ -6267,7 +6470,7 @@ ALTER TABLE ONLY public.settings
 
 
 --
--- Name: states_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: states states_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.states
@@ -6275,7 +6478,7 @@ ALTER TABLE ONLY public.states
 
 
 --
--- Name: user_logins_id; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: user_logins user_logins_id; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.user_logins
@@ -6283,7 +6486,7 @@ ALTER TABLE ONLY public.user_logins
 
 
 --
--- Name: users_id; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: users users_id; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.users
@@ -6291,7 +6494,7 @@ ALTER TABLE ONLY public.users
 
 
 --
--- Name: webhooks_id; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: webhooks webhooks_id; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.webhooks
@@ -6950,7 +7153,133 @@ CREATE INDEX webhooks_url ON public.webhooks USING btree (url);
 
 
 --
--- Name: cities_country_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: cards_labels label_card_count_update; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER label_card_count_update AFTER INSERT OR DELETE OR UPDATE ON public.cards_labels FOR EACH ROW EXECUTE PROCEDURE public.label_card_count_update();
+
+
+--
+-- Name: boards update_board_count; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER update_board_count AFTER INSERT OR DELETE OR UPDATE ON public.boards FOR EACH ROW EXECUTE PROCEDURE public.update_board_count();
+
+
+--
+-- Name: board_stars update_board_star_count; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER update_board_star_count AFTER INSERT OR DELETE OR UPDATE ON public.board_stars FOR EACH ROW EXECUTE PROCEDURE public.update_board_star_count();
+
+
+--
+-- Name: board_subscribers update_board_subscriber_count; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER update_board_subscriber_count AFTER INSERT OR DELETE OR UPDATE ON public.board_subscribers FOR EACH ROW EXECUTE PROCEDURE public.update_board_subscriber_count();
+
+
+--
+-- Name: boards_users update_board_user_count; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER update_board_user_count AFTER INSERT OR DELETE OR UPDATE ON public.boards_users FOR EACH ROW EXECUTE PROCEDURE public.update_board_user_count();
+
+
+--
+-- Name: card_attachments update_card_attachment_count; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER update_card_attachment_count AFTER INSERT OR DELETE OR UPDATE ON public.card_attachments FOR EACH ROW EXECUTE PROCEDURE public.update_card_attachment_count();
+
+
+--
+-- Name: checklists update_card_checklist_count; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER update_card_checklist_count AFTER INSERT OR DELETE OR UPDATE ON public.checklists FOR EACH ROW EXECUTE PROCEDURE public.update_card_checklist_count();
+
+
+--
+-- Name: checklist_items update_card_checklist_item_count; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER update_card_checklist_item_count AFTER INSERT OR DELETE OR UPDATE ON public.checklist_items FOR EACH ROW EXECUTE PROCEDURE public.update_card_checklist_item_count();
+
+
+--
+-- Name: cards update_card_count; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER update_card_count AFTER INSERT OR DELETE OR UPDATE ON public.cards FOR EACH ROW EXECUTE PROCEDURE public.update_card_count();
+
+
+--
+-- Name: card_subscribers update_card_subscriber_count; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER update_card_subscriber_count AFTER INSERT OR DELETE OR UPDATE ON public.card_subscribers FOR EACH ROW EXECUTE PROCEDURE public.update_card_subscriber_count();
+
+
+--
+-- Name: cards_users update_card_user_count; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER update_card_user_count AFTER INSERT OR DELETE OR UPDATE ON public.cards_users FOR EACH ROW EXECUTE PROCEDURE public.update_card_user_count();
+
+
+--
+-- Name: card_voters update_card_voters_count; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER update_card_voters_count AFTER INSERT OR DELETE OR UPDATE ON public.card_voters FOR EACH ROW EXECUTE PROCEDURE public.update_card_voters_count();
+
+
+--
+-- Name: lists update_list_count; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER update_list_count AFTER INSERT OR DELETE OR UPDATE ON public.lists FOR EACH ROW EXECUTE PROCEDURE public.update_list_count();
+
+
+--
+-- Name: list_subscribers update_list_subscriber_count; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER update_list_subscriber_count AFTER INSERT OR DELETE OR UPDATE ON public.list_subscribers FOR EACH ROW EXECUTE PROCEDURE public.update_list_subscriber_count();
+
+
+--
+-- Name: organizations update_organization_count; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER update_organization_count AFTER INSERT OR DELETE OR UPDATE ON public.organizations FOR EACH ROW EXECUTE PROCEDURE public.update_organization_count();
+
+
+--
+-- Name: organizations_users update_organization_user_count; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER update_organization_user_count AFTER INSERT OR DELETE OR UPDATE ON public.organizations_users FOR EACH ROW EXECUTE PROCEDURE public.update_organization_user_count();
+
+
+--
+-- Name: users update_user_delete; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER update_user_delete AFTER DELETE ON public.users FOR EACH ROW EXECUTE PROCEDURE public.update_user_delete();
+
+
+--
+-- Name: user_logins update_users_user_login_count; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER update_users_user_login_count AFTER INSERT OR DELETE OR UPDATE ON public.user_logins FOR EACH ROW EXECUTE PROCEDURE public.update_users_user_login_count();
+
+
+--
+-- Name: cities cities_country_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.cities
@@ -6958,7 +7287,7 @@ ALTER TABLE ONLY public.cities
 
 
 --
--- Name: cities_state_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: cities cities_state_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.cities
@@ -6966,7 +7295,7 @@ ALTER TABLE ONLY public.cities
 
 
 --
--- Name: states_country_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: states states_country_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.states
@@ -6974,1223 +7303,850 @@ ALTER TABLE ONLY public.states
 
 
 --
--- Name: SCHEMA public; Type: ACL; Schema: -; Owner: -
---
-
-REVOKE ALL ON SCHEMA public FROM PUBLIC;
-REVOKE ALL ON SCHEMA public FROM postgres;
-GRANT ALL ON SCHEMA public TO postgres;
-GRANT ALL ON SCHEMA public TO PUBLIC;
-
-
---
 -- Name: SEQUENCE acl_board_links_seq; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON SEQUENCE public.acl_board_links_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE public.acl_board_links_seq FROM restya;
 GRANT ALL ON SEQUENCE public.acl_board_links_seq TO restya;
-GRANT ALL ON SEQUENCE public.acl_board_links_seq TO postgres;
 
 
 --
 -- Name: TABLE acl_board_links; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON TABLE public.acl_board_links FROM PUBLIC;
-REVOKE ALL ON TABLE public.acl_board_links FROM restya;
 GRANT ALL ON TABLE public.acl_board_links TO restya;
-GRANT ALL ON TABLE public.acl_board_links TO postgres;
 
 
 --
 -- Name: SEQUENCE acl_board_links_boards_user_roles_seq; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON SEQUENCE public.acl_board_links_boards_user_roles_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE public.acl_board_links_boards_user_roles_seq FROM restya;
 GRANT ALL ON SEQUENCE public.acl_board_links_boards_user_roles_seq TO restya;
-GRANT ALL ON SEQUENCE public.acl_board_links_boards_user_roles_seq TO postgres;
 
 
 --
 -- Name: TABLE acl_board_links_boards_user_roles; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON TABLE public.acl_board_links_boards_user_roles FROM PUBLIC;
-REVOKE ALL ON TABLE public.acl_board_links_boards_user_roles FROM restya;
 GRANT ALL ON TABLE public.acl_board_links_boards_user_roles TO restya;
-GRANT ALL ON TABLE public.acl_board_links_boards_user_roles TO postgres;
 
 
 --
 -- Name: TABLE acl_board_links_listing; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON TABLE public.acl_board_links_listing FROM PUBLIC;
-REVOKE ALL ON TABLE public.acl_board_links_listing FROM restya;
 GRANT ALL ON TABLE public.acl_board_links_listing TO restya;
-GRANT ALL ON TABLE public.acl_board_links_listing TO postgres;
 
 
 --
 -- Name: SEQUENCE acl_links_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON SEQUENCE public.acl_links_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE public.acl_links_id_seq FROM restya;
 GRANT ALL ON SEQUENCE public.acl_links_id_seq TO restya;
-GRANT ALL ON SEQUENCE public.acl_links_id_seq TO postgres;
 
 
 --
 -- Name: TABLE acl_links; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON TABLE public.acl_links FROM PUBLIC;
-REVOKE ALL ON TABLE public.acl_links FROM restya;
 GRANT ALL ON TABLE public.acl_links TO restya;
-GRANT ALL ON TABLE public.acl_links TO postgres;
 
 
 --
 -- Name: SEQUENCE acl_links_roles_roles_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON SEQUENCE public.acl_links_roles_roles_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE public.acl_links_roles_roles_id_seq FROM restya;
 GRANT ALL ON SEQUENCE public.acl_links_roles_roles_id_seq TO restya;
-GRANT ALL ON SEQUENCE public.acl_links_roles_roles_id_seq TO postgres;
 
 
 --
 -- Name: TABLE acl_links_roles; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON TABLE public.acl_links_roles FROM PUBLIC;
-REVOKE ALL ON TABLE public.acl_links_roles FROM restya;
 GRANT ALL ON TABLE public.acl_links_roles TO restya;
-GRANT ALL ON TABLE public.acl_links_roles TO postgres;
 
 
 --
 -- Name: TABLE acl_links_listing; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON TABLE public.acl_links_listing FROM PUBLIC;
-REVOKE ALL ON TABLE public.acl_links_listing FROM restya;
 GRANT ALL ON TABLE public.acl_links_listing TO restya;
-GRANT ALL ON TABLE public.acl_links_listing TO postgres;
 
 
 --
 -- Name: SEQUENCE acl_organization_links_seq; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON SEQUENCE public.acl_organization_links_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE public.acl_organization_links_seq FROM restya;
 GRANT ALL ON SEQUENCE public.acl_organization_links_seq TO restya;
-GRANT ALL ON SEQUENCE public.acl_organization_links_seq TO postgres;
 
 
 --
 -- Name: TABLE acl_organization_links; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON TABLE public.acl_organization_links FROM PUBLIC;
-REVOKE ALL ON TABLE public.acl_organization_links FROM restya;
 GRANT ALL ON TABLE public.acl_organization_links TO restya;
-GRANT ALL ON TABLE public.acl_organization_links TO postgres;
 
 
 --
 -- Name: SEQUENCE acl_organization_links_organizations_user_roles_seq; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON SEQUENCE public.acl_organization_links_organizations_user_roles_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE public.acl_organization_links_organizations_user_roles_seq FROM restya;
 GRANT ALL ON SEQUENCE public.acl_organization_links_organizations_user_roles_seq TO restya;
-GRANT ALL ON SEQUENCE public.acl_organization_links_organizations_user_roles_seq TO postgres;
 
 
 --
 -- Name: TABLE acl_organization_links_organizations_user_roles; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON TABLE public.acl_organization_links_organizations_user_roles FROM PUBLIC;
-REVOKE ALL ON TABLE public.acl_organization_links_organizations_user_roles FROM restya;
 GRANT ALL ON TABLE public.acl_organization_links_organizations_user_roles TO restya;
-GRANT ALL ON TABLE public.acl_organization_links_organizations_user_roles TO postgres;
 
 
 --
 -- Name: TABLE acl_organization_links_listing; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON TABLE public.acl_organization_links_listing FROM PUBLIC;
-REVOKE ALL ON TABLE public.acl_organization_links_listing FROM restya;
 GRANT ALL ON TABLE public.acl_organization_links_listing TO restya;
-GRANT ALL ON TABLE public.acl_organization_links_listing TO postgres;
 
 
 --
 -- Name: SEQUENCE activities_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON SEQUENCE public.activities_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE public.activities_id_seq FROM restya;
 GRANT ALL ON SEQUENCE public.activities_id_seq TO restya;
-GRANT ALL ON SEQUENCE public.activities_id_seq TO postgres;
 
 
 --
 -- Name: TABLE activities; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON TABLE public.activities FROM PUBLIC;
-REVOKE ALL ON TABLE public.activities FROM restya;
 GRANT ALL ON TABLE public.activities TO restya;
-GRANT ALL ON TABLE public.activities TO postgres;
 
 
 --
 -- Name: SEQUENCE boards_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON SEQUENCE public.boards_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE public.boards_id_seq FROM restya;
 GRANT ALL ON SEQUENCE public.boards_id_seq TO restya;
-GRANT ALL ON SEQUENCE public.boards_id_seq TO postgres;
 
 
 --
 -- Name: TABLE boards; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON TABLE public.boards FROM PUBLIC;
-REVOKE ALL ON TABLE public.boards FROM restya;
 GRANT ALL ON TABLE public.boards TO restya;
-GRANT ALL ON TABLE public.boards TO postgres;
 
 
 --
 -- Name: SEQUENCE cards_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON SEQUENCE public.cards_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE public.cards_id_seq FROM restya;
 GRANT ALL ON SEQUENCE public.cards_id_seq TO restya;
-GRANT ALL ON SEQUENCE public.cards_id_seq TO postgres;
 
 
 --
 -- Name: TABLE cards; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON TABLE public.cards FROM PUBLIC;
-REVOKE ALL ON TABLE public.cards FROM restya;
 GRANT ALL ON TABLE public.cards TO restya;
-GRANT ALL ON TABLE public.cards TO postgres;
 
 
 --
 -- Name: SEQUENCE checklist_items_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON SEQUENCE public.checklist_items_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE public.checklist_items_id_seq FROM restya;
 GRANT ALL ON SEQUENCE public.checklist_items_id_seq TO restya;
-GRANT ALL ON SEQUENCE public.checklist_items_id_seq TO postgres;
 
 
 --
 -- Name: TABLE checklist_items; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON TABLE public.checklist_items FROM PUBLIC;
-REVOKE ALL ON TABLE public.checklist_items FROM restya;
 GRANT ALL ON TABLE public.checklist_items TO restya;
-GRANT ALL ON TABLE public.checklist_items TO postgres;
 
 
 --
 -- Name: SEQUENCE checklists_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON SEQUENCE public.checklists_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE public.checklists_id_seq FROM restya;
 GRANT ALL ON SEQUENCE public.checklists_id_seq TO restya;
-GRANT ALL ON SEQUENCE public.checklists_id_seq TO postgres;
 
 
 --
 -- Name: TABLE checklists; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON TABLE public.checklists FROM PUBLIC;
-REVOKE ALL ON TABLE public.checklists FROM restya;
 GRANT ALL ON TABLE public.checklists TO restya;
-GRANT ALL ON TABLE public.checklists TO postgres;
 
 
 --
 -- Name: SEQUENCE labels_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON SEQUENCE public.labels_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE public.labels_id_seq FROM restya;
 GRANT ALL ON SEQUENCE public.labels_id_seq TO restya;
-GRANT ALL ON SEQUENCE public.labels_id_seq TO postgres;
 
 
 --
 -- Name: TABLE labels; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON TABLE public.labels FROM PUBLIC;
-REVOKE ALL ON TABLE public.labels FROM restya;
 GRANT ALL ON TABLE public.labels TO restya;
-GRANT ALL ON TABLE public.labels TO postgres;
 
 
 --
 -- Name: SEQUENCE lists_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON SEQUENCE public.lists_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE public.lists_id_seq FROM restya;
 GRANT ALL ON SEQUENCE public.lists_id_seq TO restya;
-GRANT ALL ON SEQUENCE public.lists_id_seq TO postgres;
 
 
 --
 -- Name: TABLE lists; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON TABLE public.lists FROM PUBLIC;
-REVOKE ALL ON TABLE public.lists FROM restya;
 GRANT ALL ON TABLE public.lists TO restya;
-GRANT ALL ON TABLE public.lists TO postgres;
 
 
 --
 -- Name: SEQUENCE organizations_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON SEQUENCE public.organizations_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE public.organizations_id_seq FROM restya;
 GRANT ALL ON SEQUENCE public.organizations_id_seq TO restya;
-GRANT ALL ON SEQUENCE public.organizations_id_seq TO postgres;
 
 
 --
 -- Name: TABLE organizations; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON TABLE public.organizations FROM PUBLIC;
-REVOKE ALL ON TABLE public.organizations FROM restya;
 GRANT ALL ON TABLE public.organizations TO restya;
-GRANT ALL ON TABLE public.organizations TO postgres;
 
 
 --
 -- Name: SEQUENCE users_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON SEQUENCE public.users_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE public.users_id_seq FROM restya;
 GRANT ALL ON SEQUENCE public.users_id_seq TO restya;
-GRANT ALL ON SEQUENCE public.users_id_seq TO postgres;
 
 
 --
 -- Name: TABLE users; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON TABLE public.users FROM PUBLIC;
-REVOKE ALL ON TABLE public.users FROM restya;
 GRANT ALL ON TABLE public.users TO restya;
-GRANT ALL ON TABLE public.users TO postgres;
 
 
 --
 -- Name: TABLE activities_listing; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON TABLE public.activities_listing FROM PUBLIC;
-REVOKE ALL ON TABLE public.activities_listing FROM restya;
 GRANT ALL ON TABLE public.activities_listing TO restya;
-GRANT ALL ON TABLE public.activities_listing TO postgres;
 
 
 --
 -- Name: SEQUENCE boards_users_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON SEQUENCE public.boards_users_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE public.boards_users_id_seq FROM restya;
 GRANT ALL ON SEQUENCE public.boards_users_id_seq TO restya;
-GRANT ALL ON SEQUENCE public.boards_users_id_seq TO postgres;
 
 
 --
 -- Name: TABLE boards_users; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON TABLE public.boards_users FROM PUBLIC;
-REVOKE ALL ON TABLE public.boards_users FROM restya;
 GRANT ALL ON TABLE public.boards_users TO restya;
-GRANT ALL ON TABLE public.boards_users TO postgres;
 
 
 --
 -- Name: TABLE boards_users_listing; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON TABLE public.boards_users_listing FROM PUBLIC;
-REVOKE ALL ON TABLE public.boards_users_listing FROM restya;
 GRANT ALL ON TABLE public.boards_users_listing TO restya;
-GRANT ALL ON TABLE public.boards_users_listing TO postgres;
 
 
 --
 -- Name: TABLE admin_boards_listing; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON TABLE public.admin_boards_listing FROM PUBLIC;
-REVOKE ALL ON TABLE public.admin_boards_listing FROM restya;
 GRANT ALL ON TABLE public.admin_boards_listing TO restya;
-GRANT ALL ON TABLE public.admin_boards_listing TO postgres;
 
 
 --
 -- Name: TABLE cities; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON TABLE public.cities FROM PUBLIC;
-REVOKE ALL ON TABLE public.cities FROM restya;
 GRANT ALL ON TABLE public.cities TO restya;
-GRANT ALL ON TABLE public.cities TO postgres;
 
 
 --
 -- Name: TABLE countries; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON TABLE public.countries FROM PUBLIC;
-REVOKE ALL ON TABLE public.countries FROM restya;
 GRANT ALL ON TABLE public.countries TO restya;
-GRANT ALL ON TABLE public.countries TO postgres;
 
 
 --
 -- Name: SEQUENCE ips_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON SEQUENCE public.ips_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE public.ips_id_seq FROM restya;
 GRANT ALL ON SEQUENCE public.ips_id_seq TO restya;
-GRANT ALL ON SEQUENCE public.ips_id_seq TO postgres;
 
 
 --
 -- Name: TABLE ips; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON TABLE public.ips FROM PUBLIC;
-REVOKE ALL ON TABLE public.ips FROM restya;
 GRANT ALL ON TABLE public.ips TO restya;
-GRANT ALL ON TABLE public.ips TO postgres;
 
 
 --
 -- Name: SEQUENCE login_types_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON SEQUENCE public.login_types_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE public.login_types_id_seq FROM restya;
 GRANT ALL ON SEQUENCE public.login_types_id_seq TO restya;
-GRANT ALL ON SEQUENCE public.login_types_id_seq TO postgres;
 
 
 --
 -- Name: TABLE login_types; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON TABLE public.login_types FROM PUBLIC;
-REVOKE ALL ON TABLE public.login_types FROM restya;
 GRANT ALL ON TABLE public.login_types TO restya;
-GRANT ALL ON TABLE public.login_types TO postgres;
 
 
 --
 -- Name: TABLE states; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON TABLE public.states FROM PUBLIC;
-REVOKE ALL ON TABLE public.states FROM restya;
 GRANT ALL ON TABLE public.states TO restya;
-GRANT ALL ON TABLE public.states TO postgres;
 
 
 --
 -- Name: TABLE admin_users_listing; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON TABLE public.admin_users_listing FROM PUBLIC;
-REVOKE ALL ON TABLE public.admin_users_listing FROM restya;
 GRANT ALL ON TABLE public.admin_users_listing TO restya;
-GRANT ALL ON TABLE public.admin_users_listing TO postgres;
 
 
 --
 -- Name: SEQUENCE attachments_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON SEQUENCE public.attachments_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE public.attachments_id_seq FROM restya;
 GRANT ALL ON SEQUENCE public.attachments_id_seq TO restya;
-GRANT ALL ON SEQUENCE public.attachments_id_seq TO postgres;
 
 
 --
 -- Name: SEQUENCE boards_stars_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON SEQUENCE public.boards_stars_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE public.boards_stars_id_seq FROM restya;
 GRANT ALL ON SEQUENCE public.boards_stars_id_seq TO restya;
-GRANT ALL ON SEQUENCE public.boards_stars_id_seq TO postgres;
 
 
 --
 -- Name: TABLE board_stars; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON TABLE public.board_stars FROM PUBLIC;
-REVOKE ALL ON TABLE public.board_stars FROM restya;
 GRANT ALL ON TABLE public.board_stars TO restya;
-GRANT ALL ON TABLE public.board_stars TO postgres;
 
 
 --
 -- Name: SEQUENCE boards_subscribers_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON SEQUENCE public.boards_subscribers_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE public.boards_subscribers_id_seq FROM restya;
 GRANT ALL ON SEQUENCE public.boards_subscribers_id_seq TO restya;
-GRANT ALL ON SEQUENCE public.boards_subscribers_id_seq TO postgres;
 
 
 --
 -- Name: TABLE board_subscribers; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON TABLE public.board_subscribers FROM PUBLIC;
-REVOKE ALL ON TABLE public.board_subscribers FROM restya;
 GRANT ALL ON TABLE public.board_subscribers TO restya;
-GRANT ALL ON TABLE public.board_subscribers TO postgres;
 
 
 --
 -- Name: SEQUENCE board_user_roles_seq; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON SEQUENCE public.board_user_roles_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE public.board_user_roles_seq FROM restya;
 GRANT ALL ON SEQUENCE public.board_user_roles_seq TO restya;
-GRANT ALL ON SEQUENCE public.board_user_roles_seq TO postgres;
 
 
 --
 -- Name: TABLE board_user_roles; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON TABLE public.board_user_roles FROM PUBLIC;
-REVOKE ALL ON TABLE public.board_user_roles FROM restya;
 GRANT ALL ON TABLE public.board_user_roles TO restya;
-GRANT ALL ON TABLE public.board_user_roles TO postgres;
 
 
 --
 -- Name: SEQUENCE cards_labels_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON SEQUENCE public.cards_labels_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE public.cards_labels_id_seq FROM restya;
 GRANT ALL ON SEQUENCE public.cards_labels_id_seq TO restya;
-GRANT ALL ON SEQUENCE public.cards_labels_id_seq TO postgres;
 
 
 --
 -- Name: TABLE cards_labels; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON TABLE public.cards_labels FROM PUBLIC;
-REVOKE ALL ON TABLE public.cards_labels FROM restya;
 GRANT ALL ON TABLE public.cards_labels TO restya;
-GRANT ALL ON TABLE public.cards_labels TO postgres;
 
 
 --
 -- Name: TABLE boards_labels_listing; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON TABLE public.boards_labels_listing FROM PUBLIC;
-REVOKE ALL ON TABLE public.boards_labels_listing FROM restya;
 GRANT ALL ON TABLE public.boards_labels_listing TO restya;
-GRANT ALL ON TABLE public.boards_labels_listing TO postgres;
 
 
 --
 -- Name: SEQUENCE card_attachments_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON SEQUENCE public.card_attachments_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE public.card_attachments_id_seq FROM restya;
 GRANT ALL ON SEQUENCE public.card_attachments_id_seq TO restya;
-GRANT ALL ON SEQUENCE public.card_attachments_id_seq TO postgres;
 
 
 --
 -- Name: TABLE card_attachments; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON TABLE public.card_attachments FROM PUBLIC;
-REVOKE ALL ON TABLE public.card_attachments FROM restya;
 GRANT ALL ON TABLE public.card_attachments TO restya;
-GRANT ALL ON TABLE public.card_attachments TO postgres;
 
 
 --
 -- Name: SEQUENCE cards_subscribers_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON SEQUENCE public.cards_subscribers_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE public.cards_subscribers_id_seq FROM restya;
 GRANT ALL ON SEQUENCE public.cards_subscribers_id_seq TO restya;
-GRANT ALL ON SEQUENCE public.cards_subscribers_id_seq TO postgres;
 
 
 --
 -- Name: TABLE card_subscribers; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON TABLE public.card_subscribers FROM PUBLIC;
-REVOKE ALL ON TABLE public.card_subscribers FROM restya;
 GRANT ALL ON TABLE public.card_subscribers TO restya;
-GRANT ALL ON TABLE public.card_subscribers TO postgres;
 
 
 --
 -- Name: SEQUENCE card_voters_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON SEQUENCE public.card_voters_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE public.card_voters_id_seq FROM restya;
 GRANT ALL ON SEQUENCE public.card_voters_id_seq TO restya;
-GRANT ALL ON SEQUENCE public.card_voters_id_seq TO postgres;
 
 
 --
 -- Name: TABLE card_voters; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON TABLE public.card_voters FROM PUBLIC;
-REVOKE ALL ON TABLE public.card_voters FROM restya;
 GRANT ALL ON TABLE public.card_voters TO restya;
-GRANT ALL ON TABLE public.card_voters TO postgres;
 
 
 --
 -- Name: TABLE card_voters_listing; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON TABLE public.card_voters_listing FROM PUBLIC;
-REVOKE ALL ON TABLE public.card_voters_listing FROM restya;
 GRANT ALL ON TABLE public.card_voters_listing TO restya;
-GRANT ALL ON TABLE public.card_voters_listing TO postgres;
 
 
 --
 -- Name: TABLE cards_labels_listing; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON TABLE public.cards_labels_listing FROM PUBLIC;
-REVOKE ALL ON TABLE public.cards_labels_listing FROM restya;
 GRANT ALL ON TABLE public.cards_labels_listing TO restya;
-GRANT ALL ON TABLE public.cards_labels_listing TO postgres;
 
 
 --
 -- Name: SEQUENCE cards_users_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON SEQUENCE public.cards_users_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE public.cards_users_id_seq FROM restya;
 GRANT ALL ON SEQUENCE public.cards_users_id_seq TO restya;
-GRANT ALL ON SEQUENCE public.cards_users_id_seq TO postgres;
 
 
 --
 -- Name: TABLE cards_users; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON TABLE public.cards_users FROM PUBLIC;
-REVOKE ALL ON TABLE public.cards_users FROM restya;
 GRANT ALL ON TABLE public.cards_users TO restya;
-GRANT ALL ON TABLE public.cards_users TO postgres;
 
 
 --
 -- Name: TABLE cards_users_listing; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON TABLE public.cards_users_listing FROM PUBLIC;
-REVOKE ALL ON TABLE public.cards_users_listing FROM restya;
 GRANT ALL ON TABLE public.cards_users_listing TO restya;
-GRANT ALL ON TABLE public.cards_users_listing TO postgres;
 
 
 --
 -- Name: TABLE checklists_listing; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON TABLE public.checklists_listing FROM PUBLIC;
-REVOKE ALL ON TABLE public.checklists_listing FROM restya;
 GRANT ALL ON TABLE public.checklists_listing TO restya;
-GRANT ALL ON TABLE public.checklists_listing TO postgres;
 
 
 --
 -- Name: TABLE cards_listing; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON TABLE public.cards_listing FROM PUBLIC;
-REVOKE ALL ON TABLE public.cards_listing FROM restya;
 GRANT ALL ON TABLE public.cards_listing TO restya;
-GRANT ALL ON TABLE public.cards_listing TO postgres;
 
 
 --
 -- Name: SEQUENCE lists_subscribers_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON SEQUENCE public.lists_subscribers_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE public.lists_subscribers_id_seq FROM restya;
 GRANT ALL ON SEQUENCE public.lists_subscribers_id_seq TO restya;
-GRANT ALL ON SEQUENCE public.lists_subscribers_id_seq TO postgres;
 
 
 --
 -- Name: TABLE list_subscribers; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON TABLE public.list_subscribers FROM PUBLIC;
-REVOKE ALL ON TABLE public.list_subscribers FROM restya;
 GRANT ALL ON TABLE public.list_subscribers TO restya;
-GRANT ALL ON TABLE public.list_subscribers TO postgres;
 
 
 --
 -- Name: TABLE lists_listing; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON TABLE public.lists_listing FROM PUBLIC;
-REVOKE ALL ON TABLE public.lists_listing FROM restya;
 GRANT ALL ON TABLE public.lists_listing TO restya;
-GRANT ALL ON TABLE public.lists_listing TO postgres;
 
 
 --
 -- Name: TABLE boards_listing; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON TABLE public.boards_listing FROM PUBLIC;
-REVOKE ALL ON TABLE public.boards_listing FROM restya;
 GRANT ALL ON TABLE public.boards_listing TO restya;
-GRANT ALL ON TABLE public.boards_listing TO postgres;
 
 
 --
 -- Name: TABLE cards_elasticsearch_listing; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON TABLE public.cards_elasticsearch_listing FROM PUBLIC;
-REVOKE ALL ON TABLE public.cards_elasticsearch_listing FROM restya;
 GRANT ALL ON TABLE public.cards_elasticsearch_listing TO restya;
-GRANT ALL ON TABLE public.cards_elasticsearch_listing TO postgres;
 
 
 --
 -- Name: TABLE checklist_add_listing; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON TABLE public.checklist_add_listing FROM PUBLIC;
-REVOKE ALL ON TABLE public.checklist_add_listing FROM restya;
 GRANT ALL ON TABLE public.checklist_add_listing TO restya;
-GRANT ALL ON TABLE public.checklist_add_listing TO postgres;
 
 
 --
 -- Name: SEQUENCE cities_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON SEQUENCE public.cities_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE public.cities_id_seq FROM restya;
 GRANT ALL ON SEQUENCE public.cities_id_seq TO restya;
-GRANT ALL ON SEQUENCE public.cities_id_seq TO postgres;
 
 
 --
 -- Name: SEQUENCE cities_id_seq1; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON SEQUENCE public.cities_id_seq1 FROM PUBLIC;
-REVOKE ALL ON SEQUENCE public.cities_id_seq1 FROM restya;
 GRANT ALL ON SEQUENCE public.cities_id_seq1 TO restya;
-GRANT ALL ON SEQUENCE public.cities_id_seq1 TO postgres;
 
 
 --
 -- Name: SEQUENCE countries_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON SEQUENCE public.countries_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE public.countries_id_seq FROM restya;
 GRANT ALL ON SEQUENCE public.countries_id_seq TO restya;
-GRANT ALL ON SEQUENCE public.countries_id_seq TO postgres;
 
 
 --
 -- Name: SEQUENCE countries_id_seq1; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON SEQUENCE public.countries_id_seq1 FROM PUBLIC;
-REVOKE ALL ON SEQUENCE public.countries_id_seq1 FROM restya;
 GRANT ALL ON SEQUENCE public.countries_id_seq1 TO restya;
-GRANT ALL ON SEQUENCE public.countries_id_seq1 TO postgres;
 
 
 --
 -- Name: TABLE created_cards_listing; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON TABLE public.created_cards_listing FROM PUBLIC;
-REVOKE ALL ON TABLE public.created_cards_listing FROM restya;
 GRANT ALL ON TABLE public.created_cards_listing TO restya;
-GRANT ALL ON TABLE public.created_cards_listing TO postgres;
 
 
 --
 -- Name: SEQUENCE email_templates_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON SEQUENCE public.email_templates_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE public.email_templates_id_seq FROM restya;
 GRANT ALL ON SEQUENCE public.email_templates_id_seq TO restya;
-GRANT ALL ON SEQUENCE public.email_templates_id_seq TO postgres;
 
 
 --
 -- Name: TABLE email_templates; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON TABLE public.email_templates FROM PUBLIC;
-REVOKE ALL ON TABLE public.email_templates FROM restya;
 GRANT ALL ON TABLE public.email_templates TO restya;
-GRANT ALL ON TABLE public.email_templates TO postgres;
 
 
 --
 -- Name: TABLE gadget_users_listing; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON TABLE public.gadget_users_listing FROM PUBLIC;
-REVOKE ALL ON TABLE public.gadget_users_listing FROM restya;
 GRANT ALL ON TABLE public.gadget_users_listing TO restya;
-GRANT ALL ON TABLE public.gadget_users_listing TO postgres;
 
 
 --
 -- Name: SEQUENCE languages_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON SEQUENCE public.languages_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE public.languages_id_seq FROM restya;
 GRANT ALL ON SEQUENCE public.languages_id_seq TO restya;
-GRANT ALL ON SEQUENCE public.languages_id_seq TO postgres;
 
 
 --
 -- Name: TABLE languages; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON TABLE public.languages FROM PUBLIC;
-REVOKE ALL ON TABLE public.languages FROM restya;
 GRANT ALL ON TABLE public.languages TO restya;
-GRANT ALL ON TABLE public.languages TO postgres;
 
 
 --
 -- Name: SEQUENCE list_subscribers_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON SEQUENCE public.list_subscribers_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE public.list_subscribers_id_seq FROM restya;
 GRANT ALL ON SEQUENCE public.list_subscribers_id_seq TO restya;
-GRANT ALL ON SEQUENCE public.list_subscribers_id_seq TO postgres;
 
 
 --
 -- Name: TABLE oauth_access_tokens; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON TABLE public.oauth_access_tokens FROM PUBLIC;
-REVOKE ALL ON TABLE public.oauth_access_tokens FROM restya;
 GRANT ALL ON TABLE public.oauth_access_tokens TO restya;
-GRANT ALL ON TABLE public.oauth_access_tokens TO postgres;
 
 
 --
 -- Name: TABLE oauth_authorization_codes; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON TABLE public.oauth_authorization_codes FROM PUBLIC;
-REVOKE ALL ON TABLE public.oauth_authorization_codes FROM restya;
 GRANT ALL ON TABLE public.oauth_authorization_codes TO restya;
-GRANT ALL ON TABLE public.oauth_authorization_codes TO postgres;
 
 
 --
 -- Name: TABLE oauth_clients; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON TABLE public.oauth_clients FROM PUBLIC;
-REVOKE ALL ON TABLE public.oauth_clients FROM restya;
 GRANT ALL ON TABLE public.oauth_clients TO restya;
-GRANT ALL ON TABLE public.oauth_clients TO postgres;
 
 
 --
 -- Name: SEQUENCE oauth_clients_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON SEQUENCE public.oauth_clients_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE public.oauth_clients_id_seq FROM restya;
 GRANT ALL ON SEQUENCE public.oauth_clients_id_seq TO restya;
-GRANT ALL ON SEQUENCE public.oauth_clients_id_seq TO postgres;
 
 
 --
 -- Name: SEQUENCE oauth_clients_id_seq1; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON SEQUENCE public.oauth_clients_id_seq1 FROM PUBLIC;
-REVOKE ALL ON SEQUENCE public.oauth_clients_id_seq1 FROM restya;
 GRANT ALL ON SEQUENCE public.oauth_clients_id_seq1 TO restya;
-GRANT ALL ON SEQUENCE public.oauth_clients_id_seq1 TO postgres;
 
 
 --
 -- Name: TABLE oauth_jwt; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON TABLE public.oauth_jwt FROM PUBLIC;
-REVOKE ALL ON TABLE public.oauth_jwt FROM restya;
 GRANT ALL ON TABLE public.oauth_jwt TO restya;
-GRANT ALL ON TABLE public.oauth_jwt TO postgres;
 
 
 --
 -- Name: TABLE oauth_refresh_tokens; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON TABLE public.oauth_refresh_tokens FROM PUBLIC;
-REVOKE ALL ON TABLE public.oauth_refresh_tokens FROM restya;
 GRANT ALL ON TABLE public.oauth_refresh_tokens TO restya;
-GRANT ALL ON TABLE public.oauth_refresh_tokens TO postgres;
 
 
 --
 -- Name: TABLE oauth_scopes; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON TABLE public.oauth_scopes FROM PUBLIC;
-REVOKE ALL ON TABLE public.oauth_scopes FROM restya;
 GRANT ALL ON TABLE public.oauth_scopes TO restya;
-GRANT ALL ON TABLE public.oauth_scopes TO postgres;
 
 
 --
 -- Name: SEQUENCE organizations_users_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON SEQUENCE public.organizations_users_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE public.organizations_users_id_seq FROM restya;
 GRANT ALL ON SEQUENCE public.organizations_users_id_seq TO restya;
-GRANT ALL ON SEQUENCE public.organizations_users_id_seq TO postgres;
 
 
 --
 -- Name: TABLE organizations_users; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON TABLE public.organizations_users FROM PUBLIC;
-REVOKE ALL ON TABLE public.organizations_users FROM restya;
 GRANT ALL ON TABLE public.organizations_users TO restya;
-GRANT ALL ON TABLE public.organizations_users TO postgres;
 
 
 --
 -- Name: TABLE organizations_users_listing; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON TABLE public.organizations_users_listing FROM PUBLIC;
-REVOKE ALL ON TABLE public.organizations_users_listing FROM restya;
 GRANT ALL ON TABLE public.organizations_users_listing TO restya;
-GRANT ALL ON TABLE public.organizations_users_listing TO postgres;
 
 
 --
 -- Name: TABLE organization_listing; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON TABLE public.organization_listing FROM PUBLIC;
-REVOKE ALL ON TABLE public.organization_listing FROM restya;
 GRANT ALL ON TABLE public.organization_listing TO restya;
-GRANT ALL ON TABLE public.organization_listing TO postgres;
 
 
 --
 -- Name: SEQUENCE organization_user_roles_seq; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON SEQUENCE public.organization_user_roles_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE public.organization_user_roles_seq FROM restya;
 GRANT ALL ON SEQUENCE public.organization_user_roles_seq TO restya;
-GRANT ALL ON SEQUENCE public.organization_user_roles_seq TO postgres;
 
 
 --
 -- Name: TABLE organization_user_roles; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON TABLE public.organization_user_roles FROM PUBLIC;
-REVOKE ALL ON TABLE public.organization_user_roles FROM restya;
 GRANT ALL ON TABLE public.organization_user_roles TO restya;
-GRANT ALL ON TABLE public.organization_user_roles TO postgres;
 
 
 --
 -- Name: TABLE organizations_listing; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON TABLE public.organizations_listing FROM PUBLIC;
-REVOKE ALL ON TABLE public.organizations_listing FROM restya;
 GRANT ALL ON TABLE public.organizations_listing TO restya;
-GRANT ALL ON TABLE public.organizations_listing TO postgres;
 
 
 --
 -- Name: SEQUENCE roles_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON SEQUENCE public.roles_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE public.roles_id_seq FROM restya;
 GRANT ALL ON SEQUENCE public.roles_id_seq TO restya;
-GRANT ALL ON SEQUENCE public.roles_id_seq TO postgres;
 
 
 --
 -- Name: TABLE roles; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON TABLE public.roles FROM PUBLIC;
-REVOKE ALL ON TABLE public.roles FROM restya;
 GRANT ALL ON TABLE public.roles TO restya;
-GRANT ALL ON TABLE public.roles TO postgres;
 
 
 --
 -- Name: TABLE role_links_listing; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON TABLE public.role_links_listing FROM PUBLIC;
-REVOKE ALL ON TABLE public.role_links_listing FROM restya;
 GRANT ALL ON TABLE public.role_links_listing TO restya;
-GRANT ALL ON TABLE public.role_links_listing TO postgres;
 
 
 --
 -- Name: TABLE setting_categories; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON TABLE public.setting_categories FROM PUBLIC;
-REVOKE ALL ON TABLE public.setting_categories FROM restya;
 GRANT ALL ON TABLE public.setting_categories TO restya;
-GRANT ALL ON TABLE public.setting_categories TO postgres;
 
 
 --
 -- Name: SEQUENCE setting_categories_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON SEQUENCE public.setting_categories_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE public.setting_categories_id_seq FROM restya;
 GRANT ALL ON SEQUENCE public.setting_categories_id_seq TO restya;
-GRANT ALL ON SEQUENCE public.setting_categories_id_seq TO postgres;
 
 
 --
 -- Name: SEQUENCE settings_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON SEQUENCE public.settings_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE public.settings_id_seq FROM restya;
 GRANT ALL ON SEQUENCE public.settings_id_seq TO restya;
-GRANT ALL ON SEQUENCE public.settings_id_seq TO postgres;
 
 
 --
 -- Name: TABLE settings; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON TABLE public.settings FROM PUBLIC;
-REVOKE ALL ON TABLE public.settings FROM restya;
 GRANT ALL ON TABLE public.settings TO restya;
-GRANT ALL ON TABLE public.settings TO postgres;
 
 
 --
 -- Name: TABLE settings_listing; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON TABLE public.settings_listing FROM PUBLIC;
-REVOKE ALL ON TABLE public.settings_listing FROM restya;
 GRANT ALL ON TABLE public.settings_listing TO restya;
-GRANT ALL ON TABLE public.settings_listing TO postgres;
 
 
 --
 -- Name: TABLE simple_board_listing; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON TABLE public.simple_board_listing FROM PUBLIC;
-REVOKE ALL ON TABLE public.simple_board_listing FROM restya;
 GRANT ALL ON TABLE public.simple_board_listing TO restya;
-GRANT ALL ON TABLE public.simple_board_listing TO postgres;
 
 
 --
 -- Name: SEQUENCE states_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON SEQUENCE public.states_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE public.states_id_seq FROM restya;
 GRANT ALL ON SEQUENCE public.states_id_seq TO restya;
-GRANT ALL ON SEQUENCE public.states_id_seq TO postgres;
 
 
 --
 -- Name: SEQUENCE states_id_seq1; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON SEQUENCE public.states_id_seq1 FROM PUBLIC;
-REVOKE ALL ON SEQUENCE public.states_id_seq1 FROM restya;
 GRANT ALL ON SEQUENCE public.states_id_seq1 TO restya;
-GRANT ALL ON SEQUENCE public.states_id_seq1 TO postgres;
 
 
 --
 -- Name: SEQUENCE timezones_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON SEQUENCE public.timezones_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE public.timezones_id_seq FROM restya;
 GRANT ALL ON SEQUENCE public.timezones_id_seq TO restya;
-GRANT ALL ON SEQUENCE public.timezones_id_seq TO postgres;
 
 
 --
 -- Name: TABLE timezones; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON TABLE public.timezones FROM PUBLIC;
-REVOKE ALL ON TABLE public.timezones FROM restya;
 GRANT ALL ON TABLE public.timezones TO restya;
-GRANT ALL ON TABLE public.timezones TO postgres;
 
 
 --
 -- Name: TABLE user_logins; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON TABLE public.user_logins FROM PUBLIC;
-REVOKE ALL ON TABLE public.user_logins FROM restya;
 GRANT ALL ON TABLE public.user_logins TO restya;
-GRANT ALL ON TABLE public.user_logins TO postgres;
 
 
 --
 -- Name: SEQUENCE user_logins_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON SEQUENCE public.user_logins_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE public.user_logins_id_seq FROM restya;
 GRANT ALL ON SEQUENCE public.user_logins_id_seq TO restya;
-GRANT ALL ON SEQUENCE public.user_logins_id_seq TO postgres;
 
 
 --
 -- Name: TABLE user_logins_listing; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON TABLE public.user_logins_listing FROM PUBLIC;
-REVOKE ALL ON TABLE public.user_logins_listing FROM restya;
 GRANT ALL ON TABLE public.user_logins_listing TO restya;
-GRANT ALL ON TABLE public.user_logins_listing TO postgres;
 
 
 --
 -- Name: TABLE users_cards_listing; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON TABLE public.users_cards_listing FROM PUBLIC;
-REVOKE ALL ON TABLE public.users_cards_listing FROM restya;
 GRANT ALL ON TABLE public.users_cards_listing TO restya;
-GRANT ALL ON TABLE public.users_cards_listing TO postgres;
 
 
 --
 -- Name: TABLE users_listing; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON TABLE public.users_listing FROM PUBLIC;
-REVOKE ALL ON TABLE public.users_listing FROM restya;
 GRANT ALL ON TABLE public.users_listing TO restya;
-GRANT ALL ON TABLE public.users_listing TO postgres;
 
 
 --
 -- Name: SEQUENCE webhooks_id_seq; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON SEQUENCE public.webhooks_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE public.webhooks_id_seq FROM restya;
 GRANT ALL ON SEQUENCE public.webhooks_id_seq TO restya;
-GRANT ALL ON SEQUENCE public.webhooks_id_seq TO postgres;
 
 
 --
 -- Name: TABLE webhooks; Type: ACL; Schema: public; Owner: -
 --
 
-REVOKE ALL ON TABLE public.webhooks FROM PUBLIC;
-REVOKE ALL ON TABLE public.webhooks FROM restya;
 GRANT ALL ON TABLE public.webhooks TO restya;
-GRANT ALL ON TABLE public.webhooks TO postgres;
 
 
 --

@@ -1,4 +1,5 @@
 <% if(!_.isEmpty(activity) && activity != null){ %> 
+	<% if(activity.attributes.type !== 'add_permission'&& activity.attributes.type !== 'remove_permission') { %>
 	<% var unread = ""; %>
 	<% if(!_.isUndefined(authuser) && !_.isUndefined(authuser.user) && !_.isUndefined(activity.from_footer) && parseInt(activity.attributes.id) > parseInt(authuser.user.unread_activity_id)){ %>
 		 <%if(activity.attributes.token !== authuser.access_token){%> 
@@ -25,7 +26,8 @@
 		<i class="avatar avatar-color-194 img-rounded pull-left" title="<%-activity.attributes.full_name %>"></i>
 	<% } %>
 		<div class="media-body">    
-			<%  activity.attributes.organization_name = (activity.attributes.organization_name !== null) ? activity.attributes.organization_name : i18next.t("[deleted]");
+			<%  activity.attributes.comment = filterXSS(activity.attributes.comment);
+				activity.attributes.organization_name = (activity.attributes.organization_name !== null) ? activity.attributes.organization_name : i18next.t("[deleted]");
 				activity.attributes.board_name = (activity.attributes.board_name !== null) ? activity.attributes.board_name : i18next.t("[deleted]");
 				activity.attributes.card_name = (activity.attributes.card_name !== null) ? activity.attributes.card_name : i18next.t("[deleted]");
 				var cardLink;
@@ -115,8 +117,14 @@
 						_.each(matches, function(match) {
 							_username.push(match.substr(1));
 						});
-						if(!_.isEmpty(_username) && !_.isUndefined(authuser.user) && _.contains(_username, authuser.user.username)){
-							comment = filterXSS(activity.attributes.full_name) + ' has mentioned you in card ' + cardLink;
+						if (!_.isEmpty(_username) && !_.isUndefined(authuser.user)){
+							if (_.contains(_username, authuser.user.username)) {
+								comment = filterXSS(activity.attributes.full_name) + ' has mentioned you in card ' + cardLink;
+							} else if (_.contains(_username, 'card')) {
+								comment = filterXSS(activity.attributes.full_name) + ' mentioned all the members in the card ' + cardLink;
+							} else if (_.contains(_username, 'board')) {
+								comment = filterXSS(activity.attributes.full_name) + ' mentioned all the board members in the card ' + cardLink;
+							}
 						} 
 					}
 				}
@@ -125,11 +133,9 @@
 						<div class="activities-list js-activity-<%- activity.attributes.id %>">
 						<% if(activity.attributes.type == 'add_comment') { 
 							var originalComment;
-							if (!_.isUndefined(activity.attributes.revisions) && !_.isEmpty(activity.attributes.revisions) && activity.attributes.revisions !== null) { 
-								activity.attributes.comment = filterXSS(activity.attributes.revisions.old_value.comment);
+							if (!_.isUndefined(activity.attributes.revisions) && !_.isEmpty(activity.attributes.revisions) && activity.attributes.revisions !== null) {
 								originalComment = filterXSS(activity.attributes.revisions.old_value.comment);
-							} else { 
-								activity.attributes.comment = filterXSS(activity.attributes.comment);
+							} else {
 								originalComment = filterXSS(activity.attributes.comment);
 							}
 							if(!_.isUndefined(activity.from_footer)) { %>
@@ -247,6 +253,7 @@
 		<%}%>
 		<% if(!_.isEmpty(unread)){ %>
 			<div class="well-sm clearfix"></div>
+		<%}%>
 		<%}%>
 	<% }else{ %><div class="media-body alert alert-info"><%- i18next.t('No %s available.', { postProcess: 'sprintf', sprintf: [i18next.t('activities')] }) %></div><% } %>
 	

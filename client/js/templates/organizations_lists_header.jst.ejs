@@ -1,41 +1,58 @@
 <div id="js-navbar-default" class="navbar navbar-default" role="navigation">
   <div class="container-fluid">
-    <div class="navbar-left">
-      <h1 class="navbar-left navbar-btn list-group-item-text"><span class="navbar-left"><a href="#/boards" title="<%- SITE_NAME %>"><img src="img/logo.png" alt="[Image: <%- SITE_NAME %>]" title="<%- SITE_NAME %>" class="img-responsive center-block"/></a></span></h1>
-      <ul class="list-inline navbar-left h2 navbar-btn navbar-form text-center">
-        <li class="text-muted"><span class="h5">/</span></li>
-        <li><span class="text-muted h4"><%- i18next.t('Organizations') %></span></li>
-      </ul>
-      <div class="pull-left"> 
-        <div class="js-dropdown dropdown  docmodal-submenu row">
-          <a data-toggle="dropdown" id="dropdownMenu1" class="dropdown-toggle btn btn-link show" href="#"> <i class="icon-cog h3 text-muted"></i></a>
-          <ul role="menu" class="dropdown-menu arrow">
-            <li class="text-center text-muted"><strong><%- i18next.t('Sort') %></strong></li>
-            <li class="divider"></li>
-            <li class="js-sort-by-organizations active"><a title="<%- i18next.t('Name') %>" href="#" class="js-sort-by" data-field="name"><i class="icon icon-arrow-down js-sort-up-organizations"></i><%- i18next.t('Name') %></a></li>
-            <% _.each(user.models,function(organization,key) {
-              if(key === 1) {
-                _.each(organization.attributes.organization_user_roles,function(organization_user_role) {
-                  var organzationOwnerRole;
-                  if(organization_user_role.id === 1) { 
-                    organzationOwnerRole = organization_user_role.name;%>
-                    <li class="js-sort-by-organizations"><a title="<%- i18next.t('%s', {
-                      postProcess: 'sprintf',
-                      sprintf: [organzationOwnerRole]
-                  }) %>" href="#" data-field="username" class="js-sort-by"><%- i18next.t('%s', {
-                    postProcess: 'sprintf',
-                    sprintf: [organzationOwnerRole]
-                }) %> </a></li>
-                  <% }
-              });
-            }
-            }); %>
-            <li class="js-sort-by-organizations"><a title="<%- i18next.t('Created') %>" href="#" data-field="created" class="js-sort-by"><%- i18next.t('Created') %></a></li>
-            <li class="js-sort-by-organizations"><a title="<%- i18next.t('Users Count') %>" href="#" data-field="organizations_user_count" class="js-sort-by"><%- i18next.t('Users Count') %></a></li>
-            <li class="js-sort-by-organizations"><a title="<%- i18next.t('Board Count') %>" href="#" data-field="board_count" class="js-sort-by"><%- i18next.t('Board Count') %></a></li>
+    <div class="row">
+			<div class="pull-left">
+				<div class="clearfix">
+					<h2 class="pull-left navbar-btn list-group-item-text"><span class="pull-left"><a href="#/boards" title="<%- SITE_NAME %>"><img src="img/logo.png" alt="[Image: <%- SITE_NAME %>]" title="<%- SITE_NAME %>" class="img-responsive center-block"/></a></span>
+						<ul class="list-inline pull-left h3 navbar-btn text-center">
+							<li class="navbar-btn text-muted"><span class="h5">&nbsp;/&nbsp;</span></li>
+							<li><span class="text-muted h4"><%- i18next.t('Organizations') %></span></li>
+						</ul>
+					</h2>
+				</div>
+			</div>
+      <div class="navbar-header">
+				<button data-toggle="collapse" data-target=".navbar-collapse" class="navbar-toggle" type="button"> 
+					<span class="sr-only"><%- i18next.t('Toggle navigation') %></span> 
+					<span class="icon-bar"></span> 
+					<span class="icon-bar"></span> 
+					<span class="icon-bar"></span> 
+				</button>
+			</div>
+      <nav class="navbar-collapse collapse mob-no-pad">
+				<div class="navbar-left">
+					<ul class="nav nav-pills pull-left pillsuser-list navbar-btn h4 right-mar">
+						<li class="dropdown"> 
+              <a data-toggle="dropdown" id="dropdownMenu1" class="dropdown-toggle btn btn-link show" href="#"> <i class="icon-cog h3 text-muted"></i></a>
+              <ul role="menu" class="dropdown-menu arrow">
+                <li class="text-center text-muted"><strong><%- i18next.t('Sort') %></strong></li>
+                <li class="divider"></li>
+                <li class="js-sort-by-organizations active"><a title="<%- i18next.t('Name') %>" href="#" class="js-sort-by" data-field="name"><i class="icon icon-arrow-down js-sort-up-organizations"></i><%- i18next.t('Name') %></a></li>
+                <% _.each(user.models,function(organization,key) {
+                  if(key === 1) {
+                    _.each(organization.attributes.organization_user_roles,function(organization_user_role) {
+                      var organzationOwnerRole;
+                      if(organization_user_role.id === 1) { 
+                        organzationOwnerRole = organization_user_role.name;%>
+                        <li class="js-sort-by-organizations"><a title="<%- i18next.t('%s', {
+                          postProcess: 'sprintf',
+                          sprintf: [organzationOwnerRole]
+                      }) %>" href="#" data-field="username" class="js-sort-by"><%- i18next.t('%s', {
+                        postProcess: 'sprintf',
+                        sprintf: [organzationOwnerRole]
+                    }) %> </a></li>
+                      <% }
+                  });
+                }
+                }); %>
+                <li class="js-sort-by-organizations"><a title="<%- i18next.t('Created') %>" href="#" data-field="created" class="js-sort-by"><%- i18next.t('Created') %></a></li>
+                <li class="js-sort-by-organizations"><a title="<%- i18next.t('Users Count') %>" href="#" data-field="organizations_user_count" class="js-sort-by"><%- i18next.t('Users Count') %></a></li>
+                <li class="js-sort-by-organizations"><a title="<%- i18next.t('Board Count') %>" href="#" data-field="board_count" class="js-sort-by"><%- i18next.t('Board Count') %></a></li>
+              </ul>
+            </li>
           </ul>
         </div>
-      </div>
+      </nav>
     </div>
   </div>
 </div>

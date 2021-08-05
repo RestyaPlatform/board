@@ -53,6 +53,11 @@ To upgrade, overwrite application files and apply respective DB script:
 *  v0.6.6 to v0.6.7 - [`/sql/upgrade-0.6.6-0.6.7.sql`](https://github.com/RestyaPlatform/board/blob/master/sql/upgrade-0.6.6-0.6.7.sql)
 *  v0.6.7 to v0.6.8 - [`/sql/upgrade-0.6.7-0.6.8.sql`](https://github.com/RestyaPlatform/board/blob/master/sql/upgrade-0.6.7-0.6.8.sql)
 *  v0.6.8 to v0.6.9 - [`/sql/upgrade-0.6.8-0.6.9.sql`](https://github.com/RestyaPlatform/board/blob/master/sql/upgrade-0.6.8-0.6.9.sql)
+*  v0.6.9 to v1.7 - [`/sql/upgrade-0.6.9-1.7.sql`](https://github.com/RestyaPlatform/board/blob/master/sql/upgrade-0.6.9-1.7.sql)
+
+### To upgrade in linux run the following commands. Overwrite All, when prompted by script:
+sudo wget https://github.com/RestyaPlatform/board/raw/master/restyaboard.sh –no-check-certificate
+sudo ./restyaboard.sh
 
 ### Configuring Restyaboard
 
@@ -61,6 +66,7 @@ To upgrade, overwrite application files and apply respective DB script:
 * Visit admin panel at `/#/settings/6`
 * Update Dropbox App Key by visiting [https://www.dropbox.com/developers/apps/](https://www.dropbox.com/developers/apps/)
 * Update Flickr API Key by visiting [https://www.flickr.com/services/apps/](https://www.flickr.com/services/apps/)
+* Update Unsplash API Key by visiting [https://unsplash.com/developers](https://unsplash.com/developers)
 * Visit `/#/settings/3` for configuring site name, email and server timezone.
 * Change admin email and password
 * To add/reply cards via email, visit `/#/settings/10` to configure IMAP settings

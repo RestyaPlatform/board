@@ -124,8 +124,6 @@
 								  <div class="clearfix" id="manager-area"></div>
 									</div>
 								</div>
-								</span>
-								</span>
 							<% } 
 							if (IS_TWO_FACTOR_AUTHENTICATION_ENABLED === 'true') { 
 								var is_two_factor_authentication_enabled;
@@ -258,8 +256,73 @@
 											</div>
 										</div>
 									</fieldset>
-								</fieldset>
-							<% } %>
+								<% } %>
+							</fieldset>
+							<fieldset class="col-sm-offset-1 well-sm">
+								<legend><span class="show h4"><%- i18next.t('Push Notifications') %></span></legend>
+								<div class="col-xs-12 well-sm">
+									<div class="table-responsive js-boardList-view">
+										<table class="table table-striped table-bordered table-hover list-group-item-text">
+										<thead>
+											<th class="text-center">
+												<%- i18next.t("Device") %>
+											</th>
+											<th class="text-center">
+												<%- i18next.t("Last Notification") %>
+											</th>
+											<th class="text-center">
+												<%- i18next.t("Status") %>
+											</th>
+										</thead>
+										<tbody class="js-pushNotification-list">
+											<% if (!_.isUndefined(user.attributes.user_push_tokens) && user.attributes.user_push_tokens !== null && !_.isEmpty(user.attributes.user_push_tokens) && user.attributes.user_push_tokens.length > 0) { 
+												_.each(user.attributes.user_push_tokens, function(push_notification) { %>
+													<tr>
+														<td class="text-center">
+															<%- push_notification.device_modal %>
+														</td>
+														<td class="text-center">
+															<% if (!_.isUndefined(push_notification.last_push_notified) && !_.isEmpty(push_notification.last_push_notified) && push_notification.last_push_notified !== null) { %>
+																<% setInterval(function() { %>
+																	<% parse_date(push_notification.last_push_notified, authuser, 'js-timeago-user-'+user.attributes.id); %>
+																<% }, 10000); %>
+																<span class="js-timeago-user-<%- user.attributes.id %>"><%= parse_date(push_notification.last_push_notified, authuser, 'js-timeago-user-'+user.attributes.id, true) %></span>
+															<% } else { %>
+																-
+															<% } %>
+														</td>
+														<td>
+															<ul class="list-inline list-group-item-text">
+																<li class="navbar-btn">
+																	<a href="javascript:void(0);" class="btn btn-default btn-xs js-push-notification-<%- push_notification.id %> <%if(push_notification.is_active === "t"){%>js-block-notification<%}else{%>js-unblock-notification<%}%>"
+																	title="<%if(push_notification.is_active === "t"){%><%- i18next.t('Disable') %><%}else{%><%- i18next.t('Enable') %><%}%>" data-id="<%- push_notification.id %>">
+																		<i class="icon-exclamation"></i>
+																		<span data-id="<%- push_notification.id %>">
+																			<%if(push_notification.is_active === "t"){%>
+																			<%- i18next.t("Disable") %>
+																			<%}else{%>
+																			<%- i18next.t("Enable") %>
+																			<%}%>
+																		</span></a>
+																</li>
+															</ul>
+														</td>
+													</tr>
+											<% 		});
+												} else { %>
+												<tr>
+													<td class="text-center" colspan="3">
+														<%= i18next.t('No push notifications setup. Please install %s .', { 
+															postProcess: 'sprintf', sprintf: ['<a href="http://restya.com/board/mobile-app?utm_source=Restyaboard - ' + SITE_NAME + '&utm_medium=web&utm_campaign=profle_settings_push_notification" target="_blank" title="Restyaboard Mobile App" class="text-primary">Restyaboard Mobile App</a>'] 
+														}) %>
+													</td>
+												</tr>
+											<% } %>
+										</tbody>
+										</table>
+									</div>
+								</div>
+							</fieldset>
 							<div class="col-xs-9 pull-right clearfix">
 								<div class="form-group">
 									<label for="submit2" class="col-sm-1 control-label sr-only"><%- i18next.t("Submit") %></label>

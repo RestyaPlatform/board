@@ -8,7 +8,7 @@
  * @package    Restyaboard
  * @subpackage Core
  * @author     Restya <info@restya.com>
- * @copyright  2014-2019 Restya
+ * @copyright  2014-2021 Restya
  * @license    http://restya.com/ Restya Licence
  * @link       http://restya.com/
  */
@@ -353,7 +353,7 @@ function insertActivity($user_id, $comment, $type, $foreign_ids = array() , $rev
             }
         }
     }
-    if (!empty($foreign_ids['board_id']) || !empty($foreign_ids['organization_id']) || !empty($foreign_ids['user_id'])) {
+    if (!empty($foreign_ids['board_id']) || !empty($foreign_ids['organization_id']) || !empty($foreign_ids['user_id']) || $type === 'add_permission' || $type === 'remove_permission') {
         $val = '';
         for ($i = 1, $len = count($values); $i <= $len; $i++) {
             $val.= '$' . $i;
@@ -610,7 +610,7 @@ function sendMail($template, $replace_content, $to, $reply_to_mail = '')
         }
         $headers.= "MIME-Version: 1.0" . PHP_EOL;
         $headers.= "Content-Type: text/html; charset=UTF-8" . PHP_EOL;
-        $headers.= "X-Mailer: Restyaboard (0.6.9; +http://restya.com/board)" . PHP_EOL;
+        $headers.= "X-Mailer: Restyaboard (1.7; +http://restya.com/board)" . PHP_EOL;
         $headers.= "X-Auto-Response-Suppress: All" . PHP_EOL;
         if (is_plugin_enabled('r_sparkpost')) {
             require_once PLUGIN_PATH . DS . 'SparkPost' . DS . 'functions.php';
@@ -626,6 +626,90 @@ function sendMail($template, $replace_content, $to, $reply_to_mail = '')
             }
             error_log($compose_string, 3, CACHE_PATH . DS . 'mail.log');
         }
+    }
+}
+/**
+ * Execute CURL Request For Push Notification
+ *
+ * @param string $url    URL
+ * @param mixed  $payload   optional CURL Values default value : array ()
+ *
+ * @return mixed
+ */
+function PushNotificationCurlExecute($url, $payload)
+{
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($ch, CURLOPT_POST, 1);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
+    $headers = array();
+    $headers[] = 'Content-Type: application/x-www-form-urlencoded';
+    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+    $result = curl_exec($ch);
+    if (curl_errno($ch)) {
+        echo 'Error:' . curl_error($ch);
+    }
+    curl_close($ch);
+}
+/**
+ * Common method to send push notification
+ *
+ * @param string $user_id               Notification User ID
+ * @param array  $user_device_tokens    User device token array
+ * @param string $profile_picture_path  Notification user Avatar
+ * @param string $title                 Notification title
+ * @param string $comment               Notification Comment
+ * @param string $additional_info       Notification Additional Information
+ *
+ *
+ * @return void
+ */
+function sendPushNotification($user_id, $user_device_tokens = [], $profile_picture_path, $title, $comment, $additional_info)
+{
+    global $db_lnk;
+    $andriod_push_message = array(
+        "body" => $comment,
+        "title" => $title,
+        "ttl" => 3600,
+        "largeIcon" => "ic_launcher",
+        "largeIconUrl" => $profile_picture_path,
+        "smallIcon" => "ic_notification",
+        "icon" => $profile_picture_path,
+        "sound" => "default",
+    );
+    $apns_push_message = array(
+        "aps" => ["alert" => $comment],
+    );
+    $andriod_device_tokens = array();
+    $ios_device_tokens = array();
+    $device_tokens = json_decode($user_device_tokens);
+    foreach ($device_tokens as $value) {
+        if ($value->device_os === 'Android') {
+            $payload = array(
+                'to' => $value->token,
+                'data' => $andriod_push_message
+            );
+            PushNotificationCurlExecute('http://push.restya.com:8322/api/push/fcm', $payload);
+        } else {
+            $payload = array(
+                'service' => 'apns',
+                'headers' => ["apns-priority" => 10,
+                "apns-topic" => "com.restya.board",
+                ],
+                "payload" => $apns_push_message,
+                "token" => $value->token
+            );
+            PushNotificationCurlExecute('http://push.restya.com:8322/api/push/apns', $payload);
+        }
+    }
+    if (!empty($user_id)) {
+        $qry_val_array = array(
+            $user_id,
+            'now()',
+            'true',
+        );
+        pg_query_params($db_lnk, 'UPDATE user_push_tokens SET last_push_notified = $2 WHERE user_id = $1 AND is_active = $3', $qry_val_array);
     }
 }
 /**
@@ -1089,21 +1173,18 @@ function importTrelloBoard($board = array())
             $board_visibility
         );
         $new_board = pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO boards (created, modified, name, background_color, background_picture_url, background_pattern_url, user_id, board_visibility) VALUES (now(), now(), $1, $2, $3, $4, $5, $6) RETURNING id', $qry_val_arr));
-        $server = strtolower($_SERVER['SERVER_SOFTWARE']);
-        if (strpos($server, 'apache') !== false) {
-            ob_end_clean();
-            header("Connection: close\r\n");
-            header("Content-Encoding: none\r\n");
-            ignore_user_abort(true); // optional
-            ob_start();
-            echo json_encode($new_board);
-            $size = ob_get_length();
-            header("Content-Length: $size");
-            ob_end_flush(); // Strange behaviour, will not work
-            flush(); // Unless both are called !
-            ob_end_clean();
-        } else {
-            echo json_encode($new_board);
+        ob_end_clean();
+        header("Connection: close\r\n");
+        header("Content-Encoding: none\r\n");
+        ignore_user_abort(true); // optional
+        ob_start();
+        echo json_encode($new_board);
+        $size = ob_get_length();
+        header("Content-Length: $size");
+        ob_end_flush(); // Strange behaviour, will not work
+        flush(); // Unless both are called !
+        ob_end_clean();
+        if (function_exists('fastcgi_finish_request')) {
             fastcgi_finish_request();
         }
         $admin_user_id = array();
@@ -3284,6 +3365,495 @@ function importpipefyBoard($board = array())
     }
 }
 /**
+ * Import monday board
+ *
+ * @param array $board Boards from monday
+ *
+ * @return mixed
+ */
+function importMondayBoards($path, $folder)
+{
+    global $r_debug, $db_lnk, $authUser, $_server_domain_url;
+    $team_peoples = $boards = $card_updates = $sub_boards_names = $new_boards = array();
+    // Reading team files for the peoples
+    $team_filecount = 0;
+    $teamfiles = glob($path . 'team' . DS . '*.xlsx');
+    if ($teamfiles) {
+        $team_filecount = count($teamfiles);
+        if (!empty($team_filecount)) {
+            foreach ($teamfiles as $key => $value) {
+                if ($xlsx = SimpleXLSX::parse($value)) {
+                    $all_rows = array();
+                    $data = $xlsx->rows();
+                    $row = 0;
+                    foreach ($data as $key => $value) {
+                        if ($row >= 2) {
+                            if ($value[0] == '' || $value[0] == 'Name') {
+                                continue;
+                            } else {
+                                $arrResult = array();
+                                foreach ($value as $valKey => $val) {
+                                    $arrResult[$all_rows[0][$valKey]] = $val;
+                                }
+                                $team_peoples[$arrResult["Name"]] = $arrResult;
+                            }
+                        } else if ($row == 1) {
+                            $all_rows[] = $value;
+                        }
+                        $row++;
+                    }
+                }
+            }
+        }
+    }
+    // Reading team files for the peoples
+    $updates_filecount = 0;
+    $updatesfiles = glob($path . 'updates' . DS . '*.xlsx');
+    if ($updatesfiles) {
+        $updates_filecount = count($updatesfiles);
+        if (!empty($updates_filecount)) {
+            foreach ($updatesfiles as $key => $value) {
+                if ($xlsx = SimpleXLSX::parse($value)) {
+                    $all_rows = array();
+                    $data = $xlsx->rows();
+                    $row = 0;
+                    foreach ($data as $key => $value) {
+                        if ($row >= 2) {
+                            $arrResult = array();
+                            foreach ($value as $valKey => $val) {
+                                $arrResult[$all_rows[$valKey]] = $val;
+                            }
+                            $card_updates[$arrResult['Item ID']][] = $arrResult;
+                        } else if ($row == 1) {
+                            $all_rows = $value;
+                        }
+                        $row++;
+                    }
+                }
+            }
+        }
+    }
+    // Reading sub board files
+    $sub_board_files = glob($path . 'boards' . DS . '*_Subitems of*.xlsx');
+    if (!empty($sub_board_files)) {
+        foreach ($sub_board_files as $sub_board_file) {
+            if (!empty(basename($sub_board_file))) {
+                $sub_boards_names[] = basename($sub_board_file);
+            }
+        }
+    }
+    // Reading board files
+    $board_filecount = 0;
+    $boardfiles = glob($path . 'boards' . DS . '*.xlsx');
+    if ($boardfiles) {
+        $board_filecount = count($boardfiles);
+        if (!empty($board_filecount)) {
+            foreach ($boardfiles as $key => $value) {
+                $board_file_name = basename($value);
+                if (array_search($board_file_name, $sub_boards_names) > - 1) {
+                    continue;
+                } else if ($xlsx = SimpleXLSX::parse($value)) {
+                    $all_rows = array();
+                    $data = $xlsx->rows();
+                    $tmpboard = array();
+                    $row = 0;
+                    foreach ($data as $key => $value) {
+                        if ($row == 0) {
+                            $tmpboard['name'] = $value[0];
+                        } else if ($row > 2 && !empty($all_rows)) {
+                            if ($value[0] == '' || $value[0] == 'Name') {
+                                continue;
+                            } else {
+                                $arrResult = array();
+                                foreach ($value as $valKey => $val) {
+                                    if ($all_rows[$valKey] == 'Status') {
+                                        $status = $val;
+                                        if ($val == '') {
+                                            $status = 'Empty';
+                                        }
+                                        $arrResult[$all_rows[$valKey]] = $status;
+                                        if (!empty($status) && $status !== '') {
+                                            if (empty($tmpboard['lists'][$status])) {
+                                                $tmpboard['lists'][$status] = $status;
+                                            }
+                                        }
+                                    } else if ($all_rows[$valKey] == 'Tags' && !empty($val) && $val !== '') {
+                                        $arrResult[$all_rows[$valKey]] = $val;
+                                        $temp_lables = explode(', ', $val);
+                                        foreach ($temp_lables as $tmp_label) {
+                                            if (empty($tmpboard['labels'][$tmp_label])) {
+                                                $tmpboard['labels'][$tmp_label] = $tmp_label;
+                                            }
+                                        };
+                                    } else if ($all_rows[$valKey] == 'People' && !empty($val) && $val !== '') {
+                                        $arrResult[$all_rows[$valKey]] = $val;
+                                        $temp_people = explode(', ', $val);
+                                        foreach ($temp_people as $people) {
+                                            if (empty($team_peoples[$people])) {
+                                                $team_peoples[$people] = ['Name' => $people];
+                                            }
+                                        }
+                                    } else if ($all_rows[$valKey] == 'Item ID (auto generated)') {
+                                        $arrResult['Item ID'] = $val;
+                                    } else {
+                                        $arrResult[$all_rows[$valKey]] = $val;
+                                    }
+                                }
+                                $tmpboard['cards'][] = $arrResult;
+                            }
+                        } else if ($row > 0 && $value[0] == 'Name') {
+                            $all_rows = $value;
+                        }
+                        $row++;
+                    }
+                    if (empty($tmpboard['lists'])) {
+                        $tmpboard['lists']['Empty'] = 'Empty';
+                    }
+                    $boards[] = $tmpboard;
+                }
+            }
+        }
+    }
+    $server = strtolower($_SERVER['SERVER_SOFTWARE']);
+    if (strpos($server, 'apache') !== false) {
+        ob_end_clean();
+        header("Connection: close\r\n");
+        header("Content-Encoding: none\r\n");
+        ignore_user_abort(true); // optional
+        ob_start();
+        echo json_encode(["msg" => "Success"]);
+        $size = ob_get_length();
+        header("Content-Length: $size");
+        ob_end_flush(); // Strange behaviour, will not work
+        flush(); // Unless both are called !
+        ob_end_clean();
+    } else {
+        echo json_encode(["msg" => "Success"]);
+        fastcgi_finish_request();
+    }
+    foreach ($boards as $key => $board) {
+        $users = $userNames = $lists = $listNames = $cards = $cardLists = $labels = array();
+        if (!empty($board)) {
+            $user_id = $authUser['id'];
+            // insert new board
+            $qry_val_arr = array(
+                $board['name'],
+                2,
+                $user_id
+            );
+            $new_board = pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO boards (created, modified, name, board_visibility, user_id) VALUES (now(), now(), $1, $2, $3) RETURNING id', $qry_val_arr));
+            $new_boards[$board['name']] = $new_board;
+            // insert current user as board member
+            $qry_val_arr = array(
+                $authUser['id'],
+                $new_board['id'],
+                1
+            );
+            pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO boards_users (created, modified, user_id, board_id, board_user_role_id) VALUES (now(), now(), $1, $2, $3) RETURNING id', $qry_val_arr));
+            $auto_subscribe_on_board = (AUTO_SUBSCRIBE_ON_BOARD === 'Enabled') ? 'true' : false;
+            if ($auto_subscribe_on_board) {
+                $qry_val_arr = array(
+                    $authUser['id'],
+                    $new_board['id'],
+                    true
+                );
+                pg_query_params($db_lnk, 'INSERT INTO board_subscribers (created, modified, user_id, board_id, is_subscribed) VALUES (now(), now(), $1, $2, $3)', $qry_val_arr);
+            }
+            // insert labels
+            if (!empty($board['labels'])) {
+                foreach ($board['labels'] as $label) {
+                    if (!empty($label)) {
+                        $qry_val_arr = array(
+                            utf8_decode($label)
+                        );
+                        $check_label = executeQuery('SELECT id FROM labels WHERE name = $1', $qry_val_arr);
+                        if (empty($check_label)) {
+                            $qry_val_arr = array(
+                                utf8_decode($label)
+                            );
+                            $check_label = pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO labels (created, modified, name) VALUES (now(), now(), $1) RETURNING id', $qry_val_arr));
+                        }
+                        $labels[$label] = $check_label['id'];
+                    }
+                }
+            }
+            // insert board members
+            if (!empty($team_peoples)) {
+                foreach ($team_peoples as $boarduser) {
+                    if (empty($boarduser['User Status']) || (!empty($boarduser['User Status']) && $boarduser['User Status'] == "Activated")) {
+                        if (empty($users[$boarduser["Name"]])) {
+                            $member = array(
+                                'id' => $boarduser["Name"],
+                                'username' => strtolower($boarduser["Name"]) ,
+                                'fullName' => $boarduser["Name"],
+                                'avatarUrl' => null,
+                                'initials' => strtoupper(substr($boarduser["Name"], 0, 1))
+                            );
+                            $users = importMember($member, $new_board, 'monday');
+                            $userNames[$boarduser["Name"]] = $users[$boarduser["Name"]];
+                        }
+                    }
+                }
+            }
+            // insert lists
+            if (!empty($board['lists'])) {
+                $i = 0;
+                foreach ($board['lists'] as $list) {
+                    $i+= 1;
+                    if (!in_array($list, $listNames)) {
+                        $qry_val_arr = array(
+                            utf8_decode($list) ,
+                            $new_board['id'],
+                            $i,
+                            $user_id
+                        );
+                        $_list = pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO lists (created, modified, name, board_id, position, color, user_id) VALUES (now(), now(), $1, $2, $3, NULL, $4) RETURNING id', $qry_val_arr));
+                        $lists[$list] = $_list['id'];
+                        $listNames[$list] = $list;
+                    }
+                }
+            }
+            //Import cards
+            $i = 0;
+            foreach ($board["cards"] as $key => $card) {
+                if (isset($card['Item ID']) && !empty($card['Item ID'])) {
+                    $i+= 1;
+                    $is_closed = 'false';
+                    $date = (!empty($card['Date']) && $card['Date'] !== '') ? date('Y-m-d H:i:s', strtotime($card['Date'])) : NULL;
+                    if (isset($card['Text']) && !empty($card['Text']) && $card['Text'] !== 'NULL') {
+                        $description = $card['Text'];
+                    } else {
+                        $description = '';
+                    }
+                    $card_user_id = (!empty($card['Creator']) && $card['Creator'] !== "") ? $userNames[$card['Creator']] : $user_id;
+                    $created_at = (!empty($card['Created at']) && $card['Created at'] !== "") ? date('Y-m-d H:i:s', strtotime($card['Created at'])) : date('Y-m-d H:i:s');
+                    $updated_at = (!empty($card['Updated at']) && $card['Updated at'] !== "") ? date('Y-m-d H:i:s', strtotime($card['Updated at'])) : date('Y-m-d H:i:s');
+                    $card_status = (isset($card['Status']) && !empty($card['Status'])) ? $card['Status'] : "Empty";
+                    $card_custom_fields = NULL;
+                    if (isset($card['Timeline - Start']) && !empty($card['Timeline - Start'])) {
+                        $custom_fields['start_date'] = $card['Timeline - Start'];
+                        $card_custom_fields = json_encode($custom_fields);
+                    }
+                    $qry_val_arr = array(
+                        $new_board['id'],
+                        $lists[$card_status],
+                        utf8_decode($card['Name']) ,
+                        $description,
+                        $is_closed,
+                        $i,
+                        $date,
+                        $card_user_id,
+                        $created_at,
+                        $updated_at,
+                        $card_custom_fields
+                    );
+                    $_card = pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO cards (created, modified, board_id, list_id, name, description, is_archived, position, due_date, user_id, custom_fields) VALUES ($9, $10, $1, $2, $3, $4, $5, $6, $7, $8, $11) RETURNING id', $qry_val_arr));
+                    $cards[$card['Item ID']] = $_card['id'];
+                    if (!empty($card_updates) && !empty($card_updates[$card['Item ID']])) {
+                        $mat_path = array();
+                        // Updating comments attachments into card attachments
+                        foreach ($card_updates[$card['Item ID']] as $cardComment) {
+                            if (!empty($cardComment['Asset IDs'])) {
+                                $asset_files = glob(MEDIA_PATH . DS . 'import' . DS . $folder . DS . 'assets' . DS . $cardComment['Asset IDs'] . '_*');
+                                if (!empty($asset_files)) {
+                                    $attachment_name = str_replace($cardComment['Asset IDs'] . '_', '', basename($asset_files[0]));
+                                    $mediadir = MEDIA_PATH . DS . 'Card' . DS . $_card['id'];
+                                    $save_path = 'Card' . DS . $_card['id'];
+                                    $save_path = str_replace('\\', '/', $save_path);
+                                    $writeto = $save_path . DS . $attachment_name;
+                                    if (!file_exists($mediadir)) {
+                                        mkdir($mediadir, 0777, true);
+                                    }
+                                    copy($asset_files[0], $mediadir . DS . $attachment_name);
+                                    $qry_val_arr = array(
+                                        $new_board['id'],
+                                        $lists[$card_status],
+                                        $_card['id'],
+                                        $attachment_name,
+                                        $writeto,
+                                    );
+                                    pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO card_attachments (created, modified, board_id, list_id, card_id, name, path, mimetype) VALUES (now(), now(), $1, $2, $3, $4, $5, NULL) RETURNING id', $qry_val_arr));
+                                }
+                            }
+                            // import comments updates
+                            $comment = $cardComment['Update Content'];
+                            $comment = ltrim($comment, "'");
+                            if (($card['Item ID'] == $cardComment['Item ID']) && !empty($comment)) {
+                                $type = 'add_comment';
+                                $comment_user_id = (!empty($cardComment['User']) && $cardComment['User'] !== "") ? $userNames[$cardComment['User']] : $user_id;
+                                $newdate = date_create_from_format("d/F/Y H:i:s A", $cardComment['Created At']);
+                                $newupdated = date_create_from_format("d/F/Y H:i:s A", $cardComment['Created At']);
+                                $newdate = date_format($newdate, 'Y-m-d H:i:s');
+                                $newupdated = date_format($newupdated, 'Y-m-d H:i:s');
+                                $created = (!empty($newdate) && $newdate !== "") ? date('Y-m-d H:i:s', strtotime($newdate)) : date('Y-m-d H:i:s');
+                                $modified = (!empty($newupdated) && $newupdated !== "") ? date('Y-m-d H:i:s', strtotime($newupdated)) : date('Y-m-d H:i:s');
+                                $qry_val_arr = array(
+                                    $created,
+                                    $modified,
+                                    $new_board['id'],
+                                    $lists[$card_status],
+                                    $_card['id'],
+                                    $comment_user_id,
+                                    $type,
+                                    $comment,
+                                    $_GET['token']
+                                );
+                                $activity = pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO activities (created, modified, board_id, list_id, card_id, user_id, type, comment, token) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id', $qry_val_arr));
+                                $card_parent[$cardComment['Post ID']] = $activity['id'];
+                                if (!empty($activity)) {
+                                    $id_converted = base_convert($activity['id'], 10, 36);
+                                    $materialized_path = sprintf("%08s", $id_converted);
+                                    $path = 'P' . $activity['id'];
+                                    $depth = 0;
+                                    $root = $activity['id'];
+                                    $revisions = Null;
+                                    if (!empty($cardComment['Parent Post ID']) && $cardComment['Content Type'] == 'Reply') {
+                                        $path = 'P' . $card_parent[$cardComment['Parent Post ID']] . '.P' . $activity['id'];
+                                        $materialized_path = $mat_path[$cardComment['Parent Post ID']] . '-' . $materialized_path;
+                                        $root = $prev_root[$cardComment['Parent Post ID']];
+                                        $depth = $prev_depth[$cardComment['Parent Post ID']] + 1;
+                                        $revision['old_value']['comment'] = $comment;
+                                        $revisions = serialize($revision);
+                                    }
+                                    $freshness_ts = $created;
+                                    $qry_val_arr = array(
+                                        $materialized_path,
+                                        $path,
+                                        $depth,
+                                        $root,
+                                        $freshness_ts,
+                                        $activity['id'],
+                                        $revisions
+                                    );
+                                    pg_query_params($db_lnk, 'UPDATE activities SET materialized_path = $1, path = $2, depth = $3, root = $4, freshness_ts = $5, revisions = $7 WHERE id = $6', $qry_val_arr);
+                                    $qry_val_arr = array(
+                                        $freshness_ts,
+                                        $root
+                                    );
+                                    pg_query_params($db_lnk, 'UPDATE activities SET freshness_ts = $1 WHERE root = $2', $qry_val_arr);
+                                    $mat_path[$cardComment['Post ID']] = $materialized_path;
+                                    $prev_root[$cardComment['Post ID']] = $root;
+                                    $prev_depth[$cardComment['Post ID']] = $depth;
+                                }
+                            }
+                        }
+                    }
+                    if (!empty($card['Subitems']) && $card['Subitems'] !== '') {
+                        $card_subitems = explode(', ', $card['Subitems']);
+                        foreach ($card_subitems as $subitem) {
+                            $i+= 1;
+                            $qry_val_arr = array(
+                                $new_board['id'],
+                                $lists[$card_status],
+                                utf8_decode($subitem) ,
+                                $description,
+                                $is_closed,
+                                $i,
+                                NULL,
+                                $card_user_id,
+                                $created_at,
+                                $updated_at
+                            );
+                            $_subcard = pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO cards (created, modified, board_id, list_id, name, description, is_archived, position, due_date, user_id) VALUES ($9, $10, $1, $2, $3, $4, $5, $6, $7, $8) RETURNING id', $qry_val_arr));
+                        }
+                    }
+                    // Import labels
+                    if (!empty($card['Tags']) && $card['Tags'] !== '') {
+                        $label_names = explode(', ', $card['Tags']);
+                        if (!empty($label_names)) {
+                            foreach ($label_names as $label) {
+                                $qry_val_arr = array(
+                                    $new_board['id'],
+                                    $lists[$card_status],
+                                    $_card['id'],
+                                    $labels[$label]
+                                );
+                                pg_query_params($db_lnk, 'INSERT INTO cards_labels (created, modified, board_id, list_id, card_id, label_id) VALUES (now(), now(), $1, $2, $3, $4)', $qry_val_arr);
+                            }
+                        }
+                    }
+                    // import Card attachments
+                    if (!empty($card['Files']) && $card['Files'] !== '') {
+                        $card_attachments = explode(', ', $card['Files']);
+                        foreach ($card_attachments as $attachment) {
+                            $attachment = urldecode(strtolower($attachment));
+                            $attachment_splits = explode('/', $attachment);
+                            $attachment_id = $attachment_splits[count($attachment_splits) - 2];
+                            $attachment_name = basename($attachment);
+                            $imagefiles = glob(MEDIA_PATH . DS . 'import' . DS . $folder . DS . 'assets' . DS . $attachment_id . '_*');
+                            if (!empty($attachment_id) && !empty($attachment_name) && !empty($imagefiles)) {
+                                $mediadir = MEDIA_PATH . DS . 'Card' . DS . $_card['id'];
+                                $save_path = 'Card' . DS . $_card['id'];
+                                $save_path = str_replace('\\', '/', $save_path);
+                                $writeto = $save_path . DS . $attachment_name;
+                                if (!file_exists($mediadir)) {
+                                    mkdir($mediadir, 0777, true);
+                                }
+                                $fullpath = MEDIA_PATH . DS . 'import' . DS . $folder . DS . 'assets' . DS . $attachment_id . "_" . $attachment_name;
+                                copy($imagefiles[0], $mediadir . DS . $attachment_name);
+                                $qry_val_arr = array(
+                                    $new_board['id'],
+                                    $lists[$card_status],
+                                    $_card['id'],
+                                    $attachment_name,
+                                    $writeto,
+                                );
+                                pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO card_attachments (created, modified, board_id, list_id, card_id, name, path, mimetype) VALUES (now(), now(), $1, $2, $3, $4, $5, NULL) RETURNING id', $qry_val_arr));
+                            }
+                        }
+                    }
+                    // import card users
+                    if (!empty($card['People'])) {
+                        $assignees = $card['People'];
+                        $card_assignees = explode(', ', $assignees);
+                        foreach ($card_assignees as $cardMember) {
+                            if (empty($users[$cardMember])) {
+                                $member = array(
+                                    'id' => $cardMember,
+                                    'username' => strtolower($cardMember) ,
+                                    'fullName' => $cardMember,
+                                    'avatarUrl' => null,
+                                    'initials' => strtoupper(substr($cardMember, 0, 1))
+                                );
+                                $users = importMember($member, $new_board, 'monday');
+                                $userNames[$cardMember] = $cardMember;
+                            }
+                            $qry_val_arr = array(
+                                $_card['id'],
+                                $users[$cardMember]
+                            );
+                            pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO cards_users (created, modified, card_id, user_id) VALUES (now(), now(), $1, $2) RETURNING id', $qry_val_arr));
+                        }
+                    }
+                }
+            }
+            if (!empty($cards)) {
+                foreach ($cards as $value) {
+                    $conditions = array(
+                        $value
+                    );
+                    $activity_count = executeQuery("SELECT COUNT(id) as total_count FROM activities WHERE type = 'add_comment' AND card_id = $1", $conditions);
+                    $activity_count = (!empty($activity_count)) ? $activity_count['total_count'] : 0;
+                    $qry_val_arr = array(
+                        $activity_count,
+                        $value
+                    );
+                    pg_query_params($db_lnk, 'UPDATE cards SET comment_count = $1 WHERE id = $2', $qry_val_arr);
+                }
+            }
+        }
+    }
+    // update mail for all the imported boards
+    if (!empty($new_boards)) {
+        foreach ($new_boards as $new_board) {
+            if (!empty($new_board)) {
+                boardImportMailSend('Monday', $new_board);
+            }
+        }
+    }
+    return $new_boards;
+}
+/**
  * Email to name
  *
  * @param string $email Email
@@ -3385,11 +3955,15 @@ function paginate_data($c_sql, $db_lnk, $pg_params, $r_resource_filters, $limit 
 function update_query($table_name, $id, $r_resource_cmd, $r_put, $comment = '', $activity_type = '', $foreign_ids = '')
 {
     global $r_debug, $db_lnk, $authUser, $_server_domain_url;
-    $values = array(
-        'now()'
-    );
+    $values = array();
     $sfields = '';
-    $fields = 'modified';
+    $fields = '';
+    if ($activity_type != 'delete_card_evergreen_card' && $activity_type != 'add_card_evergreen_card') {
+        $fields = 'modified';
+        $values = array(
+            'now()'
+        );
+    }
     if (!empty($table_name) && !empty($id)) {
         $put = getbindValues($table_name, $r_put);
         if ($table_name == 'users') {
@@ -3397,7 +3971,11 @@ function update_query($table_name, $id, $r_resource_cmd, $r_put, $comment = '', 
         }
         foreach ($put as $key => $value) {
             if ($key != 'id') {
-                $fields.= ', ' . $key;
+                if ($fields != '') {
+                    $fields.= ', ' . $key;
+                } else {
+                    $fields = $key;
+                }
                 if ($value === false) {
                     array_push($values, 'false');
                 } elseif ($value === 'null' || $value === 'NULL' || $value === 'null') {
@@ -3637,15 +4215,18 @@ function importMember($member, $new_board, $import_type)
         $users[$member['id']],
         $new_board['id']
     );
-    pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO boards_users (created, modified, user_id, board_id, board_user_role_id) VALUES (now(), now(), $1, $2, 2) RETURNING id', $qry_val_arr));
-    $auto_subscribe_on_board = (AUTO_SUBSCRIBE_ON_BOARD === 'Enabled') ? 'true' : false;
-    if ($auto_subscribe_on_board) {
-        $qry_val_arr = array(
-            $users[$member['id']],
-            $new_board['id'],
-            true
-        );
-        pg_query_params($db_lnk, 'INSERT INTO board_subscribers (created, modified, user_id, board_id, is_subscribed) VALUES (now(), now(), $1, $2, $3)', $qry_val_arr);
+    $boardUserExist = executeQuery('SELECT * FROM boards_users WHERE user_id = $1 and board_id = $2', $qry_val_arr);
+    if (!$boardUserExist) {
+        pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO boards_users (created, modified, user_id, board_id, board_user_role_id) VALUES (now(), now(), $1, $2, 2) RETURNING id', $qry_val_arr));
+        $auto_subscribe_on_board = (AUTO_SUBSCRIBE_ON_BOARD === 'Enabled') ? 'true' : false;
+        if ($auto_subscribe_on_board) {
+            $qry_val_arr = array(
+                $users[$member['id']],
+                $new_board['id'],
+                true
+            );
+            pg_query_params($db_lnk, 'INSERT INTO board_subscribers (created, modified, user_id, board_id, is_subscribed) VALUES (now(), now(), $1, $2, $3)', $qry_val_arr);
+        }
     }
     return $users;
 }
@@ -3781,7 +4362,7 @@ function sendMailNotification($notification_type)
         'add_card_voter',
         'add_comment'
     );
-    $users_result = pg_query_params($db_lnk, 'SELECT users.id, users.username, users.email, users.full_name, users.last_email_notified_activity_id, users.timezone, users.language, (SELECT array_to_json(array_agg(row_to_json(d))) FROM (SELECT bs.board_id FROM board_subscribers bs WHERE bs.user_id = users.id AND bs.is_subscribed = \'t\') d) AS board_ids, (SELECT array_to_json(array_agg(row_to_json(d))) FROM (SELECT ls.list_id, l.board_id FROM list_subscribers ls, lists l WHERE ls.user_id = users.id AND l.id = ls.list_id AND ls.is_subscribed = \'t\') d) AS list_ids,(SELECT array_to_json(array_agg(row_to_json(d))) FROM (SELECT cs.card_id, c.list_id, c.board_id FROM card_subscribers cs, cards c WHERE cs.user_id = users.id AND c.id = cs.card_id AND cs.is_subscribed = \'t\') d) AS card_ids FROM users WHERE is_send_newsletter = $1', $qry_val_arr);
+    $users_result = pg_query_params($db_lnk, 'SELECT users.id, users.username, users.email, users.full_name, users.last_email_notified_activity_id, users.timezone, users.language, (SELECT array_to_json(array_agg(row_to_json(d))) FROM (SELECT bs.board_id FROM board_subscribers bs WHERE bs.user_id = users.id AND bs.is_subscribed = \'t\') d) AS board_ids, (SELECT array_to_json(array_agg(row_to_json(d))) FROM (SELECT ls.list_id, l.board_id FROM list_subscribers ls, lists l WHERE ls.user_id = users.id AND l.id = ls.list_id AND ls.is_subscribed = \'t\') d) AS list_ids,(SELECT array_to_json(array_agg(row_to_json(d))) FROM (SELECT cs.card_id, c.list_id, c.board_id FROM card_subscribers cs, cards c WHERE cs.user_id = users.id AND c.id = cs.card_id AND cs.is_subscribed = \'t\') d) AS card_ids, (SELECT array_to_json(array_agg(row_to_json(d))) FROM (SELECT ts.token, ts.device_os FROM user_push_tokens ts WHERE ts.user_id = users.id AND is_active = \'t\') d) AS user_push_tokens FROM users WHERE is_send_newsletter = $1', $qry_val_arr);
     while ($user = pg_fetch_assoc($users_result)) {
         $board_ids = $list_ids = $card_ids = array();
         $board_arr = (!empty($user['board_ids'])) ? array_filter(json_decode($user['board_ids'], true)) : '';
@@ -3806,7 +4387,7 @@ function sendMailNotification($notification_type)
                 }
             }
         }
-        $mail_content = $mentioned_mail_content = '';
+        $mail_content = $mentioned_mail_content = $board_mentioned_mail_content = $card_mentioned_mail_content = '';
         $activities_result = '';
         $notification_count = 0;
         $reply_to_mail = '';
@@ -3827,20 +4408,37 @@ function sendMailNotification($notification_type)
                     $user_avatar = '<img style="margin-right: 10px;vertical-align: middle;" src="' . $profile_picture_path . '" alt="[Image: ' . $activity['full_name'] . ']" class="img-rounded img-responsive">' . "\n";
                 } else if (!empty($activity['initials'])) {
                     $user_avatar = '<i style="border-radius:4px;text-shadow:#6f6f6f 0.02em 0.02em 0.02em;width:32px;height:32px;line-height:32px;font-size:16px;display:inline-block;font-style:normal;text-align:center;text-transform:uppercase;color:#f47564 !important;background-color:#ffffff !important;border:1px solid #d7d9db;margin-right: 10px;">' . $activity['initials'] . '</i>' . "\n";
+                    $profile_picture_path = "https://ui-avatars.com/api/?background=fff&color=f47564&name=" . $activity['initials'] . "@&size=32";
                 }
                 if (empty($i)) {
                     $activity_id[] = $activity['id'];
                     $i++;
                 }
-                $is_mention_activity = 0;
+                $is_mention_activity = $is_board_mention_activity = $is_card_mention_activity = 0;
                 if ($activity['type'] == 'add_comment' || $activity['type'] == 'edit_comment') {
+                    preg_match_all('/@(board*)/', $activity['comment'], $boardmatches);
+                    if (!empty($boardmatches[1])) {
+                        $board_mentioned_activity = $activity;
+                        $is_board_mention_activity = 1;
+                        $board_mentioned_activity['comment'] = __l('##USER_NAME## has mentioned all the board members in card ##CARD_NAME## on ##BOARD_NAME##') . '<div style="margin:5px 0px 0px 43px"><div style="background-color: #ffffff;border: 1px solid #dddddd;border-radius: 4px;display: block;line-height: 1.42857;margin:7px 0;padding: 4px;transition: all 0.2s ease-in-out 0s;"><div style="padding:3px 0px 0px 0px;margin:0px">' . $activity['comment'] . '</div></div></div>';
+                        $activity['comment'] = '';
+                        $br = '<div style="line-height:20px;">&nbsp;</div>';
+                    }
+                    preg_match_all('/@(card*)/', $activity['comment'], $cardmatches);
+                    if (!empty($cardmatches[1])) {
+                        $card_mentioned_activity = $activity;
+                        $is_card_mention_activity = 1;
+                        $card_mentioned_activity['comment'] = __l('##USER_NAME## has mentioned all the members in the card ##CARD_NAME## on ##BOARD_NAME##') . '<div style="margin:5px 0px 0px 43px"><div style="background-color: #ffffff;border: 1px solid #dddddd;border-radius: 4px;display: block;line-height: 1.42857;margin:7px 0;padding: 4px;transition: all 0.2s ease-in-out 0s;"><div style="padding:3px 0px 0px 0px;margin:0px">' . $activity['comment'] . '</div></div></div>';
+                        $activity['comment'] = '';
+                        $br = '<div style="line-height:20px;">&nbsp;</div>';
+                    }
                     preg_match_all('/@([^ ]*)/', $activity['comment'], $matches);
                     if (in_array($user['username'], $matches[1])) {
                         $mentioned_activity = $activity;
                         $is_mention_activity = 1;
                         $mentioned_activity['comment'] = __l('##USER_NAME## has mentioned you in card ##CARD_NAME## on ##BOARD_NAME##') . '<div style="margin:5px 0px 0px 43px"><div style="background-color: #ffffff;border: 1px solid #dddddd;border-radius: 4px;display: block;line-height: 1.42857;margin:7px 0;padding: 4px;transition: all 0.2s ease-in-out 0s;"><div style="padding:3px 0px 0px 0px;margin:0px">' . $activity['comment'] . '</div></div></div>';
                         $activity['comment'] = '';
-                    } else {
+                    } else if (empty($boardmatches[1]) && empty($cardmatches[1])) {
                         $activity['comment'] = __l('##USER_NAME## commented to the card ##CARD_NAME## on ##BOARD_NAME##') . '<div style="margin:5px 0px 0px 43px"><div style="background-color: #ffffff;border: 1px solid #dddddd;border-radius: 4px;display: block;line-height: 1.42857;margin:7px 0;padding: 4px;transition: all 0.2s ease-in-out 0s;"><div style="padding:3px 0px 0px 0px;margin:0px">' . $activity['comment'] . '</div></div></div>';
                     }
                     $br = '<div style="line-height:20px;">&nbsp;</div>';
@@ -3914,12 +4512,34 @@ function sendMailNotification($notification_type)
                             '<ins style="padding: 0px 3px;font-size: 90%;line-height: 1;text-align: center;white-space: nowrap;vertical-align: baseline;background: #d1e1ad;color: #405a04;text-decoration: none;margin-right: 3px;"'
                         );
                         $difference = str_replace($search, $replace, $activity['difference'][0]);
+                        if ($is_board_mention_activity) {
+                            $board_mentioned_activity['comment'].= '<div style="margin:5px 0px 0px 43px"><div style="background-color: #ffffff;border: 1px solid #dddddd;border-radius: 4px;display: block;line-height: 1.42857;margin:7px 0;padding: 4px;transition: all 0.2s ease-in-out 0s;"><div style="padding:3px 0px 0px 0px;margin:0px">' . $difference . '</div></div></div>';
+                        }
+                        if ($is_card_mention_activity) {
+                            $card_mentioned_activity['comment'].= '<div style="margin:5px 0px 0px 43px"><div style="background-color: #ffffff;border: 1px solid #dddddd;border-radius: 4px;display: block;line-height: 1.42857;margin:7px 0;padding: 4px;transition: all 0.2s ease-in-out 0s;"><div style="padding:3px 0px 0px 0px;margin:0px">' . $difference . '</div></div></div>';
+                        }
                         if ($is_mention_activity) {
                             $mentioned_activity['comment'].= '<div style="margin:5px 0px 0px 43px"><div style="background-color: #ffffff;border: 1px solid #dddddd;border-radius: 4px;display: block;line-height: 1.42857;margin:7px 0;padding: 4px;transition: all 0.2s ease-in-out 0s;"><div style="padding:3px 0px 0px 0px;margin:0px">' . $difference . '</div></div></div>';
                         } else {
                             $activity['comment'].= '<div style="margin:5px 0px 0px 43px"><div style="background-color: #ffffff;border: 1px solid #dddddd;border-radius: 4px;display: block;line-height: 1.42857;margin:7px 0;padding: 4px;transition: all 0.2s ease-in-out 0s;"><div style="padding:3px 0px 0px 0px;margin:0px">' . $difference . '</div></div></div>';
                         }
                     }
+                }
+                if ($is_board_mention_activity) {
+                    $comment = findAndReplaceVariables($board_mentioned_activity);
+                    $board_mentioned_mail_content.= '<div>' . "\n";
+                    $board_mentioned_mail_content.= '<div style="float:left">' . $user_avatar . '</div>' . "\n";
+                    $board_mentioned_mail_content.= '<div>' . $comment . $reply_to . '</div>' . "\n";
+                    $board_mentioned_mail_content.= '</div>' . "\n";
+                    $board_mentioned_mail_content.= $br . "\n";
+                }
+                if ($is_card_mention_activity) {
+                    $comment = findAndReplaceVariables($card_mentioned_activity);
+                    $card_mentioned_mail_content.= '<div>' . "\n";
+                    $card_mentioned_mail_content.= '<div style="float:left">' . $user_avatar . '</div>' . "\n";
+                    $card_mentioned_mail_content.= '<div>' . $comment . $reply_to . '</div>' . "\n";
+                    $card_mentioned_mail_content.= '</div>' . "\n";
+                    $card_mentioned_mail_content.= $br . "\n";
                 }
                 if ($is_mention_activity) {
                     $comment = findAndReplaceVariables($mentioned_activity);
@@ -3928,13 +4548,17 @@ function sendMailNotification($notification_type)
                     $mentioned_mail_content.= '<div>' . $comment . $reply_to . '</div>' . "\n";
                     $mentioned_mail_content.= '</div>' . "\n";
                     $mentioned_mail_content.= $br . "\n";
-                } else {
+                } else if (!($is_board_mention_activity) && !($is_card_mention_activity)) {
                     $comment = findAndReplaceVariables($activity);
                     $mail_content.= '<div>' . "\n";
                     $mail_content.= '<div style="float:left">' . $user_avatar . '</div>' . "\n";
                     $mail_content.= '<div>' . $comment . $reply_to . '</div>' . "\n";
                     $mail_content.= '</div>' . "\n";
                     $mail_content.= $br . "\n";
+                }
+                $push_message_title = (!empty($activity['full_name']) ? $activity['full_name'] : 'Deleted account');
+                if (!empty($user['user_push_tokens'])) {
+                    sendPushNotification($user['id'], $user['user_push_tokens'], $profile_picture_path, $push_message_title, strip_tags($comment) , $reply_to);
                 }
                 $notification_count++;
             }
@@ -3955,20 +4579,37 @@ function sendMailNotification($notification_type)
                     $user_avatar = '<img style="margin-right: 10px;vertical-align: middle;" src="' . $profile_picture_path . '" alt="[Image: ' . $activity['full_name'] . ']" class="img-rounded img-responsive">' . "\n";
                 } else if (!empty($activity['initials'])) {
                     $user_avatar = '<i style="border-radius:4px;text-shadow:#6f6f6f 0.02em 0.02em 0.02em;width:32px;height:32px;line-height:32px;font-size:16px;display:inline-block;font-style:normal;text-align:center;text-transform:uppercase;color:#f47564 !important;background-color:#ffffff !important;border:1px solid #d7d9db;margin-right: 10px;">' . $activity['initials'] . '</i>' . "\n";
+                    $profile_picture_path = "https://ui-avatars.com/api/?background=fff&color=f47564&name=" . $activity['initials'] . "@&size=32";
                 }
                 if (empty($i)) {
                     $activity_id[] = $activity['id'];
                     $i++;
                 }
-                $is_mention_activity = 0;
+                $is_mention_activity = $is_board_mention_activity = $is_card_mention_activity = 0;
                 if ($activity['type'] == 'add_comment' || $activity['type'] == 'edit_comment') {
+                    preg_match_all('/@(board*)/', $activity['comment'], $boardmatches);
+                    if (!empty($boardmatches[1])) {
+                        $board_mentioned_activity = $activity;
+                        $is_board_mention_activity = 1;
+                        $board_mentioned_activity['comment'] = __l('##USER_NAME## has mentioned all the board members in card ##CARD_NAME## on ##BOARD_NAME##') . '<div style="margin:5px 0px 0px 43px"><div style="background-color: #ffffff;border: 1px solid #dddddd;border-radius: 4px;display: block;line-height: 1.42857;margin:7px 0;padding: 4px;transition: all 0.2s ease-in-out 0s;"><div style="padding:3px 0px 0px 0px;margin:0px">' . $activity['comment'] . '</div></div></div>';
+                        $activity['comment'] = '';
+                        $br = '<div style="line-height:20px;">&nbsp;</div>';
+                    }
+                    preg_match_all('/@(card*)/', $activity['comment'], $cardmatches);
+                    if (!empty($cardmatches[1])) {
+                        $card_mentioned_activity = $activity;
+                        $is_card_mention_activity = 1;
+                        $card_mentioned_activity['comment'] = __l('##USER_NAME## has mentioned all the members in the card ##CARD_NAME## on ##BOARD_NAME##') . '<div style="margin:5px 0px 0px 43px"><div style="background-color: #ffffff;border: 1px solid #dddddd;border-radius: 4px;display: block;line-height: 1.42857;margin:7px 0;padding: 4px;transition: all 0.2s ease-in-out 0s;"><div style="padding:3px 0px 0px 0px;margin:0px">' . $activity['comment'] . '</div></div></div>';
+                        $activity['comment'] = '';
+                        $br = '<div style="line-height:20px;">&nbsp;</div>';
+                    }
                     preg_match_all('/@([^ ]*)/', $activity['comment'], $matches);
                     if (in_array($user['username'], $matches[1])) {
                         $mentioned_activity = $activity;
                         $is_mention_activity = 1;
                         $mentioned_activity['comment'] = __l('##USER_NAME## has mentioned you in card ##CARD_NAME## on ##BOARD_NAME##') . '<div style="margin:5px 0px 0px 43px"><div style="background-color: #ffffff;border: 1px solid #dddddd;border-radius: 4px;display: block;line-height: 1.42857;margin:7px 0;padding: 4px;transition: all 0.2s ease-in-out 0s;"><div style="padding:3px 0px 0px 0px;margin:0px">' . $activity['comment'] . '</div></div></div>';
                         $activity['comment'] = '';
-                    } else {
+                    } else if (empty($boardmatches[1]) && empty($cardmatches[1])) {
                         $activity['comment'] = __l('##USER_NAME## commented to the card ##CARD_NAME## on ##BOARD_NAME##') . '<div style="margin:5px 0px 0px 43px"><div style="background-color: #ffffff;border: 1px solid #dddddd;border-radius: 4px;display: block;line-height: 1.42857;margin:7px 0;padding: 4px;transition: all 0.2s ease-in-out 0s;"><div style="padding:3px 0px 0px 0px;margin:0px">' . $activity['comment'] . '</div></div></div>';
                     }
                     $br = '<div style="line-height:20px;">&nbsp;</div>';
@@ -4042,12 +4683,34 @@ function sendMailNotification($notification_type)
                             '<ins style="padding: 0px 3px;font-size: 90%;line-height: 1;text-align: center;white-space: nowrap;vertical-align: baseline;background: #d1e1ad;color: #405a04;text-decoration: none;margin-right: 3px;"'
                         );
                         $difference = str_replace($search, $replace, $activity['difference'][0]);
+                        if ($is_board_mention_activity) {
+                            $board_mentioned_activity['comment'].= '<div style="margin:5px 0px 0px 43px"><div style="background-color: #ffffff;border: 1px solid #dddddd;border-radius: 4px;display: block;line-height: 1.42857;margin:7px 0;padding: 4px;transition: all 0.2s ease-in-out 0s;"><div style="padding:3px 0px 0px 0px;margin:0px">' . $difference . '</div></div></div>';
+                        }
+                        if ($is_card_mention_activity) {
+                            $card_mentioned_activity['comment'].= '<div style="margin:5px 0px 0px 43px"><div style="background-color: #ffffff;border: 1px solid #dddddd;border-radius: 4px;display: block;line-height: 1.42857;margin:7px 0;padding: 4px;transition: all 0.2s ease-in-out 0s;"><div style="padding:3px 0px 0px 0px;margin:0px">' . $difference . '</div></div></div>';
+                        }
                         if ($is_mention_activity) {
                             $mentioned_activity['comment'].= '<div style="margin:5px 0px 0px 43px"><div style="background-color: #ffffff;border: 1px solid #dddddd;border-radius: 4px;display: block;line-height: 1.42857;margin:7px 0;padding: 4px;transition: all 0.2s ease-in-out 0s;"><div style="padding:3px 0px 0px 0px;margin:0px">' . $difference . '</div></div></div>';
                         } else {
                             $activity['comment'].= '<div style="margin:5px 0px 0px 43px"><div style="background-color: #ffffff;border: 1px solid #dddddd;border-radius: 4px;display: block;line-height: 1.42857;margin:7px 0;padding: 4px;transition: all 0.2s ease-in-out 0s;"><div style="padding:3px 0px 0px 0px;margin:0px">' . $difference . '</div></div></div>';
                         }
                     }
+                }
+                if ($is_board_mention_activity) {
+                    $comment = findAndReplaceVariables($board_mentioned_activity);
+                    $board_mentioned_mail_content.= '<div>' . "\n";
+                    $board_mentioned_mail_content.= '<div style="float:left">' . $user_avatar . '</div>' . "\n";
+                    $board_mentioned_mail_content.= '<div>' . $comment . $reply_to . '</div>' . "\n";
+                    $board_mentioned_mail_content.= '</div>' . "\n";
+                    $board_mentioned_mail_content.= $br . "\n";
+                }
+                if ($is_card_mention_activity) {
+                    $comment = findAndReplaceVariables($card_mentioned_activity);
+                    $card_mentioned_mail_content.= '<div>' . "\n";
+                    $card_mentioned_mail_content.= '<div style="float:left">' . $user_avatar . '</div>' . "\n";
+                    $card_mentioned_mail_content.= '<div>' . $comment . $reply_to . '</div>' . "\n";
+                    $card_mentioned_mail_content.= '</div>' . "\n";
+                    $card_mentioned_mail_content.= $br . "\n";
                 }
                 if ($is_mention_activity) {
                     $comment = findAndReplaceVariables($mentioned_activity);
@@ -4056,13 +4719,17 @@ function sendMailNotification($notification_type)
                     $mentioned_mail_content.= '<div>' . $comment . $reply_to . '</div>' . "\n";
                     $mentioned_mail_content.= '</div>' . "\n";
                     $mentioned_mail_content.= $br . "\n";
-                } else {
+                } else if (!($is_board_mention_activity) && !($is_card_mention_activity)) {
                     $comment = findAndReplaceVariables($activity);
                     $mail_content.= '<div>' . "\n";
                     $mail_content.= '<div style="float:left">' . $user_avatar . '</div>' . "\n";
                     $mail_content.= '<div>' . $comment . $reply_to . '</div>' . "\n";
                     $mail_content.= '</div>' . "\n";
                     $mail_content.= $br . "\n";
+                }
+                $push_message_title = (!empty($activity['full_name']) ? $activity['full_name'] : 'Deleted account');
+                if (!empty($user['user_push_tokens'])) {
+                    sendPushNotification($user['id'], $user['user_push_tokens'], $profile_picture_path, $push_message_title, strip_tags($comment) , $reply_to);
                 }
                 $notification_count++;
             }
@@ -4083,20 +4750,37 @@ function sendMailNotification($notification_type)
                     $user_avatar = '<img style="margin-right: 10px;vertical-align: middle;" src="' . $profile_picture_path . '" alt="[Image: ' . $activity['full_name'] . ']" class="img-rounded img-responsive">' . "\n";
                 } else if (!empty($activity['initials'])) {
                     $user_avatar = '<i style="border-radius:4px;text-shadow:#6f6f6f 0.02em 0.02em 0.02em;width:32px;height:32px;line-height:32px;font-size:16px;display:inline-block;font-style:normal;text-align:center;text-transform:uppercase;color:#02aff1 !important;background-color:#ffffff !important;border:1px solid #d7d9db;margin-right: 10px;">' . $activity['initials'] . '</i>' . "\n";
+                    $profile_picture_path = "https://ui-avatars.com/api/?background=fff&color=f47564&name=" . $activity['initials'] . "@&size=32";
                 }
                 if (empty($i)) {
                     $activity_id[] = $activity['id'];
                     $i++;
                 }
-                $is_mention_activity = 0;
+                $is_mention_activity = $is_board_mention_activity = $is_card_mention_activity = 0;
                 if ($activity['type'] == 'add_comment' || $activity['type'] == 'edit_comment') {
+                    preg_match_all('/@(board*)/', $activity['comment'], $boardmatches);
+                    if (!empty($boardmatches[1])) {
+                        $board_mentioned_activity = $activity;
+                        $is_board_mention_activity = 1;
+                        $board_mentioned_activity['comment'] = __l('##USER_NAME## has mentioned all the board members in card ##CARD_NAME## on ##BOARD_NAME##') . '<div style="margin:5px 0px 0px 43px"><div style="background-color: #ffffff;border: 1px solid #dddddd;border-radius: 4px;display: block;line-height: 1.42857;margin:7px 0;padding: 4px;transition: all 0.2s ease-in-out 0s;"><div style="padding:3px 0px 0px 0px;margin:0px">' . $activity['comment'] . '</div></div></div>';
+                        $activity['comment'] = '';
+                        $br = '<div style="line-height:20px;">&nbsp;</div>';
+                    }
+                    preg_match_all('/@(card*)/', $activity['comment'], $cardmatches);
+                    if (!empty($cardmatches[1])) {
+                        $card_mentioned_activity = $activity;
+                        $is_card_mention_activity = 1;
+                        $card_mentioned_activity['comment'] = __l('##USER_NAME## has mentioned all the members in the card ##CARD_NAME## on ##BOARD_NAME##') . '<div style="margin:5px 0px 0px 43px"><div style="background-color: #ffffff;border: 1px solid #dddddd;border-radius: 4px;display: block;line-height: 1.42857;margin:7px 0;padding: 4px;transition: all 0.2s ease-in-out 0s;"><div style="padding:3px 0px 0px 0px;margin:0px">' . $activity['comment'] . '</div></div></div>';
+                        $activity['comment'] = '';
+                        $br = '<div style="line-height:20px;">&nbsp;</div>';
+                    }
                     preg_match_all('/@([^ ]*)/', $activity['comment'], $matches);
                     if (in_array($user['username'], $matches[1])) {
                         $mentioned_activity = $activity;
                         $is_mention_activity = 1;
                         $mentioned_activity['comment'] = __l('##USER_NAME## has mentioned you in card ##CARD_NAME## on ##BOARD_NAME##') . '<div style="margin:5px 0px 0px 43px"><div style="background-color: #ffffff;border: 1px solid #dddddd;border-radius: 4px;display: block;line-height: 1.42857;margin:7px 0;padding: 4px;transition: all 0.2s ease-in-out 0s;"><div style="padding:3px 0px 0px 0px;margin:0px">' . $activity['comment'] . '</div></div></div>';
                         $activity['comment'] = '';
-                    } else {
+                    } else if (empty($boardmatches[1]) && empty($cardmatches[1])) {
                         $activity['comment'] = __l('##USER_NAME## commented to the card ##CARD_NAME## on ##BOARD_NAME##') . '<div style="margin:5px 0px 0px 43px"><div style="background-color: #ffffff;border: 1px solid #dddddd;border-radius: 4px;display: block;line-height: 1.42857;margin:7px 0;padding: 4px;transition: all 0.2s ease-in-out 0s;"><div style="padding:3px 0px 0px 0px;margin:0px">' . $activity['comment'] . '</div></div></div>';
                     }
                     $br = '<div style="line-height:20px;">&nbsp;</div>';
@@ -4170,12 +4854,34 @@ function sendMailNotification($notification_type)
                             '<ins style="padding: 0px 3px;font-size: 90%;line-height: 1;text-align: center;white-space: nowrap;vertical-align: baseline;background: #d1e1ad;color: #405a04;text-decoration: none;margin-right: 3px;"'
                         );
                         $difference = str_replace($search, $replace, $activity['difference'][0]);
+                        if ($is_board_mention_activity) {
+                            $board_mentioned_activity['comment'].= '<div style="margin:5px 0px 0px 43px"><div style="background-color: #ffffff;border: 1px solid #dddddd;border-radius: 4px;display: block;line-height: 1.42857;margin:7px 0;padding: 4px;transition: all 0.2s ease-in-out 0s;"><div style="padding:3px 0px 0px 0px;margin:0px">' . $difference . '</div></div></div>';
+                        }
+                        if ($is_card_mention_activity) {
+                            $card_mentioned_activity['comment'].= '<div style="margin:5px 0px 0px 43px"><div style="background-color: #ffffff;border: 1px solid #dddddd;border-radius: 4px;display: block;line-height: 1.42857;margin:7px 0;padding: 4px;transition: all 0.2s ease-in-out 0s;"><div style="padding:3px 0px 0px 0px;margin:0px">' . $difference . '</div></div></div>';
+                        }
                         if ($is_mention_activity) {
                             $mentioned_activity['comment'].= '<div style="margin:5px 0px 0px 43px"><div style="background-color: #ffffff;border: 1px solid #dddddd;border-radius: 4px;display: block;line-height: 1.42857;margin:7px 0;padding: 4px;transition: all 0.2s ease-in-out 0s;"><div style="padding:3px 0px 0px 0px;margin:0px">' . $difference . '</div></div></div>';
                         } else {
                             $activity['comment'].= '<div style="margin:5px 0px 0px 43px"><div style="background-color: #ffffff;border: 1px solid #dddddd;border-radius: 4px;display: block;line-height: 1.42857;margin:7px 0;padding: 4px;transition: all 0.2s ease-in-out 0s;"><div style="padding:3px 0px 0px 0px;margin:0px">' . $difference . '</div></div></div>';
                         }
                     }
+                }
+                if ($is_board_mention_activity) {
+                    $comment = findAndReplaceVariables($board_mentioned_activity);
+                    $board_mentioned_mail_content.= '<div>' . "\n";
+                    $board_mentioned_mail_content.= '<div style="float:left">' . $user_avatar . '</div>' . "\n";
+                    $board_mentioned_mail_content.= '<div>' . $comment . $reply_to . '</div>' . "\n";
+                    $board_mentioned_mail_content.= '</div>' . "\n";
+                    $board_mentioned_mail_content.= $br . "\n";
+                }
+                if ($is_card_mention_activity) {
+                    $comment = findAndReplaceVariables($card_mentioned_activity);
+                    $card_mentioned_mail_content.= '<div>' . "\n";
+                    $card_mentioned_mail_content.= '<div style="float:left">' . $user_avatar . '</div>' . "\n";
+                    $card_mentioned_mail_content.= '<div>' . $comment . $reply_to . '</div>' . "\n";
+                    $card_mentioned_mail_content.= '</div>' . "\n";
+                    $card_mentioned_mail_content.= $br . "\n";
                 }
                 if ($is_mention_activity) {
                     $comment = findAndReplaceVariables($mentioned_activity);
@@ -4184,7 +4890,7 @@ function sendMailNotification($notification_type)
                     $mentioned_mail_content.= '<div>' . $comment . $reply_to . '</div>' . "\n";
                     $mentioned_mail_content.= '</div>' . "\n";
                     $mentioned_mail_content.= $br . "\n";
-                } else {
+                } else if (!($is_board_mention_activity) && !($is_card_mention_activity)) {
                     $comment = findAndReplaceVariables($activity);
                     $mail_content.= '<div>' . "\n";
                     $mail_content.= '<div style="float:left">' . $user_avatar . '</div>' . "\n";
@@ -4192,10 +4898,14 @@ function sendMailNotification($notification_type)
                     $mail_content.= '</div>' . "\n";
                     $mail_content.= $br . "\n";
                 }
+                $push_message_title = (!empty($activity['full_name']) ? $activity['full_name'] : 'Deleted account');
+                if (!empty($user['user_push_tokens'])) {
+                    sendPushNotification($user['id'], $user['user_push_tokens'], $profile_picture_path, $push_message_title, strip_tags($comment) , $reply_to);
+                }
                 $notification_count++;
             }
         }
-        if (!empty($mail_content) || !empty($mentioned_mail_content)) {
+        if (!empty($mail_content) || !empty($mentioned_mail_content) || !empty($board_mentioned_mail_content) || !empty($card_mentioned_mail_content)) {
             $timezone = SITE_TIMEZONE;
             if (!empty($user['timezone'])) {
                 $timezone = trim($user['timezone']);
@@ -4214,6 +4924,14 @@ function sendMailNotification($notification_type)
             if ($mentioned_mail_content) {
                 $main_content = '<h2 style="font-size:16px;font-family:Arial,Helvetica,sans-serif;margin:7px 0px 0px 43px;padding:35px 0px 0px 0px">Mentioned to you</h2><br>';
                 $main_content.= $mentioned_mail_content;
+            }
+            if (!empty($card_mentioned_mail_content)) {
+                $main_content.= '<h2 style="font-size:16px;font-family:Arial,Helvetica,sans-serif;margin:7px 0px 0px 43px;padding:35px 0px 0px 0px">Mentioned to all card members</h2><br>';
+                $main_content.= $card_mentioned_mail_content;
+            }
+            if (!empty($board_mentioned_mail_content)) {
+                $main_content.= '<h2 style="font-size:16px;font-family:Arial,Helvetica,sans-serif;margin:7px 0px 0px 43px;padding:35px 0px 0px 0px">Mentioned to all board members</h2><br>';
+                $main_content.= $board_mentioned_mail_content;
             }
             if ($mail_content) {
                 $main_content.= '<h2 style="font-size:16px;font-family:Arial,Helvetica,sans-serif;margin:7px 0px 0px 43px;padding:35px 0px 0px 0px">Activities</h2><br>';

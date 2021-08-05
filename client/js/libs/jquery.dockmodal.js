@@ -19,6 +19,7 @@
         minimizedWidth: 200,
         gutter: 10,
         poppedOutDistance: "6%",
+        poppedOutHorizontalDistance: "2%",
         title: "",
         dialogClass: "",
         buttons: [], /* id, html, buttonClass, click */
@@ -405,8 +406,8 @@
                 $dockModal.removeClass("minimized").addClass("popped-out").css({
                     "width": "auto",
                     "height": "auto",
-                    "left": $this.options.poppedOutDistance,
-                    "right": $this.options.poppedOutDistance,
+                    "left": $this.options.poppedOutHorizontalDistance,
+                    "right": $this.options.poppedOutHorizontalDistance,
                     "top": $this.options.poppedOutDistance,
                     "bottom": 42 + "px"
                 });
@@ -420,7 +421,9 @@
                 } else {
                     $dockModal.find(".action-popout").attr("title", "Pop-in");
                 }
-
+                if (typeof minimize_set_interval !== undefined) {
+                    clearTimeout(minimize_set_interval);
+                }
                 methods.refreshLayout();
 
                 setTimeout(function () {

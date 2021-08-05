@@ -12,7 +12,7 @@ App.intro_video_view = Backbone.View.extend({
      */
     initialize: function() {
         var field = $('#content').attr('class');
-        if (field === "container-fluid") {
+        if (field.indexOf("container-fluid") !== -1) {
             this.render();
         }
     },
@@ -25,13 +25,15 @@ App.intro_video_view = Backbone.View.extend({
      *
      */
     render: function() {
-        $('#content').addClass('intro_video');
+        if (!$('#content').hasClass("intro_video")) {
+            $('#content').addClass("intro_video");
+        }
         if (authuser.user.is_intro_video_skipped === "f" || authuser.user.is_intro_video_skipped === null) {
             this.$el.dockmodal({
                 height: 300,
                 width: 200,
                 animationSpeed: ANIMATION_SPEED,
-                title: "<div class='col-xs-12'><div class='text-center'><strong>What's New in Restyaboard v0.6.9 (Stereopony)</strong></div></div>",
+                title: "<div class='col-xs-12'><div class='text-center'><strong>What's New in Restyaboard v1.7 (Scorpions)</strong></div></div>",
                 beforePopout: function(event) {
                     if ($(window).width() < 1400) {
                         $('.editor').resizable({
@@ -151,9 +153,14 @@ App.intro_video_view = Backbone.View.extend({
                             }
                         }
                     });
+                    /*The popupView has been called here*/
+                    var popupView = new App.popupView();
                 }
             });
             this.$el.html(this.template);
+        } else {
+            /*The popupView has been called here*/
+            var popupView = new App.popupView();
         }
         return this;
     }

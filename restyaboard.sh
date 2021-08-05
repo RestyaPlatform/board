@@ -338,10 +338,10 @@
         					then
 								echo "Note: For the latest version of PHP, we're going to download https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm and https://rpms.remirepo.net/enterprise/remi-release-8.rpm."
 								echo "Installing PHP..."
-								dnf install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
-								dnf install https://rpms.remirepo.net/enterprise/remi-release-8.rpm
+								dnf -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
+								dnf -y install https://rpms.remirepo.net/enterprise/remi-release-8.rpm
 								dnf module enable php:remi-7.4
-								dnf install php php-cli php-common
+								dnf -y install php php-cli php-common
 							else
 								yum install -y epel-release
 								echo "Note: For the latest version of PHP, we're going to download http://rpms.famillecollet.com/enterprise/remi-release-${OS_VERSION}.rpm."
@@ -375,7 +375,8 @@
 				then
 					if ([ "$OS_REQUIREMENT" = "CentOS" ] && [ "$OS_VERSION" = "8" ])
         			then
-						dnf install php-fpm php-devel php-opcache
+						dnf -y install php-fpm php-devel php-opcache
+						dnf -y install php-json
 					else
 						yum --enablerepo=remi-php74 install -y php-fpm php-devel php-cli php-opcache
 					fi
@@ -413,7 +414,7 @@
 					then
 						if ([ "$OS_REQUIREMENT" = "CentOS" ] && [ "$OS_VERSION" = "8" ])
 						then
-							dnf install php-curl
+							dnf -y install php-curl
 						else
 							yum --enablerepo=remi-php74 install -y php-curl
 						fi
@@ -446,7 +447,7 @@
 					then
 						if ([ "$OS_REQUIREMENT" = "CentOS" ] && [ "$OS_VERSION" = "8" ])
 						then
-							dnf install php-pgsql
+							dnf -y install php-pgsql
 						else
 							yum --enablerepo=remi-php74 install -y php-pgsql
 						fi
@@ -478,7 +479,7 @@
 					then
 						if ([ "$OS_REQUIREMENT" = "CentOS" ] && [ "$OS_VERSION" = "8" ])
 						then
-							dnf install php-mbstring
+							dnf -y install php-mbstring
 						else
 							yum --enablerepo=remi-php74 install -y php-mbstring
 						fi
@@ -510,7 +511,7 @@
 					then
 						if ([ "$OS_REQUIREMENT" = "CentOS" ] && [ "$OS_VERSION" = "8" ])
 						then
-							dnf install php-ldap
+							dnf -y install php-ldap
 						else
 							yum --enablerepo=remi-php74 install -y php-ldap
 						fi
@@ -557,8 +558,8 @@
 						yum install -y ImageM* netpbm gd gd-* libjpeg libexif gcc coreutils make
 						if ([ "$OS_REQUIREMENT" = "CentOS" ] && [ "$OS_VERSION" = "8" ])
 						then
-							dnf install php-pear
-							dnf install php-gd
+							dnf -y install php-pear
+							dnf -y install php-gd
 						else
 							yum --enablerepo=remi-php74 install -y php-pear
 							yum --enablerepo=remi-php74 install -y php-gd
@@ -602,7 +603,7 @@
 					then
 						if ([ "$OS_REQUIREMENT" = "CentOS" ] && [ "$OS_VERSION" = "8" ])
 						then
-							dnf install php-imap
+							dnf -y install php-imap
 						else
 							yum --enablerepo=remi-php74 install -y php-imap
 						fi
@@ -634,7 +635,7 @@
 					then
 						if ([ "$OS_REQUIREMENT" = "CentOS" ] && [ "$OS_VERSION" = "8" ])
 						then
-							dnf install php-xml
+							dnf -y install php-xml
 						else
 							yum --enablerepo=remi-php74 install -y php-xml
 						fi
@@ -762,31 +763,27 @@
 					case "${answer}" in
 						[Yy])
 						echo "Installing PostgreSQL..."
-						if [ $(getconf LONG_BIT) = "32" ]; then
-							if [[ $OS_REQUIREMENT = "Fedora" ]]; then
-								rpm -Uvh "https://download.postgresql.org/pub/repos/yum/9.6/fedora/fedora-${OS_VERSION}-i386/pgdg-fedora-repo-latest.noarch.rpm"
-							else
-								rpm -Uvh "https://download.postgresql.org/pub/repos/yum/9.6/redhat/rhel-${OS_VERSION}-i386/pgdg-redhat-repo-latest.noarch.rpm"
-							fi
-						fi
 						if [ $(getconf LONG_BIT) = "64" ]; then
 							if [[ $OS_REQUIREMENT = "Fedora" ]]; then
-								rpm -Uvh "https://download.postgresql.org/pub/repos/yum/9.6/fedora/fedora-${OS_VERSION}-x86_64/pgdg-fedora-repo-latest.noarch.rpm"
+								dnf install -y "https://download.postgresql.org/pub/repos/yum/reporpms/F-${OS_VERSION}-x86_64/pgdg-fedora-repo-latest.noarch.rpm"
 							else
-								rpm -Uvh "https://download.postgresql.org/pub/repos/yum/9.6/redhat/rhel-${OS_VERSION}-x86_64/pgdg-redhat-repo-latest.noarch.rpm"
+								if ([ "$OS_REQUIREMENT" = "CentOS" ] && [ "$OS_VERSION" != "8" ])
+								then
+									yum install -y "https://download.postgresql.org/pub/repos/yum/reporpms/EL-${OS_VERSION}-x86_64/pgdg-redhat-repo-latest.noarch.rpm"
+								fi
 							fi
 						fi
 						if ([ "$OS_REQUIREMENT" = "CentOS" ] && [ "$OS_VERSION" = "8" ])
 						then
-							dnf module enable postgresql:9.6
-							dnf install postgresql-server postgresql-contrib postgresql-libs
+							dnf module enable postgresql:13
+							dnf -y install postgresql-server postgresql-contrib postgresql-libs
 						else
-							yum install -y postgresql96 postgresql96-server postgresql96-contrib postgresql96-libs	
+							yum install -y postgresql13 postgresql13-server postgresql13-contrib postgresql13-libs	
 						fi
 						error_code=$?
 						if [ ${error_code} != 0 ]
 						then
-							echo "postgresql96 installation failed with error code ${error_code} (postgresql96 installation failed with error code 29)"
+							echo "postgresql13 installation failed with error code ${error_code} (postgresql13 installation failed with error code 29)"
 							return 29
 						fi
 					esac
@@ -795,25 +792,22 @@
 					if [[ $PSQL_VERSION < 9.3 ]]; then
 						set +x
 						echo "Restyaboard will not work in your PostgreSQL version (i.e. less than 9.3). So script going to update PostgreSQL version 9.6"
-						if [ $(getconf LONG_BIT) = "32" ]; then
+						if [ $(getconf LONG_BIT) = "64" ]; then
 							if [[ $OS_REQUIREMENT = "Fedora" ]]; then
-								rpm -Uvh "https://download.postgresql.org/pub/repos/yum/9.6/fedora/fedora-${OS_VERSION}-i386/pgdg-fedora-repo-latest.noarch.rpm"
+								dnf install -y "https://download.postgresql.org/pub/repos/yum/reporpms/F-${OS_VERSION}-x86_64/pgdg-fedora-repo-latest.noarch.rpm"
 							else
-								rpm -Uvh "https://download.postgresql.org/pub/repos/yum/9.6/redhat/rhel-${OS_VERSION}-i386/pgdg-redhat-repo-latest.noarch.rpm"
-							fi
-						else
-							if [[ $OS_REQUIREMENT = "Fedora" ]]; then
-								rpm -Uvh "https://download.postgresql.org/pub/repos/yum/9.6/fedora/fedora-${OS_VERSION}-x86_64/pgdg-fedora-repo-latest.noarch.rpm"
-							else
-								rpm -Uvh "https://download.postgresql.org/pub/repos/yum/9.6/redhat/rhel-${OS_VERSION}-x86_64/pgdg-redhat-repo-latest.noarch.rpm"
+								if ([ "$OS_REQUIREMENT" = "CentOS" ] && [ "$OS_VERSION" != "8" ])
+								then
+									yum install -y "https://download.postgresql.org/pub/repos/yum/reporpms/EL-${OS_VERSION}-x86_64/pgdg-redhat-repo-latest.noarch.rpm"
+								fi
 							fi
 						fi
 						if ([ "$OS_REQUIREMENT" = "CentOS" ] && [ "$OS_VERSION" = "8" ])
 						then
-							dnf module enable postgresql:9.6
-							dnf install postgresql-server postgresql-contrib postgresql-libs
+							dnf module enable postgresql:13
+							dnf -y install postgresql-server postgresql-contrib postgresql-libs
 						else
-							yum install -y postgresql96 postgresql96-server postgresql96-contrib postgresql96-libs
+							yum install -y postgresql13 postgresql13-server postgresql13-contrib postgresql13-libs
 						fi
 						error_code=$?
 						if [ ${error_code} != 0 ]
@@ -824,19 +818,20 @@
 					fi
 				fi
 				PSQL_VERSION=$(psql --version | egrep -o '[0-9]{1,}\.[0-9]{1,}')
+				if [[ ${PSQL_VERSION} =~ ^13\.[0-9]{1,}$ ]]; then
+					PSQL_VERSION=13
+				fi
 				PSQL_FOLDER=$(echo ${PSQL_VERSION} | sed 's/\.//')
 				if ([ "$OS_REQUIREMENT" = "CentOS" ] && [ "$OS_VERSION" = "8" ])
 				then
 					postgresql-setup --initdb
 				else
-					if [ -f "/usr/pgsql-${PSQL_VERSION}/bin/postgresql${PSQL_FOLDER}-setup" ]; then
-						"/usr/pgsql-${PSQL_VERSION}/bin/postgresql${PSQL_FOLDER}-setup" initdb
-					fi
+					"/usr/pgsql-${PSQL_VERSION}/bin/postgresql-${PSQL_VERSION}-setup" initdb
 				fi
 				if ([ "$OS_REQUIREMENT" = "CentOS" ] && [ "$OS_VERSION" = "8" ])
 				then
-					systemctl start postgresql
 					systemctl enable postgresql
+					systemctl start postgresql
 				else
 					if [ -f "/bin/systemctl" ]; then
 						systemctl start "postgresql-${PSQL_VERSION}.service"
@@ -850,14 +845,12 @@
 				then
 					sed -e 's/peer/trust/g' -e 's/ident/trust/g' < "/var/lib/pgsql/data/pg_hba.conf" > "/var/lib/pgsql/data/pg_hba.conf.1"
 					cd "/var/lib/pgsql/data" || exit
-					mv pg_hba.conf pg_hba.conf_old
-					mv pg_hba.conf.1 pg_hba.conf
 				else
 					sed -e 's/peer/trust/g' -e 's/ident/trust/g' < "/var/lib/pgsql/${PSQL_VERSION}/data/pg_hba.conf" > "/var/lib/pgsql/${PSQL_VERSION}/data/pg_hba.conf.1"
 					cd "/var/lib/pgsql/${PSQL_VERSION}/data" || exit
-					mv pg_hba.conf pg_hba.conf_old
-					mv pg_hba.conf.1 pg_hba.conf
 				fi
+				mv pg_hba.conf pg_hba.conf_old
+				mv pg_hba.conf.1 pg_hba.conf
 				if ([ "$OS_REQUIREMENT" = "CentOS" ] && [ "$OS_VERSION" = "8" ])
 				then
 					systemctl restart postgresql
@@ -1072,6 +1065,19 @@
 				then
 					echo "postfix installation failed with error code ${error_code} (postfix installation failed with error code 16)"
 				fi
+				PHP_VERSION=$(php --version | head -n 1 | cut -d " " -f 2 | grep --only-matching --perl-regexp "^\\d\.\\d+")
+				if [ -f "/etc/php/${PHP_VERSION}/fpm/php.ini" ] 
+				then
+					sed -i "s/;sendmail_path =/sendmail_path = \"\/usr\/sbin\/sendmail -t -i\"/g" /etc/php/${PHP_VERSION}/fpm/php.ini
+				fi
+				if [ -f "/etc/php/${PHP_VERSION}/cli/php.ini" ] 
+				then
+					sed -i "s/;sendmail_path =/sendmail_path = \"\/usr\/sbin\/sendmail -t -i\"/g" /etc/php/${PHP_VERSION}/cli/php.ini
+				fi
+				if [ -f "/etc/php.ini" ] 
+				then
+					sed -i "s/;sendmail_path =/sendmail_path = \"\/usr\/sbin\/sendmail -t -i\"/g" /etc/php.ini
+				fi
 			fi
 		}
 		change_permission()
@@ -1268,24 +1274,34 @@
 				echo "SSL connectivity cannot be set for IP address"
 			else
 				set +x
-				echo "Do you want to set up SSL connectivity for your domain and your domain should be  publicly accessible Restyaboard instance, Note: If you're trying to set SSL  for Non-publicly accessible instance, then your Restyaboard will not work (y/n)?"
+				echo "Do you want to set up SSL connectivity for your domain and your domain should be  publicly accessible Restyaboard instance and your domain should be mappped to this Restyaboard Server, Note: If you're trying to set SSL  for Non-publicly accessible instance, then your Restyaboard will not work (y/n)?"
 				read -r answer
 				set -x
 				case "${answer}" in
 					[Yy])
-					cd /opt/
-					wget https://github.com/certbot/certbot/archive/master.zip -O certbot-master.zip
-					unzip certbot-master.zip
-					cd /opt/certbot-master/
-					sudo -H ./certbot-auto certonly --webroot --no-bootstrap -d $webdir -w "$dir/client"
-					sed -i "s/restya\.com/$webdir/g" ${DOWNLOAD_DIR}/restyaboard-ssl.conf
-
-					sed -i "/client_max_body_size 300M;/r ${DOWNLOAD_DIR}/restyaboard-ssl.conf"  /etc/nginx/conf.d/restyaboard.conf
 					if ([ "$OS_REQUIREMENT" = "Ubuntu" ] || [ "$OS_REQUIREMENT" = "Debian" ] || [ "$OS_REQUIREMENT" = "LinuxMint" ] || [ "$OS_REQUIREMENT" = "Raspbian" ])
 					then
+						apt install certbot python3-certbot-nginx -y
 						service nginx restart
 						service php7.4-fpm restart
+						certbot --nginx
 					else
+						if ([ "$OS_REQUIREMENT" = "CentOS" ] && [ "$OS_VERSION" = "8" ])
+						then
+							dnf -y install epel-release
+							dnf -y install certbot python3-certbot-nginx
+							certbot --nginx
+						else
+							yum install -y epel-release
+							yum install certbot-nginx
+							certbot --nginx
+						fi
+						error_code=$?
+						if [ ${error_code} != 0 ]
+						then
+							echo "SSL installation failed with error code ${error_code} (php installation failed with error code 20)"
+							return 20
+						fi
 						if [ -f "/bin/systemctl" ]; then
 							echo "Starting services with systemd..."
 							systemctl restart nginx
@@ -1487,6 +1503,56 @@
             find "$dir/client/apps" -type f -exec chmod 644 {} \;
             chmod 0777 $dir/client/apps/**/*.json
 		}
+		upgrade-0.6.9-1.7(){
+			if [ -d "$dir/client/apps/r_togetherjs" ]; then
+				rm -rf $dir/client/apps/r_togetherjs/
+			fi
+			if [ -d "$dir/client/apps" ]; then
+				chmod -R go+w "$dir/client/apps"
+			else 
+				mkdir "$dir/client/apps"
+				chmod -R go+w "$dir/client/apps"
+			fi
+			curl -v -L -G -o /tmp/r_codenames-v0.1.5.zip  https://github.com/RestyaPlatform/board-apps/releases/download/v1/r_codenames-v0.1.5.zip
+			unzip /tmp/r_codenames-v0.1.5.zip -d "$dir/client/apps"
+			curl -v -L -G -o /tmp/r_gmail_addon-v0.1.2.zip https://github.com/RestyaPlatform/board-apps/releases/download/v1/r_gmail_addon-v0.1.2.zip
+			unzip /tmp/r_gmail_addon-v0.1.2.zip -d "$dir/client/apps"
+			
+			echo "Applying permission..."
+			useradd restyaboard
+			usermod --password 'hjVl2!rGd' restyaboard
+			PHP_VERSION=$(php --version | head -n 1 | cut -d " " -f 2 | grep --only-matching --perl-regexp "^\\d\.\\d+")
+			if ([ "$OS_REQUIREMENT" = "Ubuntu" ] || [ "$OS_REQUIREMENT" = "Debian" ] || [ "$OS_REQUIREMENT" = "LinuxMint" ] || [ "$OS_REQUIREMENT" = "Raspbian" ])
+			then
+				user www-data;
+				usermod -a -G restyaboard www-data
+				sed -i "s/\[www\]/[restyaboard] group=restyaboard/g" /etc/php/${PHP_VERSION}/fpm/pool.d/www.conf
+				sed -i "s/user\s*=\s*www-data/user = restyaboard/g" /etc/php/${PHP_VERSION}/fpm/pool.d/www.conf
+				sed -i "0,/group\s*=\s*www-data/s//group = restyaboard/g" /etc/php/${PHP_VERSION}/fpm/pool.d/www.conf
+			else
+				user nginx;
+				usermod -a -G restyaboard nginx
+				sed -i "s/\[www\]/[restyaboard] group=restyaboard/g" /etc/php-fpm.d/www.conf
+				sed -i "s/user\s*=\s*apache/user = restyaboard/g" /etc/php-fpm.d/www.conf
+				sed -i "0,/group\s*=\s*apache/s//group = restyaboard/g" /etc/php-fpm.d/www.conf
+			fi
+			chown -R restyaboard:restyaboard $dir
+			chmod -R u=rwX,g=rX,o= $dir
+			chown -R restyaboard:restyaboard "$dir/media"
+			chmod -R u=rwX,g=rX,o= $dir/media;
+			chown -R restyaboard:restyaboard "$dir/client/img"
+			chmod -R u=rwX,g=rX,o= $dir/client/img;
+			chown -R restyaboard:restyaboard "$dir/tmp/cache"
+			chmod -R u=rwX,g=rX,o= $dir/tmp/cache;
+			chmod +x $dir/server/php/shell/main.sh
+			chown -R restyaboard:restyaboard "$dir/client/apps"
+			chmod -R u=rwX,g=rX,o= "$dir/client/apps"
+			chmod -R u=rwX,g=rX,o= $dir/client/apps/**/*.json
+			if ([ "$OS_REQUIREMENT" = "CentOS" ])
+			then
+				chcon -R -t httpd_sys_rw_content_t $dir/client/apps/**/*.json
+			fi
+		}
 
 		update_version()
 		{
@@ -1606,6 +1672,10 @@
 				then
 					upgrade+=("upgrade-0.6.8-0.6.9")
 				fi	
+				if [[ $version < "v1.7" ]];
+				then
+					upgrade+=("upgrade-0.6.9-1.7")
+				fi
 				# use for loop to read all values and indexes
 				for i in "${upgrade[@]}"
 				do
@@ -1749,11 +1819,30 @@
 			install_postfix
 			
 			echo "Changing permission..."
-			find $dir -type d -exec chmod 755 {} \;
-			find $dir -type f -exec chmod 644 {} \;
-			chmod -R go+w "$dir/media"
-			chmod -R go+w "$dir/client/img"
-			chmod -R go+w "$dir/tmp/cache"
+			useradd restyaboard
+			usermod --password 'hjVl2!rGd' restyaboard
+			if ([ "$OS_REQUIREMENT" = "Ubuntu" ] || [ "$OS_REQUIREMENT" = "Debian" ] || [ "$OS_REQUIREMENT" = "LinuxMint" ] || [ "$OS_REQUIREMENT" = "Raspbian" ])
+			then
+				user www-data;
+				usermod -a -G restyaboard www-data
+				sed -i "s/\[www\]/[restyaboard] group=restyaboard/g" /etc/php/7.4/fpm/pool.d/www.conf
+				sed -i "s/user\s*=\s*www-data/user = restyaboard/g" /etc/php/7.4/fpm/pool.d/www.conf
+				sed -i "0,/group\s*=\s*www-data/s//group = restyaboard/g" /etc/php/7.4/fpm/pool.d/www.conf
+			else
+				user nginx;
+				usermod -a -G restyaboard nginx
+				sed -i "s/\[www\]/[restyaboard] group=restyaboard/g" /etc/php-fpm.d/www.conf
+				sed -i "s/user\s*=\s*apache/user = restyaboard/g" /etc/php-fpm.d/www.conf
+				sed -i "0,/group\s*=\s*apache/s//group = restyaboard/g" /etc/php-fpm.d/www.conf
+			fi
+			chown -R restyaboard:restyaboard $dir
+			chmod -R u=rwX,g=rX,o= $dir
+			chown -R restyaboard:restyaboard "$dir/media"
+			chmod -R u=rwX,g=rX,o= $dir/media;
+			chown -R restyaboard:restyaboard "$dir/client/img"
+			chmod -R u=rwX,g=rX,o= $dir/client/img;
+			chown -R restyaboard:restyaboard "$dir/tmp/cache"
+			chmod -R u=rwX,g=rX,o= $dir/tmp/cache;
 			chmod +x $dir/server/php/shell/main.sh
 			change_permission
 
@@ -1767,8 +1856,12 @@
 			sed -i "s/^.*'R_DB_PORT'.*$/define('R_DB_PORT', '${POSTGRES_DBPORT}');/g" "$dir/server/php/config.inc.php"
 			
 			echo "Setting up cron for every 5 minutes.."
-			echo "*/5 * * * * $dir/server/php/shell/main.sh > /dev/null 2> /dev/null" >> /var/spool/cron/crontabs/root
-
+			if ([ "$OS_REQUIREMENT" = "Ubuntu" ] || [ "$OS_REQUIREMENT" = "Debian" ] || [ "$OS_REQUIREMENT" = "LinuxMint" ] || [ "$OS_REQUIREMENT" = "Raspbian" ])
+			then
+				echo "*/5 * * * * $dir/server/php/shell/main.sh > /dev/null 2> /dev/null" >> /var/spool/cron/crontabs/root
+			else
+				echo "*/5 * * * * $dir/server/php/shell/main.sh > /dev/null 2> /dev/null" >> /var/spool/cron/root
+			fi
 			php_fpm_reset
 
 			set +x
@@ -1783,9 +1876,10 @@
 					install_jq
 				fi
 				mkdir "$dir/client/apps"
-				chmod -R go+w "$dir/client/apps"
+				chown -R restyaboard:restyaboard "$dir/client/apps"
+				chmod -R u=rwX,g=rX,o= "$dir/client/apps"
 				curl -v -L -G -o /tmp/apps.json https://raw.githubusercontent.com/RestyaPlatform/board-apps/master/apps.json
-				chmod -R go+w "/tmp/apps.json"
+				chown -R restyaboard:restyaboard "/tmp/apps.json"
 				for fid in `jq -r '.[] | .id + "-v" + .version + "#" + .price' /tmp/apps.json`
 				do
 					app_name=$(echo ${fid} | cut -d"#" -f1)
@@ -1796,10 +1890,29 @@
 						unzip /tmp/$app_name.zip -d "$dir/client/apps"
 					fi
 				done
-				find "$dir/client/apps" -type d -exec chmod 755 {} \;
-				find "$dir/client/apps" -type f -exec chmod 644 {} \;
-				chmod 0777 $dir/client/apps/**/*.json
+				chown -R restyaboard:restyaboard "$dir/client/apps"
+				chmod -R u=rwX,g=rX,o= "$dir/client/apps"
+				chmod -R u=rwX,g=rX,o= $dir/client/apps/**/*.json
+				if ([ "$OS_REQUIREMENT" = "CentOS" ])
+				then
+					chcon -R -t httpd_sys_rw_content_t $dir/client/apps/**/*.json
+				fi
 			esac
+			if ([ "$OS_REQUIREMENT" = "Ubuntu" ] || [ "$OS_REQUIREMENT" = "Debian" ] || [ "$OS_REQUIREMENT" = "LinuxMint" ] || [ "$OS_REQUIREMENT" = "Raspbian" ])
+			then
+				service nginx restart
+				service php7.4-fpm restart
+			else
+				if [ -f "/bin/systemctl" ]; then
+					echo "Starting services with systemd..."
+					systemctl restart nginx
+					systemctl restart php-fpm
+				else
+					echo "Starting services..."
+					/etc/init.d/php-fpm restart
+					/etc/init.d/nginx restart
+				fi
+			fi
 			set_db_connection
 		esac
 		/bin/echo "$RESTYABOARD_VERSION" > ${DOWNLOAD_DIR}/release
@@ -1812,6 +1925,10 @@
 			if [ ${APACHE_ENABLED} -eq 0 ]; then
 				ssl_connectivity
 			fi
+		fi
+		if ([ "$OS_REQUIREMENT" = "CentOS" ] && [ "$OS_VERSION" = "8" ])
+        then
+			semanage permissive -a httpd_t
 		fi
 		set +x
 		echo "Checking Hosting..."

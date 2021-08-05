@@ -46,6 +46,12 @@ App.LoginView = Backbone.View.extend({
         var self = this;
         var target = $(e.target);
         var data = target.serializeObject();
+        if (_.isUndefined(data.device_brand)) {
+            var push_tokens = $.cookie('push_tokens');
+            if (!_.isUndefined(push_tokens) && !_.isEmpty(push_tokens) && push_tokens !== null) {
+                data.push_tokens = JSON.stringify(push_tokens);
+            }
+        }
         if ($.trim(data.email) === '' || $.trim(data.password) === '') {
             if ($.trim(data.email) === '' && $.trim(data.password) === '') {
                 $('.error-msg-username').remove();
@@ -113,9 +119,13 @@ App.LoginView = Backbone.View.extend({
                                 auth_response.user.is_card_checklists_notifications_enabled = response.user.is_card_checklists_notifications_enabled;
                                 auth_response.user.is_card_attachments_notifications_enabled = response.user.is_card_attachments_notifications_enabled;
                                 auth_response.user.is_ldap = response.user.is_ldap;
+                                auth_response.user.is_saml = response.user.is_saml;
                                 auth_response.user.is_intro_video_skipped = response.user.is_intro_video_skipped;
+                                auth_response.user.next_community_edition_popup_on = response.user.next_community_edition_popup_on;
+                                auth_response.user.is_show_community_edition_popup = response.user.is_show_community_edition_popup;
                                 auth_response.user.is_two_factor_authentication_enabled = response.user.is_two_factor_authentication_enabled;
                                 $.cookie('auth', JSON.stringify(auth_response));
+                                $.removeCookie('push_tokens');
                                 i18next.changeLanguage(response.user.language);
                                 api_token = response.access_token;
                                 var links = JSON.parse(response.links);
@@ -173,8 +183,13 @@ App.LoginView = Backbone.View.extend({
         if (!_.isUndefined(R_MLDAP_SERVERS) && !_.isEmpty(R_MLDAP_SERVERS)) {
             ldap_servers = R_MLDAP_SERVERS.split(',');
         }
+        var android_user_name = '';
+        if (window.Android && window.Android.getUserName()) {
+            android_user_name = window.Android.getUserName();
+        }
         this.$el.html(this.template({
-            ldap_servers: ldap_servers
+            ldap_servers: ldap_servers,
+            android_user_name: android_user_name
         }));
         this.showTooltip();
         return this;

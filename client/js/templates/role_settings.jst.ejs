@@ -2,17 +2,20 @@
 		<div class="table-responsive navbar-btn">
 			<ul id = "myTab" class = "nav nav-tabs js-role-setting-tab">
 				<% 
-				var user_active,board_active,org_active;
+				var user_active,board_active,org_active,card_active;
 				if(tab_choosen == 'users'){
 					user_active = 'active'
 				}else if (tab_choosen == 'boards'){
 					board_active = 'active'
+				}else if (tab_choosen == 'cards'){
+					card_active = 'active';
 				}else{
 					org_active = 'active'
 				}
 				%>
 			   <li class="<%- user_active %>"><a href = "#users" data-toggle = "tab" id="js-rolesetting-tab" data-toggle_id="users" title="<%- i18next.t('Users') %>"><%- i18next.t('Users') %></a></li>			   
 			   <li class="<%- board_active %>"><a href = "#boards" data-toggle = "tab" id="js-rolesetting-tab" data-toggle_id="boards" title="<%- i18next.t('Boards') %>"><%- i18next.t('Boards') %></a></li>			
+			   <li class="<%- card_active %>"><a href = "#cards" data-toggle = "tab" id="js-rolesetting-tab" data-toggle_id="cards" title="<%- i18next.t('Cards') %>"><%- i18next.t('Cards') %></a></li>
 			   <li class="<%- org_active %>"><a href = "#organizations" data-toggle = "tab" id="js-rolesetting-tab" data-toggle_id="organizations" title="<%- i18next.t('Organizations') %>"><%- i18next.t('Organizations') %></a></li>			
 			</ul>
 			<div id = "myTabContent" class = "tab-content js-role-setting-content">
@@ -39,156 +42,160 @@
 					 </li>
 				</ul>
 			   </div>
-			<table class="table js-acl-link-list acl-link-list">
-				<thead>
-					<th colspan="2" class="col-xs-15"><%- i18next.t('Name') %></th>
-					<% roles.each(function(role) { %>
-						<th class="col-xs-1 text-center">
-						<div class="dropdown navbar-right"><a title="Edit Role" class="dropdown-toggle" data-toggle="dropdown">
-						<%- i18next.t(role.attributes.name) %>
-						<i class="icon-pencil"></i></a>
-			    <ul class="dropdown-menu arrow arrow-right js-users-roleEdit-response">
-					<li> 
-						<div class="clearfix text-center col-xs-12">
-							<span class="col-xs-10"><strong><%- i18next.t("Edit Role") %></strong></span><i class="icon-remove cur"></i>
-						</div>
-					</li>
-					<li class="col-xs-12 divider"></li>
-					<li class="col-xs-12">
-					    <form id="RoleEditForm-<%- role.attributes.id %>" name="RoleEditForm" class="form-horizontal col-xs-12 js-roleEdit-form">
-							<input type="hidden" name="id" value="<%- role.attributes.id %>">
-						  <div class="form-group required">
-							<label class="sr-only control-label" for="inputEditName-<%- role.attributes.id %>"><%- i18next.t("Name") %></label>
-							<input type="name" name="name" id="inputEditName-<%- role.attributes.id %>" value="<%- role.attributes.name %>" class="form-control js-role-name" placeholder="<%- i18next.t('Name') %>" required>
-						  </div>
-						  <div class="form-group">
-							<label class="sr-only control-label" for="submitEditRole-<%- role.attributes.id %>"><%- i18next.t("Update") %></label>
-							<input type="submit" class="btn btn-primary col-xs-12" id="submitEditRole-<%- role.attributes.id %>" title="<%- i18next.t('Update Role') %>" value="<%- i18next.t('Update') %>">
-						  </div>
-							<% if(parseInt(role.attributes.id) > 3) { %>
-								<div class="form-group">
-									<a href="#" title="Delete" class="js-delete-users-role btn btn-default col-xs-12" data-role_id="<%- role.attributes.id %>"><%- i18next.t('Delete') %></a>											
+			   <div class="col-xs-12">
+				   <div class="table-responsive">
+					   <table class="table js-acl-link-list acl-link-list">
+						<thead>
+							<th colspan="2" class="col-xs-15"><%- i18next.t('Name') %></th>
+							<% roles.each(function(role) { %>
+								<th class="col-xs-1 text-center">
+								<div class="dropdown navbar-right"><a title="Edit Role" class="dropdown-toggle" data-toggle="dropdown">
+								<%- i18next.t(role.attributes.name) %>
+								<i class="icon-pencil"></i></a>
+								<ul class="dropdown-menu arrow arrow-right js-users-roleEdit-response">
+									<li> 
+										<div class="clearfix text-center col-xs-12">
+											<span class="col-xs-10"><strong><%- i18next.t("Edit Role") %></strong></span><i class="icon-remove cur"></i>
+										</div>
+									</li>
+									<li class="col-xs-12 divider"></li>
+									<li class="col-xs-12">
+										<form id="RoleEditForm-<%- role.attributes.id %>" name="RoleEditForm" class="form-horizontal col-xs-12 js-roleEdit-form">
+											<input type="hidden" name="id" value="<%- role.attributes.id %>">
+										<div class="form-group required">
+											<label class="sr-only control-label" for="inputEditName-<%- role.attributes.id %>"><%- i18next.t("Name") %></label>
+											<input type="name" name="name" id="inputEditName-<%- role.attributes.id %>" value="<%- role.attributes.name %>" class="form-control js-role-name" placeholder="<%- i18next.t('Name') %>" required>
+										</div>
+										<div class="form-group">
+											<label class="sr-only control-label" for="submitEditRole-<%- role.attributes.id %>"><%- i18next.t("Update") %></label>
+											<input type="submit" class="btn btn-primary col-xs-12" id="submitEditRole-<%- role.attributes.id %>" title="<%- i18next.t('Update Role') %>" value="<%- i18next.t('Update') %>">
+										</div>
+											<% if(parseInt(role.attributes.id) > 3) { %>
+												<div class="form-group">
+													<a href="#" title="Delete" class="js-delete-users-role btn btn-default col-xs-12" data-role_id="<%- role.attributes.id %>"><%- i18next.t('Delete') %></a>											
+												</div>
+											<% } %>
+										</form>
+									</li>
+								</ul>
 								</div>
-							<% } %>
-						</form>
-					 </li>
-				</ul>
-			   </div>
-						</th>
-					<% }); %>
-				</thead>
-				<tbody class="js-acl-link-list-body acl-link-list">
-					<%
-						var acl_link_groups = ["Guest", "Users", "Plugins"];     
-						var group = '';
-						var old_group = '';
-						var group_id = '';
-						acl_links.each(function(acl_link) {    
-							if (acl_link.attributes.is_hide === 1) {
-								return;
-							}
-							acl_link.acl_links_roles.add(acl_link.attributes.acl_links_roles);
-							group_id = acl_link.attributes.group_id - 1;
-							group = acl_link_groups[group_id];
-					%>
-							<% if (group != old_group) { %>
-								<tr>
-									<td colspan="5" class="text-primary"><h3><%- group %></h3></td>
-								</tr>
-							<% } %>
-							<% if (group_id === 2) {
-									if(apps !== ""){ 
-										_.each(apps, function(key,value) { 
-											if(_.isUndefined(acl_link.attributes.visibility) || acl_link.attributes.visibility !== 'show') {
-												acl_link.attributes.visibility = 'hide';
-											}
-											if (key.id === acl_link.attributes.slug) {
-												acl_link.attributes.visibility = 'show';
-											}
-										});
+								</th>
+							<% }); %>
+						</thead>
+						<tbody class="js-acl-link-list-body acl-link-list">
+							<%
+								var acl_link_groups = ["Guest", "Users", "Plugins"];     
+								var group = '';
+								var old_group = '';
+								var group_id = '';
+								acl_links.each(function(acl_link) {    
+									if (acl_link.attributes.is_hide === 1) {
+										return;
 									}
-								} %>
-							 
-							<tr <% if (group_id === 2 && acl_link.attributes.visibility === 'hide') { %>class="<%= acl_link.attributes.visibility %>"<% } %>>
-								<td class="col-xs-1"><div class="invisible"></div></td>
-								<td><%- acl_link.attributes.name %></td>
-								<%
-									roles.each(function(role) {
-										var is_enabled = acl_link.acl_links_roles.findWhere({
-											role_id: parseInt(role.attributes.id)
-										});
-								%>
-								<% if (role.attributes.id === "1") { %>      
-									<td class="text-center">
-									    <% if (acl_link.attributes.is_user_action === 1) { %>  
-										    <div class="checkbox">
-												 <input type="checkbox" class="cur" checked="checked">
-												 <label></label>
-                                            </div> 
-										<% } else { %>      
-											<label class="js-update-role" data-table="acl_links_roles" data-acl_link_id="<%- acl_link.attributes.id %>"  data-role_id="<%- role.attributes.id %>" for="acl_link_id_<%- role.attributes.id %>_<%- acl_link.attributes.id %>">-</label>
-										<% } %>   
-									</td>     
-								<% } else if (role.attributes.id === "2") { %>    
-									<% if (acl_link.attributes.is_user_action === 1) { %>
-										<td class="text-center">
-											<div class="checkbox">
-												<input type="checkbox" class="cur" name="acl_link_id[<%- role.attributes.id %>][<%- acl_link.attributes.id %>]" value="<%- acl_link.attributes.id%>" <% if(!_.isEmpty(is_enabled)) { %> checked="checked" <% } %> id="acl_link_id_<%- role.attributes.id %>_<%- acl_link.attributes.id %>"/>
-												<label class="js-update-role" data-table="acl_links_roles" data-acl_link_id="<%- acl_link.attributes.id %>"  data-role_id="<%- role.attributes.id %>" for="acl_link_id_<%- role.attributes.id %>_<%- acl_link.attributes.id %>"></label>
-											</div>
-										</td>
-									<% } else { %>
-										<td class="text-center">
-											<label class="js-update-role" data-table="acl_links_roles" data-acl_link_id="<%- acl_link.attributes.id %>"  data-role_id="<%- role.attributes.id %>" for="acl_link_id_<%- role.attributes.id %>_<%- acl_link.attributes.id %>">-</label>
-										</td>
+									acl_link.acl_links_roles.add(acl_link.attributes.acl_links_roles);
+									group_id = acl_link.attributes.group_id - 1;
+									group = acl_link_groups[group_id];
+							%>
+									<% if (group != old_group) { %>
+										<tr>
+											<td colspan="5" class="text-primary"><h3><%- group %></h3></td>
+										</tr>
 									<% } %>
-								<% } else if(role.attributes.id === "3") { %>
-									<% if (acl_link.attributes.is_guest_action === 1) { %>
-										<td class="text-center">
-											<div class="checkbox">
-												<input type="checkbox" class="cur" name="acl_link_id[<%- role.attributes.id %>][<%- acl_link.attributes.id %>]" value="<%- acl_link.attributes.id%>" <% if(!_.isEmpty(is_enabled)) { %> checked="checked" <% } %> id="acl_link_id_<%- role.attributes.id %>_<%- acl_link.attributes.id %>"/>
-												<label class="js-update-role" data-table="acl_links_roles" data-acl_link_id="<%- acl_link.attributes.id %>"  data-role_id="<%- role.attributes.id %>" for="acl_link_id_<%- role.attributes.id %>_<%- acl_link.attributes.id %>"></label>
-												<% if (acl_link.attributes.name === 'User activation') { %>
-													<a  data-placement="left" id="js-question-mark" href="javascript:void(0);" data-toggle="tooltip" title="By clicking this, user can't login after registration without confirm the email"><i class="icon-question-sign" aria-hidden="true"></i></a>
-												<% } %>
-											</div>
-										</td>
-									<% } else { %>
-										<% if (acl_link.attributes.name === 'View board') { %>
-													<td class="text-center">
-														<div class="checkbox">
-															<input type="checkbox" class="cur" name="acl_link_id[<%- role.attributes.id %>][<%- acl_link.attributes.id %>]" value="<%- acl_link.attributes.id%>" <% if(!_.isEmpty(is_enabled)) { %> checked="checked" <% } %> id="acl_link_id_<%- role.attributes.id %>_<%- acl_link.attributes.id %>"/>
-															<label class="js-update-role" data-table="acl_links_roles" data-acl_link_id="<%- acl_link.attributes.id %>"  data-role_id="<%- role.attributes.id %>" for="acl_link_id_<%- role.attributes.id %>_<%- acl_link.attributes.id %>"></label>
-														</div>
-													</td>
-										<% }else{  %>
+									<% if (group_id === 2) {
+											if(apps !== ""){ 
+												_.each(apps, function(key,value) { 
+													if(_.isUndefined(acl_link.attributes.visibility) || acl_link.attributes.visibility !== 'show') {
+														acl_link.attributes.visibility = 'hide';
+													}
+													if (key.id === acl_link.attributes.slug) {
+														acl_link.attributes.visibility = 'show';
+													}
+												});
+											}
+										} %>
+									
+									<tr <% if (group_id === 2 && acl_link.attributes.visibility === 'hide') { %>class="<%= acl_link.attributes.visibility %>"<% } %>>
+										<td class="col-xs-1"><div class="invisible"></div></td>
+										<td><%- acl_link.attributes.name %></td>
+										<%
+											roles.each(function(role) {
+												var is_enabled = acl_link.acl_links_roles.findWhere({
+													role_id: parseInt(role.attributes.id)
+												});
+										%>
+										<% if (role.attributes.id === "1") { %>      
+											<td class="text-center">
+												<% if (acl_link.attributes.is_user_action === 1) { %>  
+													<div class="checkbox">
+														<input type="checkbox" class="cur" checked="checked">
+														<label></label>
+													</div> 
+												<% } else { %>      
+													<label class="js-update-role" data-table="acl_links_roles" data-acl_link_id="<%- acl_link.attributes.id %>"  data-role_id="<%- role.attributes.id %>" for="acl_link_id_<%- role.attributes.id %>_<%- acl_link.attributes.id %>">-</label>
+												<% } %>   
+											</td>     
+										<% } else if (role.attributes.id === "2") { %>    
+											<% if (acl_link.attributes.is_user_action === 1) { %>
+												<td class="text-center">
+													<div class="checkbox">
+														<input type="checkbox" class="cur" name="acl_link_id[<%- role.attributes.id %>][<%- acl_link.attributes.id %>]" value="<%- acl_link.attributes.id%>" <% if(!_.isEmpty(is_enabled)) { %> checked="checked" <% } %> id="acl_link_id_<%- role.attributes.id %>_<%- acl_link.attributes.id %>"/>
+														<label class="js-update-role" data-table="acl_links_roles" data-acl_link_id="<%- acl_link.attributes.id %>"  data-role_id="<%- role.attributes.id %>" for="acl_link_id_<%- role.attributes.id %>_<%- acl_link.attributes.id %>"></label>
+													</div>
+												</td>
+											<% } else { %>
 												<td class="text-center">
 													<label class="js-update-role" data-table="acl_links_roles" data-acl_link_id="<%- acl_link.attributes.id %>"  data-role_id="<%- role.attributes.id %>" for="acl_link_id_<%- role.attributes.id %>_<%- acl_link.attributes.id %>">-</label>
 												</td>
+											<% } %>
+										<% } else if(role.attributes.id === "3") { %>
+											<% if (acl_link.attributes.is_guest_action === 1) { %>
+												<td class="text-center">
+													<div class="checkbox">
+														<input type="checkbox" class="cur" name="acl_link_id[<%- role.attributes.id %>][<%- acl_link.attributes.id %>]" value="<%- acl_link.attributes.id%>" <% if(!_.isEmpty(is_enabled)) { %> checked="checked" <% } %> id="acl_link_id_<%- role.attributes.id %>_<%- acl_link.attributes.id %>"/>
+														<label class="js-update-role" data-table="acl_links_roles" data-acl_link_id="<%- acl_link.attributes.id %>"  data-role_id="<%- role.attributes.id %>" for="acl_link_id_<%- role.attributes.id %>_<%- acl_link.attributes.id %>"></label>
+														<% if (acl_link.attributes.name === 'User activation') { %>
+															<a  data-placement="left" id="js-question-mark" href="javascript:void(0);" data-toggle="tooltip" title="By clicking this, user can't login after registration without confirm the email"><i class="icon-question-sign" aria-hidden="true"></i></a>
+														<% } %>
+													</div>
+												</td>
+											<% } else { %>
+												<% if (acl_link.attributes.name === 'View board') { %>
+															<td class="text-center">
+																<div class="checkbox">
+																	<input type="checkbox" class="cur" name="acl_link_id[<%- role.attributes.id %>][<%- acl_link.attributes.id %>]" value="<%- acl_link.attributes.id%>" <% if(!_.isEmpty(is_enabled)) { %> checked="checked" <% } %> id="acl_link_id_<%- role.attributes.id %>_<%- acl_link.attributes.id %>"/>
+																	<label class="js-update-role" data-table="acl_links_roles" data-acl_link_id="<%- acl_link.attributes.id %>"  data-role_id="<%- role.attributes.id %>" for="acl_link_id_<%- role.attributes.id %>_<%- acl_link.attributes.id %>"></label>
+																</div>
+															</td>
+												<% }else{  %>
+														<td class="text-center">
+															<label class="js-update-role" data-table="acl_links_roles" data-acl_link_id="<%- acl_link.attributes.id %>"  data-role_id="<%- role.attributes.id %>" for="acl_link_id_<%- role.attributes.id %>_<%- acl_link.attributes.id %>">-</label>
+														</td>
+												<% } %>
+											<% } %>
+										<% } else { %>
+											<% if (acl_link.attributes.is_user_action === 1 && acl_link.attributes.is_guest_action === 0) { %>
+												<td class="text-center">
+													<div class="checkbox">
+														<input type="checkbox" class="cur" name="acl_link_id[<%- role.attributes.id %>][<%- acl_link.attributes.id %>]" value="<%- acl_link.attributes.id%>" <% if(!_.isEmpty(is_enabled)) { %> checked="checked" <% } %> id="acl_link_id_<%- role.attributes.id %>_<%- acl_link.attributes.id %>"/>
+														<label class="js-update-role" data-table="acl_links_roles" data-acl_link_id="<%- acl_link.attributes.id %>"  data-role_id="<%- role.attributes.id %>" for="acl_link_id_<%- role.attributes.id %>_<%- acl_link.attributes.id %>"></label>
+													</div>
+												</td>
+											<% } else { %>
+												<td class="text-center">
+													<label class="js-update-role" data-table="acl_links_roles" data-acl_link_id="<%- acl_link.attributes.id %>"  data-role_id="<%- role.attributes.id %>" for="acl_link_id_<%- role.attributes.id %>_<%- acl_link.attributes.id %>">-</label>
+												</td>
+											<% } %>
 										<% } %>
-									<% } %>
-								<% } else { %>
-									<% if (acl_link.attributes.is_user_action === 1 && acl_link.attributes.is_guest_action === 0) { %>
-										<td class="text-center">
-											<div class="checkbox">
-												<input type="checkbox" class="cur" name="acl_link_id[<%- role.attributes.id %>][<%- acl_link.attributes.id %>]" value="<%- acl_link.attributes.id%>" <% if(!_.isEmpty(is_enabled)) { %> checked="checked" <% } %> id="acl_link_id_<%- role.attributes.id %>_<%- acl_link.attributes.id %>"/>
-												<label class="js-update-role" data-table="acl_links_roles" data-acl_link_id="<%- acl_link.attributes.id %>"  data-role_id="<%- role.attributes.id %>" for="acl_link_id_<%- role.attributes.id %>_<%- acl_link.attributes.id %>"></label>
-											</div>
-										</td>
-									<% } else { %>
-										<td class="text-center">
-											<label class="js-update-role" data-table="acl_links_roles" data-acl_link_id="<%- acl_link.attributes.id %>"  data-role_id="<%- role.attributes.id %>" for="acl_link_id_<%- role.attributes.id %>_<%- acl_link.attributes.id %>">-</label>
-										</td>
-									<% } %>
-								<% } %>
-							<% }); %>
-						</tr>
-					<%
-							old_group = group;
-						});
-					%>
-				</tbody>
-			</table>
+									<% }); %>
+								</tr>
+							<%
+									old_group = group;
+								});
+							%>
+						</tbody>
+					   </table>
+					</div>
+			   </div>
 			   </div>
 			   
 			   <div class = "tab-pane fade in <%- board_active %>" id = "boards">
@@ -219,91 +226,179 @@
 						 </li>
 					</ul>
 			   </div>
-			<table class="table js-acl-link-list acl-link-list">
-				<thead>
-					<th colspan="2" class="col-xs-15"><%- i18next.t('Name') %></th>
-					<% board_user_roles.each(function(board_user_role) { %>
-						<th class="col-xs-1 text-center">
-						<div class="dropdown navbar-right">
-							<a title="Edit Board User Role" class="dropdown-toggle" data-toggle="dropdown"><%- i18next.t(board_user_role.attributes.name) %><i class="icon-pencil"></i></a>
-							<ul class="dropdown-menu arrow arrow-right js-board-user-roleEdit-response">
-								<li> 
-									<div class="clearfix text-center col-xs-12">
-										<span class="col-xs-10"><strong><%- i18next.t("Edit Board User Role") %></strong></span><i class="icon-remove cur"></i>
-									</div>
-								</li>
-								<li class="col-xs-12 divider"></li>
-								<li class="col-xs-12">
-									<form id="BoardUserRoleEditForm-<%- board_user_role.attributes.id %>" name="BoardUserRoleEditForm" class="form-horizontal col-xs-12 js-boardUser-roleEditform">
-									  <input type="hidden" name="id" value="<%- board_user_role.attributes.id %>">
-									  <div class="form-group required">
-										<label class="sr-only control-label" for="inputEditBoardName-<%- board_user_role.attributes.id %>"><%- i18next.t("Name") %></label>
-										<input type="name" name="name" value="<%- board_user_role.attributes.name %>" id="inputEditBoardName-<%- board_user_role.attributes.id %>" class="form-control js-role-name" placeholder="<%- i18next.t('Name') %>" required>
-									  </div>
-									  <div class="form-group required">
-										<label class="sr-only control-label" for="inputEditBoardDescription-<%- board_user_role.attributes.id %>"><%- i18next.t("Description") %></label>
-										<textarea name="description" id="inputEditBoardDescription-<%- board_user_role.attributes.id %>" class="form-control js-role-name" placeholder="<%- i18next.t('Description') %>"><%- board_user_role.attributes.description %></textarea>
-									  </div>
-									  <div class="form-group">
-										<label class="sr-only control-label" for="submitEditBoardUserRole-<%- board_user_role.attributes.id %>"><%- i18next.t("Update") %></label>
-										<input type="submit" class="btn btn-primary col-xs-12" id="submitEditBoardUserRole-<%- board_user_role.attributes.id %>" value="<%- i18next.t('Update') %>" title="<%- i18next.t('Update Board User Role') %>">
-									  </div>
-										<% if(parseInt(board_user_role.attributes.id) > 3) { %>
+			   <div class="col-xs-12">
+				   <div class="table-responsive">
+					   <table class="table js-acl-link-list acl-link-list">
+						   <thead>
+							<th colspan="2" class="col-xs-15"><%- i18next.t('Name') %></th>
+							<% board_user_roles.each(function(board_user_role) { %>
+								<th class="col-xs-1 text-center">
+								<div class="dropdown navbar-right">
+									<a title="Edit Board User Role" class="dropdown-toggle" data-toggle="dropdown"><%- i18next.t(board_user_role.attributes.name) %><i class="icon-pencil"></i></a>
+									<ul class="dropdown-menu arrow arrow-right js-board-user-roleEdit-response">
+										<li> 
+											<div class="clearfix text-center col-xs-12">
+												<span class="col-xs-10"><strong><%- i18next.t("Edit Board User Role") %></strong></span><i class="icon-remove cur"></i>
+											</div>
+										</li>
+										<li class="col-xs-12 divider"></li>
+										<li class="col-xs-12">
+											<form id="BoardUserRoleEditForm-<%- board_user_role.attributes.id %>" name="BoardUserRoleEditForm" class="form-horizontal col-xs-12 js-boardUser-roleEditform">
+											<input type="hidden" name="id" value="<%- board_user_role.attributes.id %>">
+											<div class="form-group required">
+												<label class="sr-only control-label" for="inputEditBoardName-<%- board_user_role.attributes.id %>"><%- i18next.t("Name") %></label>
+												<input type="name" name="name" value="<%- board_user_role.attributes.name %>" id="inputEditBoardName-<%- board_user_role.attributes.id %>" class="form-control js-role-name" placeholder="<%- i18next.t('Name') %>" required>
+											</div>
+											<div class="form-group required">
+												<label class="sr-only control-label" for="inputEditBoardDescription-<%- board_user_role.attributes.id %>"><%- i18next.t("Description") %></label>
+												<textarea name="description" id="inputEditBoardDescription-<%- board_user_role.attributes.id %>" class="form-control js-role-name" placeholder="<%- i18next.t('Description') %>"><%- board_user_role.attributes.description %></textarea>
+											</div>
 											<div class="form-group">
-												<a href="#" title="Delete" class="js-delete-board-role btn btn-default col-xs-12" data-board_user_role_id="<%- board_user_role.attributes.id %>"><%- i18next.t('Delete') %></a>											
+												<label class="sr-only control-label" for="submitEditBoardUserRole-<%- board_user_role.attributes.id %>"><%- i18next.t("Update") %></label>
+												<input type="submit" class="btn btn-primary col-xs-12" id="submitEditBoardUserRole-<%- board_user_role.attributes.id %>" value="<%- i18next.t('Update') %>" title="<%- i18next.t('Update Board User Role') %>">
 											</div>
-										<% } %>
-									</form>
-								 </li>
-							</ul>
-					   </div>
-						</th>
-					<% }); %>
-				</thead>
-				<tbody class="js-acl-link-list-body acl-link-list">
-					<%
-						var acl_board_links_groups = ["Boards","Lists","Cards"];
-						var group = '';
-						var old_group = '';
-						var group_id = '';
-						acl_board_links.each(function(acl_board_link) {
-							if (acl_board_link.attributes.is_hide === 1) {
-								return;
-							}
-							acl_board_link.acl_board_links_boards_user_roles.add(acl_board_link.attributes.acl_board_links_boards_user_roles);
-							group_id = acl_board_link.attributes.group_id - 2;
-							group = acl_board_links_groups[group_id];
-					%>
-							<% if ( group != old_group) { %>
-								<tr>
-									<td colspan="5" class="text-primary"><h3><%- group %></h3></td>
-								</tr>
-							<% } %>
-							<tr>
-								<td class="col-xs-1"><div class="invisible"></div></td>
-								<td><%- acl_board_link.attributes.name %></td>
+												<% if(parseInt(board_user_role.attributes.id) > 3) { %>
+													<div class="form-group">
+														<a href="#" title="Delete" class="js-delete-board-role btn btn-default col-xs-12" data-board_user_role_id="<%- board_user_role.attributes.id %>"><%- i18next.t('Delete') %></a>											
+													</div>
+												<% } %>
+											</form>
+										</li>
+									</ul>
+								</div>
+								</th>
+							<% }); %>
+						   </thead>
+						   <tbody class="js-acl-link-list-body acl-link-list">
 								<%
-									board_user_roles.each(function(board_user_role) {
-										var is_enabled = acl_board_link.acl_board_links_boards_user_roles.findWhere({
-											board_user_role_id: parseInt(board_user_role.attributes.id)
-										});
+									var acl_board_links_groups = ["Boards","Lists","Cards"];
+									var group = '';
+									var old_group = '';
+									var group_id = '';
+									acl_board_links.each(function(acl_board_link) {
+										if (acl_board_link.attributes.is_hide === 1) {
+											return;
+										}
+										acl_board_link.acl_board_links_boards_user_roles.add(acl_board_link.attributes.acl_board_links_boards_user_roles);
+										group_id = acl_board_link.attributes.group_id - 2;
+										group = acl_board_links_groups[group_id];
+										if (parseInt(group_id) <= 2) {
 								%>
-										<td class="text-center">
-											<div class="checkbox">
-												<input type="checkbox" class="cur" name="acl_link_id[<%- board_user_role.attributes.id %>][<%- acl_board_link.attributes.id %>]" value="<%- acl_board_link.attributes.id%>" <% if(!_.isEmpty(is_enabled)) { %> checked="checked" <% } %> id="acl_link_board_id_<%- board_user_role.attributes.id %>_<%- acl_board_link.attributes.id %>"/>
-												<label class="js-update-role" data-table="acl_board_links_boards_user_roles" data-acl_link_id="<%- acl_board_link.attributes.id %>"  data-role_id="<%- board_user_role.attributes.id %>" for="acl_link_board_id_<%- board_user_role.attributes.id %>_<%- acl_board_link.attributes.id %>"></label>
-											</div>
-										</td>
-								<% }); %>
-							</tr>
-							<% old_group = group; %>
-					<%
-						});
-					%>
-				</tbody>
-			</table>
+										<% if ( group != old_group) { %>
+											<tr>
+												<td colspan="5" class="text-primary"><h3><%- group %></h3></td>
+											</tr>
+										<% } %>
+										<tr>
+											<td class="col-xs-1"><div class="invisible"></div></td>
+											<td><%- acl_board_link.attributes.name %></td>
+											<%
+												board_user_roles.each(function(board_user_role) {
+													var is_enabled = acl_board_link.acl_board_links_boards_user_roles.findWhere({
+														board_user_role_id: parseInt(board_user_role.attributes.id)
+													});
+											%>
+													<td class="text-center">
+														<div class="checkbox">
+															<input type="checkbox" class="cur" name="acl_link_id[<%- board_user_role.attributes.id %>][<%- acl_board_link.attributes.id %>]" value="<%- acl_board_link.attributes.id%>" <% if(!_.isEmpty(is_enabled)) { %> checked="checked" <% } %> id="acl_link_board_id_<%- board_user_role.attributes.id %>_<%- acl_board_link.attributes.id %>"/>
+															<label class="js-update-role" data-table="acl_board_links_boards_user_roles" data-acl_link_id="<%- acl_board_link.attributes.id %>"  data-role_id="<%- board_user_role.attributes.id %>" for="acl_link_board_id_<%- board_user_role.attributes.id %>_<%- acl_board_link.attributes.id %>"></label>
+														</div>
+													</td>
+											<% }); %>
+										</tr>
+										<% old_group = group; %>
+								<%
+									}
+									});
+								%>
+						   </tbody>
+					   </table>
+					</div>
+				</div>
 			   </div>
 			   
+			   <div class = "tab-pane fade in <%- card_active %>" id = "cards">
+				   <div class="well-sm"></div>
+				   <div class="col-xs-12">
+					   <div class="table-responsive">
+						   <table class="table js-acl-link-list acl-link-list">
+							   <thead>
+								   <th colspan="2" class="col-xs-15"><%- i18next.t('Name') %></th>
+									<% board_user_roles.each(function(board_user_role) { %>
+										<th class="col-xs-1 text-center">
+										<div class="dropdown navbar-right">
+											<a href="javascript:void(0);"><%- i18next.t(board_user_role.attributes.name) %></a>
+										</div>
+										</th>
+									<% }); %>
+								</thead>
+								<tbody class="js-acl-link-list-body acl-link-list">
+									<%
+										var acl_board_links_groups = ["Cards"];
+										var group = '';
+										var old_group = '';
+										var group_id = '';
+										var linked_child_fields = ["get_attachment_downloader", "get_card_comments", "get_canned_response", "get_card_checklist_item"];
+										var linked_parent_fields = {};
+										linked_parent_fields.get_attachment_downloader = "get_card_attachment";
+										linked_parent_fields.get_card_comments = "view_card_activity_feed";
+										linked_parent_fields.get_canned_response = "view_card_activity_feed";
+										linked_parent_fields.get_card_checklist_item = "get_card_checklist";
+										acl_board_links.each(function(acl_board_link) {
+											if (acl_board_link.attributes.is_hide === 1) {
+												return;
+											}
+											acl_board_link.acl_board_links_boards_user_roles.add(acl_board_link.attributes.acl_board_links_boards_user_roles);
+											group_id = acl_board_link.attributes.group_id - 5;
+											group = acl_board_links_groups[group_id];
+											if (parseInt(group_id) === 0) {
+									%>
+											<% if ( group != old_group) { %>
+												<tr>
+													<td colspan="5" class="text-primary"><h3><%- group %></h3></td>
+												</tr>
+											<% } %>
+											<tr>
+												<td class="col-xs-1"><div class="invisible"></div></td>
+												<td class="<% if(linked_child_fields.indexOf(acl_board_link.attributes.slug) > -1) { %>pl22<% } %>"><%- acl_board_link.attributes.name %></td>
+												<%
+													board_user_roles.each(function(board_user_role) {
+														var is_enabled = acl_board_link.acl_board_links_boards_user_roles.findWhere({
+															board_user_role_id: parseInt(board_user_role.attributes.id)
+														});
+														var is_disabled = false;
+														if (!_.isUndefined(linked_parent_fields[acl_board_link.attributes.slug])) {
+															var acl_link = acl_board_links.findWhere({
+																slug: linked_parent_fields[acl_board_link.attributes.slug]
+															});
+															acl_link.acl_board_links_boards_user_roles.add(acl_link.attributes.acl_board_links_boards_user_roles);
+															var isChecked = acl_link.acl_board_links_boards_user_roles.findWhere({
+																board_user_role_id: parseInt(board_user_role.attributes.id)
+															});
+															if (_.isUndefined(isChecked)) {
+																is_disabled = true;
+															}
+														}
+												%>
+														<td class="text-center">
+															<div class="checkbox">
+																<input type="checkbox" class="<% if(!is_disabled) { %>cur<%} %>" name="acl_link_id[<%- board_user_role.attributes.id %>][<%- acl_board_link.attributes.id %>]" data-checked="<% if(!_.isEmpty(is_enabled)) { %>checked<% }else{ %>false<% } %>"value="<%- acl_board_link.attributes.id%>" <% if(!_.isEmpty(is_enabled)) { %> checked="checked" <% } %> id="acl_link_board_id_<%- board_user_role.attributes.id %>_<%- acl_board_link.attributes.id %>" <% if(is_disabled) { %>disabled<% } %>/>
+																<label class="<% if(!is_disabled) { %>js-update-role<% } %> <%- acl_board_link.attributes.slug %>_<%- board_user_role.attributes.id %> <% if(is_disabled) { %>no-cur<% } %>" data-table="acl_board_links_boards_user_roles" data-acl_link_id="<%- acl_board_link.attributes.id %>"  data-role_id="<%- board_user_role.attributes.id %>" data-group_id="<%- acl_board_link.attributes.group_id %>" data-slug="<%- acl_board_link.attributes.slug %>" for="acl_link_board_id_<%- board_user_role.attributes.id %>_<%- acl_board_link.attributes.id %>"></label>
+															</div>
+														</td>
+												<% }); %>
+											</tr>
+											<% old_group = group; %>
+									<%
+										}
+										});
+									%>
+								</tbody>
+				   			</table>
+						</div>
+					</div>
+			   </div>
+
 			   <div class = "tab-pane fade in <%- org_active %>" id = "organizations">
 			   <div class="pull-right well-sm dropdown"><a title="Add Organization User Role" href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-plus-sign"></i><span><%- i18next.t('Add Organization User Role') %></span></a>
 			   <ul class="dropdown-menu arrow arrow-right">
@@ -331,83 +426,87 @@
 						 </li>
 					</ul>
 			   </div>
-				<table class="table js-acl-link-list acl-link-list">
-				<thead>
-					<th colspan="2" class="col-xs-15"><%- i18next.t('Name') %></th>
-					<% organization_user_roles.each(function(organization_user_role) { %>
-						<th class="col-xs-1 text-center">
-							<div class="dropdown navbar-right"><a title="Edit Organization User Role" class="dropdown-toggle" data-toggle="dropdown"><%- i18next.t(organization_user_role.attributes.name) %><i class="icon-pencil"></i></a>
-							   <ul class="dropdown-menu arrow arrow-right js-org-user-roleEdit-response">
-										<li> 
-											<div class="clearfix text-center col-xs-12">
-												<span class="col-xs-10"><strong><%- i18next.t("Edit Organization User Role") %></strong></span><i class="icon-remove cur"></i>
-											</div>
-										</li>
-										<li class="col-xs-12 divider"></li>
-										<li class="col-xs-12">
-											<form id="OrganizationUserRoleEditForm-<%- organization_user_role.attributes.id %>" name="OrganizationUserRoleEditForm" class="form-horizontal col-xs-12 js-orgUser-roleEditform">
-											<input type="hidden" name="id" value="<%- organization_user_role.attributes.id %>">
-											  <div class="form-group required">
-												<label class="sr-only control-label" for="inputEditOrganizationName-<%- organization_user_role.attributes.id %>"><%- i18next.t("Name") %></label>
-												<input type="name" name="name" id="inputEditOrganizationName-<%- organization_user_role.attributes.id %>" value="<%- organization_user_role.attributes.name %>" class="form-control js-role-name" placeholder="<%- i18next.t('Name') %>" required>
-											  </div>
-											  <div class="form-group required">
-												<label class="sr-only control-label" for="inputEditOrganizationDescription-<%- organization_user_role.attributes.id %>"><%- i18next.t("Description") %></label>
-												<textarea name="description" id="inputEditOrganizationDescription-<%- organization_user_role.attributes.id %>" class="form-control js-role-name" placeholder="<%- i18next.t('Description') %>"><%- organization_user_role.attributes.description %></textarea>
-											  </div>
-											  <div class="form-group">
-												<label class="sr-only control-label" for="submitEditOrganizationUserRole-<%- organization_user_role.attributes.id %>" title="<%- i18next.t('Update Organization User Role') %>"><%- i18next.t("Update") %></label>
-												<input type="submit" class="btn btn-primary col-xs-12" id="submitEditOrganizationUserRole-<%- organization_user_role.attributes.id %>" value="<%- i18next.t('Update') %>">
-											  </div>
-												<% if(parseInt(organization_user_role.attributes.id) > 3) { %>
-													<div class="form-group">
-														<a href="#" title="Delete" class="js-delete-org-role btn btn-default col-xs-12" data-organization_user_role_id="<%- organization_user_role.attributes.id %>"><%- i18next.t('Delete') %></a>											
-													</div>
-												<% } %>
-											</form>
-										 </li>
-									</ul>
-							   </div>
-						</th>
-					<% }); %>
-				</thead>
-				<tbody class="js-acl-link-list-body acl-link-list">
-					<%
-						var acl_organization_links_groups = ["Organizations"];
-						var group = '';
-						var old_group = '';
-						var group_id = '';
-						acl_organization_links.each(function(acl_organization_link) {
-							acl_organization_link.acl_organization_links_organizations_user_roles.add(acl_organization_link.attributes.acl_organization_links_organizations_user_roles);
-							group_id = acl_organization_link.attributes.group_id - 5;
-							group = acl_organization_links_groups[group_id];
-					%>
-						<% if (group != old_group) { %>
-							<tr>
-								<td colspan="5" class="text-primary"><h3><%- group %></h3></td>
-							</tr>
-						<% } %>
-						<tr>
-							<td class="col-xs-1"> <div class="invisible"></div></td>
-							<td><%- acl_organization_link.attributes.name%></td>
-							<% 
-								organization_user_roles.each(function(organization_user_role) {									
-									var is_enabled = acl_organization_link.acl_organization_links_organizations_user_roles.findWhere({
-										organization_user_role_id: parseInt(organization_user_role.attributes.id)
-									});
-							%>
-									<td class="text-center">
-										<div class="checkbox">
-											<input type="checkbox" class="cur" name="acl_link_id[<%- organization_user_role.attributes.id %>][<%- acl_organization_link.attributes.id %>]" value="<%- acl_organization_link.attributes.id%>" <% if (!_.isEmpty(is_enabled)) { %> checked="checked" <% } %> id="acl_link_org_id_<%- organization_user_role.attributes.id %>_<%- acl_organization_link.attributes.id %>"/>
-											<label class="js-update-role" data-table="acl_organization_links_organizations_user_roles" data-acl_link_id="<%- acl_organization_link.attributes.id %>"  data-role_id="<%- organization_user_role.attributes.id %>" for="acl_link_org_id_<%- organization_user_role.attributes.id %>_<%- acl_organization_link.attributes.id %>"></label>
+			   <div class="col-xs-12">
+				   <div class="table-responsive">
+					<table class="table js-acl-link-list acl-link-list">
+						<thead>
+							<th colspan="2" class="col-xs-15"><%- i18next.t('Name') %></th>
+								<% organization_user_roles.each(function(organization_user_role) { %>
+									<th class="col-xs-1 text-center">
+										<div class="dropdown navbar-right"><a title="Edit Organization User Role" class="dropdown-toggle" data-toggle="dropdown"><%- i18next.t(organization_user_role.attributes.name) %><i class="icon-pencil"></i></a>
+										<ul class="dropdown-menu arrow arrow-right js-org-user-roleEdit-response">
+													<li> 
+														<div class="clearfix text-center col-xs-12">
+															<span class="col-xs-10"><strong><%- i18next.t("Edit Organization User Role") %></strong></span><i class="icon-remove cur"></i>
+														</div>
+													</li>
+													<li class="col-xs-12 divider"></li>
+													<li class="col-xs-12">
+														<form id="OrganizationUserRoleEditForm-<%- organization_user_role.attributes.id %>" name="OrganizationUserRoleEditForm" class="form-horizontal col-xs-12 js-orgUser-roleEditform">
+														<input type="hidden" name="id" value="<%- organization_user_role.attributes.id %>">
+														<div class="form-group required">
+															<label class="sr-only control-label" for="inputEditOrganizationName-<%- organization_user_role.attributes.id %>"><%- i18next.t("Name") %></label>
+															<input type="name" name="name" id="inputEditOrganizationName-<%- organization_user_role.attributes.id %>" value="<%- organization_user_role.attributes.name %>" class="form-control js-role-name" placeholder="<%- i18next.t('Name') %>" required>
+														</div>
+														<div class="form-group required">
+															<label class="sr-only control-label" for="inputEditOrganizationDescription-<%- organization_user_role.attributes.id %>"><%- i18next.t("Description") %></label>
+															<textarea name="description" id="inputEditOrganizationDescription-<%- organization_user_role.attributes.id %>" class="form-control js-role-name" placeholder="<%- i18next.t('Description') %>"><%- organization_user_role.attributes.description %></textarea>
+														</div>
+														<div class="form-group">
+															<label class="sr-only control-label" for="submitEditOrganizationUserRole-<%- organization_user_role.attributes.id %>" title="<%- i18next.t('Update Organization User Role') %>"><%- i18next.t("Update") %></label>
+															<input type="submit" class="btn btn-primary col-xs-12" id="submitEditOrganizationUserRole-<%- organization_user_role.attributes.id %>" value="<%- i18next.t('Update') %>">
+														</div>
+															<% if(parseInt(organization_user_role.attributes.id) > 3) { %>
+																<div class="form-group">
+																	<a href="#" title="Delete" class="js-delete-org-role btn btn-default col-xs-12" data-organization_user_role_id="<%- organization_user_role.attributes.id %>"><%- i18next.t('Delete') %></a>											
+																</div>
+															<% } %>
+														</form>
+													</li>
+												</ul>
 										</div>
-									</td>
+									</th>
+								<% }); %>
+							</thead>
+							<tbody class="js-acl-link-list-body acl-link-list">
+							<%
+								var acl_organization_links_groups = ["Organizations"];
+								var group = '';
+								var old_group = '';
+								var group_id = '';
+								acl_organization_links.each(function(acl_organization_link) {
+									acl_organization_link.acl_organization_links_organizations_user_roles.add(acl_organization_link.attributes.acl_organization_links_organizations_user_roles);
+									group_id = acl_organization_link.attributes.group_id - 5;
+									group = acl_organization_links_groups[group_id];
+							%>
+								<% if (group != old_group) { %>
+									<tr>
+										<td colspan="5" class="text-primary"><h3><%- group %></h3></td>
+									</tr>
+								<% } %>
+								<tr>
+									<td class="col-xs-1"> <div class="invisible"></div></td>
+									<td><%- acl_organization_link.attributes.name%></td>
+									<% 
+										organization_user_roles.each(function(organization_user_role) {									
+											var is_enabled = acl_organization_link.acl_organization_links_organizations_user_roles.findWhere({
+												organization_user_role_id: parseInt(organization_user_role.attributes.id)
+											});
+									%>
+											<td class="text-center">
+												<div class="checkbox">
+													<input type="checkbox" class="cur" name="acl_link_id[<%- organization_user_role.attributes.id %>][<%- acl_organization_link.attributes.id %>]" value="<%- acl_organization_link.attributes.id%>" <% if (!_.isEmpty(is_enabled)) { %> checked="checked" <% } %> id="acl_link_org_id_<%- organization_user_role.attributes.id %>_<%- acl_organization_link.attributes.id %>"/>
+													<label class="js-update-role" data-table="acl_organization_links_organizations_user_roles" data-acl_link_id="<%- acl_organization_link.attributes.id %>"  data-role_id="<%- organization_user_role.attributes.id %>" for="acl_link_org_id_<%- organization_user_role.attributes.id %>_<%- acl_organization_link.attributes.id %>"></label>
+												</div>
+											</td>
+									<% }); %>
+								</tr>
+								<% old_group = group; %>
 							<% }); %>
-						</tr>
-						<% old_group = group; %>
-					<% }); %>
-				</tbody>
-			</table>
+							</tbody>
+					</table>
+				   </div>
+			   </div>
 			   </div>
 			</div>
 		</div>

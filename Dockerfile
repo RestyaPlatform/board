@@ -1,4 +1,4 @@
-FROM alpine:3.11 AS build
+FROM alpine:3.12 AS build
 RUN apk add -u --no-cache npm php7
 
 WORKDIR /code
@@ -31,7 +31,7 @@ COPY Gruntfile.js .
 RUN npm run docker:prebuild
 
 
-FROM alpine:3.11
+FROM alpine:3.12
 
 # update & install package
 RUN apk add -u --no-cache \
@@ -96,6 +96,9 @@ ENV POSTGRES_HOST=postgres \
 RUN chmod +x /docker-entrypoint.sh
 RUN chmod +x /init-db.sh
 RUN chmod +x server/php/shell/main.sh
+
+# Default ports
+EXPOSE 80
 
 # TODO root user should be avoided but required for now
 
