@@ -127,7 +127,7 @@
 					  
 					  <div class="js-show-card-desc">
 							<% if(!_.isEmpty(card.attributes.description)){ %>
-								<%= converter.makeHtml((card.attributes.description)) %>
+								<%= converter.makeHtml(filterXSS(card.attributes.description)) %>
 							<% } %>
 						</div>
 					  
