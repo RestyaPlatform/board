@@ -37,7 +37,7 @@ _.each(app_settings, function(app_setting) {
 <% }); 
 } %>
 <input type="hidden" value="<%- folder %>" name="folder" id="folder">
-  <div class="form-group">
+  <div class="form-group col-xs-12">
 	<label for="submit" class="sr-only  col-sm-4  control-label col-xs-12"><%- i18next.t('Submit') %></label>
 	<div class="col-sm-offset-2 col-sm-10 col-xs-12">
 		<input type="submit" value="<%- i18next.t('Update') %>" id="submit" class="btn btn-primary">
@@ -87,7 +87,7 @@ _.each(app_settings, function(app_setting) {
 		</div>
 		<div class="well-sm"></div>
 		<div class="ldap_attributes_content"></div>
-		<div class="form-group js-ldap-submit hide">
+		<div class="form-group js-ldap-submit hide col-xs-12">
 				<input type="hidden" value="r_multiple_ldap_login" name="folder" id="folder">
 				<label for="submit" class="sr-only  col-sm-4  control-label col-xs-12"><%- i18next.t('Submit') %></label>
 				<div class="col-sm-offset-2 col-sm-10 col-xs-12">
