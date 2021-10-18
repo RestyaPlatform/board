@@ -1588,7 +1588,7 @@
 				set -x
 				
 				echo "Downloading files..."
-				curl -v -L -G -d "app=board&ver=${RESTYABOARD_VERSION}" -o /tmp/restyaboard.zip https://restya.com/download.php
+				curl -v -L -G -d "app=board&ver=${RESTYABOARD_VERSION}" -o /tmp/restyaboard.zip -k https://restya.com/download.php
 				unzip /tmp/restyaboard.zip -d ${DOWNLOAD_DIR}
 				
 				echo "Updating files..."
@@ -1806,7 +1806,7 @@
 				apt install -y curl
 			fi
 			mkdir ${DOWNLOAD_DIR}
-			curl -v -L -G -d "app=board&ver=${RESTYABOARD_VERSION}" -o /tmp/restyaboard.zip https://restya.com/download.php
+			curl -v -L -G -d "app=board&ver=${RESTYABOARD_VERSION}" -o /tmp/restyaboard.zip -k https://restya.com/download.php
 			unzip /tmp/restyaboard.zip -d ${DOWNLOAD_DIR}
 			rm /tmp/restyaboard.zip
 
@@ -1946,7 +1946,7 @@
 			echo "Note: PHP Mailer will not work in Azure. Kindly use external SMTP mail server."
 		fi
 		set +x
-		curl -v -L -G -d "app=board&os=${os}&version=${version}" "https://restya.com/success_installation.php"
+		curl -v -L -G -d "app=board&os=${os}&version=${version}" -k "https://restya.com/success_installation.php"
 		echo "Restyaboard URL : $webdir"
 
 		echo "Login with username admin and password restya"
@@ -1955,7 +1955,7 @@
 	main
 	error=$?
 	os=$(lsb_release -i -s)
-	curl -v -L -G -d "app=board&os=${os}&error=${error}" "https://restya.com/error_installation.php"
+	curl -v -L -G -d "app=board&os=${os}&error=${error}" -k "https://restya.com/error_installation.php"
 	echo "If you're finding it difficult to install Restyaboard from your end, we do also offer free installation support that you may consider https://restya.com/contact?category=free-installation"
 	exit 1
 } 2>&1 | tee -a restyaboard_install.log
