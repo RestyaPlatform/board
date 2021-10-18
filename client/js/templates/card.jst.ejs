@@ -42,7 +42,7 @@
 				<% }%> 
 			</div>
 		<% }%> 
-  <a href="#/board/<%- card.attributes.board_id %>/card/<%- card.attributes.id %>" title="<%- card.attributes.name %>"><%= CheckFieldExists(card.board, 'name', card.attributes.name, 'Value', 'r_gridview_configure') %></a>
+  <a href="#/board/<%- card.attributes.board_id %>/card/<%- card.attributes.id %>" title="<%- card.attributes.name %>"><%= CheckFieldExists(card.board, 'name', filterXSS(card.attributes.name), 'Value', 'r_gridview_configure') %></a>
   </div>
   <div class="pull-left navbar-btn <% if(!_.isEmpty(card.collection) && card.list.collection.board.attributes.is_expand_image_front_of_card){ %> hide <% } %>">
   <ul class="list-unstyled list-inline text-muted boardlistblk clearfix txt-aligns js-list-card-data">
