@@ -1,3 +1,7 @@
+---
+title: Confirming the registered users in the admin panel of Restyaboard
+---
+
 # Manually confirming the registered users in the admin panel of Restyaboard
 
 ## Introduction
