@@ -96,7 +96,7 @@ If there are no problems reported, most likely the emails will be received in in
 
 *   Please note that for some cases, setting up SPF, DKIM and DMARC may not still work as mail systems use lot of heuristics to determine spam and can flag system mails as spam.
 
-# Troubleshooting email issues in Azure hosting
+## Troubleshooting email issues in Azure hosting
 
 By default, Azure hosting blocks all outgoing mails. So, even if you use Linux VM on Azure, emails won’t be sent.
 
