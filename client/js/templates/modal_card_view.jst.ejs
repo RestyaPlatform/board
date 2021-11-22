@@ -5,7 +5,7 @@
   <div class="pull-right js-attachment-loader"></div>
   <div class="clearfix col-xs-12 printable">
   <% if(!_.isUndefined(authuser.user) && (!_.isEmpty(card.list.collection.board.acl_links.where({slug: "get_card_title",board_user_role_id: parseInt(list.board_user_role_id)})))){ %>
-  <h3 class="navbar-btn"> <span class="icon-credit-card text-muted"></span> <a href="" title="<%- card.attributes.name %>" class="<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: "edit_card",board_user_role_id: parseInt(list.board_user_role_id)})))){ %>js-show-card-title-edit-form<% }else{ %> js-no-action<%}%>"><%- card.attributes.name %></a><small class = "no-print">&nbsp;<%- i18next.t('in list') %>&nbsp;</small><span class="dropdown"><a class="dropdown-toggle <% if(!_.isUndefined(authuser.user) && CheckFieldPermission(card.list.collection.board, list.board_user_role_id, 'move_card')&& (authuser.user.role_id == 1 ||  !_.isEmpty(card.list.collection.board.acl_links.where({slug: 'move_list_cards',board_user_role_id: parseInt(list.board_user_role_id)})))){ %>js-show-move-card-form<%}else{%>js-no-action<%}%>" data-toggle="dropdown" title="<%- list.attributes.name %>" href="#"><%- list.attributes.name %></a>
+  <h3 class="navbar-btn"> <span class="icon-credit-card text-muted"></span> <a href="" title="<%- card.attributes.name %>" class="<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: "edit_card",board_user_role_id: parseInt(list.board_user_role_id)})))){ %>js-show-card-title-edit-form<% }else{ %> js-no-action<%}%>"><%- card.attributes.name %></a><small class = "no-print">&nbsp;<%- i18next.t('in list') %>&nbsp;</small><span class="dropdown"><a class="dropdown-toggle <% if(!_.isUndefined(authuser.user) && CheckFieldPermission(card.list.collection.board, list.board_user_role_id, 'move_card')&& (authuser.user.role_id == 1 ||  !_.isEmpty(card.list.collection.board.acl_links.where({slug: 'move_list_cards',board_user_role_id: parseInt(list.board_user_role_id)})))){ %>js-show-move-card-form<%}else{%>js-no-action<%}%>" title="<%- list.attributes.name %>" href="javascript:void(0);"><%- list.attributes.name %></a>
   <% if(!_.isUndefined(authuser.user)){ %>
 	<ul class="dropdown-menu arrow col-xs-12 panel-body">
 		<li class="col-xs-12 clearfix text-center"><div> <span class="col-xs-10"><strong><%- i18next.t('Move Card') %></strong></span><a class="js-close-popover pull-right" href="#"><i class="icon-remove "></i></a></div></li>
@@ -331,7 +331,7 @@
 					<% } %>
 					<% if(CheckFieldPermission(card.list.collection.board, list.board_user_role_id, 'get_card_checklist')) { %>
 					<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 ||  !_.isEmpty(card.list.collection.board.acl_links.where({slug: "add_checklists",board_user_role_id: parseInt(list.board_user_role_id)})))) { %>
-						<li class="dropdown"> <a class="btn btn-default dropdown-toggle js-show-checklist-add-form even-action htruncate" role="button" data-toggle="dropdown" data-action="modalcard" title="<%- i18next.t('Checklist') %>" href="#"><i class="icon-list-ul"></i><%- i18next.t('Checklist') %></a>
+						<li class="dropdown"> <a class="btn btn-default dropdown-toggle js-show-checklist-add-form even-action htruncate" role="button" data-action="modalcard" title="<%- i18next.t('Checklist') %>" href="javascript:void(0);"><i class="icon-list-ul"></i><%- i18next.t('Checklist') %></a>
 						  <ul class="dropdown-menu dropdown-menu-left arrow col-xs-12">
 							<li class="col-xs-12 clearfix text-center"> <div><span class="col-xs-10"><strong><%- i18next.t('Add Checklist') %></strong></span><a class="js-close-popover pull-right" href="#"><i class="icon-remove "></i></a></div> </li>
 							<li class="col-xs-12 divider"></li>
@@ -354,7 +354,7 @@
 				<ul class="js-card-actions list-inline action-list navbar-btn">
 					<% if(CheckFieldPermission(card.list.collection.board, list.board_user_role_id, 'move_card')) { %>
 					<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 ||  !_.isEmpty(card.list.collection.board.acl_links.where({slug: "move_list_cards",board_user_role_id: parseInt(list.board_user_role_id)})))) { %>
-					<li class="dropdown js-card-custom-app" data-card_id = "<%- card.id%>"> <a class="btn btn-default dropdown-toggle js-show-move-card-form js-card-header-action even-action htruncate" role="button" data-toggle="dropdown" title="<%- i18next.t('Move') %>" href="#"><i class="icon-folder-close js-card-header-action"></i><%- i18next.t('Move') %></a>
+					<li class="dropdown js-card-custom-app" data-card_id = "<%- card.id%>"> <a class="btn btn-default dropdown-toggle js-show-move-card-form js-card-header-action even-action htruncate" role="button" title="<%- i18next.t('Move') %>" href="javascript:void(0);"><i class="icon-folder-close js-card-header-action"></i><%- i18next.t('Move') %></a>
 					  <ul class="dropdown-menu dropdown-menu-left arrow col-xs-12">
 						<li class="col-xs-12 clearfix text-center"><div> <span class="col-xs-10"><strong><%- i18next.t('Move Card') %></strong></span><a class="js-close-popover pull-right" href="#"><i class="icon-remove "></i></a></div></li>
 						<li class="col-xs-12 divider"></li>
@@ -373,7 +373,7 @@
 					<% } %>
 					<% if(CheckFieldPermission(card.list.collection.board, list.board_user_role_id, 'copy_cards')) { %>
 					<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 ||  !_.isEmpty(card.list.collection.board.acl_links.where({slug: "copy_card",board_user_role_id: parseInt(list.board_user_role_id)})))  && !is_offline_data){ %>
-						<li class="dropdown js-hide-on-offline navbar-btn"> <a class="btn btn-default dropdown-toggle js-show-copy-card-form even-action htruncate" role="button" data-toggle="dropdown" data-action="modalcard-actions" title="<%- i18next.t('Copy') %>" href="#"><i class="icon-copy" data-action="modalcard-actions"></i><%- i18next.t('Copy') %></a>
+						<li class="dropdown js-hide-on-offline navbar-btn"> <a class="btn btn-default dropdown-toggle js-show-copy-card-form even-action htruncate" role="button" data-action="modalcard-actions" title="<%- i18next.t('Copy') %>" href="javascript:void(0);"><i class="icon-copy" data-action="modalcard-actions"></i><%- i18next.t('Copy') %></a>
 						  <ul class="dropdown-menu dropdown-menu-left arrow col-xs-12 pre-scrollable vertical-scrollbar">
 							<li class="col-xs-12 clearfix text-center"> <div><span class="col-xs-10"><strong><%- i18next.t('Copy Card') %></strong></span><a class="js-close-popover pull-right" href="#"><i class="icon-remove "></i></a></div> </li>
 							<li class="col-xs-12 divider"></li>
@@ -577,7 +577,7 @@
   <!-- Side Menu block start -->
   <%if(!_.isUndefined(authuser.user)) {%>
   <div class="dropdown dockheader-dropdown docmodal-submenu js-modal-settings hide">
-  <a aria-expanded="true" data-toggle="dropdown" id="dropdownMenu1" class="dropdown-toggle label"> <i class="icon-cog h3"></i></a>
+  <a aria-expanded="true" id="dropdownMenu1" class="dropdown-toggle label"> <i class="icon-cog h3"></i></a>
   <ul role="menu" class="dropdown-menu arrow">
 		<% if(CheckFieldPermission(card.list.collection.board, list.board_user_role_id, 'get_card_color')) { %>
 		<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 || !_.isEmpty(card.list.collection.board.acl_links.where({slug: "edit_card",board_user_role_id: parseInt(list.board_user_role_id)})))){ %>
@@ -722,7 +722,7 @@
 		<% } %>
 		<% if(CheckFieldPermission(card.list.collection.board, list.board_user_role_id, 'get_card_checklist')) { %>
 		<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 ||  !_.isEmpty(card.list.collection.board.acl_links.where({slug: "add_checklists",board_user_role_id: parseInt(list.board_user_role_id)})))) { %>
-		    <li class="dropdown"> <a class="dropdown-toggle js-show-checklist-add-form" role="button" data-toggle="dropdown" data-action="modalcard-actions" title="<%- i18next.t('Checklist') %>" href="#"><%- i18next.t('Checklist') %></a>
+		    <li class="dropdown"> <a class="dropdown-toggle js-show-checklist-add-form" role="button" data-action="modalcard-actions" title="<%- i18next.t('Checklist') %>" href="javascript:void(0);"><%- i18next.t('Checklist') %></a>
 		      <ul class="dropdown-menu dropdown-menu-left arrow col-xs-12">
 				<li class="col-xs-12 clearfix text-center"> <div><span class="col-xs-10"><strong><%- i18next.t('Add Checklist') %></strong></span><a class="js-close-popover pull-right" href="#"><i class="icon-remove "></i></a></div> </li>
 		        <li class="col-xs-12 divider"></li>
@@ -795,7 +795,7 @@
 	  <% if(!_.isUndefined(authuser.user)) { %>
 		<% if(CheckFieldPermission(card.list.collection.board, list.board_user_role_id, 'move_card')) { %>
 		<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 ||  !_.isEmpty(card.list.collection.board.acl_links.where({slug: "move_list_cards",board_user_role_id: parseInt(list.board_user_role_id)})))) { %>
-		<li class="dropdown"> <a class="dropdown-toggle js-show-move-card-form js-card-header-action" role="button" data-toggle="dropdown" title="<%- i18next.t('Move') %>" href="#"><%- i18next.t('Move') %></a>
+		<li class="dropdown"> <a class="dropdown-toggle js-show-move-card-form js-card-header-action" role="button" title="<%- i18next.t('Move') %>" href="javascript:void(0);"><%- i18next.t('Move') %></a>
 			<ul class="dropdown-menu dropdown-menu-left arrow col-xs-12">
 			<li class="col-xs-12 clearfix text-center"><div> <span class="col-xs-10"><strong><%- i18next.t('Move Card') %></strong></span><a class="js-close-popover pull-right" href="#"><i class="icon-remove "></i></a></div></li>
 			<li class="col-xs-12 divider"></li>
@@ -814,7 +814,7 @@
 		<% } %>
 		<% if(CheckFieldPermission(card.list.collection.board, list.board_user_role_id, 'copy_cards')) { %>
 		<% if(!_.isUndefined(authuser.user) && (authuser.user.role_id == 1 ||  !_.isEmpty(card.list.collection.board.acl_links.where({slug: "copy_card",board_user_role_id: parseInt(list.board_user_role_id)})))  && !is_offline_data){ %>
-			<li class="dropdown js-hide-on-offline"> <a class="dropdown-toggle js-show-copy-card-form" role="button" data-toggle="dropdown" data-action="modalcard" title="<%- i18next.t('Copy') %>" href="#"><%- i18next.t('Copy') %></a>
+			<li class="dropdown js-hide-on-offline"> <a class="dropdown-toggle js-show-copy-card-form" role="button" data-action="modalcard" title="<%- i18next.t('Copy') %>" href="javascript:void(0);"><%- i18next.t('Copy') %></a>
 				<ul class="dropdown-menu dropdown-menu-left arrow col-xs-12 pre-scrollable vertical-scrollbar" style="max-height: 180px; overflow-y: auto;">
 				<li class="col-xs-12 clearfix text-center"> <div><span class="col-xs-10"><strong><%- i18next.t('Copy Card') %></strong></span><a class="js-close-popover pull-right" href="#"><i class="icon-remove "></i></a></div> </li>
 				<li class="col-xs-12 divider"></li>
