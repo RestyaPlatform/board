@@ -74,7 +74,7 @@ if (_.isEmpty(role_links.where({
 						<% }%>
 							<% if(!_.isUndefined(authuser.user)){%>
 								<li class="dropdown hidden-xs board-btn add-board-dropdown">
-									<a title="<%- i18next.t('Dashboard') %>" href="#" data-toggle="dropdown" class="btn btn-default js-show-boards-list">
+									<a title="<%- i18next.t('Dashboard') %>" href="javascript:void(0);" class="btn btn-default dropdown-toggle js-show-boards-list">
 										<span>
 											<%- i18next.t("Boards") %>
 										</span>
