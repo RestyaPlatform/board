@@ -17,9 +17,9 @@ This document contains information about how to install and configure Canned Res
 
 ## Video Tutorial
 
-For step-by-step instructions on Canned Response Plugin Installation from Admin, refer [YouTube video](http://www.youtube.com/watch?v=ZAGgmVVHMME "Watch video on Canned Response Plugin Installation from Admin")
+For step-by-step instructions on Canned Response Plugin Installation from Admin, refer [YouTube video](https://www.youtube.com/watch?v=ZAGgmVVHMME "Watch video on Canned Response Plugin Installation from Admin")
 
-[![How to install Canned Response Plugin](canned_response.png)](http://www.youtube.com/watch?v=ZAGgmVVHMME "Watch video on Canned Response Plugin Installation")
+[![How to install Canned Response Plugin](canned_response.png)](https://www.youtube.com/watch?v=ZAGgmVVHMME "Watch video on Canned Response Plugin Installation")
 
 ## How to install Canned Response Plugin?
 

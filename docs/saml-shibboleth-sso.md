@@ -24,9 +24,9 @@ SAML SSO operates by passing the identity of the user from one location (the ide
 
 ## Video - Configuring SSOCircle.com IdP
 
-For step-by-step instructions on SAML / Shibboleth Plugin Configuration, refer [YouTube video](https://youtu.be/PjqYWjNUOWk "Watch video on SAML / Shibboleth Plugin Configuration")
+For step-by-step instructions on SAML / Shibboleth Plugin Configuration, refer [YouTube video](https://www.youtube.com/watch?v=PjqYWjNUOWk "Watch video on SAML / Shibboleth Plugin Configuration")
 
-[![SAML / Shibboleth Plugin Configuration](saml_plugin_configuration.png "SAML / Shibboleth Plugin Configuration")](https://youtu.be/PjqYWjNUOWk "Watch video on SAML / Shibboleth Plugin Configuration") 
+[![SAML / Shibboleth Plugin Configuration](saml_plugin_configuration.png "SAML / Shibboleth Plugin Configuration")](https://www.youtube.com/watch?v=PjqYWjNUOWk "Watch video on SAML / Shibboleth Plugin Configuration") 
 
 ## SAML Configuration
 

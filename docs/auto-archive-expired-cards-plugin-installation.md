@@ -17,9 +17,9 @@ This document contains information about how to install and configure Agile WIP 
 
 ## Video Tutorial
 
-For step-by-step instructions about Auto Archive Expired Cards Plugin Installation, refer [YouTube video](http://www.youtube.com/watch?v=dVmgj_EzFsY "Watch video on Auto Archive Expired Cards Plugin Installation")
+For step-by-step instructions about Auto Archive Expired Cards Plugin Installation, refer [YouTube video](https://www.youtube.com/watch?v=dVmgj_EzFsY "Watch video on Auto Archive Expired Cards Plugin Installation")
 
-[![Watch video on Auto Archive Expired Cards Plugin Installation](auto_archive_expired_cards.png "Auto Archive Expired Cards Plugin Installation")](http://www.youtube.com/watch?v=dVmgj_EzFsY "Watch video on Auto Archive Expired Cards Plugin Installation")
+[![Watch video on Auto Archive Expired Cards Plugin Installation](auto_archive_expired_cards.png "Auto Archive Expired Cards Plugin Installation")](https://www.youtube.com/watch?v=dVmgj_EzFsY "Watch video on Auto Archive Expired Cards Plugin Installation")
 
 ## How to install Auto Archive Expired Cards Plugin?
 

@@ -19,7 +19,7 @@ This document contains information about how to install and configure Dashboard 
 
 For step-by-step instructions on Dashboard Charts Plugin Installation, refer [YouTube video](https://www.youtube.com/watch?v=FSrQWPgiKkM "Watch video on Dashboard Charts Plugin Installation")
 
-[![Watch video on Dashboard Charts Plugin Installation](dashboard_charts_installation.png)](http://www.youtube.com/watch?v=FSrQWPgiKkM "Watch video on Dashboard Charts Plugin Installation")
+[![Watch video on Dashboard Charts Plugin Installation](dashboard_charts_installation.png)](https://www.youtube.com/watch?v=FSrQWPgiKkM "Watch video on Dashboard Charts Plugin Installation")
 
 ## Dashboard Charts Plugin Installation
 

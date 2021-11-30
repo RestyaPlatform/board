@@ -18,7 +18,7 @@ This document contains information about Import from GitHub Plugin Installation.
 
 For step-by-step instructions on Import from GitHub Plugin Installation, refer [YouTube video](https://www.youtube.com/watch?v=OUfBFJqUY7w "Watch video on Import from GitHub Plugin Installation")
 
-[![Import from GitHub Plugin Installation](import_github_installation.png)](http://www.youtube.com/watch?v=OUfBFJqUY7w "Watch video on Import from GitHub Plugin Installation")
+[![Import from GitHub Plugin Installation](import_github_installation.png)](https://www.youtube.com/watch?v=OUfBFJqUY7w "Watch video on Import from GitHub Plugin Installation")
 
 ## Import from GitHub Plugin Installation
 

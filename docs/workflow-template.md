@@ -18,7 +18,7 @@ This document contains information about how to create Workflow Template.
 
 For step-by-step instructions on Workflow Template, refer [YouTube video](https://www.youtube.com/watch?v=_Y8r7auwzOY "Watch video on Workflow Template")
 
-[![Workflow Template](workflow_template.png "Board Templat")](http://www.youtube.com/watch?v=_Y8r7auwzOY "Watch video on Workflow Template")
+[![Workflow Template](workflow_template.png "Board Templat")](https://www.youtube.com/watch?v=_Y8r7auwzOY "Watch video on Workflow Template")
 
 ## Workflow Template
 

@@ -16,9 +16,9 @@ This document contains information about how to install the Zapier plugin.
 
 ## Video Tutorial
 
-For step-by-step instructions on Zapier Plugin Installation, refer [YouTube video](https://youtu.be/sMHzwfnlN6g "Watch video on Zapier Plugin Installation")
+For step-by-step instructions on Zapier Plugin Installation, refer [YouTube video](https://www.youtube.com/watch?v=sMHzwfnlN6g "Watch video on Zapier Plugin Installation")
 
-[![Zapier Plugin Installation](zapier_installation.png "Zapier Plugin Installation")](https://youtu.be/sMHzwfnlN6g "Watch video on Zapier Plugin Installation")
+[![Zapier Plugin Installation](zapier_installation.png "Zapier Plugin Installation")](https://www.youtube.com/watch?v=sMHzwfnlN6g "Watch video on Zapier Plugin Installation")
 
 ## Zapier Plugin Installation
 
