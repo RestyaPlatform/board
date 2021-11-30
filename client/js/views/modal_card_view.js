@@ -4559,78 +4559,74 @@ App.ModalCardView = Backbone.View.extend({
         var board_id = parseInt(target.val());
         var content_list = '';
         var content_position = '';
-        if (board_id == this.model.attributes.board_id) {
-            this.showMoveCardForm(e);
-        } else {
-            var board = self.boards.findWhere({
-                id: parseInt(board_id),
-                is_closed: 0
-            });
-            board.lists.add(board.attributes.lists);
-            var board_lists = board.lists.where({
-                is_archived: 0
-            });
-            var current_position = this.model.collection.indexOf(this.model) + 1;
-            var is_first_list = true;
-            var position_visiblity = false;
-            if ((!_.isUndefined(board.attributes.sort_by) && board.attributes.sort_by !== null && board.attributes.sort_by === 'position') || (_.isUndefined(board.attributes.sort_by) || board.attributes.sort_by === null)) {
-                position_visiblity = true;
-            }
-            var wip_enabled = false;
-            if (!_.isUndefined(APPS) && APPS !== null) {
-                if (!_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null) {
-                    if ($.inArray('r_agile_wip', APPS.enabled_apps) !== -1) {
-                        wip_enabled = true;
-                    }
-                }
-            }
-            content_list += '<option value="">' + i18next.t('Select List') + '</option>';
-            _.each(board_lists, function(list) {
-                if (self.model.attributes.list_id == list.attributes.id) {
-                    content_list += '<option value="' + list.id + '" selected="selected">' + _.escape(list.attributes.name) + ' ' + i18next.t('(current)') + '</option>';
-                    is_first_list = true;
-                } else {
-                    if (wip_enabled && !_.isUndefined(list.attributes.custom_fields) && !_.isEmpty(list.attributes.custom_fields) && list.attributes.custom_fields !== null) {
-                        var list_custom_fields = JSON.parse(list.attributes.custom_fields);
-                        var list_card_count = isNaN(list.attributes.card_count) ? 0 : list.attributes.card_count;
-                        if (!_.isUndefined(list_custom_fields.wip_limit) && !_.isEmpty(list_custom_fields.wip_limit)) {
-                            if (parseInt(list_card_count) === parseInt(list_custom_fields.wip_limit) && !_.isUndefined(list_custom_fields.hard_wip_limit) && !_.isEmpty(list_custom_fields.hard_wip_limit)) {
-                                content_list += '<option value="' + list.id + '" disabled>' + _.escape(list.attributes.name) + ' (' + i18next.t('Agile WIP exceeded') + ')</option>';
-                            } else if (parseInt(list_card_count) > parseInt(list_custom_fields.wip_limit)) {
-                                content_list += '<option value="' + list.id + '">' + _.escape(list.attributes.name) + ' ( > ' + i18next.t('WIP limit') + ')</option>';
-                            } else {
-                                content_list += '<option value="' + list.id + '">' + _.escape(list.attributes.name) + '</option>';
-                            }
-                        }
-                    } else {
-                        content_list += '<option value="' + list.id + '">' + _.escape(list.attributes.name) + '</option>';
-                    }
-                }
-                if (is_first_list) {
-                    is_first_list = false;
-                    for (var i = 1; i <= list.attributes.card_count; i++) {
-                        if (self.model.attributes.list_id == list.attributes.id && i == current_position) {
-                            content_position += '<option value="' + i + '" selected="selected">' + i + ' ' + i18next.t('(current)') + '</option>';
-                        } else {
-                            content_position += '<option value="' + i + '">' + i + '</option>';
-                        }
-                    }
-                    if (self.model.attributes.list_id != list.attributes.id) {
-                        var next_position = parseInt(list.attributes.card_count) + 1;
-                        content_position += '<option value="' + next_position + '">' + next_position + '</option>';
-                    }
-                }
-            });
-            self.$el.find('.js-change-position').html(content_list);
-            if (position_visiblity) {
-                if (self.$el.find('.js-position').parent().hasClass('hide')) {
-                    self.$el.find('.js-position').parent().removeClass('hide');
-                }
-            } else {
-                self.$el.find('.js-position').parent().addClass('hide');
-            }
-            self.$el.find('.js-position').html(content_position);
+        var board = self.boards.findWhere({
+            id: parseInt(board_id),
+            is_closed: 0
+        });
+        board.lists.add(board.attributes.lists);
+        var board_lists = board.lists.where({
+            is_archived: 0
+        });
+        var current_position = this.model.collection.indexOf(this.model) + 1;
+        var is_first_list = true;
+        var position_visiblity = false;
+        if ((!_.isUndefined(board.attributes.sort_by) && board.attributes.sort_by !== null && board.attributes.sort_by === 'position') || (_.isUndefined(board.attributes.sort_by) || board.attributes.sort_by === null)) {
+            position_visiblity = true;
         }
+        var wip_enabled = false;
+        if (!_.isUndefined(APPS) && APPS !== null) {
+            if (!_.isUndefined(APPS.enabled_apps) && APPS.enabled_apps !== null) {
+                if ($.inArray('r_agile_wip', APPS.enabled_apps) !== -1) {
+                    wip_enabled = true;
+                }
+            }
+        }
+        content_list += '<option value="">' + i18next.t('Select List') + '</option>';
+        _.each(board_lists, function(list) {
+            if (self.model.attributes.list_id == list.attributes.id) {
+                content_list += '<option value="' + list.id + '" selected="selected">' + _.escape(list.attributes.name) + ' ' + i18next.t('(current)') + '</option>';
+                is_first_list = true;
+            } else {
+                if (wip_enabled && !_.isUndefined(list.attributes.custom_fields) && !_.isEmpty(list.attributes.custom_fields) && list.attributes.custom_fields !== null) {
+                    var list_custom_fields = JSON.parse(list.attributes.custom_fields);
+                    var list_card_count = isNaN(list.attributes.card_count) ? 0 : list.attributes.card_count;
+                    if (!_.isUndefined(list_custom_fields.wip_limit) && !_.isEmpty(list_custom_fields.wip_limit)) {
+                        if (parseInt(list_card_count) === parseInt(list_custom_fields.wip_limit) && !_.isUndefined(list_custom_fields.hard_wip_limit) && !_.isEmpty(list_custom_fields.hard_wip_limit)) {
+                            content_list += '<option value="' + list.id + '" disabled>' + _.escape(list.attributes.name) + ' (' + i18next.t('Agile WIP exceeded') + ')</option>';
+                        } else if (parseInt(list_card_count) > parseInt(list_custom_fields.wip_limit)) {
+                            content_list += '<option value="' + list.id + '">' + _.escape(list.attributes.name) + ' ( > ' + i18next.t('WIP limit') + ')</option>';
+                        } else {
+                            content_list += '<option value="' + list.id + '">' + _.escape(list.attributes.name) + '</option>';
+                        }
+                    }
+                } else {
+                    content_list += '<option value="' + list.id + '">' + _.escape(list.attributes.name) + '</option>';
+                }
+            }
+            if (is_first_list) {
+                is_first_list = false;
+                for (var i = 1; i <= list.attributes.card_count; i++) {
+                    if (self.model.attributes.list_id == list.attributes.id && i == current_position) {
+                        content_position += '<option value="' + i + '" selected="selected">' + i + ' ' + i18next.t('(current)') + '</option>';
+                    } else {
+                        content_position += '<option value="' + i + '">' + i + '</option>';
+                    }
+                }
+                if (self.model.attributes.list_id != list.attributes.id) {
+                    var next_position = parseInt(list.attributes.card_count) + 1;
+                    content_position += '<option value="' + next_position + '">' + next_position + '</option>';
+                }
+            }
+        });
+        self.$el.find('.js-change-position').html(content_list);
+        if (position_visiblity) {
+            if (self.$el.find('.js-position').parent().hasClass('hide')) {
+                self.$el.find('.js-position').parent().removeClass('hide');
+            }
+        } else {
+            self.$el.find('.js-position').parent().addClass('hide');
+        }
+        self.$el.find('.js-position').html(content_position);
     },
     /**
      * changePosition()

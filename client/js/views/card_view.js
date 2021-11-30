@@ -720,6 +720,11 @@ App.CardView = Backbone.View.extend({
      * @type string
      */
     selectCardPosition: function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        _(function() {
+            $(e.target).parents('.dropdown').addClass('open');
+        }).defer();
         var target = $(e.currentTarget);
         var self = this;
         var list_id = target.val();
@@ -749,6 +754,11 @@ App.CardView = Backbone.View.extend({
      * @type string
      */
     changeCardPosition: function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        _(function() {
+            $(e.target).parents('.dropdown').addClass('open');
+        }).defer();
         var target = $(e.currentTarget);
         var posoition = target.val();
         this.$el.find('.js-card-add-position').val(posoition);
@@ -989,6 +999,8 @@ App.CardView = Backbone.View.extend({
      *
      */
     backToCardActions: function(e) {
+        e.preventDefault();
+        e.stopPropagation();
         $('a.js-show-card-action-list').next().remove();
         $('a.js-show-card-action-list').after(new App.CardActionsView({
             model: this.model
