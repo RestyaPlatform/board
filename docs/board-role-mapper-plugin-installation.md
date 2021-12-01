@@ -1,3 +1,7 @@
+---
+description: User Role to Board Role Mapper Plugin Installation
+---
+
 # Board Roles Plugin Installation
 
 ## Introduction

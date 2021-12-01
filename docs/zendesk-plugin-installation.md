@@ -1,3 +1,7 @@
+---
+description: Zendesk Plugin Installation
+---
+
 # Zendesk plugin installation instructions
 
 ## Introduction

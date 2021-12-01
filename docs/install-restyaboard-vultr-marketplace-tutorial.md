@@ -1,3 +1,7 @@
+---
+description: Restyaboard installation through Vultr Marketplace
+---
+
 # Install Restyaboard 1-click app through Vultr Marketplace
 
 ## Introduction

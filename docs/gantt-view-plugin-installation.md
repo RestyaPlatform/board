@@ -1,3 +1,7 @@
+---
+description: Gantt View Plugin Installation
+---
+
 # Gantt View Plugin Installation
 
 ## Introduction

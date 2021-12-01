@@ -1,3 +1,7 @@
+---
+description: Restyaboard installation in Ubuntu using shell script
+---
+
 # Installation in Ubuntu using shell script
 
 ## Introduction

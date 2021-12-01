@@ -1,3 +1,7 @@
+---
+description: ElasticSearch Plugin Installation
+---
+
 # ElasticSearch Plugin Installation
 
 ## Introduction

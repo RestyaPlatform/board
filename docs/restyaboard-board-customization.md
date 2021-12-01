@@ -1,3 +1,7 @@
+---
+description: Board Customization in Restyaboard
+---
+
 # Board Customization in Restyaboard
 
 ## Introduction

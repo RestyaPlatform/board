@@ -1,3 +1,7 @@
+---
+description: Grid View Configure Plugin Installation
+---
+
 # Grid View Configure Plugin Installation
 
 ## Introduction

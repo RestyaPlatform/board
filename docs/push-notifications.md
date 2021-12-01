@@ -1,3 +1,7 @@
+---
+description: Restyaboard Push Notifications
+---
+
 # Push Notifications
 
 Depending on the notification functions and goals, push notifications are often displayed as a full screen or as a top or bottom banner.

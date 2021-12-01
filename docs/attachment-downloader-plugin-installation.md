@@ -1,3 +1,7 @@
+---
+description: Attachment Downloader Plugin Installation
+---
+
 # Attachment Downloader Plugin Installation
 
 ## Introduction

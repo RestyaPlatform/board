@@ -1,3 +1,7 @@
+---
+description: SEO Checklist Plugin Installation
+---
+
 # SEO Checklist Plugin Installation
 
 ## Introduction

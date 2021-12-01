@@ -1,5 +1,6 @@
 ---
 title: Introduction | Restyaboard LDAP
+description: Restyaboard LDAP setup
 ---
 
 # LDAP

@@ -1,3 +1,7 @@
+---
+description: Check Permission for Add/Edit Labels in Restyaboard
+---
+
 # Check Permission for Add/Edit Labels
 
 ## Introduction

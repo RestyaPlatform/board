@@ -1,3 +1,7 @@
+---
+description: Changing the background of the board in Restyaboard
+---
+
 # Changing the background of the board 
 
 You can change the background of your Restyaboard boards to make them more personal. Once you've updated the board backdrop, it will be visible to all other users who visit the board. Choose from thirty-two different colors or attractive photographs to express yourself while also making it easier to navigate your board's page. Additionally, users can upload their own background photos.

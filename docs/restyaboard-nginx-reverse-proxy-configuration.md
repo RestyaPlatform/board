@@ -1,3 +1,7 @@
+---
+description: Configuration of Restyaboard on an NGINX Reverse proxy
+---
+
 # Configuration of Restyaboard on an NGINX Reverse proxy
 
 ## Configuration of Restyaboard on an NGINX Reverse proxy

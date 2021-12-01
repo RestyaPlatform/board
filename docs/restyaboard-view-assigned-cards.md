@@ -1,5 +1,6 @@
 ---
 title: Restyaboard View the Assigned Cards to the User from All the Boards
+description: Restyaboard View the Assigned Cards to the User from All the Boards
 ---
 
 # Restyaboard View the Assigned Cards to the User from All the Boards

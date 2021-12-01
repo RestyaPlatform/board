@@ -1,3 +1,7 @@
+---
+description: Estimated Time Tracking Plugin Installation
+---
+
 # Estimated Time Tracking Plugin Installation
 
 ## Introduction

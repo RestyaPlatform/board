@@ -1,3 +1,7 @@
+---
+description: Auto Archive Expired Cards Plugin Installation
+---
+
 # Auto Archive Expired Cards Plugin Installation
 
 ## Introduction

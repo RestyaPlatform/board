@@ -1,3 +1,7 @@
+---
+description: Groups Plugin Installation
+---
+
 # Groups Plugin Installation
 
 ## Introduction

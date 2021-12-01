@@ -1,3 +1,7 @@
+---
+description: Slack Plugin Installation
+---
+
 # Slack Plugin Installation
 
 ## Introduction

@@ -1,3 +1,7 @@
+---
+description: LDAP Plugin Installation
+---
+
 # LDAP Plugin Installation
 
 ## Introduction

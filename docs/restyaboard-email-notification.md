@@ -1,3 +1,7 @@
+---
+description: Restyaboard Email Notification
+---
+
 # Restyaboard Email Notification
 
 ## Introduction

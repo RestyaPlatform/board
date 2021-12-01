@@ -1,3 +1,7 @@
+---
+description: Card Template Plugin Installation
+---
+
 # Card Template Plugin Installation
 
 ## Introduction

@@ -1,3 +1,7 @@
+---
+description: Restyaboard installation in CentOS using shell script
+---
+
 # Installation in CentOS using shell script
 
 ## Introduction

@@ -1,3 +1,7 @@
+---
+description: Import from GitHub Plugin Installation
+---
+
 # Import from GitHub Plugin Installation
 
 ## Introduction

@@ -1,3 +1,7 @@
+---
+description: SAML / Shibboleth Plugin Installation
+---
+
 # SAML / Shibboleth Plugin Installation
 
 ## Introduction

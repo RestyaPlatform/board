@@ -1,3 +1,7 @@
+---
+description: Restyaboard installation using shell script
+---
+
 # Restyaboard Installation
 
 ## Introduction

@@ -1,3 +1,7 @@
+---
+description: Creation of workflow template in Restyaboard
+---
+
 # Workflow Template
 
 ## Introduction

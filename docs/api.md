@@ -1,3 +1,7 @@
+---
+description: Restyaboard API Explorer Help
+---
+
 # API Explorer
 
 ## Introduction

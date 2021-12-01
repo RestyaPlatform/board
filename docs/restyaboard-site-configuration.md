@@ -1,3 +1,7 @@
+---
+description: Configuration of Site Settings from Admin
+---
+
 #  Configuration of Site Settings from Admin
 
 ## Introduction

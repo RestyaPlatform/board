@@ -1,3 +1,7 @@
+---
+description: Import from Monday.com in Restyaboard
+---
+
 # Import from Monday.com
 
 **Bring any of your work from Monday into Restyaboard!**

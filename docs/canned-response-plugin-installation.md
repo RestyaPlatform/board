@@ -1,3 +1,7 @@
+---
+description: Canned Response Plugin Installation
+---
+
 # Canned Response Plugin Installation
 
 ## Introduction

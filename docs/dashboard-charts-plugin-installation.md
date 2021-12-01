@@ -1,3 +1,7 @@
+---
+description: Dashboard Charts plugin installation instructions
+---
+
 # Dashboard Charts plugin installation instructions
 
 ## Introduction

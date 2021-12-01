@@ -1,3 +1,7 @@
+---
+description: Theming/CSSilize Plugin Installation
+---
+
 # Theming/CSSilize Plugin Installation
 
 ## Introduction

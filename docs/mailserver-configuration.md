@@ -1,3 +1,7 @@
+---
+description: Mail server configuration in Restyaboard
+---
+
 # Mail server configuration
 
 ## Introduction

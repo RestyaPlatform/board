@@ -1,3 +1,7 @@
+---
+description: Zapier Plugin Installation
+---
+
 # Zapier plugin installation instructions
 
 ## Introduction

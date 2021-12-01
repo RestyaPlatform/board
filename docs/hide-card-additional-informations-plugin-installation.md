@@ -1,3 +1,7 @@
+---
+description: Hide Card Additiona Informations Plugin Installation
+---
+
 # Hide Card Additiona Informations Plugin Installation
 
 ## Introduction

@@ -1,3 +1,7 @@
+---
+description: SAML / Shibboleth setup
+---
+
 # SAML / Shibboleth
 
 ## Introduction

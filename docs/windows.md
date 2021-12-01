@@ -1,3 +1,7 @@
+---
+description: Installation in windows using XAMPP
+---
+
 # Manual Installation in windows using XAMPP
 
 ## Introduction

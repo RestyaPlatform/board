@@ -1,3 +1,7 @@
+---
+description: User iCal Feed Plugin Installation
+---
+
 # User iCal Feed Plugin Installation
 
 ## Introduction

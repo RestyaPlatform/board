@@ -1,3 +1,7 @@
+---
+description: Visual Studio Plugin Installation
+---
+
 # Visual Studio Plugin Installation
 
 ## Introduction

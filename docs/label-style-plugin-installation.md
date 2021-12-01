@@ -1,3 +1,7 @@
+---
+description: LabelStyle Plugin Installation
+---
+
 # LabelStyle Plugin Installation
 
 ## Introduction

@@ -1,3 +1,7 @@
+---
+description: Agile WIP Plugin Installation
+---
+
 # Agile WIP Plugin Installation
 
 ## Introduction

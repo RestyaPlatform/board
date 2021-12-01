@@ -1,3 +1,7 @@
+---
+description: Troubleshooting in Restyaboard
+---
+
 # Troubleshooting
 
 ## Introduction

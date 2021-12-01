@@ -1,3 +1,7 @@
+---
+description: Restyaboard Elasticsearch Help
+---
+
 # Elasticsearch Help
 
 ## Introduction
