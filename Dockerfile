@@ -69,6 +69,7 @@ ENV ROOT_DIR=/var/lib/nginx/html \
 COPY --from=build /code/restyaboard-docker.zip /tmp/restyaboard.zip
 RUN unzip /tmp/restyaboard.zip -d ${ROOT_DIR} && \
     rm /tmp/restyaboard.zip && \
+    mv  ${ROOT_DIR}/api_explorer/ ${ROOT_DIR}/client/api_explorer/ && \
     chown -R nginx:nginx ${ROOT_DIR}
 
 # install apps
