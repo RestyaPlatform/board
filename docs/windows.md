@@ -1,3 +1,7 @@
+---
+description: Installation in windows using XAMPP
+---
+
 # Manual Installation in windows using XAMPP
 
 ## Introduction
@@ -17,9 +21,9 @@ This document is a step-by-step guide that illustrates how to setup Restyaboard 
 
 ## Video Tutorial
 
-For step-by-step instructions on Install in Windows using XAMPP, refer [YouTube video](http://www.youtube.com/watch?v=AB2IJYuMxTQ "Watch video on Manual Installation in windows using XAMPP")
+For step-by-step instructions on Install in Windows using XAMPP, refer [YouTube video](https://www.youtube.com/watch?v=AB2IJYuMxTQ "Watch video on Manual Installation in windows using XAMPP")
 
-[![Manual Installation in windows using XAMPP](windows_installation.png)](http://www.youtube.com/watch?v=AB2IJYuMxTQ "Watch video on Manual Installation in windows using XAMPP")
+[![Manual Installation in windows using XAMPP](windows_installation.png)](https://www.youtube.com/watch?v=AB2IJYuMxTQ "Watch video on Manual Installation in windows using XAMPP")
 
 ## Manual Installation of XAMPP server and PostgreSQL
 

@@ -1,3 +1,7 @@
+---
+description: Desktop Notifications
+---
+
 # Desktop Notifications
 
 ## Introduction

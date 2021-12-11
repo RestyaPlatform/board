@@ -1,3 +1,7 @@
+---
+description: Custom Field Plugin Installation
+---
+
 # Custom Field Plugin Installation
 
 ## Introduction
@@ -19,7 +23,7 @@ This document contains information about how to install Custom Field Plugin from
 
 For step-by-step instructions on Custom Field Plugin Installation, refer [YouTube video](https://www.youtube.com/watch?v=xCf4Thk3AmA "Watch video on Custom Field Plugin Installation")
 
-[![Watch video on Custom Field Plugin Installation](custom_field_installation.png)](http://www.youtube.com/watch?v=xCf4Thk3AmA "Watch video on Custom Field Plugin Installation")
+[![Watch video on Custom Field Plugin Installation](custom_field_installation.png)](https://www.youtube.com/watch?v=xCf4Thk3AmA "Watch video on Custom Field Plugin Installation")
 
 ## How to install Custom Field Plugin
 

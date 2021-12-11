@@ -1,3 +1,7 @@
+---
+description: Estimated Time Tracking Plugin Installation
+---
+
 # Estimated Time Tracking Plugin Installation
 
 ## Introduction
@@ -18,7 +22,7 @@ This document contains information about how to install Estimated Time Tracking 
 
 For step-by-step instructions on Estimated Time Tracking Plugin Installation from Admin, refer [YouTube video](https://www.youtube.com/watch?v=uVYVskj3BJM "Watch video on Estimated Time Tracking Plugin Installation")
 
-[![Estimated Time Tracking Plugin Installation](estimated_time.png)](http://www.youtube.com/watch?v=uVYVskj3BJM "Watch video on Estimated Time Tracking Plugin Installation")
+[![Estimated Time Tracking Plugin Installation](estimated_time.png)](https://www.youtube.com/watch?v=uVYVskj3BJM "Watch video on Estimated Time Tracking Plugin Installation")
 
 ## Estimated Time Tracking Plugin Installation
 

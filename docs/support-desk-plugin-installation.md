@@ -1,3 +1,7 @@
+---
+description: Support Desk Plugin Installation
+---
+
 # Support Desk Plugin Installation
 
 ## Introduction
@@ -18,7 +22,7 @@ This document contains information about how to install the Support Desk plugin.
 
 For step-by-step instructions on Support Desk Plugin Installation, refer [YouTube video](https://www.youtube.com/watch?v=8Adlx13YKmM "Watch video on Support Desk Plugin Installation")
 
-[![Support Desk Plugin Installation](support_plugin_installation.png)](http://www.youtube.com/watch?v=8Adlx13YKmM "Watch video on Support Desk Plugin Installation")  
+[![Support Desk Plugin Installation](support_plugin_installation.png)](https://www.youtube.com/watch?v=8Adlx13YKmM "Watch video on Support Desk Plugin Installation")  
 
 ## Support Desk Plugin Installation
 

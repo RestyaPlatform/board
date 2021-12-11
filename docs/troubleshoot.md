@@ -1,3 +1,7 @@
+---
+description: Troubleshooting in Restyaboard
+---
+
 # Troubleshooting
 
 ## Introduction
@@ -53,7 +57,7 @@ This document contains information about how to match users from Trello to the R
 
 **After installing Restyaboard on CentOS, the login page is not showing**
 
-*   In CentOS, we think disable selinux and reboot the machine may resolve your problem. For disabling selinux, please refer the video [https://youtu.be/hcnIHZnS1o8?t=150](https://youtu.be/hcnIHZnS1o8?t=150)
+*   In CentOS, we think disable selinux and reboot the machine may resolve your problem. For disabling selinux, please refer the video [https://www.youtube.com/watch?v=hcnIHZnS1o8?t=150](https://www.youtube.com/watch?v=hcnIHZnS1o8?t=150)
 
 **How to allow only particular users to Add/Edit labels**
 

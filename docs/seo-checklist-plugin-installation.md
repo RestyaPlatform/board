@@ -1,3 +1,7 @@
+---
+description: SEO Checklist Plugin Installation
+---
+
 # SEO Checklist Plugin Installation
 
 ## Introduction
@@ -18,11 +22,11 @@ This document contains information about instruction on SEO Checklist Plugin Ins
 
 For step-by-step instructions on SEO Checklist Plugin Installations, refer [YouTube video](https://www.youtube.com/watch?v=HBD6fgikH0A "Watch video on SEO Checklist Plugin Installations")
 
-[![SEO Checklist Plugin Installations](seo_checklist_installation.png "SEO Checklist Plugin Installations")](http://www.youtube.com/watch?v=HBD6fgikH0A "Watch video on SEO Checklist Plugin Installations")
+[![SEO Checklist Plugin Installations](seo_checklist_installation.png "SEO Checklist Plugin Installations")](https://www.youtube.com/watch?v=HBD6fgikH0A "Watch video on SEO Checklist Plugin Installations")
 
 ## SEO Checklist Plugin Installation
 
-[![How to configure SEO Checklist plugin](seo_checklist_installation.png)](http://www.youtube.com/watch?v=HBD6fgikH0A)
+[![How to configure SEO Checklist plugin](seo_checklist_installation.png)](https://www.youtube.com/watch?v=HBD6fgikH0A)
 
 1.  Download [SEO Checklist app](https://restya.com/board/apps/r_seo_checklist "SEO Checklist app")
 2.  Goto your Restyaboard installation root directory. e.g., directory: `/usr/share/nginx/html/restyaboard/`

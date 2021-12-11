@@ -1,3 +1,7 @@
+---
+description: SparkPost Plugin Installation
+---
+
 # SparkPost Plugin Installation
 
 ## Introduction

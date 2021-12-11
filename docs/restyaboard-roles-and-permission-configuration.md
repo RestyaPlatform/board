@@ -1,3 +1,7 @@
+---
+description: Configuration of Permissions and Roles in Restyaboard
+---
+
 #  Configuration of Permissions and Roles
 
 ## Introduction

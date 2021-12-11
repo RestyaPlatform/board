@@ -1,3 +1,7 @@
+---
+description: Chat Plugin Installation
+---
+
 # Chat Plugin Installation
 
 ## Introduction

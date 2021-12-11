@@ -1,3 +1,7 @@
+---
+description: Slack Plugin Installation
+---
+
 # Slack Plugin Installation
 
 ## Introduction
@@ -16,9 +20,9 @@ This document contains information about how to install the Slack plugin
 
 ## Video Tutorial
 
-For step-by-step instructions on Slack Plugin Installation, refer [YouTube video](https://youtu.be/hXrxCIsvacU "Watch video on Slack Plugin Installation")
+For step-by-step instructions on Slack Plugin Installation, refer [YouTube video](https://www.youtube.com/watch?v=hXrxCIsvacU "Watch video on Slack Plugin Installation")
 
-[![Slack Plugin Installation](slack_installation.png "Slack plugin configuration")](https://youtu.be/hXrxCIsvacU "Watch video on Slack Plugin Installation")
+[![Slack Plugin Installation](slack_installation.png "Slack plugin configuration")](https://www.youtube.com/watch?v=hXrxCIsvacU "Watch video on Slack Plugin Installation")
 
 ## Slack Plugin Installation
 

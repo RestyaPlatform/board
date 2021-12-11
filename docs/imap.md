@@ -1,3 +1,7 @@
+---
+description: Restyaboard IMAP Configuration
+---
+
 # IMAP
 
 ## Introduction

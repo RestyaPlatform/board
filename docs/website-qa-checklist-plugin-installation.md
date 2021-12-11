@@ -1,3 +1,7 @@
+---
+description: Website QA Checklist Plugin Installation
+---
+
 # Website QA Checklist Plugin Installation
 
 ## Introduction
@@ -18,7 +22,7 @@ This document contains information about how to install the Website QA Checklist
 
 For step-by-step instructions on Website QA Checklist Plugin Installation, refer [YouTube video](https://www.youtube.com/watch?v=1c46b8BjEpc "Watch video on Website QA Checklist Plugin Installation")
 
-[![Website QA Checklist Plugin Installation](website_qa_checklist_installation.png "Website QA Checklist Plugin Installation")](http://www.youtube.com/watch?v=1c46b8BjEpc "Watch video on Website QA Checklist Plugin Installation")
+[![Website QA Checklist Plugin Installation](website_qa_checklist_installation.png "Website QA Checklist Plugin Installation")](https://www.youtube.com/watch?v=1c46b8BjEpc "Watch video on Website QA Checklist Plugin Installation")
 
 ## Website QA Checklist Plugin Installation
 

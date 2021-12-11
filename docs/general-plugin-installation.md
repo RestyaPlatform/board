@@ -1,3 +1,7 @@
+---
+description: General Plugin Installation
+---
+
 # General Plugin Installation
 
 ## Introduction

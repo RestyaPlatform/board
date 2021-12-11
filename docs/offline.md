@@ -1,3 +1,7 @@
+---
+description: Restyaboard Offline sync
+---
+
 # Offline sync - use without internet
 
 ## Introduction
