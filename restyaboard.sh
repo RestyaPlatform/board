@@ -1956,6 +1956,6 @@
 	error=$?
 	os=$(lsb_release -i -s)
 	curl -v -L -G -d "app=board&os=${os}&error=${error}" -k "https://restya.com/error_installation.php"
-	echo "If you're finding it difficult to install Restyaboard from your end, we do also offer free installation support that you may consider https://restya.com/contact?category=free-installation"
+	echo "If you're finding it difficult to install Restyaboard from your end, we do also offer installation support that you may consider https://restya.com/contact"
 	exit 1
 } 2>&1 | tee -a restyaboard_install.log
