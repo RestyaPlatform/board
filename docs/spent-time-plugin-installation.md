@@ -1,3 +1,7 @@
+---
+description: Spent Time Tracking Plugin Installation
+---
+
 # Spent Time Tracking Plugin Installation
 
 ## Introduction

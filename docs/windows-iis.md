@@ -1,3 +1,7 @@
+---
+description: Installation in windows using IIS
+---
+
 # Install in windows using IIS
 
 ## Introduction
@@ -45,11 +49,11 @@ This document contains information about Installation in Windows using IIS.
 
 *   NodeJS / NPM
 
-[https://nodejs.org](https://nodejs.org "NodeJS / NPM Installer")
+[https://nodejs.org/en/](https://nodejs.org/en/ "NodeJS / NPM Installer")
 
 *   PostgreSQL
 
-[https://www.postgresql.org/download](https://www.postgresql.org/download "PostgreSQL Installer")
+[https://www.postgresql.org/download/](https://www.postgresql.org/download/ "PostgreSQL Installer")
 
 *   Git for Windows (including Git Bash) - this is optional
 

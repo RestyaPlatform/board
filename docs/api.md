@@ -1,3 +1,7 @@
+---
+description: Restyaboard API Explorer Help
+---
+
 # API Explorer
 
 ## Introduction
@@ -23,7 +27,7 @@ This document contains information about API Explorer Help.
 
 *   You can also refer the video below:
 
-[![[API Explorer]](api_explorer.png "API Explorer")](http://www.youtube.com/watch?v=xKh2gRJWmfE) 
+[![[API Explorer]](api_explorer.png "API Explorer")](https://www.youtube.com/watch?v=xKh2gRJWmfE) 
 
 ## How to generate guest access token 
 

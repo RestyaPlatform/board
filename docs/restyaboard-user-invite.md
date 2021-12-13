@@ -1,3 +1,7 @@
+---
+description: Inviting external users to Restyaboard
+---
+
 # Inviting external users to Restyaboard
 
 ## Introduction

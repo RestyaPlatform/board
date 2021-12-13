@@ -1,3 +1,7 @@
+---
+description: Broadcasts Plugin Installation
+---
+
 # Broadcasts Plugin Installation
 
 ## Introduction

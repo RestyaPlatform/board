@@ -1,3 +1,7 @@
+---
+description: Link Nextcloud Plugin Installation
+---
+
 # Link Nextcloud Plugin Installation
 
 ## Introduction

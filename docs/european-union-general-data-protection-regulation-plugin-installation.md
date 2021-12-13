@@ -1,3 +1,7 @@
+---
+description: European Union General Data Protection Regulation Plugin Installation
+---
+
 # European Union General Data Protection Regulation Plugin Installation
 
 ## Introduction

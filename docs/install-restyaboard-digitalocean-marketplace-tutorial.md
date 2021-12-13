@@ -1,3 +1,7 @@
+---
+description: Restyaboard installation through DigitalOcean Marketplace
+---
+
 # Install Restyaboard 1-click app through DigitalOcean Marketplace
 
 ## Introduction
@@ -69,10 +73,10 @@ After creating the Restyaboard droplet, now your Restyaboard site needs to be co
     
 2.  Change your admin password after the successful login.
     
-3.  [Configure your Restyaboard](https://restya.com/board/docs/restyaboard-site-configuration) site by updating business name, email, and 3rd party API keys
+3.  [Configure your Restyaboard](https://restya.com/board/docs/restyaboard-site-configuration/) site by updating business name, email, and 3rd party API keys
 4.  If required, setup [additional plugins](https://restya.com/board/apps)
 5.  Start managing your tasks by following the below workflows
     
-    *   [Restyaboard in Checklist Based Workflow](https://restya.com/board/docs/restyaboard-checklist-based-workflow)
-    *   [Restyaboard in Label Based Workflow](https://restya.com/board/docs/restyaboard-label-based-workflow)
-    *   [Restyaboard in List Based Workflow](https://restya.com/board/docs/restyaboard-list-based-workflow)
+    *   [Restyaboard in Checklist Based Workflow](https://restya.com/board/docs/restyaboard-checklist-based-workflow/)
+    *   [Restyaboard in Label Based Workflow](https://restya.com/board/docs/restyaboard-label-based-workflow/)
+    *   [Restyaboard in List Based Workflow](https://restya.com/board/docs/restyaboard-list-based-workflow/)

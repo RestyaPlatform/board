@@ -1,3 +1,7 @@
+---
+description: Restyaboard installation in NixOs
+---
+
 # Manual Installation in NixOs
 
 ## Introduction

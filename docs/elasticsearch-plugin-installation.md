@@ -1,3 +1,7 @@
+---
+description: ElasticSearch Plugin Installation
+---
+
 # ElasticSearch Plugin Installation
 
 ## Introduction
@@ -18,7 +22,7 @@ This document contains information about how to install Elasticsearch Plugin fro
 
 For step-by-step instructions on Elasticsearch Plugin Installation, refer [YouTube video](https://www.youtube.com/watch?v=jDp-3cJuPeM "Watch video on Elasticsearch Plugin Installation")
 
-[![Elasticsearch Plugin Installation](elasticsearch_installation.png "Elasticsearch Plugin Installation")](http://www.youtube.com/watch?v=jDp-3cJuPeM "Watch video on Elasticsearch Plugin Installation")
+[![Elasticsearch Plugin Installation](elasticsearch_installation.png "Elasticsearch Plugin Installation")](https://www.youtube.com/watch?v=jDp-3cJuPeM "Watch video on Elasticsearch Plugin Installation")
 
 ## ElasticSearch Plugin Installation
 

@@ -1,6 +1,10 @@
-# Configuration of Restyaboard on a NGINX Reverse proxy
+---
+description: Configuration of Restyaboard on an NGINX Reverse proxy
+---
 
-## Configuration of Restyaboard on a NGINX Reverse proxy
+# Configuration of Restyaboard on an NGINX Reverse proxy
+
+## Configuration of Restyaboard on an NGINX Reverse proxy
 
 * For configuring Restyaboard on a Nginx Reverse proxy, you have to set Host header:
 
