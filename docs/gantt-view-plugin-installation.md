@@ -1,3 +1,7 @@
+---
+description: Gantt View Plugin Installation
+---
+
 # Gantt View Plugin Installation
 
 ## Introduction
@@ -18,7 +22,7 @@ This document contains information about how to install Gantt View Plugin from a
 
 For step-by-step instructions on Gantt View Plugin Installation, refer [YouTube video](https://www.youtube.com/watch?v=4UYtTWpGhj8 "Watch video on Gantt View Plugin Installation")
 
-[![Gantt View Plugin Installation](gantt_view_installation.png "Gantt View Plugin Installation")](http://www.youtube.com/watch?v=4UYtTWpGhj8 "Watch video on Gantt View Plugin Installation")
+[![Gantt View Plugin Installation](gantt_view_installation.png "Gantt View Plugin Installation")](https://www.youtube.com/watch?v=4UYtTWpGhj8 "Watch video on Gantt View Plugin Installation")
 
 ## Gantt View Plugin Installation
 

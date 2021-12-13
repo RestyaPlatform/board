@@ -1,3 +1,7 @@
+---
+description: Insights Plugin Installation
+---
+
 # Insights Plugin Installation
 
 ## Introduction

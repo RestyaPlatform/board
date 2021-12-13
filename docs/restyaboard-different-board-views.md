@@ -1,3 +1,7 @@
+---
+description: Restyaboard Different Board Views
+---
+
 # Restyaboard Different Board Views
 
 ## Introduction

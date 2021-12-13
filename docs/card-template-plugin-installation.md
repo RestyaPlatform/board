@@ -1,3 +1,7 @@
+---
+description: Card Template Plugin Installation
+---
+
 # Card Template Plugin Installation
 
 ## Introduction
@@ -17,9 +21,9 @@ This document contains information about how to install and configure Card Templ
 
 ## Video Tutorial
 
-For step-by-step instructions on Card Template Plugin Installation from Admin, refer [YouTube video](http://www.youtube.com/watch?v=Hu9hNv9wFyQ "Watch video on Card Template Plugin Installation")
+For step-by-step instructions on Card Template Plugin Installation from Admin, refer [YouTube video](https://www.youtube.com/watch?v=Hu9hNv9wFyQ "Watch video on Card Template Plugin Installation")
 
-[![Card Template Plugin Installation](card_template.png)](http://www.youtube.com/watch?v=Hu9hNv9wFyQ "Watch video on Card Template Plugin Installation")
+[![Card Template Plugin Installation](card_template.png)](https://www.youtube.com/watch?v=Hu9hNv9wFyQ "Watch video on Card Template Plugin Installation")
 
 ## How to install Card Template Plugin
 

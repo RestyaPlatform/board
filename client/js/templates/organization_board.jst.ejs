@@ -13,7 +13,7 @@
 			</h4>
 			<% if(!_.isEmpty(role_links.where({slug: "starred_board"}))){ %>
 				<span class="pull-right dropdown">
-					<a href="#" class="js-board-visibility text-muted h5 show" data-toggle="dropdown">
+					<a href="javascript:void(0);" class="js-board-visibility text-muted h5 show dropdown-toggle">
 						<% if(board.attributes.board_visibility == 0) { %>
 							<span title="<%- i18next.t('Private') %>" class="icon-lock col-lg-2 text-primary"></span>
 						<% } else if(board.attributes.board_visibility == 1) { %> 

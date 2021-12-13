@@ -1,3 +1,7 @@
+---
+description: Restyaboard installation through Docker
+---
+
 # Install Restyaboard through Docker
 
 ## Introduction

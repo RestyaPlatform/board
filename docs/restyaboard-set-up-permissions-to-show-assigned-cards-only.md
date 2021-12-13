@@ -1,3 +1,7 @@
+---
+description: Set up permissions to show assigned cards only in Restyaboard
+---
+
 # Set up permissions to show assigned cards only in Restyaboard
 
 ## Introduction

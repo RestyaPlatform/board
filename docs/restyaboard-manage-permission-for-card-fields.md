@@ -1,3 +1,7 @@
+---
+description: Set up access control for card fields in Restyaboard
+---
+
 # Manage Cards Fields Display Permission For Board User Roles from Admin Panel
 
 ## Introduction

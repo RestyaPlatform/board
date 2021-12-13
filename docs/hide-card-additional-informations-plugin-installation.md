@@ -1,3 +1,7 @@
+---
+description: Hide Card Additiona Informations Plugin Installation
+---
+
 # Hide Card Additiona Informations Plugin Installation
 
 ## Introduction
@@ -18,7 +22,7 @@ This document contains information about Hide Card Additional Informations Plugi
 
 For step-by-step instructions on Hide Card Additional Informations Plugin Installation, refer [YouTube video](https://www.youtube.com/watch?v=culHgu4wr3w "Watch video on Hide Card Additional Informations Plugin Installation")
 
-[![Hide Card Additional Informations Plugin Installation](hide_card_additional_informations.png "Hide Card Additional Informations Plugin Installation")](http://www.youtube.com/watch?v=culHgu4wr3w "Watch video on Hide Card Additional Informations Plugin Installation")
+[![Hide Card Additional Informations Plugin Installation](hide_card_additional_informations.png "Hide Card Additional Informations Plugin Installation")](https://www.youtube.com/watch?v=culHgu4wr3w "Watch video on Hide Card Additional Informations Plugin Installation")
 
 ## Hide Card Additional Informations Plugin Installation
 

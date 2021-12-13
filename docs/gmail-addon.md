@@ -1,3 +1,7 @@
+---
+description: Gmail Add-on Installation
+---
+
 # Gmail add-on
 
 ## Introduction

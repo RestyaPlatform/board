@@ -1,3 +1,7 @@
+---
+description: Wiki Plugin Installation
+---
+
 # Wiki Plugin Installation
 
 ## Introduction
