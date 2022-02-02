@@ -162,7 +162,7 @@ if (file_exists(APP_PATH . '/client/apps/r_elasticsearch/app.json')) {
         $elasticsearch_index_class = $elasticsearch_data['settings']['r_elasticsearch_index_name']['value'];
     }
     if (function_exists('curl_init')) {
-        $ch = curl_init('http://'.$elasticsearch_server_class. ':'. $elasticsearch_port_class . '/' . $elasticsearch_index_class . '/cards/_search');
+        $ch = curl_init('http://'.$elasticsearch_server_class. ':'. $elasticsearch_port_class . '/' . $elasticsearch_index_class . '/_search');
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);

@@ -2372,8 +2372,9 @@ CREATE VIEW public.cards_listing AS
           ORDER BY activities.id DESC
          LIMIT 1), 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS list_moved_date,
     u.full_name AS card_created_user,
-    cards.cover_image_id
-   FROM (((public.cards cards
+    cards.cover_image_id,
+    (l.is_archived)::integer AS list_is_archived
+   FROM (((cards cards
      LEFT JOIN public.users u ON ((u.id = cards.user_id)))
      LEFT JOIN public.boards b ON ((b.id = cards.board_id)))
      LEFT JOIN public.lists l ON ((l.id = cards.list_id)));
