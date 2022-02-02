@@ -1,6 +1,6 @@
 ---
 title: Confirming the registered users in the admin panel of Restyaboard
-description: Confirming the registered users in the admin panel of Restyaboard
+description: This document contains information about how to manually confirm the registered user in the admin panel in Restyaboard site.
 ---
 
 # Manually confirming the registered users in the admin panel of Restyaboard

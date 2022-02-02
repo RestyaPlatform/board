@@ -1,5 +1,5 @@
 ---
-description: Gantt View Plugin Installation
+description: Gantt View Plugin Installation, This document contains information about instruction on Gantt View Plugin Installations.
 ---
 
 # Gantt View Plugin Installation

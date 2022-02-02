@@ -1,5 +1,5 @@
 ---
-description: Installation in windows using XAMPP
+description: Manual Installation in windows using XAMPP, this document is a step-by-step guide that illustrates how to setup Restyaboard in windows using XAMPP.
 ---
 
 # Manual Installation in windows using XAMPP

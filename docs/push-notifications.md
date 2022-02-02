@@ -1,5 +1,5 @@
 ---
-description: Restyaboard Push Notifications
+description: For the Restyaboard mobile app, you can enable and disable the push notifications on the user’s profile settings page.
 ---
 
 # Push Notifications
