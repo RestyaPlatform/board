@@ -12,7 +12,7 @@ Restyaboard is more like an electronic sticky note for organizing tasks and todo
 
 Today, several universities, automobile companies, government organizations, etc from across Europe take advantage of Restyaboard.
 
-Restyaboard is now available as [1-Click App running in Vultr Marketplace\*](https://restya.com/board/vultr?v=v1.7&s=ubuntu "1-Click App running in Vultr Marketplace*")
+Restyaboard is now available as [1-Click App running in Vultr Marketplace\*](https://restya.com/board/vultr?v=v1.7.1&s=ubuntu "1-Click App running in Vultr Marketplace*")
 
 This document is a step-by-step guide that illustrates how to setup Restyaboard for work with Vultr.
 
@@ -29,10 +29,10 @@ Installation instructions
 
 **Step 1: Creating Restyaboard VPS**
 
-1.  If you’re new to Vultr, you can [register a new account](https://restya.com/board/vultr?v=v1.7&s=new-vultr-customer) to get a $100.
+1.  If you’re new to Vultr, you can [register a new account](https://restya.com/board/vultr?v=v1.7.1&s=new-vultr-customer) to get a $100.
     
     ![Creating Restyaboard VPS](install-restyaboard-vultr-configure.png)
-2.  If you are an existing Vultr user – create [Restyaboard VPS with Ubuntu](https://restya.com/board/vultr?v=v1.7&s=ubuntu). Or open Vultr Marketplace and search for Restyaboard (in the “Business” category). 
+2.  If you are an existing Vultr user – create [Restyaboard VPS with Ubuntu](https://restya.com/board/vultr?v=v1.7.1&s=ubuntu). Or open Vultr Marketplace and search for Restyaboard (in the “Business” category). 
     
     ![Creating Restyaboard VPS](install-restyaboard-vultr-create.png) 
 

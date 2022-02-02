@@ -1,5 +1,5 @@
 ---
-description: LabelStyle Plugin Installation
+description: LabelStyle Plugin Installation, this document contains information about how to install the LabelStyle plugin in the Restyaboard.
 ---
 
 # LabelStyle Plugin Installation

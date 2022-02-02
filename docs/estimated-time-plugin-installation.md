@@ -1,5 +1,5 @@
 ---
-description: Estimated Time Tracking Plugin Installation
+description: This document contains information about how to install Estimated Time Tracking Plugin from admin panel.
 ---
 
 # Estimated Time Tracking Plugin Installation

@@ -1,5 +1,5 @@
 ---
-description: SEO Checklist Plugin Installation
+description: SEO Checklist Plugin Installation, This document contains information about instruction on SEO Checklist Plugin Installations.
 ---
 
 # SEO Checklist Plugin Installation

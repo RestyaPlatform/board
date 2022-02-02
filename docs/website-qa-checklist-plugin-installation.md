@@ -1,5 +1,5 @@
 ---
-description: Website QA Checklist Plugin Installation
+description: Website QA Checklist Plugin Installation, this document contains information about how to install the Website QA Checklist plugin.
 ---
 
 # Website QA Checklist Plugin Installation
