@@ -374,8 +374,8 @@
         					then
 								echo "Note: For the latest version of PHP, we're going to download https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm and https://rpms.remirepo.net/enterprise/remi-release-8.rpm."
 								echo "Installing PHP..."
-								dnf -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
-								dnf -y install https://rpms.remirepo.net/enterprise/remi-release-8.rpm
+								dnf -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-${OS_VERSION}.noarch.rpm
+								dnf -y install https://rpms.remirepo.net/enterprise/remi-release-${OS_VERSION}.rpm
 								dnf module enable php:remi-7.4
 								dnf -y install php php-cli php-common
 							else
