@@ -1,5 +1,5 @@
 ---
-description: SAML / Shibboleth setup
+description: SAML SSO operates by passing the identity of the user from one location (the identity provider) to another (the service provider).
 ---
 
 # SAML / Shibboleth

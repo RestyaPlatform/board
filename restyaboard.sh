@@ -4,7 +4,7 @@
 #
 # Usage: ./restyaboard.sh
 #
-# Copyright (c) 2014-2019 Restya.
+# Copyright (c) 2014-2022 Restya.
 # Dual License (OSL 3.0 & Commercial License)
 {
 	main() {
@@ -196,6 +196,12 @@
 								if [ -f "/etc/nginx/sites-available/default" ]; then
 									rm -rf /etc/nginx/sites-available/default
 								fi
+								UFW_ENABLED=$(ufw status | grep 'active' | wc -l) 
+								if [ ${UFW_ENABLED} -eq 1 ]
+								then
+									ufw allow 'Nginx HTTP'
+									ufw allow 'Nginx HTTPS'
+								fi
 								service nginx start
 							esac
 						fi
@@ -227,6 +233,12 @@
 							if [ -f "/etc/nginx/sites-available/default" ]; then
 								rm -rf /etc/nginx/sites-available/default
 							fi
+							UFW_ENABLED=$(ufw status | grep 'active' | wc -l) 
+							if [ ${UFW_ENABLED} -eq 1 ]
+							then
+								ufw allow 'Nginx HTTP'
+								ufw allow 'Nginx HTTPS'
+							fi
 							service nginx start
 						esac
 					fi
@@ -254,8 +266,13 @@
                             case "${answer}" in
                                 [Yy])
                                 echo "Installing nginx..."
-                                rpm -Uvh "http://nginx.org/packages/centos/${OS_VERSION}/noarch/RPMS/nginx-release-centos-${OS_VERSION}-0.el${OS_VERSION}.ngx.noarch.rpm"
-                                yum install -y zip cronie nginx
+                                if ([ "$OS_REQUIREMENT" = "CentOS" ] && [ "$OS_VERSION" -ge "8" ])
+								then
+									dnf -y install nginx
+								else
+									rpm -Uvh "http://nginx.org/packages/centos/${OS_VERSION}/noarch/RPMS/nginx-release-centos-${OS_VERSION}-0.el${OS_VERSION}.ngx.noarch.rpm"
+									yum install -y zip cronie nginx
+								fi
                                 error_code=$?
                                 if [ ${error_code} != 0 ]
                                 then
@@ -271,6 +288,13 @@
                                 if [ -f "/etc/nginx/sites-available/default.conf" ]; then
                                     rm -rf /etc/nginx/sites-available/default.conf
                                 fi
+								FIREWALL_ENABLED=$(firewall-cmd --state | grep 'running' | wc -l)
+								if [ ${FIREWALL_ENABLED} -eq 1 ]
+								then
+									firewall-cmd --permanent --zone=public --add-service=http
+									firewall-cmd --permanent --zone=public --add-service=https
+									firewall-cmd --reload
+								fi
                                 service nginx start
                                 chkconfig --levels 35 nginx on
                             esac
@@ -287,8 +311,13 @@
 						case "${answer}" in
 							[Yy])
 							echo "Installing nginx..."
-							rpm -Uvh "http://nginx.org/packages/centos/${OS_VERSION}/noarch/RPMS/nginx-release-centos-${OS_VERSION}-0.el${OS_VERSION}.ngx.noarch.rpm"
-							yum install -y zip cronie nginx
+							if ([ "$OS_REQUIREMENT" = "CentOS" ] && [ "$OS_VERSION" -ge "8" ])
+							then
+								dnf -y install nginx
+							else
+								rpm -Uvh "http://nginx.org/packages/centos/${OS_VERSION}/noarch/RPMS/nginx-release-centos-${OS_VERSION}-0.el${OS_VERSION}.ngx.noarch.rpm"
+								yum install -y zip cronie nginx
+							fi
 							error_code=$?
 							if [ ${error_code} != 0 ]
 							then
@@ -303,6 +332,13 @@
 							fi
 							if [ -f "/etc/nginx/sites-available/default.conf" ]; then
 								rm -rf /etc/nginx/sites-available/default.conf
+							fi
+							FIREWALL_ENABLED=$(firewall-cmd --state | grep 'running' | wc -l)
+							if [ ${FIREWALL_ENABLED} -eq 1 ]
+							then
+								firewall-cmd --permanent --zone=public --add-service=http
+								firewall-cmd --permanent --zone=public --add-service=https
+								firewall-cmd --reload
 							fi
 							service nginx start
 							chkconfig --levels 35 nginx on
@@ -334,12 +370,12 @@
 					else 
 						if ([ "$pkg_name" = "yum" ])
 						then
-							if ([ "$OS_REQUIREMENT" = "CentOS" ] && [ "$OS_VERSION" = "8" ])
+							if ([ "$OS_REQUIREMENT" = "CentOS" ] && [ "$OS_VERSION" -ge "8" ])
         					then
 								echo "Note: For the latest version of PHP, we're going to download https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm and https://rpms.remirepo.net/enterprise/remi-release-8.rpm."
 								echo "Installing PHP..."
-								dnf -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
-								dnf -y install https://rpms.remirepo.net/enterprise/remi-release-8.rpm
+								dnf -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-${OS_VERSION}.noarch.rpm
+								dnf -y install https://rpms.remirepo.net/enterprise/remi-release-${OS_VERSION}.rpm
 								dnf module enable php:remi-7.4
 								dnf -y install php php-cli php-common
 							else
@@ -373,7 +409,7 @@
 			else 
 				if ([ "$pkg_name" = "yum" ])
 				then
-					if ([ "$OS_REQUIREMENT" = "CentOS" ] && [ "$OS_VERSION" = "8" ])
+					if ([ "$OS_REQUIREMENT" = "CentOS" ] && [ "$OS_VERSION" -ge "8" ])
         			then
 						dnf -y install php-fpm php-devel php-opcache
 						dnf -y install php-json
@@ -412,7 +448,7 @@
 				else 
 					if ([ "$pkg_name" = "yum" ])
 					then
-						if ([ "$OS_REQUIREMENT" = "CentOS" ] && [ "$OS_VERSION" = "8" ])
+						if ([ "$OS_REQUIREMENT" = "CentOS" ] && [ "$OS_VERSION" -ge "8" ])
 						then
 							dnf -y install php-curl
 						else
@@ -445,7 +481,7 @@
 				else 
 					if ([ "$pkg_name" = "yum" ])
 					then
-						if ([ "$OS_REQUIREMENT" = "CentOS" ] && [ "$OS_VERSION" = "8" ])
+						if ([ "$OS_REQUIREMENT" = "CentOS" ] && [ "$OS_VERSION" -ge "8" ])
 						then
 							dnf -y install php-pgsql
 						else
@@ -477,7 +513,7 @@
 				else 
 					if ([ "$pkg_name" = "yum" ])
 					then
-						if ([ "$OS_REQUIREMENT" = "CentOS" ] && [ "$OS_VERSION" = "8" ])
+						if ([ "$OS_REQUIREMENT" = "CentOS" ] && [ "$OS_VERSION" -ge "8" ])
 						then
 							dnf -y install php-mbstring
 						else
@@ -509,7 +545,7 @@
 				else 
 					if ([ "$pkg_name" = "yum" ])
 					then
-						if ([ "$OS_REQUIREMENT" = "CentOS" ] && [ "$OS_VERSION" = "8" ])
+						if ([ "$OS_REQUIREMENT" = "CentOS" ] && [ "$OS_VERSION" -ge "8" ])
 						then
 							dnf -y install php-ldap
 						else
@@ -556,7 +592,7 @@
 					if ([ "$pkg_name" = "yum" ])
 					then
 						yum install -y ImageM* netpbm gd gd-* libjpeg libexif gcc coreutils make
-						if ([ "$OS_REQUIREMENT" = "CentOS" ] && [ "$OS_VERSION" = "8" ])
+						if ([ "$OS_REQUIREMENT" = "CentOS" ] && [ "$OS_VERSION" -ge "8" ])
 						then
 							dnf -y install php-pear
 							dnf -y install php-gd
@@ -601,7 +637,7 @@
 				else
 					if ([ "$pkg_name" = "yum" ])
 					then
-						if ([ "$OS_REQUIREMENT" = "CentOS" ] && [ "$OS_VERSION" = "8" ])
+						if ([ "$OS_REQUIREMENT" = "CentOS" ] && [ "$OS_VERSION" -ge "8" ])
 						then
 							dnf -y install php-imap
 						else
@@ -633,7 +669,7 @@
 				else
 					if ([ "$pkg_name" = "yum" ])
 					then
-						if ([ "$OS_REQUIREMENT" = "CentOS" ] && [ "$OS_VERSION" = "8" ])
+						if ([ "$OS_REQUIREMENT" = "CentOS" ] && [ "$OS_VERSION" -ge "8" ])
 						then
 							dnf -y install php-xml
 						else
@@ -711,6 +747,9 @@
 					if [[ ${PSQL_VERSION} =~ ^12\.[0-9]{1,}$ ]]; then
 						PSQL_VERSION=12
 					fi
+					if [[ ${PSQL_VERSION} =~ ^13\.[0-9]{1,}$ ]]; then
+						PSQL_VERSION=13
+					fi
 					if [[ 1 -eq "$(echo "${PSQL_VERSION} < 9.3" | bc)" ]]; then
 						set +x
 						echo "Restyaboard will not work in your PostgreSQL version (i.e. less than 9.3). So script going to update PostgreSQL version 9.6"
@@ -747,6 +786,9 @@
 				if [[ ${PSQL_VERSION} =~ ^12\.[0-9]{1,}$ ]]; then
 					PSQL_VERSION=12
 				fi
+				if [[ ${PSQL_VERSION} =~ ^13\.[0-9]{1,}$ ]]; then
+					PSQL_VERSION=13
+				fi
 				sed -e 's/peer/trust/g' -e 's/ident/trust/g' < /etc/postgresql/${PSQL_VERSION}/main/pg_hba.conf > /etc/postgresql/${PSQL_VERSION}/main/pg_hba.conf.1
 				cd /etc/postgresql/${PSQL_VERSION}/main || exit
 				mv pg_hba.conf pg_hba.conf_old
@@ -767,13 +809,15 @@
 							if [[ $OS_REQUIREMENT = "Fedora" ]]; then
 								dnf install -y "https://download.postgresql.org/pub/repos/yum/reporpms/F-${OS_VERSION}-x86_64/pgdg-fedora-repo-latest.noarch.rpm"
 							else
-								if ([ "$OS_REQUIREMENT" = "CentOS" ] && [ "$OS_VERSION" != "8" ])
+								if ([ "$OS_REQUIREMENT" = "CentOS" ] && [ "$OS_VERSION" -ge "8" ])
 								then
+									echo "...."
+								else
 									yum install -y "https://download.postgresql.org/pub/repos/yum/reporpms/EL-${OS_VERSION}-x86_64/pgdg-redhat-repo-latest.noarch.rpm"
 								fi
 							fi
 						fi
-						if ([ "$OS_REQUIREMENT" = "CentOS" ] && [ "$OS_VERSION" = "8" ])
+						if ([ "$OS_REQUIREMENT" = "CentOS" ] && [ "$OS_VERSION" -ge "8" ])
 						then
 							dnf module enable postgresql:13
 							dnf -y install postgresql-server postgresql-contrib postgresql-libs
@@ -802,7 +846,7 @@
 								fi
 							fi
 						fi
-						if ([ "$OS_REQUIREMENT" = "CentOS" ] && [ "$OS_VERSION" = "8" ])
+						if ([ "$OS_REQUIREMENT" = "CentOS" ] && [ "$OS_VERSION" -ge "8" ])
 						then
 							dnf module enable postgresql:13
 							dnf -y install postgresql-server postgresql-contrib postgresql-libs
@@ -822,13 +866,13 @@
 					PSQL_VERSION=13
 				fi
 				PSQL_FOLDER=$(echo ${PSQL_VERSION} | sed 's/\.//')
-				if ([ "$OS_REQUIREMENT" = "CentOS" ] && [ "$OS_VERSION" = "8" ])
+				if ([ "$OS_REQUIREMENT" = "CentOS" ] && [ "$OS_VERSION" -ge "8" ])
 				then
 					postgresql-setup --initdb
 				else
 					"/usr/pgsql-${PSQL_VERSION}/bin/postgresql-${PSQL_VERSION}-setup" initdb
 				fi
-				if ([ "$OS_REQUIREMENT" = "CentOS" ] && [ "$OS_VERSION" = "8" ])
+				if ([ "$OS_REQUIREMENT" = "CentOS" ] && [ "$OS_VERSION" -ge "8" ])
 				then
 					systemctl enable postgresql
 					systemctl start postgresql
@@ -841,7 +885,7 @@
 						chkconfig --levels 35 "postgresql-${PSQL_VERSION}" on
 					fi
 				fi
-				if ([ "$OS_REQUIREMENT" = "CentOS" ] && [ "$OS_VERSION" = "8" ])
+				if ([ "$OS_REQUIREMENT" = "CentOS" ] && [ "$OS_VERSION" -ge "8" ])
 				then
 					sed -e 's/peer/trust/g' -e 's/ident/trust/g' < "/var/lib/pgsql/data/pg_hba.conf" > "/var/lib/pgsql/data/pg_hba.conf.1"
 					cd "/var/lib/pgsql/data" || exit
@@ -851,7 +895,7 @@
 				fi
 				mv pg_hba.conf pg_hba.conf_old
 				mv pg_hba.conf.1 pg_hba.conf
-				if ([ "$OS_REQUIREMENT" = "CentOS" ] && [ "$OS_VERSION" = "8" ])
+				if ([ "$OS_REQUIREMENT" = "CentOS" ] && [ "$OS_VERSION" -ge "8" ])
 				then
 					systemctl restart postgresql
 				else
@@ -1108,7 +1152,7 @@
 					echo "PostgreSQL user creation failed with error code ${error_code} (PostgreSQL user creation failed with error code 35)"
 					return 35
 				fi
-				psql -U postgres -c "CREATE DATABASE ${POSTGRES_DBNAME} OWNER ${POSTGRES_DBUSER} ENCODING 'UTF8' TEMPLATE template0"
+				psql -U postgres -c "CREATE DATABASE ${POSTGRES_DBNAME} OWNER ${POSTGRES_DBUSER} ENCODING 'UTF8' LC_CTYPE 'en_US.UTF-8' LC_COLLATE 'en_US.UTF-8' TEMPLATE template0"
 				error_code=$?
 				if [ ${error_code} != 0 ]
 				then
@@ -1151,7 +1195,7 @@
 					echo "PostgreSQL user creation failed with error code ${error_code} (PostgreSQL user creation failed with error code 41)"
 					return 41
 				fi			
-				psql -U postgres -c "CREATE DATABASE ${POSTGRES_DBNAME} OWNER ${POSTGRES_DBUSER} ENCODING 'UTF8' TEMPLATE template0"
+				psql -U postgres -c "CREATE DATABASE ${POSTGRES_DBNAME} OWNER ${POSTGRES_DBUSER} ENCODING 'UTF8' LC_CTYPE 'en_US.UTF-8' LC_COLLATE 'en_US.UTF-8' TEMPLATE template0"
 				error_code=$?
 				if [ ${error_code} != 0 ]
 				then
@@ -1192,7 +1236,7 @@
 				echo "Reset php-fpm (use unix socket mode)..."
 				if [ -f "/run/php/php7.4-fpm.sock" ]; then
 					sed -i "s/listen = 127.0.0.1:9000/listen = \/run\/php\/php7.4-fpm.sock/g" /etc/php-fpm.d/www.conf
-				elif [ -f "/run/php-fpm/www.sock" ]; then
+				elif [ -e "/run/php-fpm/www.sock" ]; then
 					sed -i "s/listen = 127.0.0.1:9000/listen = \/run\/php-fpm\/www.sock/g" /etc/php-fpm.d/www.conf
 					sed -i "s/unix:\/run\/php\/php7.4-fpm.sock/unix:\/run\/php-fpm\/www.sock/g" /etc/nginx/conf.d/restyaboard.conf
 				else
@@ -1286,7 +1330,7 @@
 						service php7.4-fpm restart
 						certbot --nginx
 					else
-						if ([ "$OS_REQUIREMENT" = "CentOS" ] && [ "$OS_VERSION" = "8" ])
+						if ([ "$OS_REQUIREMENT" = "CentOS" ] && [ "$OS_VERSION" -ge "8" ])
 						then
 							dnf -y install epel-release
 							dnf -y install certbot python3-certbot-nginx
@@ -1676,6 +1720,10 @@
 				then
 					upgrade+=("upgrade-0.6.9-1.7")
 				fi
+				if [[ $version < "v1.7.1" ]];
+				then
+					upgrade+=("upgrade-1.7-1.7.1")
+				fi
 				# use for loop to read all values and indexes
 				for i in "${upgrade[@]}"
 				do
@@ -1926,7 +1974,7 @@
 				ssl_connectivity
 			fi
 		fi
-		if ([ "$OS_REQUIREMENT" = "CentOS" ] && [ "$OS_VERSION" = "8" ])
+		if ([ "$OS_REQUIREMENT" = "CentOS" ] && [ "$OS_VERSION" -ge "8" ])
         then
 			semanage permissive -a httpd_t
 		fi

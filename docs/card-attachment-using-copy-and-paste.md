@@ -1,5 +1,5 @@
 ---
-description: Attaching Image in Card Using Copy and Paste in Restyaboard
+description: This document contains information about Attaching Image in Card Using Copy and Paste in Restyaboard.
 ---
 
 # Attaching Image in Card Using Copy and Paste in Restyaboard

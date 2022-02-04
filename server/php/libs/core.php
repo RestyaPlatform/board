@@ -8,7 +8,7 @@
  * @package    Restyaboard
  * @subpackage Core
  * @author     Restya <info@restya.com>
- * @copyright  2014-2021 Restya
+ * @copyright  2014-2022 Restya
  * @license    http://restya.com/ Restya Licence
  * @link       http://restya.com/
  */
@@ -610,7 +610,7 @@ function sendMail($template, $replace_content, $to, $reply_to_mail = '')
         }
         $headers.= "MIME-Version: 1.0" . PHP_EOL;
         $headers.= "Content-Type: text/html; charset=UTF-8" . PHP_EOL;
-        $headers.= "X-Mailer: Restyaboard (1.7; +http://restya.com/board)" . PHP_EOL;
+        $headers.= "X-Mailer: Restyaboard (1.7.1; +http://restya.com/board)" . PHP_EOL;
         $headers.= "X-Auto-Response-Suppress: All" . PHP_EOL;
         if (is_plugin_enabled('r_sparkpost')) {
             require_once PLUGIN_PATH . DS . 'SparkPost' . DS . 'functions.php';

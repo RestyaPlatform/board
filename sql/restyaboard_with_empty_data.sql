@@ -2372,7 +2372,8 @@ CREATE VIEW public.cards_listing AS
           ORDER BY activities.id DESC
          LIMIT 1), 'YYYY-MM-DD"T"HH24:MI:SS'::text) AS list_moved_date,
     u.full_name AS card_created_user,
-    cards.cover_image_id
+    cards.cover_image_id,
+    (l.is_archived)::integer AS list_is_archived
    FROM (((public.cards cards
      LEFT JOIN public.users u ON ((u.id = cards.user_id)))
      LEFT JOIN public.boards b ON ((b.id = cards.board_id)))
@@ -4250,6 +4251,23 @@ COPY public.acl_board_links_boards_user_roles (id, created, modified, acl_board_
 233	2021-08-02 11:08:40.528229	2021-08-02 11:08:40.528229	63	4
 234	2021-08-02 11:08:42.552606	2021-08-02 11:08:42.552606	67	4
 235	2021-08-02 11:08:43.173454	2021-08-02 11:08:43.173454	66	4
+236	2021-08-02 15:49:46.42371	2021-08-02 15:49:46.42371	68	4
+237	2021-08-02 15:49:47.335758	2021-08-02 15:49:47.335758	69	4
+238	2021-08-02 15:49:48.154245	2021-08-02 15:49:48.154245	70	4
+239	2021-08-02 15:49:48.945261	2021-08-02 15:49:48.945261	71	4
+240	2021-08-02 15:49:50.744855	2021-08-02 15:49:50.744855	72	4
+241	2021-08-02 15:49:51.102921	2021-08-02 15:49:51.102921	73	4
+243	2021-08-02 15:49:52.653707	2021-08-02 15:49:52.653707	75	4
+244	2021-08-02 15:49:54.300197	2021-08-02 15:49:54.300197	76	4
+245	2021-08-02 15:49:55.086943	2021-08-02 15:49:55.086943	77	4
+247	2021-08-02 15:50:03.966638	2021-08-02 15:50:03.966638	79	4
+248	2021-08-02 15:50:04.411499	2021-08-02 15:50:04.411499	80	4
+249	2021-08-02 15:50:04.416496	2021-08-02 15:50:04.416496	81	4
+250	2021-08-02 15:50:05.515065	2021-08-02 15:50:05.515065	82	4
+251	2021-08-02 15:50:05.520125	2021-08-02 15:50:05.520125	83	4
+252	2021-08-02 15:50:05.526754	2021-08-02 15:50:05.526754	84	4
+253	2021-08-02 15:50:06.490611	2021-08-02 15:50:06.490611	85	4
+254	2021-08-02 15:50:06.495257	2021-08-02 15:50:06.495257	86	4
 \.
 
 
@@ -4257,7 +4275,7 @@ COPY public.acl_board_links_boards_user_roles (id, created, modified, acl_board_
 -- Name: acl_board_links_boards_user_roles_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.acl_board_links_boards_user_roles_seq', 235, true);
+SELECT pg_catalog.setval('public.acl_board_links_boards_user_roles_seq', 256, true);
 
 
 --
@@ -4568,7 +4586,7 @@ COPY public.activities (id, created, modified, board_id, list_id, card_id, user_
 -- Name: activities_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.activities_id_seq', 2, true);
+SELECT pg_catalog.setval('public.activities_id_seq', 35, true);
 
 
 --
@@ -5110,7 +5128,7 @@ COPY public.ips (id, created, modified, ip, host, user_agent, "order", city_id, 
 -- Name: ips_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.ips_id_seq', 2, true);
+SELECT pg_catalog.setval('public.ips_id_seq', 3, true);
 
 
 --
@@ -6116,7 +6134,7 @@ COPY public.user_logins (id, created, modified, user_id, ip_id, user_agent, is_l
 -- Name: user_logins_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.user_logins_id_seq', 4, true);
+SELECT pg_catalog.setval('public.user_logins_id_seq', 5, true);
 
 
 --
@@ -6139,7 +6157,7 @@ SELECT pg_catalog.setval('public.user_push_tokens_id_seq', 1, false);
 --
 
 COPY public.users (id, created, modified, role_id, username, email, password, full_name, initials, about_me, profile_picture_path, notification_frequency, is_allow_desktop_notification, is_active, is_email_confirmed, created_organization_count, created_board_count, joined_organization_count, list_count, joined_card_count, created_card_count, joined_board_count, checklist_count, checklist_item_completed_count, checklist_item_count, activity_count, card_voter_count, last_activity_id, last_login_date, last_login_ip_id, ip_id, login_type_id, is_productivity_beats, user_login_count, is_ldap, is_send_newsletter, last_email_notified_activity_id, owner_board_count, member_board_count, owner_organization_count, member_organization_count, language, timezone, default_desktop_notification, is_list_notifications_enabled, is_card_notifications_enabled, is_card_members_notifications_enabled, is_card_labels_notifications_enabled, is_card_checklists_notifications_enabled, is_card_attachments_notifications_enabled, is_intro_video_skipped, is_invite_from_board, is_two_factor_authentication_enabled, two_factor_authentication_hash, persist_card_divider_position, is_saml, next_community_edition_popup_on, is_show_community_edition_popup) FROM stdin;
-1	2014-06-03 12:40:41.189	2015-04-02 16:26:03.939	1	admin	board@restya.com	$2y$12$QiJW6TjPKzDZPAuoWEex9OjPHQF33YzfkdC09FhasgPO.MjZ5btKe	New Admin	PA	Added About Me	client/img/default-admin-user.png	\N	f	t	t	0	0	0	0	0	0	0	0	0	0	0	0	2	2021-08-02 11:06:17.586343	1	1	2	t	0	f	2	0	0	0	0	0	\N	Europe/Andorra	f	f	f	f	f	f	f	f	f	f	\N	\N	f	2021-09-01	f
+1	2014-06-03 12:40:41.189	2015-04-02 16:26:03.939	1	admin	board@restya.com	$2y$12$QiJW6TjPKzDZPAuoWEex9OjPHQF33YzfkdC09FhasgPO.MjZ5btKe	New Admin	PA	Added About Me	client/img/default-admin-user.png	\N	f	t	t	0	0	0	0	0	0	0	0	0	0	0	0	2	2021-08-02 15:49:25.451288	1	1	2	t	0	f	2	0	0	0	0	0	\N	Europe/Andorra	f	f	f	f	f	f	f	f	f	f	\N	\N	f	2021-09-01	f
 \.
 
 

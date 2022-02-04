@@ -1,5 +1,5 @@
 ---
-description: Configuration of Restyaboard on an NGINX Reverse proxy
+description: Restyaboard Configuration, here you can check Configuration of Restyaboard on an NGINX Reverse proxy
 ---
 
 # Configuration of Restyaboard on an NGINX Reverse proxy

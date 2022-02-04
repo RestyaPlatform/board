@@ -1,5 +1,5 @@
 ---
-description: Restyaboard installation through Docker
+description: This document is a step-by-step guide that illustrates how to install the Restyaboard using Docker Compose.
 ---
 
 # Install Restyaboard through Docker

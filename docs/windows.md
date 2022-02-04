@@ -1,5 +1,5 @@
 ---
-description: Installation in windows using XAMPP
+description: Manual Installation in windows using XAMPP, this document is a step-by-step guide that illustrates how to setup Restyaboard in windows using XAMPP.
 ---
 
 # Manual Installation in windows using XAMPP
@@ -64,7 +64,7 @@ Please skip the steps below, if you have already installed XAMPP server, Postgre
     
 ## Manual Installation of Restyaboard in XAMPP
 
-1.  Download script from `https://github.com/RestyaPlatform/board/releases`, and choose the latest version. e.g., `https://github.com/RestyaPlatform/board/releases/download/v1.7/board-v1.7.zip`
+1.  Download script from `https://github.com/RestyaPlatform/board/releases`, and choose the latest version. e.g., `https://github.com/RestyaPlatform/board/releases/download/v1.7.1/board-v1.7.1.zip`
 2.  Extract the zip into your apache server root folder. e.g., `C:\xampp\htdocs\`
 3.  Create database using the command
     
