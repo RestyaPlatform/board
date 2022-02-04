@@ -576,13 +576,13 @@ function executeQuery($qry, $arr = array())
  * Common method to send mail
  *
  * @param string $template        Email template name
- * @param array  $replace_content Email content replace array
+ * @param array  $replaceContent Email content replace array
  * @param string $to              To email address
- * @param string $reply_to_mail   Reply to email address
+ * @param string $replyToMail   Reply to email address
  *
  * @return void
  */
-function sendMail($template, $replace_content, $to, $reply_to_mail = '')
+function sendMail($template, $replaceContent, $to, $replyToMail = '')
 {
     global $r_debug, $db_lnk, $_server_domain_url;
     if (file_exists(SITE_URL_FOR_SHELL)) {
@@ -597,7 +597,7 @@ function sendMail($template, $replace_content, $to, $reply_to_mail = '')
     $qry_val_arr = array(
         $template
     );
-    $emailFindReplace = array_merge($default_content, $replace_content);
+    $emailFindReplace = array_merge($default_content, $replaceContent);
     $templates = executeQuery('SELECT * FROM email_templates WHERE name = $1', $qry_val_arr);
     if ($templates) {
         $message = strtr($templates['email_text_content'], $emailFindReplace);
@@ -605,8 +605,8 @@ function sendMail($template, $replace_content, $to, $reply_to_mail = '')
         $subject = strtr($templates['subject'], $emailFindReplace);
         $from_email = strtr($templates['from_email'], $emailFindReplace);
         $headers = 'From:' . $from_email . PHP_EOL;
-        if (!empty($reply_to_mail)) {
-            $headers.= 'Reply-To:' . $reply_to_mail . PHP_EOL;
+        if (!empty($replyToMail)) {
+            $headers.= 'Reply-To:' . $replyToMail . PHP_EOL;
         }
         $headers.= "MIME-Version: 1.0" . PHP_EOL;
         $headers.= "Content-Type: text/html; charset=UTF-8" . PHP_EOL;
@@ -4390,7 +4390,7 @@ function sendMailNotification($notification_type)
         $mail_content = $mentioned_mail_content = $board_mentioned_mail_content = $card_mentioned_mail_content = '';
         $activities_result = '';
         $notification_count = 0;
-        $reply_to_mail = '';
+        $replyToMail = '';
         $reply_to = '';
         if (!empty($board_ids)) {
             $qry_arr = array(
@@ -4474,9 +4474,9 @@ function sendMailNotification($notification_type)
                     $card = pg_fetch_assoc($card);
                     $mail_to = 'mailto:' . $board_email . '?subject=RE:' . $card['name'];
                     if (empty($tmp_card_id) || $tmp_card_id == $activity['card_id']) {
-                        $reply_to_mail = $board_email;
+                        $replyToMail = $board_email;
                     } else {
-                        $reply_to_mail = '';
+                        $replyToMail = '';
                     }
                     $tmp_card_id = $activity['card_id'];
                     $reply_to = '<div style="margin:5px 0px 0px 43px;"><a href="' . $mail_to . '" target="_blank">Reply via email</a></div>' . "\n";
@@ -4645,9 +4645,9 @@ function sendMailNotification($notification_type)
                     $card = pg_fetch_assoc($card);
                     $mail_to = 'mailto:' . $board_email . '?subject=RE:' . $card['name'];
                     if (empty($tmp_card_id) || $tmp_card_id == $activity['card_id']) {
-                        $reply_to_mail = $board_email;
+                        $replyToMail = $board_email;
                     } else {
-                        $reply_to_mail = '';
+                        $replyToMail = '';
                     }
                     $tmp_card_id = $activity['card_id'];
                     $reply_to = '<div style="margin:5px 0px 0px 43px;"><a href="' . $mail_to . '" target="_blank">Reply via email</a></div>' . "\n";
@@ -4816,9 +4816,9 @@ function sendMailNotification($notification_type)
                     $card = pg_fetch_assoc($card);
                     $mail_to = 'mailto:' . $board_email . '?subject=RE:' . $card['name'];
                     if (empty($tmp_card_id) || $tmp_card_id == $activity['card_id']) {
-                        $reply_to_mail = $board_email;
+                        $replyToMail = $board_email;
                     } else {
-                        $reply_to_mail = '';
+                        $replyToMail = '';
                     }
                     $tmp_card_id = $activity['card_id'];
                     $reply_to = '<div style="margin:5px 0px 0px 43px;"><a href="' . $mail_to . '" target="_blank">Reply via email</a></div>' . "\n";
@@ -4943,7 +4943,7 @@ function sendMailNotification($notification_type)
             $emailFindReplace['##NOTIFICATION_COUNT##'] = $notification_count;
             $emailFindReplace['##SINCE##'] = strftime("%I:%M %p ( %B %e, %Y)");
             $emailFindReplace['##USER_ID##'] = $user['id'];
-            sendMail('email_notification', $emailFindReplace, $user['email'], $reply_to_mail);
+            sendMail('email_notification', $emailFindReplace, $user['email'], $replyToMail);
         }
     }
 }

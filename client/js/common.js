@@ -255,9 +255,6 @@ function parse_date(dateTime, logged_user, classname, isAbbrReturn) {
     }
 }
 
-
-
-
 function stripScripts(s) {
     var div = document.createElement('div');
     div.innerHTML = s;

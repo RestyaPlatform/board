@@ -754,10 +754,10 @@ App.CardView = Backbone.View.extend({
     changeCardPosition: function(e) {
         e.preventDefault();
         e.stopPropagation();
-        _(function() {
-            $(e.target).parents('.dropdown').addClass('open');
-        }).defer();
         var target = $(e.currentTarget);
+        _(function() {
+            $(target).parents('.dropdown').addClass('open');
+        }).defer();
         var posoition = target.val();
         this.$el.find('.js-card-add-position').val(posoition);
         return false;
