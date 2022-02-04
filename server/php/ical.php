@@ -65,19 +65,7 @@ if (!empty($_GET['board_id']) && !empty($_GET['user_id']) && !empty($_GET['hash'
                 $board_name = $row['name'];
                 $uid = preg_replace('#^https?://#', '', $_server_domain_url);
                 // Checcking unassigned cards for Restricted board user.
-                if (!empty($assigned_card_ids)) {
-                    if (in_array($row['id'], $assigned_card_ids)) {
-                        $event.= 'BEGIN:VEVENT' . "\r\n";
-                        $event.= 'UID:' . $row['id'] . "@" . $uid . "\r\n";
-                        $event.= 'DTSTART;TZID=' . $timezone . ':' . date('Ymd\THis', strtotime($row['due_date'])) . "\r\n";
-                        $event.= 'DTEND;TZID=' . $timezone . ':' . date('Ymd\THis', strtotime($row['due_date'])) . "\r\n";
-                        $event.= 'SUMMARY:' . $row['card_name'] . "\r\n";
-                        $event.= 'URL:' . $_server_domain_url . '/#/board/' . $_GET['board_id'] . "/card/" . $row['id'] . "\r\n";
-                        $event.= 'END:VEVENT' . "\r\n";
-                    }
-                } else if (!empty($is_restricted_board_user)) {
-                    $event = null;
-                } else if (empty($is_restricted_board_user)) {
+                if (empty($is_restricted_board_user) || (!empty($assigned_card_ids) && in_array($row['id'], $assigned_card_ids))) {
                     $event.= 'BEGIN:VEVENT' . "\r\n";
                     $event.= 'UID:' . $row['id'] . "@" . $uid . "\r\n";
                     $event.= 'DTSTART;TZID=' . $timezone . ':' . date('Ymd\THis', strtotime($row['due_date'])) . "\r\n";
@@ -85,6 +73,8 @@ if (!empty($_GET['board_id']) && !empty($_GET['user_id']) && !empty($_GET['hash'
                     $event.= 'SUMMARY:' . $row['card_name'] . "\r\n";
                     $event.= 'URL:' . $_server_domain_url . '/#/board/' . $_GET['board_id'] . "/card/" . $row['id'] . "\r\n";
                     $event.= 'END:VEVENT' . "\r\n";
+                } else if (!empty($is_restricted_board_user)) {
+                    $event = null;
                 }
             }
             $ical.= 'X-WR-CALNAME:' . $board_name . ' (via ' . SITE_NAME . ')' . "\r\n";
