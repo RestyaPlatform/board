@@ -4,11 +4,7 @@ $(window).resize(function() {
     var windowH = $(window).height();
     var notificationH = windowH - footerH;
     var boardH;
-    if (footerH) {
-        boardH = windowH - headerH - footerH - 14;
-    } else {
-        boardH = windowH - headerH - 50;
-    }
+    boardH = footerH ? (windowH - headerH - footerH - 14) : (boardH = windowH - headerH - 50);
     $(".board-list-view").css("height", (boardH + 'px'));
     if ($(".js-board-list") && (/Edge/.test(navigator.userAgent) || !!navigator.userAgent.match(/Trident.*rv\:11\./))) {
         $(".js-board-list").css("height", (boardH + 'px'));
@@ -32,6 +28,12 @@ $dc.ready(function() {
     $('body').on('click', function(e) {
         if (!$('.dropdown').is(e.target) && $('.dropdown').has(e.target).length === 0 && $('.open').has(e.target).length === 0) {
             $('.dropdown').removeClass('open');
+        }
+        if (!$('.js-open-dropdown .js-change-visibility').is(e.target) &&
+            $('.js-open-dropdown .js-change-visibility').has(e.target).length === 0 &&
+            $('.open').has(e.target).length === 0
+        ) {
+            $('.js-open-dropdown').removeClass('open');
         }
     });
     $dc.on('click', '.dropdown-menu:not(.modal-body .dropdown-menu)', function(e) {
@@ -92,13 +94,6 @@ $dc.ready(function() {
             }
         }
         return false;
-    }).on('click', 'body', function(e) {
-        if (!$('.js-open-dropdown .js-change-visibility').is(e.target) &&
-            $('.js-open-dropdown .js-change-visibility').has(e.target).length === 0 &&
-            $('.open').has(e.target).length === 0
-        ) {
-            $('.js-open-dropdown').removeClass('open');
-        }
     });
     if ((navigator.userAgent.toLowerCase().indexOf('android') > -1) && (navigator.userAgent.toLowerCase().indexOf('chrome') > -1)) {
         $('body').append('<div class="modal fade" id="add_home_modal" tabindex="-1" role="dialog" aria-hidden="false"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal"><span aria-hidden="true" id="js-cssilize-close">x</span><span class="sr-only">Close</span></button><div class="media list-group-item-heading"><div class="media-body"><h4 class="modal-title" id="exampleModalLabel">Install this webapp to your phone</h4></div></div></div><div class="modal-body import-block"><ul><li>Add Restyaboard to homescreen.</li><li>Tap <i class="icon-ellipsis-vertical"></i>to bring up your browser menu and select \'Add to homescreen\' to pin the Restyaboard web app.</li></ul></div></div></div></div>');

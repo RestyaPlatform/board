@@ -728,7 +728,6 @@ App.CardView = Backbone.View.extend({
         var target = $(e.currentTarget);
         var self = this;
         var list_id = target.val();
-        var board_id = $(e.target).parents('form.js-cardAddForm').find('.js-selected-board').val();
         var content_position = '';
         self.$el.find('.js-card-add-list').val(list_id);
         var list = this.model.list.collection.board.lists.findWhere({
@@ -738,7 +737,6 @@ App.CardView = Backbone.View.extend({
             list_id: list.attributes.id,
             is_archived: 0
         }).length;
-        var current_position = filtered_cards_count + 1;
         for (var i = 1; i <= filtered_cards_count; i++) {
             content_position += '<option value="' + i + '">' + i + '</option>';
         }
