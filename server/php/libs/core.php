@@ -577,12 +577,12 @@ function executeQuery($qry, $arr = array())
  *
  * @param string $template        Email template name
  * @param array  $replaceContent Email content replace array
- * @param string $to              To email address
+ * @param string $toMail              To email address
  * @param string $replyToMail   Reply to email address
  *
  * @return void
  */
-function sendMail($template, $replaceContent, $to, $replyToMail = '')
+function sendMail($template, $replaceContent, $toMail, $replyToMail = '')
 {
     global $r_debug, $db_lnk, $_server_domain_url;
     if (file_exists(SITE_URL_FOR_SHELL)) {
@@ -614,15 +614,15 @@ function sendMail($template, $replaceContent, $to, $replyToMail = '')
         $headers.= "X-Auto-Response-Suppress: All" . PHP_EOL;
         if (is_plugin_enabled('r_sparkpost')) {
             require_once PLUGIN_PATH . DS . 'SparkPost' . DS . 'functions.php';
-            $result = SparkPostMail($to, $subject, $message, $headers, DEFAULT_FROM_EMAIL_ADDRESS);
+            $result = SparkPostMail($toMail, $subject, $message, $headers, DEFAULT_FROM_EMAIL_ADDRESS);
         } else {
-            $result = mail($to, $subject, $message, $headers, '-f' . DEFAULT_FROM_EMAIL_ADDRESS);
+            $result = mail($toMail, $subject, $message, $headers, '-f' . DEFAULT_FROM_EMAIL_ADDRESS);
         }
         if (R_DEBUG) {
             if (!$result) {
-                $compose_string = 'F, ' . $from_email . ', ' . $to . ', ' . $subject;
+                $compose_string = 'F, ' . $from_email . ', ' . $toMail . ', ' . $subject;
             } else {
-                $compose_string = 'S, ' . $from_email . ', ' . $to . ', ' . $subject;
+                $compose_string = 'S, ' . $from_email . ', ' . $toMail . ', ' . $subject;
             }
             error_log($compose_string, 3, CACHE_PATH . DS . 'mail.log');
         }
@@ -4317,11 +4317,11 @@ function __l($text)
  *
  * @return mail
  */
-function sendMailNotification($notification_type)
+function sendMailNotification($notificationType)
 {
     global $r_debug, $db_lnk, $_server_domain_url;
     $qry_val_arr = array(
-        $notification_type
+        $notificationType
     );
     $card_activity_types = array(
         'edit_card_desc',
@@ -4402,6 +4402,7 @@ function sendMailNotification($notification_type)
             $i = 0;
             $tmp_card_id = '';
             while ($activity = pg_fetch_assoc($activities_result)) {
+                $replyToMail = '';
                 if (!empty($activity['profile_picture_path'])) {
                     $hash = md5(SECURITYSALT . 'User' . $activity['user_id'] . 'png' . 'small_thumb');
                     $profile_picture_path = $_server_domain_url . '/img/small_thumb/User/' . $activity['user_id'] . '.' . $hash . '.png';
@@ -4475,8 +4476,6 @@ function sendMailNotification($notification_type)
                     $mail_to = 'mailto:' . $board_email . '?subject=RE:' . $card['name'];
                     if (empty($tmp_card_id) || $tmp_card_id == $activity['card_id']) {
                         $replyToMail = $board_email;
-                    } else {
-                        $replyToMail = '';
                     }
                     $tmp_card_id = $activity['card_id'];
                     $reply_to = '<div style="margin:5px 0px 0px 43px;"><a href="' . $mail_to . '" target="_blank">Reply via email</a></div>' . "\n";
@@ -4573,6 +4572,7 @@ function sendMailNotification($notification_type)
             $i = 0;
             $tmp_card_id = '';
             while ($activity = pg_fetch_assoc($activities_result)) {
+                $replyToMail = '';
                 if (!empty($activity['profile_picture_path'])) {
                     $hash = md5(SECURITYSALT . 'User' . $activity['user_id'] . 'png' . 'small_thumb');
                     $profile_picture_path = $_server_domain_url . '/img/small_thumb/User/' . $activity['user_id'] . '.' . $hash . '.png';
@@ -4646,8 +4646,6 @@ function sendMailNotification($notification_type)
                     $mail_to = 'mailto:' . $board_email . '?subject=RE:' . $card['name'];
                     if (empty($tmp_card_id) || $tmp_card_id == $activity['card_id']) {
                         $replyToMail = $board_email;
-                    } else {
-                        $replyToMail = '';
                     }
                     $tmp_card_id = $activity['card_id'];
                     $reply_to = '<div style="margin:5px 0px 0px 43px;"><a href="' . $mail_to . '" target="_blank">Reply via email</a></div>' . "\n";
@@ -4744,6 +4742,7 @@ function sendMailNotification($notification_type)
             $i = 0;
             $tmp_card_id = '';
             while ($activity = pg_fetch_assoc($activities_result)) {
+                $replyToMail = '';
                 if (!empty($activity['profile_picture_path'])) {
                     $hash = md5(SECURITYSALT . 'User' . $activity['user_id'] . 'png' . 'small_thumb');
                     $profile_picture_path = $_server_domain_url . '/img/small_thumb/User/' . $activity['user_id'] . '.' . $hash . '.png';
@@ -4817,8 +4816,6 @@ function sendMailNotification($notification_type)
                     $mail_to = 'mailto:' . $board_email . '?subject=RE:' . $card['name'];
                     if (empty($tmp_card_id) || $tmp_card_id == $activity['card_id']) {
                         $replyToMail = $board_email;
-                    } else {
-                        $replyToMail = '';
                     }
                     $tmp_card_id = $activity['card_id'];
                     $reply_to = '<div style="margin:5px 0px 0px 43px;"><a href="' . $mail_to . '" target="_blank">Reply via email</a></div>' . "\n";
@@ -4938,11 +4935,13 @@ function sendMailNotification($notification_type)
             }
             $main_content.= $mail_content;
             pg_query_params($db_lnk, 'UPDATE users SET last_email_notified_activity_id = $1 WHERE id = $2', $qry_arr);
-            $emailFindReplace['##CONTENT##'] = $main_content;
-            $emailFindReplace['##NAME##'] = $user['full_name'];
-            $emailFindReplace['##NOTIFICATION_COUNT##'] = $notification_count;
-            $emailFindReplace['##SINCE##'] = strftime("%I:%M %p ( %B %e, %Y)");
-            $emailFindReplace['##USER_ID##'] = $user['id'];
+            $emailFindReplace = array(
+                '##CONTENT##' => $main_content,
+                '##NAME##' => $user['full_name'],
+                '##NOTIFICATION_COUNT##' => $notification_count,
+                '##SINCE##' => strftime("%I:%M %p ( %B %e, %Y)"),
+                '##USER_ID##' => $user['id'],
+            );
             sendMail('email_notification', $emailFindReplace, $user['email'], $replyToMail);
         }
     }

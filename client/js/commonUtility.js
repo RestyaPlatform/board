@@ -9,10 +9,7 @@ $dc.ready(function() {
         if (!$('.dropdown').is(e.target) && $('.dropdown').has(e.target).length === 0 && $('.open').has(e.target).length === 0) {
             $('.dropdown').removeClass('open');
         }
-        if (!$('.js-open-dropdown .js-change-visibility').is(e.target) &&
-            $('.js-open-dropdown .js-change-visibility').has(e.target).length === 0 &&
-            $('.open').has(e.target).length === 0
-        ) {
+        if ($('.js-open-dropdown .js-change-visibility').has(e.target).length === 0 && !$('.js-open-dropdown .js-change-visibility').is(e.target) && $('.open').has(e.target).length === 0 ) {
             $('.js-open-dropdown').removeClass('open');
         }
     });
