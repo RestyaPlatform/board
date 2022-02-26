@@ -420,7 +420,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 $i++;
             }
             $direction = 'DESC';
-            if (!empty($r_resource_filters['direction']) && isset($r_resource_filters['direction'])) {
+            if (!empty($r_resource_filters['direction']) && isset($r_resource_filters['direction']) && ($r_resource_filters['direction'] === 'ASC' || $r_resource_filters['direction'] === 'DESC')) {
                 $direction = $r_resource_filters['direction'];
             }
             $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM activities_listing al ' . $condition . ' ORDER BY id ' . $direction . ' LIMIT ' . PAGING_COUNT . ') as d';
@@ -501,7 +501,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             } else if (!empty($r_resource_filters['type']) && $r_resource_filters['type'] == 'all') {
                 $flag = 1;
                 $direction = 'DESC';
-                if (!empty($r_resource_filters['direction']) && isset($r_resource_filters['direction'])) {
+                if (!empty($r_resource_filters['direction']) && isset($r_resource_filters['direction']) && ($r_resource_filters['direction'] === 'ASC' || $r_resource_filters['direction'] === 'DESC')) {
                     $direction = $r_resource_filters['direction'];
                 }
                 // If Restricted board user
