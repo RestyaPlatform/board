@@ -7706,6 +7706,10 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
         pg_query_params($db_lnk, 'UPDATE card_attachments SET is_cover = false WHERE card_id = $1 AND board_id = $2 AND list_id = $3', $data);
         $comment = '##USER_NAME## updated card attachments to this card ##CARD_LINK##';
         $activity_type = 'update_card_attachment';
+        $file = MEDIA_PATH . DS . $r_put['path'];
+        if (file_exists($file) && strpos(realpath($file) , MEDIA_PATH) == false) {
+            unset($r_put['path']);
+        }
         $response = update_query($table_name, $id, $r_resource_cmd, $r_put, $comment, $activity_type, $foreign_ids);
         echo json_encode($response);
         break;
