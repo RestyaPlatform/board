@@ -7709,8 +7709,10 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
         $file = MEDIA_PATH . DS . $r_put['path'];
         if (file_exists($file) && strpos(realpath($file) , MEDIA_PATH) == false) {
             unset($r_put['path']);
+            $response['error'] = 'Unable to update attachement. please try again.';
+        } else {
+            $response = update_query($table_name, $id, $r_resource_cmd, $r_put, $comment, $activity_type, $foreign_ids);
         }
-        $response = update_query($table_name, $id, $r_resource_cmd, $r_put, $comment, $activity_type, $foreign_ids);
         echo json_encode($response);
         break;
 
