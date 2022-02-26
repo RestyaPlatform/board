@@ -17,9 +17,7 @@
 $r_debug = '';
 $authUser = $client = $form = array();
 $_server_protocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') ? 'https' : 'http';
-$request_uri_arr = explode('/api/', $_SERVER['REQUEST_URI'], 2);
-$_server_context = $request_uri_arr[0];
-$_server_domain_url = $_server_protocol . '://' . $_SERVER['HTTP_HOST'] . $_server_context; // http://localhost/context
+$_server_domain_url = $_server_protocol . '://' . $_SERVER['HTTP_HOST']; // http://localhost/
 header('x-response-url:' . $_SERVER['REQUEST_URI']);
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: *');
@@ -8297,21 +8295,21 @@ function r_delete($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         $attachment = executeQuery('SELECT name, path FROM card_attachments WHERE id =  $1', $qry_val_arr);
         if (!empty($attachment)) {
             $file = MEDIA_PATH . DS . $attachment['path'];
-            if (file_exists($file)) {
+            if (file_exists($file) && strpos(realpath($file), MEDIA_PATH) !== false) {
                 unlink($file);
             }
             foreach ($thumbsizes['CardAttachment'] as $key => $value) {
                 $file_ext = explode('.', $attachment['name']);
                 $hash = md5(SECURITYSALT . 'CardAttachment' . $r_resource_vars['attachments'] . $file_ext[1] . $key);
                 $thumb_file = IMG_PATH . DS . $key . DS . 'CardAttachment' . DS . $r_resource_vars['attachments'] . '.' . $hash . '.' . $file_ext[1];
-                if (file_exists($thumb_file)) {
+                if (file_exists($thumb_file) && strpos(realpath($thumb_file), IMG_PATH) !== false) {
                     unlink($thumb_file);
                 }
             }
             $file_ext = explode('.', $attachment['name']);
             $hash = md5(SECURITYSALT . 'CardAttachment' . $r_resource_vars['attachments'] . $file_ext[1] . $key);
             $thumb_file = IMG_PATH . DS . 'original' . DS . 'CardAttachment' . DS . $r_resource_vars['attachments'] . '.' . $hash . '.' . $file_ext[1];
-            if (file_exists($thumb_file)) {
+            if (file_exists($thumb_file) && strpos(realpath($thumb_file), IMG_PATH) !== false) {
                 unlink($thumb_file);
             }
         }
