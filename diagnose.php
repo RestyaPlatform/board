@@ -12,12 +12,6 @@
  * @license    http://restya.com/ Restya Licence
  * @link       http://restya.com/
  */
-if (!isset($_SERVER['PHP_AUTH_USER']) || !isset($_SERVER['PHP_AUTH_PW']) || $_SERVER['PHP_AUTH_USER'] != 'restya' ||$_SERVER['PHP_AUTH_PW'] != 'restya123') { // https://www.php.net/manual/en/features.http-auth.php
-	header("WWW-Authenticate: Basic realm=\"Newsletter\"");
-	header("HTTP/1.0 401 Unauthorized");
-	echo '<html><body><h1>Rejected!</h1><big>Wrong Username or Password!</big></body></html>';
-	exit;
-}
 $nginx_class = true;
 exec("which nginx", $nginx_version);
 if (!empty($nginx_version[0])) {
