@@ -107,3 +107,16 @@ SELECT cards.id,
      LEFT JOIN users u ON ((u.id = cards.user_id)))
      LEFT JOIN boards b ON ((b.id = cards.board_id)))
      LEFT JOIN lists l ON ((l.id = cards.list_id)));
+
+DELETE FROM "acl_links_roles" WHERE acl_link_id = (select id from acl_links where slug='user_activities_listing');
+DELETE FROM "acl_links" WHERE slug = 'user_activities_listing';
+
+SELECT pg_catalog.setval('acl_links_id_seq', (SELECT MAX(id) FROM acl_links), true);
+
+INSERT INTO "acl_links" ("created", "modified", "name", "url", "method", "slug", "group_id", "is_user_action", "is_guest_action", "is_admin_action", "is_hide", "is_default") values ('now()', 'now()', 'User activities', '/users/?/activities', 'GET', 'user_activities_listing', '2', '1', '0', '0', '0', 't');
+
+SELECT pg_catalog.setval('acl_links_roles_roles_id_seq', (SELECT MAX(id) FROM acl_links_roles), true);
+
+INSERT INTO "acl_links_roles" ("created", "modified", "acl_link_id", "role_id") VALUES 
+(now(), now(), (select id from acl_links where slug='user_activities_listing'), '1'),
+(now(), now(), (select id from acl_links where slug='user_activities_listing'), '2');
