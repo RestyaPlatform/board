@@ -4360,6 +4360,7 @@ COPY public.acl_links (id, created, modified, name, url, method, slug, group_id,
 157	2020-06-12 19:03:13.498349	2020-06-12 19:03:13.498349	Card search with Custom Field	/cards/search	GET	view_card_search_custom_field	3	1	0	1	0	f
 158	2020-06-12 19:21:43.506093	2020-06-12 19:21:43.506093	Card search with Custom Field	/cards/search	GET	view_card_search_custom_field	3	1	0	1	0	f
 159	2021-07-24 12:21:21.858991	2021-07-24 12:21:21.858991	Login	/users/login	POST	users_login	1	0	1	0	0	f
+160	2022-02-28 10:41:23.833814	2022-02-28 10:41:23.833814	User activities	/users/?/activities	GET	user_activities_listing	2	1	0	0	0	t
 \.
 
 
@@ -4512,6 +4513,8 @@ COPY public.acl_links_roles (id, created, modified, acl_link_id, role_id) FROM s
 1279	2020-06-12 19:03:13.573564	2020-06-12 19:03:13.573564	157	1
 1280	2020-06-12 19:03:13.573564	2020-06-12 19:03:13.573564	157	2
 1281	2021-07-24 12:21:21.875677	2021-07-24 12:21:21.875677	159	3
+1282	2022-02-28 10:41:23.836104	2022-02-28 10:41:23.836104	160	1
+1283	2022-02-28 10:41:23.836104	2022-02-28 10:41:23.836104	160	2
 \.
 
 

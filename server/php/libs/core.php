@@ -536,9 +536,6 @@ function checkAclLinks($r_request_method = 'GET', $r_resource_cmd = '/users', $r
         if (!empty($r_request_method) && ($r_request_method === 'POST') && !empty($r_resource_cmd) && ($r_resource_cmd === '/settings')) {
             $r_request_method = 'GET';
         }
-        if (!empty($r_request_method) && ($r_request_method === 'GET') && !empty($r_resource_cmd) && ($r_resource_cmd === '/users/?/activities')) {
-            return true;
-        }
         if (!empty($r_request_method) && ($r_request_method === 'PUT') && !empty($r_resource_cmd) && $r_resource_cmd === '/users/?' && !empty($post_data['last_activity_id'])) {
             return true;
         }

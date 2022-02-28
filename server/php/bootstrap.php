@@ -48,6 +48,7 @@ function main()
             fwrite($fh, '<?php' . "\n");
             fwrite($fh, '$_server_domain_url = \'' . $_server_domain_url . '\';');
             fclose($fh);
+            chmod(SITE_URL_FOR_SHELL, 0644);
         }
         $current_locale = DEFAULT_LANGUAGE;
         if ($r_resource_cmd != '/users/login') {
