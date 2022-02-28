@@ -7692,24 +7692,6 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
         echo json_encode($response);
         break;
 
-    case '/boards/?/lists/?/cards/?/attachments/?': // card attachment update
-        $table_name = 'card_attachments';
-        $id = $r_resource_vars['attachments'];
-        $foreign_ids['board_id'] = $r_resource_vars['boards'];
-        $foreign_ids['list_id'] = $r_resource_vars['lists'];
-        $foreign_ids['card_id'] = $r_resource_vars['cards'];
-        $data = array(
-            $foreign_ids['card_id'],
-            $foreign_ids['board_id'],
-            $foreign_ids['list_id']
-        );
-        pg_query_params($db_lnk, 'UPDATE card_attachments SET is_cover = false WHERE card_id = $1 AND board_id = $2 AND list_id = $3', $data);
-        $comment = '##USER_NAME## updated card attachments to this card ##CARD_LINK##';
-        $activity_type = 'update_card_attachment';
-        $response = update_query($table_name, $id, $r_resource_cmd, $r_put, $comment, $activity_type, $foreign_ids);
-        echo json_encode($response);
-        break;
-
     case '/boards/?/lists/?/cards/?/checklists/?':
         $table_name = 'checklists';
         $id = $r_resource_vars['checklists'];
@@ -8315,21 +8297,21 @@ function r_delete($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         $attachment = executeQuery('SELECT name, path FROM card_attachments WHERE id =  $1', $qry_val_arr);
         if (!empty($attachment)) {
             $file = MEDIA_PATH . DS . $attachment['path'];
-            if (file_exists($file)) {
+            if (file_exists($file) && strpos(realpath($file), MEDIA_PATH) !== false) {
                 unlink($file);
             }
             foreach ($thumbsizes['CardAttachment'] as $key => $value) {
                 $file_ext = explode('.', $attachment['name']);
                 $hash = md5(SECURITYSALT . 'CardAttachment' . $r_resource_vars['attachments'] . $file_ext[1] . $key);
                 $thumb_file = IMG_PATH . DS . $key . DS . 'CardAttachment' . DS . $r_resource_vars['attachments'] . '.' . $hash . '.' . $file_ext[1];
-                if (file_exists($thumb_file)) {
+                if (file_exists($thumb_file) && strpos(realpath($thumb_file), IMG_PATH) !== false) {
                     unlink($thumb_file);
                 }
             }
             $file_ext = explode('.', $attachment['name']);
             $hash = md5(SECURITYSALT . 'CardAttachment' . $r_resource_vars['attachments'] . $file_ext[1] . $key);
             $thumb_file = IMG_PATH . DS . 'original' . DS . 'CardAttachment' . DS . $r_resource_vars['attachments'] . '.' . $hash . '.' . $file_ext[1];
-            if (file_exists($thumb_file)) {
+            if (file_exists($thumb_file) && strpos(realpath($thumb_file), IMG_PATH) !== false) {
                 unlink($thumb_file);
             }
         }
