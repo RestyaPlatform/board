@@ -72,6 +72,10 @@ sudo ./restyaboard.sh
 * Change admin email and password
 * To add/reply cards via email, visit `/#/settings/10` to configure IMAP settings
 
+### Diagnose Configuration 
+* You can check the status of the Restyaboard in the diagnose and you can access the diagnose page using username `restya`, password `restya123`
+* You can also configure the different password for the diagnose page by following the instructions from the link https://www.php.net/manual/en/features.http-auth.php
+
 ### Forum
 
 * [Restya Google Group](https://groups.google.com/d/forum/restya)
