@@ -72,6 +72,10 @@ sudo ./restyaboard.sh
 * Change admin email and password
 * To add/reply cards via email, visit `/#/settings/10` to configure IMAP settings
 
+### NGINX Rate Limiting Configuration
+
+* You can configure the Nginx rate limit for Restyaboard by following the instructions from the documentation link [https://restya.com/board/docs/restyaboard-nginx-reverse-proxy-configuration/#configuration-of-rate-limiting-on-nginx](https://restya.com/board/docs/restyaboard-nginx-reverse-proxy-configuration/#configuration-of-rate-limiting-on-nginx)
+
 ### Forum
 
 * [Restya Google Group](https://groups.google.com/d/forum/restya)
