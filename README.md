@@ -72,12 +72,9 @@ sudo ./restyaboard.sh
 * Change admin email and password
 * To add/reply cards via email, visit `/#/settings/10` to configure IMAP settings
 
-### Diagnose Configuration 
-* You can enable the password authentication for the diagnose page by uncommenting the lines 45-53 on the Nginx configuration file [restyaboard.conf](https://github.com/RestyaPlatform/board/blob/dev/restyaboard.conf#L45)
-* You can configure the password authentication for the diagnose page in the Apache server by following the instructions from the [link](https://stackoverflow.com/a/8275094)
-* You can check the status of the Restyaboard in the diagnose and you can access the diagnose page using the username `restya`, password `restya123`
-* You can also configure the different password in the Nginx server configuration for the diagnose page by following the instructions from the link https://docs.nginx.com/nginx/admin-guide/security-controls/configuring-http-basic-authentication/
-* You can also configure the different password in the Apache server configuration for the diagnose page by following the instructions from the link https://www.web2generators.com/apache-tools/htpasswd-generator
+### Diagnose Configuration
+
+* You can enable the password authentication for the diagnose page by following the instructions from the documentation link [https://restya.com/board/docs/restyaboard-nginx-reverse-proxy-configuration/#configuration-of-diagnose-with-password-authentication](https://restya.com/board/docs/restyaboard-nginx-reverse-proxy-configuration/#configuration-of-diagnose-with-password-authentication)
 
 ### Forum
 
