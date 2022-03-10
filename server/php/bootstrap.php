@@ -9,7 +9,7 @@ require_once 'libs' . DS . 'core.php';
 require_once 'libs' . DS . 'vendors' . DS . 'OAuth2' . DS . 'Autoloader.php';
 function main()
 {
-    global $r_debug, $authUser, $token, $localAccessIps, $db_lnk, $token_exception_url, $exception_url, $scope_exception_url, $post_exception_url, $put_exception_url, $exception_before_token, $exception_url, $admin_access_url, $put_admin_access_url, $_server_domain_url, $locales;
+    global $r_debug, $authUser, $token, $db_lnk, $token_exception_url, $exception_url, $scope_exception_url, $put_exception_url, $exception_before_token, $exception_url, $admin_access_url, $_server_domain_url, $locales;
     if (PHP_SAPI == 'cli') { // if command line mode...
         if ($_SERVER['argc'] < 2) {
             echo 'Usage: php ' . __FILE__ . ' <relative url>' . "\n";

@@ -1,15 +1,124 @@
----
-engines:
+version: "2"
+checks:
+  argument-count:
+    enabled: true
+    config:
+      threshold: 10
+  complex-logic:
+    enabled: false
+  file-lines:
+    config:
+      threshold: 10000
+  similar-code:
+    enabled: false
+  identical-code:
+    enabled: false
+  method-complexity:
+    enabled: true
+    config:
+      threshold: 10000
+  method-count:
+    enabled: true
+    config:
+      threshold: 1000
+  method-lines:
+    config:
+      threshold: 10000
+  nested-control-flow:
+    enabled: true
+    config:
+      threshold: 10000
+  return-statements:
+    enabled: true
+    config:
+      threshold: 100
+plugins:
   csslint:
     enabled: true
+    checks:
+      adjoining-classes:
+        enabled: false
+      box-model:
+        enabled: false
+      box-sizing:
+        enabled: false
+      compatible-vendor-prefixes:
+        enabled: false
+      display-property-grouping:
+        enabled: false
+      duplicate-background-images:
+        enabled: false
+      duplicate-properties:
+        enabled: false
+      empty-rules:
+        enabled: false
+      fallback-colors:
+        enabled: false
+      gradients:
+        enabled: false
+      known-properties:
+        enabled: false
+      important:
+        enabled: false
+      order-alphabetical:
+        enabled: false
+      outline-none:
+        enabled: false
+      overqualified-elements:
+        enabled: false
+      qualified-headings:
+        enabled: false
+      universal-selector:
+        enabled: false
+      unqualified-attributes:
+        enabled: false
+      regex-selectors:
+        enabled: false
+      star-property-hack:
+        enabled: false
+      text-indent:
+        enabled: false
+      underscore-property-hack:
+        enabled: false
+      zero-units:
+        enabled: false
   eslint:
     enabled: true
   fixme:
     enabled: true
-  phpmd:
-    enabled: true
     checks:
+      TODO:
+        enabled: false
+      XXX:
+        enabled: false
+  phpmd:
+    enabled: false
+    checks:
+      CleanCode/BooleanArgumentFlag:
+        enabled: false
+      CleanCode/ElseExpression:
+        enabled: false
+      CleanCode/IfStatementAssignment:
+        enabled: false
+      CleanCode/MissingImport:
+        enabled: false
+      CleanCode/StaticAccess:
+        enabled: false
+      Controversial/CamelCaseMethodName:
+        enabled: false
       Controversial/CamelCaseParameterName:
+        enabled: false
+      Controversial/CamelCasePropertyName:
+        enabled: false
+      Controversial/CamelCaseVariableName:
+        enabled: false
+      Controversial/Superglobals:
+        enabled: false
+      CyclomaticComplexity:
+        enabled: false
+      Design/LongMethod:
+        enabled: false
+      Design/NpathComplexity:
         enabled: false
       Naming/LongVariable:
         enabled: false
@@ -17,14 +126,9 @@ engines:
         enabled: false
       order-alphabetical:
         enabled: false
-ratings:
-  paths:
-  - "**.css"
-  - "**.js"
-  - "**.php"
-exclude_paths:
-- api_explorer/*
-- build/*
-- client/css/converse.css
-- client/js/libs/*
-- server/php/libs/vendors/**/*
+exclude_patterns:
+- "api_explorer/*"
+- "build/*"
+- "client/css/converse.css"
+- "client/js/libs/*"
+- "server/php/libs/vendors/**/*"
