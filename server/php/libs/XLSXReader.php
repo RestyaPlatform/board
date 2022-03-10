@@ -290,7 +290,8 @@ class SimpleXLSX
                     if ((int)$workbook->workbookPr['date1904'] === 1) {
                         $this->date1904 = 1;
                     }
-                    if ($workbookRelations = $this->getEntryXML(dirname($rel_target) . '/_rels/workbook.xml.rels')) {
+                    $workbookRelations = $this->getEntryXML(dirname($rel_target) . '/_rels/workbook.xml.rels');
+                    if ($workbookRelations) {
                         // Loop relations for workbook and extract sheets...
                         foreach ($workbookRelations->Relationship as $workbookRelation) {
                             $wrel_type = basename(trim((string)$workbookRelation['Type']));
@@ -713,7 +714,8 @@ class SimpleXLSX
      */
     public function getCell($worksheetIndex = 0, $cell = 'A1')
     {
-        if (($ws = $this->worksheet($worksheetIndex)) === false) {
+        $ws = $this->worksheet($worksheetIndex);
+        if ($ws === false) {
             return false;
         }
         $idx = is_array($cell) ? $cell : $this->getIndex((string)$cell);

@@ -321,7 +321,8 @@ function imapBodyDecode($mbox, $mid, $p, $partno)
         // so append parts together with blank row.
         if (strtolower($p->subtype) == 'plain') {
             $message.= trim($data) . "\n\n";
-        } else {
+        } 
+        if (strtolower($p->subtype) != 'plain') {
             $message.= $data . "<br><br>";
         }
     }
