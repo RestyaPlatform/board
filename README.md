@@ -76,6 +76,10 @@ sudo ./restyaboard.sh
 
 * You can configure the Nginx rate limit for Restyaboard by following the instructions from the documentation link [https://restya.com/board/docs/restyaboard-nginx-reverse-proxy-configuration/#configuration-of-rate-limiting-on-nginx](https://restya.com/board/docs/restyaboard-nginx-reverse-proxy-configuration/#configuration-of-rate-limiting-on-nginx)
 
+### Diagnose Configuration
+
+* You can enable the password authentication for the diagnose page by following the instructions from the documentation link [https://restya.com/board/docs/restyaboard-nginx-reverse-proxy-configuration/#configuration-of-diagnose-with-password-authentication](https://restya.com/board/docs/restyaboard-nginx-reverse-proxy-configuration/#configuration-of-diagnose-with-password-authentication)
+
 ### Forum
 
 * [Restya Google Group](https://groups.google.com/d/forum/restya)
