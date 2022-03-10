@@ -10,10 +10,28 @@ description: Restyaboard Configuration, here you can check Configuration of Rest
 
 **Example**
 ```
-  location / {
-    proxy_set_header Host $host;  # important
-    proxy_pass http://localhost:8000;
-  }
+location / {
+  proxy_set_header Host $host;  # important
+  proxy_pass http://localhost:8000;
+}
+```
+
+## Configuration of rate limiting on Nginx
+
+* You can limit the request on the Nginx configuration by adding limit request on the configuration file
+
+**Example**
+```
+limit_req_zone $binary_remote_addr zone=mylimit:10m rate=10r/s;
+```
+
+* Also, you need to add the limit request on the `location` block
+
+**Example**
+```
+location / {
+  limit_req zone=mylimit;
+}
 ```
 
 ## Configuration of Diagnose with password authentication
@@ -34,6 +52,9 @@ description: Restyaboard Configuration, here you can check Configuration of Rest
 ```
 
 * You can configure the password authentication for the diagnose page in the Apache server by following the instructions from the [link](https://stackoverflow.com/a/8275094)
+
 * You can check the status of the Restyaboard in the diagnose and you can access the diagnose page using the username `restya`, password `restya123`
+
 * You can also configure the different password in the Nginx server configuration for the diagnose page by following the instructions from the link [https://docs.nginx.com/nginx/admin-guide/security-controls/configuring-http-basic-authentication/](https://docs.nginx.com/nginx/admin-guide/security-controls/configuring-http-basic-authentication/)
+
 * You can also configure the different password in the Apache server configuration for the diagnose page by following the instructions from the link [https://www.web2generators.com/apache-tools/htpasswd-generator](https://www.web2generators.com/apache-tools/htpasswd-generator)
