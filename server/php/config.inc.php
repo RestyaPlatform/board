@@ -68,6 +68,7 @@ if (!defined('STDIN') && !file_exists(SITE_URL_FOR_SHELL) && !empty($_server_dom
     fwrite($fh, '<?php' . "\n");
     fwrite($fh, '$_server_domain_url = \'' . $_server_domain_url . '\';');
     fclose($fh);
+    chmod(SITE_URL_FOR_SHELL, 0644);
 }
 $db_lnk = pg_connect('host=' . R_DB_HOST . ' port=' . R_DB_PORT . ' dbname=' . R_DB_NAME . ' user=' . R_DB_USER . ' password=' . R_DB_PASSWORD . ' options=--client_encoding=UTF8') or die('Database could not connect');
 $settings = pg_query_params($db_lnk, 'SELECT name, value FROM settings', array());
