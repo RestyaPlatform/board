@@ -1,3 +1,7 @@
+---
+description: Hangouts Chat bot Installation
+---
+
 # Hangouts Chat bot
 
 ## Introduction

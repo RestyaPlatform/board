@@ -1,3 +1,7 @@
+---
+description: Restyaboard installation in Ubuntu using shell script
+---
+
 # Installation in Ubuntu using shell script
 
 ## Introduction
@@ -18,7 +22,7 @@ This document is a step-by-step guide that illustrates how to install Restyaboar
 
 For step-by-step instructions on Installation in Ubuntu using shell script, refer [YouTube video](https://www.youtube.com/watch?v=lSPgr5zXXuY "Watch video on Installation in Ubuntu using shell script")
 
-[![Installation in Ubuntu using shell script](ubuntu_installation.png)](http://www.youtube.com/watch?v=lSPgr5zXXuY "Watch video on Installation in Ubuntu using shell script")
+[![Installation in Ubuntu using shell script](ubuntu_installation.png)](https://www.youtube.com/watch?v=lSPgr5zXXuY "Watch video on Installation in Ubuntu using shell script")
 
 ## Installation in Ubuntu using shell script
 

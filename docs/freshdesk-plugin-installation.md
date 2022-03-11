@@ -1,3 +1,7 @@
+---
+description: Freshdesk Plugin Installation
+---
+
 # Freshdesk Plugin Installation
 
 ## Introduction

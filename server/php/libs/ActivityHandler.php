@@ -47,7 +47,8 @@ class ActivityHandler
                             if (getRevisiondifference($old_val, $new_val) !== false) {
                                 $diff[] = getRevisiondifference($old_val, $new_val);
                             }
-                        } else {
+                        }
+                        if ($obj_type != 'edit_comment') {
                             $diff[] = nl2br(getRevisiondifference($old_val, $new_val));
                         }
                     }

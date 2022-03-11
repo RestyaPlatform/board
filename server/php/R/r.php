@@ -8,7 +8,7 @@
  * @package    REST
  * @subpackage Core
  * @author     Restya <info@restya.com>
- * @copyright  2014-2021 Restya
+ * @copyright  2014-2022 Restya
  * @license    http://restya.com/ Restya Licence
  * @link       http://restya.com/
  * @todo       Fix code duplication & make it really lightweight
@@ -17,9 +17,11 @@
 $r_debug = '';
 $authUser = $client = $form = array();
 $_server_protocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') ? 'https' : 'http';
-$request_uri_arr = explode('/api/', $_SERVER['REQUEST_URI'], 2);
-$_server_context = $request_uri_arr[0];
-$_server_domain_url = $_server_protocol . '://' . $_SERVER['HTTP_HOST'] . $_server_context; // http://localhost/context
+// Please uncomment the below line for the sub folder usage
+// $request_uri_arr = explode('/api/', $_SERVER['REQUEST_URI'], 2);
+// $_server_context = $request_uri_arr[0];
+// $_server_domain_url = $_server_protocol . '://' . $_SERVER['HTTP_HOST'] . $_server_context; // http://localhost/context
+$_server_domain_url = $_server_protocol . '://' . $_SERVER['HTTP_HOST'];
 header('x-response-url:' . $_SERVER['REQUEST_URI']);
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: *');
@@ -61,8 +63,6 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
     // switch case.. if taking more length, then associative array...
     $query_timeout = 0;
     $sql = false;
-    $elastic_search_sql = false;
-    $parent_genre_name = '';
     $board_lists = array();
     $sort = 'id';
     $sort_by = 'DESC';
@@ -89,7 +89,8 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 'client_secret' => $oauth_client_secret
             );
             $response = getToken($post_val);
-        } else {
+        }
+        if (empty($_GET['refresh_token'])) {
             $post_val = array(
                 'grant_type' => 'client_credentials',
                 'client_id' => OAUTH_CLIENTID,
@@ -234,7 +235,8 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             $i++;
         }
         if (!empty($sql)) {
-            if ($result = pg_query_params($db_lnk, $sql, $pg_params)) {
+            $result = pg_query_params($db_lnk, $sql, $pg_params);
+            if ($result) {
                 $data = array();
                 $board_lists = array();
                 while ($row = pg_fetch_row($result)) {
@@ -242,9 +244,10 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                     if (is_plugin_enabled('r_groups')) {
                         $group_sql = 'SELECT row_to_json(d) FROM (SELECT * FROM groups_users Where user_id = $1 ORDER BY id DESC) as d ';
                         $obj['groups'] = null;
-                        if ($group_result = pg_query_params($db_lnk, $group_sql, array(
+                        $group_result = pg_query_params($db_lnk, $group_sql, array(
                             $obj['id']
-                        ))) {
+                        ));
+                        if ($group_result) {
                             while ($group = pg_fetch_row($group_result)) {
                                 $group = json_decode($group[0], true);
                                 $obj['groups'][] = $group;
@@ -263,10 +266,12 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                     $data['_metadata'] = $_metadata;
                 }
                 echo json_encode($data);
-            } else {
+            }
+            if (!$result) {
                 $r_debug.= __LINE__ . ': ' . pg_last_error($db_lnk) . '\n';
             }
-        } else {
+        }
+        if (empty($sql)) {
             echo json_encode($response);
         }
         break;
@@ -293,7 +298,8 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         }
         $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM user_logins_listing ul ' . $filter_condition . ' ORDER BY ' . $order_by . ' ' . $direction . ' limit ' . $_metadata['limit'] . ' offset ' . $_metadata['offset'] . ') as d ';
         if (!empty($sql)) {
-            if ($result = pg_query_params($db_lnk, $sql, $pg_params)) {
+            $result = pg_query_params($db_lnk, $sql, $pg_params);
+            if ($result) {
                 $data = array();
                 $board_lists = array();
                 while ($row = pg_fetch_row($result)) {
@@ -304,7 +310,8 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                     $data['_metadata'] = $_metadata;
                 }
                 echo json_encode($data);
-            } else {
+            }
+            if (!$result) {
                 $r_debug.= __LINE__ . ': ' . pg_last_error($db_lnk) . '\n';
             }
         } else {
@@ -325,7 +332,8 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             $filter_condition = 'WHERE ';
             if ($r_resource_filters['filter'] == 'inactive') {
                 $filter_condition.= 'is_active = 0';
-            } else {
+            }
+            if ($r_resource_filters['filter'] != 'inactive') {
                 $filter_condition.= 'is_active = 1';
             }
         } else if (!empty($r_resource_filters['search'])) {
@@ -354,8 +362,12 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         $val_array = array(
             true
         );
+        if (empty($sql)) {
+            echo json_encode($response);
+        }
         if (!empty($sql)) {
-            if ($result = pg_query_params($db_lnk, $sql, $pg_params)) {
+            $result = pg_query_params($db_lnk, $sql, $pg_params);
+            if ($result) {
                 $data = array();
                 $board_lists = array();
                 while ($row = pg_fetch_row($result)) {
@@ -369,11 +381,10 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                     $data['_metadata'] = $_metadata;
                 }
                 echo json_encode($data);
-            } else {
+            }
+            if (!$result) {
                 $r_debug.= __LINE__ . ': ' . pg_last_error($db_lnk) . '\n';
             }
-        } else {
-            echo json_encode($response);
         }
         break;
 
@@ -505,21 +516,22 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                     $direction = $r_resource_filters['direction'];
                 }
                 // If Restricted board user
+                if (!empty($r_resource_filters['last_activity_id'])) {
+                    $condition = ' AND al.id > $6';
+                }
+                $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM activities_listing al WHERE (board_id = ANY ( $1 ) OR organization_id  = ANY ( $2 ) OR revisions = $3 OR type = $4 OR type = $5)' . $condition . ' ORDER BY id ' . $direction . ' LIMIT ' . PAGING_COUNT . ') as d';
+                $c_sql = 'SELECT COUNT(*) FROM activities_listing al WHERE (board_id = ANY ( $1 ) OR organization_id  = ANY ( $2 ) OR revisions = $3 OR type = $4 OR type = $5)' . $condition;
+                if (empty($assigned_card_ids) && empty($assigned_board_ids)) {
+                    array_push($pg_params, '{' . implode(',', $board_ids) . '}', '{' . implode(',', $org_ids) . '}', $authUser['id']);
+                }
                 if (!empty($assigned_card_ids) || !empty($assigned_board_ids)) {
                     if (!empty($r_resource_filters['last_activity_id'])) {
-                        $condition = ' AND al.id > $7';
+                        $condition = ' AND al.id > $9';
                     }
-                    $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM activities_listing al WHERE (board_id = ANY ( $1 ) OR organization_id  = ANY ( $2 ) OR revisions = $3 OR type = $8 OR type = $9 OR (card_id = ANY ($4) OR (board_id = ANY($5) AND card_id = $6) ) ) ' . $condition . ' ORDER BY id ' . $direction . ' LIMIT ' . PAGING_COUNT . ') as d';
-                    $c_sql = 'SELECT COUNT(*) FROM activities_listing al WHERE (board_id = ANY ( $1 ) OR organization_id  = ANY ( $2 ) OR revisions = $3 OR type = $8 OR type = $9 OR (card_id = ANY ($4) OR (board_id = ANY($5) AND card_id = $6) ) ) ' . $condition;
+                    $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM activities_listing al WHERE (board_id = ANY ( $1 ) OR organization_id  = ANY ( $2 ) OR revisions = $3 OR type = $7 OR type = $8 OR (card_id = ANY ($4) OR (board_id = ANY($5) AND card_id = $6) ) ) ' . $condition . ' ORDER BY id ' . $direction . ' LIMIT ' . PAGING_COUNT . ') as d';
+                    $c_sql = 'SELECT COUNT(*) FROM activities_listing al WHERE (board_id = ANY ( $1 ) OR organization_id  = ANY ( $2 ) OR revisions = $3 OR type = $7 OR type = $8 OR (card_id = ANY ($4) OR (board_id = ANY($5) AND card_id = $6) ) ) ' . $condition;
                     $boardIDS = array_diff($board_ids, $assigned_board_ids);
                     array_push($pg_params, '{' . implode(',', $boardIDS) . '}', '{' . implode(',', $org_ids) . '}', $authUser['id'], '{' . implode(',', $assigned_card_ids) . '}', '{' . implode(',', $assigned_board_ids) . '}', 0);
-                } else {
-                    if (!empty($r_resource_filters['last_activity_id'])) {
-                        $condition = ' AND al.id > $6';
-                    }
-                    $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM activities_listing al WHERE (board_id = ANY ( $1 ) OR organization_id  = ANY ( $2 ) OR revisions = $3 OR type = $4 OR type = $5)' . $condition . ' ORDER BY id ' . $direction . ' LIMIT ' . PAGING_COUNT . ') as d';
-                    $c_sql = 'SELECT COUNT(*) FROM activities_listing al WHERE (board_id = ANY ( $1 ) OR organization_id  = ANY ( $2 ) OR revisions = $3 OR type = $4 OR type = $5)' . $condition;
-                    array_push($pg_params, '{' . implode(',', $board_ids) . '}', '{' . implode(',', $org_ids) . '}', $authUser['id']);
                 }
             } else if (!empty($r_resource_filters['board_id']) && $r_resource_filters['board_id'] && $r_resource_filters['type'] == 'board_user_activity') {
                 if (!empty($r_resource_filters['last_activity_id'])) {
@@ -556,7 +568,8 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             $_metadata = $paging_data['_metadata'];
         }
         if (!empty($sql)) {
-            if ($result = pg_query_params($db_lnk, $sql, $pg_params)) {
+            $result = pg_query_params($db_lnk, $sql, $pg_params);
+            if ($result) {
                 $data = array();
                 $board_lists = array();
                 while ($row = pg_fetch_row($result)) {
@@ -590,7 +603,8 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                     $obj = ActivityHandler::getActivitiesObj($obj);
                     if (!empty($_metadata)) {
                         $data['data'][] = $obj;
-                    } else {
+                    }
+                    if (empty($_metadata)) {
                         $data[] = $obj;
                     }
                 }
@@ -598,7 +612,8 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                     $data['_metadata'] = $_metadata;
                 }
                 echo json_encode($data);
-            } else {
+            }
+            if (!$result) {
                 $r_debug.= __LINE__ . ': ' . pg_last_error($db_lnk) . '\n';
             }
         }
@@ -623,20 +638,17 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             $sql = 'SELECT row_to_json(d) FROM (SELECT u.id, u.username, u.profile_picture_path,u.initials, u.full_name FROM users u LEFT JOIN organizations_users ou ON ou.user_id = u.id WHERE u.is_active = true AND u.is_email_confirmed = true AND ';
             $sql.= '(ou.organization_id != $1 OR ou.user_id IS null) AND';
             array_push($pg_params, $r_resource_filters['organizations']);
-        } else if (!empty($r_resource_filters['board_id'])) {
+        } else if (!empty($r_resource_filters['board_id']) && isset($r_resource_filters['board_id'])) {
             $sql = 'SELECT row_to_json(d) FROM (SELECT u.id, u.username, u.profile_picture_path,u.initials, u.full_name FROM users u JOIN boards_users bu ON bu.user_id = u.id WHERE u.is_active = true AND u.is_email_confirmed = true AND ';
             $sql.= 'bu.board_id = $1 AND';
             array_push($pg_params, $r_resource_filters['board_id']);
         } else if (!empty($r_resource_filters['filter'])) {
             $sql = 'SELECT row_to_json(d) FROM (SELECT u.id, u.username, u.profile_picture_path,u.initials, u.full_name FROM users u WHERE ';
-        } else {
+        }
+        if (empty($r_resource_filters['organizations']) && empty($r_resource_filters['board_id']) && empty($r_resource_filters['filter'])) {
             $sql = 'SELECT row_to_json(d) FROM (SELECT u.id, u.username, u.profile_picture_path,u.initials, u.full_name FROM users u WHERE  u.is_active = true AND u.is_email_confirmed = true AND ';
         }
-        if (empty($pg_params)) {
-            $sql.= '(LOWER(u.username) LIKE LOWER($1) OR LOWER(u.email) LIKE LOWER($2))) as d ';
-        } else {
-            $sql.= '(LOWER(u.username) LIKE LOWER($2) OR LOWER(u.email) LIKE LOWER($3))) as d ';
-        }
+        $sql.= empty($pg_params) ? '(LOWER(u.username) LIKE LOWER($1) OR LOWER(u.email) LIKE LOWER($2))) as d ' : '(LOWER(u.username) LIKE LOWER($2) OR LOWER(u.email) LIKE LOWER($3))) as d ';
         array_push($pg_params, '%' . $r_resource_filters['q'] . '%', '%' . $r_resource_filters['q'] . '%');
         if (empty($r_resource_filters['q'])) {
             $sql = false;
@@ -644,14 +656,16 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             $pg_params = array();
         }
         if (!empty($sql)) {
-            if ($result = pg_query_params($db_lnk, $sql, $pg_params)) {
+            $result = pg_query_params($db_lnk, $sql, $pg_params);
+            if ($result) {
                 $data = array();
                 while ($row = pg_fetch_row($result)) {
                     $obj = json_decode($row[0], true);
                     $data[] = $obj;
                 }
                 echo json_encode($data);
-            } else {
+            }
+            if (!$result) {
                 $r_debug.= __LINE__ . ': ' . pg_last_error($db_lnk) . '\n';
             }
         } else {
@@ -663,7 +677,8 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM users ul WHERE id = $1 ) as d ';
         array_push($pg_params, $r_resource_vars['users']);
         if (!empty($sql)) {
-            if ($result = pg_query_params($db_lnk, $sql, $pg_params)) {
+            $result = pg_query_params($db_lnk, $sql, $pg_params);
+            if ($result) {
                 $data = array();
                 while ($row = pg_fetch_row($result)) {
                     $obj = json_decode($row[0], true);
@@ -704,7 +719,8 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                     }
                     echo json_encode($data);
                 }
-            } else {
+            }
+            if (!$result) {
                 $r_debug.= __LINE__ . ': ' . pg_last_error($db_lnk) . '\n';
             }
         }
@@ -760,18 +776,21 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         }
         if (!empty($r_resource_filters['user_ids'])) {
             array_push($pg_params, '{' . $r_resource_vars['users'] . ',' . $r_resource_filters['user_ids'] . '}');
-        } else {
+        }
+        if (empty($r_resource_filters['user_ids'])) {
             array_push($pg_params, '{' . $r_resource_vars['users'] . '}');
         }
         if (!empty($sql)) {
-            if ($result = pg_query_params($db_lnk, $sql, $pg_params)) {
+            $result = pg_query_params($db_lnk, $sql, $pg_params);
+            if ($result) {
                 $data = array();
                 while ($row = pg_fetch_row($result)) {
                     $obj = json_decode($row[0], true);
                     $data[] = $obj;
                 }
                 echo json_encode($data);
-            } else {
+            }
+            if (!$result) {
                 $r_debug.= __LINE__ . ': ' . pg_last_error($db_lnk) . '\n';
             }
         }
@@ -807,7 +826,8 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             if ($authUser['role_id'] != 1 && empty($board_ids)) {
                 $sql = false;
             }
-        } else {
+        }
+        if (empty($r_resource_filters['type']) || $r_resource_filters['type'] != 'simple') {
             $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM boards_listing ul ';
             if (!empty($authUser) && $authUser['role_id'] != 1) {
                 $val_array = array(
@@ -844,7 +864,8 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             $_metadata = $paging_data['_metadata'];
         }
         if (!empty($sql)) {
-            if ($result = pg_query_params($db_lnk, $sql, $pg_params)) {
+            $result = pg_query_params($db_lnk, $sql, $pg_params);
+            if ($result) {
                 $data = array();
                 $board_lists = array();
                 while ($row = pg_fetch_row($result)) {
@@ -860,7 +881,8 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                     $data['_metadata'] = $_metadata;
                 }
                 echo json_encode($data);
-            } else {
+            }
+            if (!$result) {
                 $r_debug.= __LINE__ . ': ' . pg_last_error($db_lnk) . '\n';
             }
         }
@@ -898,10 +920,9 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 $sql = false;
             }
             $limit = 'all';
+            $c_sql = 'SELECT COUNT(*) FROM simple_board_listing ul ' . $filter_condition;
             if (!empty($pg_params)) {
                 $c_sql = 'SELECT COUNT(*) FROM simple_board_listing ul WHERE ul.id =ANY($1)' . $filter_condition;
-            } else {
-                $c_sql = 'SELECT COUNT(*) FROM simple_board_listing ul ' . $filter_condition;
             }
         } else if (!empty($r_resource_filters['page'])) {
             $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM admin_boards_listing ul ';
@@ -1002,7 +1023,8 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM admin_boards_listing ul ' . $filter_condition . ' ORDER BY ' . $order_by . ' ' . $direction . ' limit ' . $_metadata['limit'] . ' offset ' . $_metadata['offset'] . ') as d ';
         }
         if (!empty($sql)) {
-            if ($result = pg_query_params($db_lnk, $sql, $pg_params)) {
+            $result = pg_query_params($db_lnk, $sql, $pg_params);
+            if ($result) {
                 $data = array();
                 $board_lists = array();
                 while ($row = pg_fetch_row($result)) {
@@ -1064,10 +1086,12 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 } else {
                     echo json_encode($data);
                 }
-            } else {
+            }
+            if (!$result) {
                 $r_debug.= __LINE__ . ': ' . pg_last_error($db_lnk) . '\n';
             }
-        } else {
+        }
+        if (empty($sql)) {
             if (is_plugin_enabled('r_chart')) {
                 $data = array();
                 $board_lists = array();
@@ -1097,7 +1121,8 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                     }
                 }
                 echo json_encode(array_merge($data, $response));
-            } else {
+            }
+            if (!is_plugin_enabled('r_chart')) {
                 echo json_encode($response);
             }
         }
@@ -1202,14 +1227,14 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             }
             $check_visibility = executeQuery($s_sql, $arr);
             if (!empty($check_visibility)) {
+                $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM boards_listing ul WHERE id = $1 ORDER BY id DESC) as d';
                 if (isset($_GET["type"]) && $_GET["type"] == "instant_card") {
                     $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM instant_board_listing ul WHERE id = $1 ORDER BY id DESC) as d';
-                } else {
-                    $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM boards_listing ul WHERE id = $1 ORDER BY id DESC) as d';
                 }
                 array_push($pg_params, $r_resource_vars['boards']);
                 if (!empty($sql)) {
-                    if ($result = pg_query_params($db_lnk, $sql, $pg_params)) {
+                    $result = pg_query_params($db_lnk, $sql, $pg_params);
+                    if ($result) {
                         $data = array();
                         while ($row = pg_fetch_row($result)) {
                             $obj = json_decode($row[0], true);
@@ -1272,18 +1297,21 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                         }
                         echo json_encode($data);
                         pg_free_result($result);
-                    } else {
+                    }
+                    if (!$result) {
                         $r_debug.= __LINE__ . ': ' . pg_last_error($db_lnk) . '\n';
                     }
                 }
-            } else {
+            }
+            if (empty($check_visibility)) {
                 $response['error']['type'] = 'visibility';
                 $response['error']['message'] = 'Unauthorized';
                 echo json_encode($response);
                 // header($_SERVER['SERVER_PROTOCOL'] . ' 401 Unauthorized', true, 401);
                 
             }
-        } else {
+        }
+        if (empty($check_board)) {
             $response['error']['type'] = 'board';
             $response['error']['message'] = 'Bad Request';
             header($_SERVER['SERVER_PROTOCOL'] . ' 400 Bad Request', true, 400);
@@ -1322,26 +1350,25 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 while ($row = pg_fetch_assoc($s_result)) {
                     array_push($organization_ids, $row['organization_id']);
                 }
-                if (!empty($organization_ids)) {
-                    $sql.= ' WHERE id IN (' . implode(",", array_unique($organization_ids)) . ')';
-                } else {
-                    $sql.= ' WHERE user_id = ' . $authUser['id'];
-                }
+                $sql.= !empty($organization_ids) ? ' WHERE id IN (' . implode(",", array_unique($organization_ids)) . ')' : ' WHERE user_id = ' . $authUser['id'];
             }
             $sql.= ' ORDER BY id ASC) as d ';
             if (!empty($sql)) {
-                if ($result = pg_query_params($db_lnk, $sql, $pg_params)) {
+                $result = pg_query_params($db_lnk, $sql, $pg_params);
+                if ($result) {
                     $data = array();
                     while ($row = pg_fetch_row($result)) {
                         $obj = json_decode($row[0], true);
                         $data[] = $obj;
                     }
                     echo json_encode($data);
-                } else {
+                }
+                if (!$result) {
                     $r_debug.= __LINE__ . ': ' . pg_last_error($db_lnk) . '\n';
                 }
             }
-        } else {
+        } 
+        if (empty($r_resource_filters['type']) || $r_resource_filters['type'] != 'simple') {
             $organization_ids = array();
             $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM organizations_listing';
             if (!empty($authUser) && $authUser['role_id'] != 1) {
@@ -1371,15 +1398,12 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 while ($row = pg_fetch_assoc($s_result)) {
                     array_push($organization_ids, $row['organization_id']);
                 }
-                if (!empty($organization_ids)) {
-                    $sql.= ' WHERE id IN (' . implode(",", array_unique($organization_ids)) . ')';
-                } else {
-                    $sql.= ' WHERE user_id = ' . $authUser['id'];
-                }
+                $sql.= !empty($organization_ids) ? ' WHERE id IN (' . implode(",", array_unique($organization_ids)) . ')' : ' WHERE user_id = ' . $authUser['id'];
             }
             $sql.= ' ORDER BY id ASC) as d ';
             if (!empty($sql)) {
-                if ($result = pg_query_params($db_lnk, $sql, $pg_params)) {
+                $result = pg_query_params($db_lnk, $sql, $pg_params);
+                if ($result) {
                     $data = array();
                     while ($row = pg_fetch_row($result)) {
                         $obj = json_decode($row[0], true);
@@ -1398,7 +1422,8 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                         $data[] = $obj;
                     }
                     echo json_encode($data);
-                } else {
+                }
+                if (!$result) {
                     $r_debug.= __LINE__ . ': ' . pg_last_error($db_lnk) . '\n';
                 }
             }
@@ -1420,7 +1445,8 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM organization_listing ul WHERE id = $1 ORDER BY id DESC ) as d';
             array_push($pg_params, $r_resource_vars['organizations']);
             if (!empty($sql)) {
-                if ($result = pg_query_params($db_lnk, $sql, $pg_params)) {
+                $result = pg_query_params($db_lnk, $sql, $pg_params);
+                if ($result) {
                     $data = array();
                     while ($row = pg_fetch_row($result)) {
                         $obj = json_decode($row[0], true);
@@ -1439,11 +1465,13 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                         $data['organization_user_roles'][] = $row;
                     }
                     echo json_encode($data);
-                } else {
+                }
+                if (!$result) {
                     $r_debug.= __LINE__ . ': ' . pg_last_error($db_lnk) . '\n';
                 }
             }
-        } else {
+        }
+        if (empty($check_visibility)) {
             $response['error']['type'] = 'visibility';
             $response['error']['message'] = 'Unauthorized';
             echo json_encode($response);
@@ -1471,10 +1499,9 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             array_push($pg_params, $r_resource_vars['boards']);
             $i = 2;
             if (isset($r_resource_filters['last_activity_id']) && $r_resource_filters['last_activity_id'] > 0) {
+                $condition = ' AND al.id > $' . $i;
                 if (!empty($r_resource_filters['type']) && $r_resource_filters['type'] == 'all') {
                     $condition = ' AND al.id < $' . $i;
-                } else {
-                    $condition = ' AND al.id > $' . $i;
                 }
                 array_push($pg_params, $r_resource_filters['last_activity_id']);
                 $i++;
@@ -1547,19 +1574,28 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                     while ($row = pg_fetch_assoc($cardsIDS)) {
                         $assigned_card_ids[] = $row['id'];
                     }
+                    $cardFilter = 'al.card_id = $2';
+                    if ($i === 3) {
+                        $cardFilter = 'al.card_id = $3';
+                    }
+                    $sql = 'SELECT row_to_json(d) FROM (SELECT al.*, u.username, u.profile_picture_path, u.initials, u.full_name, c.description, c.name as card_name FROM activities_listing al LEFT JOIN users u ON al.user_id = u.id LEFT JOIN cards c on al.card_id = c.id WHERE (al.board_id = $1 AND ' . $cardFilter . ') ' . $condition . ' ' . $order . ' LIMIT ' . $limit . ' ' . $construct_offset . ') as d ';
+                    if (empty($r_resource_filters['from']) || (!empty($r_resource_filters['from']) && $r_resource_filters['from'] != 'app')) {
+                        $c_sql = 'SELECT COUNT(*) FROM activities_listing al WHERE al.board_id = $1 AND ' . $cardFilter . $condition;
+                    }
+                    if (empty($assigned_card_ids)) {
+                        array_push($pg_params, 0);
+                    }
                     if (!empty($assigned_card_ids)) {
-                        $sql = 'SELECT row_to_json(d) FROM (SELECT al.*, u.username, u.profile_picture_path, u.initials, u.full_name, c.description, c.name as card_name FROM activities_listing al LEFT JOIN users u ON al.user_id = u.id LEFT JOIN cards c on al.card_id = c.id WHERE al.board_id = $1 AND (al.card_id = ANY ($3) OR al.revisions = $2 )' . $condition . ' ' . $order . ' LIMIT ' . $limit . ' ' . $construct_offset . ') as d ';
+                        $cardFilter = 'al.card_id = ANY ($2)';
+                        if ($i === 3) {
+                            $cardFilter = 'al.card_id = ANY ($3)';
+                        }
+                        $sql = 'SELECT row_to_json(d) FROM (SELECT al.*, u.username, u.profile_picture_path, u.initials, u.full_name, c.description, c.name as card_name FROM activities_listing al LEFT JOIN users u ON al.user_id = u.id LEFT JOIN cards c on al.card_id = c.id WHERE al.board_id = $1 AND (' . $cardFilter . ')' . $condition . ' ' . $order . ' LIMIT ' . $limit . ' ' . $construct_offset . ') as d ';
                         if (empty($r_resource_filters['from']) || (!empty($r_resource_filters['from']) && $r_resource_filters['from'] != 'app')) {
-                            $c_sql = 'SELECT COUNT(*) FROM activities_listing al WHERE (al.board_id = $1 AND al.card_id = ANY ($3)) OR al.revisions = $2 ' . $condition;
+                            $c_sql = 'SELECT COUNT(*) FROM activities_listing al WHERE (al.board_id = $1 AND ' . $cardFilter . ') ' . $condition;
                         }
                         array_push($assigned_card_ids, 0);
-                        array_push($pg_params, $authUser['id'], '{' . implode(',', $assigned_card_ids) . '}');
-                    } else {
-                        $sql = 'SELECT row_to_json(d) FROM (SELECT al.*, u.username, u.profile_picture_path, u.initials, u.full_name, c.description, c.name as card_name FROM activities_listing al LEFT JOIN users u ON al.user_id = u.id LEFT JOIN cards c on al.card_id = c.id WHERE (al.board_id = $1 AND al.card_id = $2) ' . $condition . ' ' . $order . ' LIMIT ' . $limit . ' ' . $construct_offset . ') as d ';
-                        if (empty($r_resource_filters['from']) || (!empty($r_resource_filters['from']) && $r_resource_filters['from'] != 'app')) {
-                            $c_sql = 'SELECT COUNT(*) FROM activities_listing al WHERE al.board_id = $1 AND card_id = $2 ' . $condition;
-                        }
-                        array_push($pg_params, 0);
+                        array_push($pg_params, '{' . implode(',', $assigned_card_ids) . '}');
                     }
                 }
             }
@@ -1569,7 +1605,8 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 $_metadata = $paging_data['_metadata'];
             }
             if (!empty($sql)) {
-                if ($result = pg_query_params($db_lnk, $sql, $pg_params)) {
+                $result = pg_query_params($db_lnk, $sql, $pg_params);
+                if ($result) {
                     $data = array();
                     $board_lists = array();
                     while ($row = pg_fetch_row($result)) {
@@ -1618,7 +1655,8 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                                 );
                                 $obj['comment'] = strtr($obj['comment'], $replaceContent);
                             }
-                        } else {
+                        }
+                        if (empty($r_resource_filters['view'])) {
                             if ($obj['type'] === 'add_comment') {
                                 $obj['comment'] = $obj['comment'];
                             }
@@ -1634,7 +1672,8 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                         $data['_metadata'] = $_metadata;
                     }
                     echo json_encode($data);
-                } else {
+                }
+                if (!$result) {
                     $r_debug.= __LINE__ . ': ' . pg_last_error($db_lnk) . '\n';
                 }
             }
@@ -1650,14 +1689,16 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         }
         $sql.= ' ORDER BY id DESC) as d ';
         if (!empty($sql)) {
-            if ($result = pg_query_params($db_lnk, $sql, $pg_params)) {
+            $result = pg_query_params($db_lnk, $sql, $pg_params);
+            if ($result) {
                 $data = array();
                 while ($row = pg_fetch_row($result)) {
                     $obj = json_decode($row[0], true);
                     $data = $obj;
                 }
                 echo json_encode($data);
-            } else {
+            }
+            if (!$result) {
                 $r_debug.= __LINE__ . ': ' . pg_last_error($db_lnk) . '\n';
             }
         }
@@ -1671,14 +1712,16 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             array_push($pg_params, $authUser['id']);
         }
         $sql.= ' ORDER BY id DESC) as d ';
-        if ($result = pg_query_params($db_lnk, $sql, $pg_params)) {
+        $result = pg_query_params($db_lnk, $sql, $pg_params);
+        if ($result) {
             $data = array();
             while ($row = pg_fetch_row($result)) {
                 $obj = json_decode($row[0], true);
                 $data[] = $obj;
             }
             echo json_encode($data);
-        } else {
+        }
+        if (!$result) {
             $r_debug.= __LINE__ . ': ' . pg_last_error($db_lnk) . '\n';
         }
         break;
@@ -1686,14 +1729,16 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
     case '/boards/search':
         $sql = 'SELECT row_to_json(d) FROM (SELECT id, name, background_color FROM boards ul WHERE name ILIKE $1 ORDER BY id DESC) as d';
         array_push($pg_params, '%' . $r_resource_filters['q'] . '%');
-        if ($result = pg_query_params($db_lnk, $sql, $pg_params)) {
+        $result = pg_query_params($db_lnk, $sql, $pg_params);
+        if ($result) {
             $data = array();
             while ($row = pg_fetch_row($result)) {
                 $obj = json_decode($row[0], true);
                 $data = $obj;
             }
             echo json_encode($data);
-        } else {
+        }
+        if (!$result) {
             $r_debug.= __LINE__ . ': ' . pg_last_error($db_lnk) . '\n';
         }
         break;
@@ -1702,7 +1747,8 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
     case '/boards/?/cards/?':
         $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM cards_listing cll WHERE id = $1) as d ';
         array_push($pg_params, $r_resource_vars['cards']);
-        if ($result = pg_query_params($db_lnk, $sql, $pg_params)) {
+        $result = pg_query_params($db_lnk, $sql, $pg_params);
+        if ($result) {
             $data = array();
             while ($row = pg_fetch_row($result)) {
                 $obj = json_decode($row[0], true);
@@ -1721,17 +1767,18 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 }
             }
             echo json_encode($data);
-        } else {
+        }
+        if (!$result) {
             $r_debug.= __LINE__ . ': ' . pg_last_error($db_lnk) . '\n';
         }
         break;
 
     case '/boards/?/labels':
-        $metadata = array();
         $data = array();
         array_push($pg_params, $r_resource_vars['boards']);
         $sql = 'SELECT DISTINCT label_id, MAX(name) FROM  cards_labels_listing cll WHERE board_id = $1 GROUP BY label_id ORDER BY MAX(name) ASC';
-        if ($res = pg_query_params($db_lnk, $sql, $pg_params)) {
+        $res = pg_query_params($db_lnk, $sql, $pg_params);
+        if ($res) {
             while ($row = pg_fetch_assoc($res)) {
                 $val_arr = array(
                     $row['label_id']
@@ -1742,7 +1789,8 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 }
             }
             echo json_encode($data);
-        } else {
+        }
+        if (!$res) {
             $r_debug.= __LINE__ . ': ' . pg_last_error($db_lnk) . '\n';
         }
         break;
@@ -1760,7 +1808,8 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 $_metadata = $paging_data['_metadata'];
             }
         }
-        if ($result = pg_query_params($db_lnk, $sql, $pg_params)) {
+        $result = pg_query_params($db_lnk, $sql, $pg_params);
+        if ($result) {
             $data = array();
             $board_lists = array();
             while ($row = pg_fetch_row($result)) {
@@ -1776,7 +1825,8 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 $data['_metadata'] = $_metadata;
             }
             echo json_encode($data);
-        } else {
+        }
+        if (!$result) {
             $r_debug.= __LINE__ . ': ' . pg_last_error($db_lnk) . '\n';
         }
         break;
@@ -1790,6 +1840,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         );
         $sort_by_data = pg_query_params($db_lnk, 'SELECT sort_by, sort_direction FROM boards WHERE id = $1', $qry_val_arr);
         $sort_by = pg_fetch_assoc($sort_by_data);
+        $sql = 'SELECT row_to_json(d) FROM (SELECT ' . $fields . ' FROM cards_listing cll WHERE board_id = $1 AND list_id = $2 ORDER BY position asc) as d ';
         if (!empty($sort_by['sort_by']) && !empty($sort_by['sort_direction'])) {
             $sort_by_field = "";
             $sort_by_direction = $sort_by['sort_direction'];
@@ -1806,8 +1857,6 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 $sort_by_field = "custom_fields::json#>>'{start_date}'";
             }
             $sql = 'SELECT row_to_json(d) FROM (SELECT ' . $fields . ' FROM cards_listing cll WHERE board_id = $1 AND list_id = $2 ORDER BY ' . $sort_by_field . ' ' . $sort_by_direction . ' ) as d ';
-        } else {
-            $sql = 'SELECT row_to_json(d) FROM (SELECT ' . $fields . ' FROM cards_listing cll WHERE board_id = $1 AND list_id = $2 ORDER BY position asc) as d ';
         }
         if (empty($r_resource_filters['from']) || (!empty($r_resource_filters['from']) && $r_resource_filters['from'] != 'app')) {
             $c_sql = 'SELECT COUNT(*) FROM cards_listing cll';
@@ -1826,7 +1875,8 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         while ($attachment = pg_fetch_assoc($attachments)) {
             $data['attachments'][] = $attachment;
         }
-        if ($result = pg_query_params($db_lnk, $sql, $pg_params)) {
+        $result = pg_query_params($db_lnk, $sql, $pg_params);
+        if ($result) {
             $board_lists = array();
             while ($row = pg_fetch_row($result)) {
                 $obj = json_decode($row[0], true);
@@ -1844,7 +1894,8 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 $data = customFieldAfterFetchBoardsListsCards($r_resource_cmd, $r_resource_vars, $r_resource_filters, $data);
             }
             echo json_encode($data);
-        } else {
+        }
+        if (!$result) {
             $r_debug.= __LINE__ . ': ' . pg_last_error($db_lnk) . '\n';
         }
         break;
@@ -1854,7 +1905,8 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         $data = array();
         $fields = !empty($r_resource_filters['fields']) ? $r_resource_filters['fields'] : '*';
         $sql = "SELECT row_to_json(d) FROM (SELECT " . $fields . " FROM cards_listing cll WHERE custom_fields LIKE '%" . $r_resource_filters['custom_field'] . "%' ORDER BY position asc) as d ";
-        if ($result = pg_query_params($db_lnk, $sql, array())) {
+        $result = pg_query_params($db_lnk, $sql, array());
+        if ($result) {
             $board_lists = array();
             while ($row = pg_fetch_row($result)) {
                 $obj = json_decode($row[0], true);
@@ -1868,7 +1920,8 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 $data['_metadata'] = $_metadata;
             }
             echo json_encode($data);
-        } else {
+        }
+        if (!$result) {
             $r_debug.= __LINE__ . ': ' . pg_last_error($db_lnk) . '\n';
         }
         break;
@@ -1901,7 +1954,8 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             $_metadata = $paging_data['_metadata'];
         }
         if (!empty($sql)) {
-            if ($result = pg_query_params($db_lnk, $sql, $pg_params)) {
+            $result = pg_query_params($db_lnk, $sql, $pg_params);
+            if ($result) {
                 $data = array();
                 $board_lists = array();
                 while ($row = pg_fetch_row($result)) {
@@ -1941,7 +1995,8 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                     $data['_metadata'] = $_metadata;
                 }
                 echo json_encode($data);
-            } else {
+            }
+            if (!$result) {
                 $r_debug.= __LINE__ . ': ' . pg_last_error($db_lnk) . '\n';
             }
         }
@@ -1949,14 +2004,16 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
 
     case '/timezones':
         $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM timezones order by utc_offset::int) as d ';
-        if ($result = pg_query_params($db_lnk, $sql, array())) {
+        $result = pg_query_params($db_lnk, $sql, array());
+        if ($result) {
             $data = array();
             while ($row = pg_fetch_row($result)) {
                 $obj = json_decode($row[0], true);
                 $data[] = $obj;
             }
             echo json_encode($data);
-        } else {
+        }
+        if (!$result) {
             $r_debug.= __LINE__ . ': ' . pg_last_error($db_lnk) . '\n';
         }
         break;
@@ -1964,14 +2021,16 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
     case '/boards/?/lists/?/cards/?/checklists':
         $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM checklist_add_listing al WHERE board_id = $1) as d ';
         array_push($pg_params, $r_resource_vars['boards']);
-        if ($result = pg_query_params($db_lnk, $sql, $pg_params)) {
+        $result = pg_query_params($db_lnk, $sql, $pg_params);
+        if ($result) {
             $data = array();
             while ($row = pg_fetch_row($result)) {
                 $obj = json_decode($row[0], true);
                 $data[] = $obj;
             }
             echo json_encode($data);
-        } else {
+        }
+        if (!$result) {
             $r_debug.= __LINE__ . ': ' . pg_last_error($db_lnk) . '\n';
         }
         break;
@@ -1979,14 +2038,16 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
     case '/boards/?/visibility':
         $sql = 'SELECT row_to_json(d) FROM (SELECT board_visibility FROM boards bl WHERE bl.id = $1) as d ';
         array_push($pg_params, $r_resource_vars['boards']);
-        if ($result = pg_query_params($db_lnk, $sql, $pg_params)) {
+        $result = pg_query_params($db_lnk, $sql, $pg_params);
+        if ($result) {
             $data = array();
             while ($row = pg_fetch_row($result)) {
                 $obj = json_decode($row[0], true);
                 $data = $obj;
             }
             echo json_encode($data);
-        } else {
+        }
+        if (!$result) {
             $r_debug.= __LINE__ . ': ' . pg_last_error($db_lnk) . '\n';
         }
         break;
@@ -2014,15 +2075,18 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             $response = array();
             $pg_params = array();
             echo json_encode($response);
-        } else {
-            if ($result = pg_query_params($db_lnk, $sql, $pg_params)) {
+        }
+        if (!empty($r_resource_filters['q'])) {
+            $result = pg_query_params($db_lnk, $sql, $pg_params);
+            if ($result) {
                 $data = array();
                 while ($row = pg_fetch_row($result)) {
                     $obj = json_decode($row[0], true);
                     $data[] = $obj;
                 }
                 echo json_encode($data);
-            } else {
+            }
+            if (!$result) {
                 $r_debug.= __LINE__ . ': ' . pg_last_error($db_lnk) . '\n';
             }
         }
@@ -2042,8 +2106,10 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             $response = array();
             $pg_params = array();
             echo json_encode($response);
-        } else {
-            if ($result = pg_query_params($db_lnk, $sql, $pg_params)) {
+        }
+        if (!empty($r_resource_filters['q'])) {
+            $result = pg_query_params($db_lnk, $sql, $pg_params);
+            if ($result) {
                 $data = array();
                 while ($row = pg_fetch_row($result)) {
                     $obj = json_decode($row[0], true);
@@ -2056,7 +2122,8 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                     }
                 }
                 echo json_encode($data);
-            } else {
+            }
+            if (!$result) {
                 $r_debug.= __LINE__ . ': ' . pg_last_error($db_lnk) . '\n';
             }
         }
@@ -2187,7 +2254,8 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             $fields = $data['settings_from_db'];
             if ($data['id'] !== 'r_multiple_ldap_login') {
                 $result = pg_query_params($db_lnk, 'SELECT * FROM settings WHERE name IN (' . $fields . ') ORDER BY "order" ASC', array());
-            } else {
+            }
+            if ($data['id'] === 'r_multiple_ldap_login') {
                 $result = pg_query_params($db_lnk, 'SELECT * FROM settings WHERE name LIKE $1 ORDER BY "order" ASC', array(
                     '%R_MLDAP%'
                 ));
@@ -2212,7 +2280,8 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 $value['settings_description'] = strtr($data['settings_description'], $replaceContent);
                 $response[] = $value;
             }
-        } else {
+        }
+        if (empty($data['settings_from_db'])) {
             if (!empty($data['settings'])) {
                 foreach ($data['settings'] as $key => $value) {
                     $value['name'] = $key;
@@ -2241,14 +2310,16 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             array_push($pg_params, $condition_param);
         }
         $sql = 'SELECT row_to_json(d) FROM (SELECT * FROM oauth_clients c ' . $condition . ') as d ';
-        if ($result = pg_query_params($db_lnk, $sql, $pg_params)) {
+        $result = pg_query_params($db_lnk, $sql, $pg_params);
+        if ($result) {
             $data = array();
             while ($row = pg_fetch_row($result)) {
                 $obj = json_decode($row[0], true);
                 $data[] = $obj;
             }
             echo json_encode($data);
-        } else {
+        }
+        if (!$result) {
             $r_debug.= __LINE__ . ': ' . pg_last_error($db_lnk) . '\n';
         }
         break;
@@ -2264,13 +2335,15 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             $sql.= $paging_data['sql'];
             $_metadata = $paging_data['_metadata'];
         }
-        if ($result = pg_query_params($db_lnk, $sql, $pg_params)) {
+        $result = pg_query_params($db_lnk, $sql, $pg_params);
+        if ($result) {
             $data = array();
             while ($row = pg_fetch_row($result)) {
                 $obj = json_decode($row[0], true);
                 if (!empty($_metadata)) {
                     $data['data'][] = $obj;
-                } else {
+                }
+                if (empty($_metadata)) {
                     $data[] = $obj;
                 }
             }
@@ -2278,7 +2351,8 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 $data['_metadata'] = $_metadata;
             }
             echo json_encode($data);
-        } else {
+        }
+        if (!$result) {
             $r_debug.= __LINE__ . ': ' . pg_last_error($db_lnk) . '\n';
         }
         break;
@@ -2297,7 +2371,8 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             $sql.= $paging_data['sql'];
             $_metadata = $paging_data['_metadata'];
         }
-        if ($result = pg_query_params($db_lnk, $sql, $pg_params)) {
+        $result = pg_query_params($db_lnk, $sql, $pg_params);
+        if ($result) {
             $data = array();
             while ($row = pg_fetch_row($result)) {
                 $obj = json_decode($row[0], true);
@@ -2307,7 +2382,8 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 $data['_metadata'] = $_metadata;
             }
             echo json_encode($data);
-        } else {
+        }
+        if (!$result) {
             $r_debug.= __LINE__ . ': ' . pg_last_error($db_lnk) . '\n';
         }
         break;
@@ -2399,7 +2475,8 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
                 echo json_encode($plugin_return);
             } else if ($pluginToBePassed === 'CustomFields') {
                 echo json_encode($plugin_return);
-            } else {
+            }
+            if ($pluginToBePassed !== 'CardTemplate' && $pluginToBePassed !== 'CustomFields') {
                 if (!empty($plugin_return)) {
                     foreach ($plugin_return as $return_plugin_key => $return_plugin_values) {
                         $ {
@@ -2425,9 +2502,7 @@ function r_get($r_resource_cmd, $r_resource_vars, $r_resource_filters)
 function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
 {
     global $r_debug, $db_lnk, $authUser, $thumbsizes, $_server_domain_url, $jabberHost;
-    $emailFindReplace = $response = $foreign_id = $cards = $foreign_ids = $diff = $no_organization_users = $srow = $revisions = array();
-    $fields = 'created, modified';
-    $values = 'now(), now()';
+    $emailFindReplace = $response = $foreign_id = $cards = $foreign_ids = $diff = $srow = $revisions = array();
     $json = $sql = $is_return_vlaue = $is_import_board = $keepcards = false;
     $is_keep_attachment = $is_keep_user = $is_keep_label = $is_keep_activity = $is_keep_checklist = $copied_card_id = 0;
     $uuid = $table_name = '';
@@ -2474,7 +2549,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 $conditions = array(
                     $user_id['user_id']
                 );
-                $users = pg_query_params($db_lnk, 'DELETE FROM users WHERE id= $1 RETURNING username', $conditions);
+                pg_query_params($db_lnk, 'DELETE FROM users WHERE id= $1 RETURNING username', $conditions);
             }
             $response = array(
                 'success' => 'Checked users are deleted successfully.'
@@ -2562,7 +2637,8 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 'success' => 'An email has been sent with your new password.'
             );
             sendMail('forgetpassword', $emailFindReplace, $user['email']);
-        } else {
+        }
+        if (empty($user)) {
             $response = array(
                 'error' => 'No matching email id is found in the database.'
             );
@@ -2584,19 +2660,18 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             $r_post['role_id'] = 2; // user
             $r_post['ip_id'] = saveIp();
             // admin selected email notification
+            $default_email_notification = 0;
+            if (DEFAULT_EMAIL_NOTIFICATION === 'Periodically') {
+                $default_email_notification = 1;
+            } else if (DEFAULT_EMAIL_NOTIFICATION === 'Instantly') {
+                $default_email_notification = 2;
+            } else if (DEFAULT_EMAIL_NOTIFICATION === 'Daily') {
+                $default_email_notification = 3;
+            } else if (DEFAULT_EMAIL_NOTIFICATION === 'Weekly') {
+                $default_email_notification = 4;
+            }
             if (isset($r_post['is_send_newsletter'])) {
                 $default_email_notification = $r_post['is_send_newsletter'];
-            } else {
-                $default_email_notification = 0;
-                if (DEFAULT_EMAIL_NOTIFICATION === 'Periodically') {
-                    $default_email_notification = 1;
-                } else if (DEFAULT_EMAIL_NOTIFICATION === 'Instantly') {
-                    $default_email_notification = 2;
-                } else if (DEFAULT_EMAIL_NOTIFICATION === 'Daily') {
-                    $default_email_notification = 3;
-                } else if (DEFAULT_EMAIL_NOTIFICATION === 'Weekly') {
-                    $default_email_notification = 4;
-                }
             }
             $activity = executeQuery('SELECT id FROM activities ORDER BY id DESC');
             $r_post['last_email_notified_activity_id'] = $activity['id'];
@@ -2634,7 +2709,8 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                         $emailFindReplace['##NAME##'] = $r_post['full_name'];
                         $emailFindReplace['##ACTIVATION_URL##'] = $_server_domain_url . '/#/users/activation/' . $row['id'] . '/' . md5($r_post['username']);
                         sendMail('activation', $emailFindReplace, $r_post['email']);
-                    } else {
+                    }
+                    if (empty($activation_permission)) {
                         $response['activation'] = 1;
                         $qry_val_arr = array(
                             'true',
@@ -2649,7 +2725,8 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     }
                 }
             }
-        } else {
+        }
+        if ($user) {
             $msg = '';
             if ($user['email'] == $r_post['email']) {
                 $msg = 1;
@@ -2715,7 +2792,8 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     sendMail('new_project_user_invite', $emailFindReplace, $r_post['email']);
                 }
             }
-        } else {
+        }
+        if ($user) {
             $response = array(
                 'error' => 'Email address already exist'
             );
@@ -2784,7 +2862,8 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                         $emailFindReplace['##NAME##'] = $r_post['full_name'];
                         $emailFindReplace['##ACTIVATION_URL##'] = $_server_domain_url . '/#/users/activation/' . $row['id'] . '/' . md5($r_post['username']);
                         sendMail('activation', $emailFindReplace, $r_post['email']);
-                    } else {
+                    }
+                    if (empty($activation_permission)) {
                         $response['activation'] = 1;
                         $qry_val_arr = array(
                             'true',
@@ -2799,7 +2878,8 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     }
                 }
             }
-        } else {
+        }
+        if (!empty($user)) {
             if ($user['is_invite_from_board'] == 't' && $user['is_active'] == 0 && $user['is_email_confirmed'] == 0) {
                 $r_post['password'] = getCryptHash($r_post['password']);
                 $qry_val_arr = array(
@@ -2838,7 +2918,8 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
         );
         if (filter_var($r_post['email'], FILTER_VALIDATE_EMAIL) !== false) {
             $where = 'LOWER(email) = LOWER($1)';
-        } else {
+        }
+        if (!filter_var($r_post['email'], FILTER_VALIDATE_EMAIL)) {
             $where = 'LOWER(username)=LOWER($1)';
         }
         $log_user = executeQuery('SELECT id, role_id, password, is_ldap::boolean::int FROM users WHERE ' . $where, $val_arr);
@@ -2878,7 +2959,8 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     if ($checkResult) {
                         $is_provide_access_token = true;
                     }
-                } else {
+                }
+                if (empty($r_post['verification_code'])) {
                     $is_provide_access_token = true;
                 }
                 if ($is_provide_access_token) {
@@ -2968,7 +3050,8 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                             $result = pg_execute_insert($table_name, $post);
                         }
                     }
-                } else {
+                }
+                if (!$is_provide_access_token) {
                     $response = array(
                         'code' => 'verification_code',
                         'error' => 'Entered verification code is wrong. Please try again.'
@@ -2980,7 +3063,8 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     'success' => 'User authenticated successfully'
                 );
             }
-        } else {
+        }
+        if (empty($user)) {
             $last_login_ip_id = saveIp();
             $user_agent = !empty($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '';
             if (!empty($log_user)) {
@@ -2995,15 +3079,14 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             // login failed error logged
             $login_fail_string = date('Y-m-d H:i:s') . '|' . $_SERVER['REMOTE_ADDR'] . '|' . $r_post['email'] . '|' . $user_agent;
             error_log($login_fail_string . PHP_EOL, 3, CACHE_PATH . DS . 'user_logins_failed.log');
+            $response = array(
+                'code' => 'email',
+                'error' => 'Sorry, login failed. Either your username or password are incorrect or admin deactivated your account.'
+            );
             if (!empty($ldap_error)) {
                 $response = array(
                     'code' => 'LDAP',
                     'error' => $ldap_error
-                );
-            } else {
-                $response = array(
-                    'code' => 'email',
-                    'error' => 'Sorry, login failed. Either your username or password are incorrect or admin deactivated your account.'
                 );
             }
         }
@@ -3046,7 +3129,8 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                         'success' => 'Password change successfully.'
                     );
                 }
-            } else {
+            }
+            if (empty($user)) {
                 $response = array(
                     'error' => 1
                 );
@@ -3227,9 +3311,6 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 $sfields = '';
                 foreach ($put as $key => $value) {
                     if ($key != 'is_send_newsletter') {
-                        if ($key != 'id') {
-                            $fields.= ', ' . $key;
-                        }
                         if ($key != 'id' && $key != 'position') {
                             $sfields.= (empty($sfields)) ? $key : ", " . $key;
                         }
@@ -3248,10 +3329,9 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     }
                     $revision = serialize($revisions);
                     $foreign_id = $id;
+                    $response['activity'] = '';
                     if (!empty($temp_revisions)) {
                         $response['activity'] = insertActivity($authUser['id'], $comment, 'update_profile', $foreign_ids, $revision, $foreign_id);
-                    } else {
-                        $response['activity'] = '';
                     }
                     if (!empty($response['activity']['revisions']) && trim($response['activity']['revisions']) != '') {
                         $revisions = unserialize($response['activity']['revisions']);
@@ -3407,7 +3487,8 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 } else {
                     $response['error'] = 'Invalid file format. Upload json file';
                 }
-            } else {
+            }
+            if ($_FILES['board_import']['error'] != 0) {
                 $response['error'] = 'Unable to import. please try again.';
             }
         } elseif (!empty($_FILES['board_import_wekan'])) {
@@ -3422,10 +3503,12 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 if (!empty($imported_board)) {
                     $board = importWekanBoard($imported_board);
                     $response['id'] = $board['id'];
-                } else {
+                }
+                if (empty($imported_board)) {
                     $response['error'] = 'Invalid file format. Upload json file';
                 }
-            } else {
+            }
+            if ($_FILES['board_import_wekan']['error'] != 0) {
                 $response['error'] = 'Unable to import. please try again.';
             }
         } elseif (!empty($_FILES['board_import_kantree'])) {
@@ -3443,7 +3526,8 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 } else {
                     $response['error'] = 'Invalid file format. Upload json file';
                 }
-            } else {
+            }
+            if ($_FILES['board_import_kantree']['error'] != 0) {
                 $response['error'] = 'Unable to import. please try again.';
             }
         } elseif (!empty($_FILES['board_import_taiga'])) {
@@ -3461,7 +3545,8 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 } else {
                     $response['error'] = 'Invalid file format. Upload json file';
                 }
-            } else {
+            }
+            if ($_FILES['board_import_taiga']['error'] != 0) {
                 $response['error'] = 'Unable to import. please try again.';
             }
         } elseif (!empty($_FILES['board_import_asana'])) {
@@ -3476,10 +3561,12 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 if (!empty($imported_board)) {
                     $board = importAsanaBoard($imported_board['data']);
                     $response['id'] = $board['id'];
-                } else {
+                }
+                if (empty($imported_board)) {
                     $response['error'] = 'Invalid file format. Upload json file';
                 }
-            } else {
+            }
+            if ($_FILES['board_import_asana']['error'] != 0) {
                 $response['error'] = 'Unable to import. please try again.';
             }
         } elseif (!empty($_FILES['board_import_taskwarrior'])) {
@@ -3497,7 +3584,8 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 } else {
                     $response['error'] = 'Invalid file format. Upload json file';
                 }
-            } else {
+            }
+            if ($_FILES['board_import_taskwarrior']['error'] != 0) {
                 $response['error'] = 'Unable to import. please try again.';
             }
         } elseif (!empty($_FILES['board_import_pipefy'])) {
@@ -3505,9 +3593,11 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 if ($_FILES['board_import_pipefy']['type'] === 'text/csv') {
                     $all_rows = array();
                     $imported_board = array();
-                    if (($handle = fopen($_FILES['board_import_pipefy']['tmp_name'], "r")) !== false) {
+                    $handle = fopen($_FILES['board_import_pipefy']['tmp_name'], "r");
+                    if ($handle !== false) {
                         $row = 1;
-                        while (($data = fgetcsv($handle, 40000, ",")) !== false) {
+                        $data = fgetcsv($handle, 40000, ",");
+                        while ($data !== false) {
                             if ($row > 1) {
                                 $arrResult = array();
                                 foreach ($data as $key => $value) {
@@ -3522,15 +3612,18 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                         if (!empty($imported_board)) {
                             $board = importpipefyBoard($imported_board);
                             $response['id'] = $board['id'];
-                        } else {
+                        }
+                        if (empty($imported_board)) {
                             $response['error'] = 'Invalid file format. Upload CSV file';
                         }
                     }
                     fclose($handle);
-                } else {
+                }
+                if ($_FILES['board_import_pipefy']['type'] !== 'text/csv') {
                     $response['error'] = 'Invalid file format. Upload CSV file';
                 }
-            } else {
+            }
+            if ($_FILES['board_import_pipefy']['error'] != 0) {
                 $response['error'] = 'Unable to import. please try again.';
             }
         } elseif (!empty($_FILES['board_import_monday'])) {
@@ -3563,7 +3656,8 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                     if (!empty($filecount)) {
                         $board = importMondayBoards($mediadir, $time);
                         $response["msg"] = "Success";
-                    } else {
+                    }
+                    if (empty($filecount)) {
                         $response['error'] = 'Kindly upload valid zip file, no boards found.';
                     }
                 } else {
@@ -3902,7 +3996,8 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                             pg_query_params($db_lnk, 'INSERT INTO board_subscribers (' . $boards_subscriber_fields . ') VALUES (' . $boards_subscriber_val . ')', $boards_subscriber_values);
                         }
                     }
-                } else {
+                }
+                if (!$keepusers) {
                     //Add into board users
                     $qry_val_arr = array(
                         $new_board_id,
@@ -3978,7 +4073,8 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                                 $list_fields.= ', ' . $key;
                                 if ($value === false) {
                                     array_push($list_values, 'false');
-                                } else {
+                                }
+                                if ($value !== false) {
                                     array_push($list_values, $value);
                                 }
                             }
@@ -4023,7 +4119,8 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                                         pg_query_params($db_lnk, 'INSERT INTO list_subscribers (' . $lists_subscriber_fields . ') VALUES (' . $lists_subscriber_val . ')', $lists_subscriber_values);
                                     }
                                 }
-                            } else {
+                            }
+                            if (!$keepusers) {
                                 //Copy list subscribers
                                 $qry_val_arr = array(
                                     $list_id,
@@ -4313,7 +4410,8 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                                                                 array_push($cards_subscriber_values, 'false');
                                                             } else if ($value === null) {
                                                                 array_push($cards_subscriber_values, null);
-                                                            } else {
+                                                            }
+                                                            if ($value !== false && $value !== null) {
                                                                 array_push($cards_subscriber_values, $value);
                                                             }
                                                         }
@@ -4479,7 +4577,8 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 }
                 unset($r_post['name']);
                 $response['activity'] = update_query('boards', $r_resource_vars['boards'], $r_resource_cmd, $r_post, $comment, $activity_type, $foreign_ids);
-            } else {
+            }
+            if (!in_array($file_ext, $allowed_ext)) {
                 $response['error'] = 'File extension not supported. It supports only jpg, png, bmp and gif.';
             }
         }
@@ -4694,7 +4793,8 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 $r_post['user_id']
             );
             pg_query_params($db_lnk, 'UPDATE list_subscribers SET is_subscribed = $1 WHERE list_id = $2 and user_id = $3', $qry_val_arr);
-        } else {
+        }
+        if (empty($check_subscribed)) {
             $r_post['list_id'] = $r_resource_vars['lists'];
             $sql = true;
         }
@@ -4714,6 +4814,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             $r_post = json_decode($_POST['data'], true);
             $r_post['image_link'] = $_POST['image_link'];
         }
+        $response_file = $obj = array();
         $table_name = 'cards';
         if (!empty($r_post['is_support_app'])) {
             $admin = executeQuery('SELECT id FROM users WHERE role_id = $1', [1]);
@@ -4827,9 +4928,9 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                                         $response_file['activity'] = insertActivity($userID, $comment, 'add_card_attachment', $foreign_ids, null, $response_file['card_attachments'][$i]['id']);
                                         foreach ($thumbsizes['CardAttachment'] as $key => $value) {
                                             $imgdir = IMG_PATH . DS . $key . DS . 'CardAttachment' . DS . $response_file['card_attachments'][$i]['id'];
-                                            $list = glob($imgdir . '.*');
-                                            if (!empty($list) && isset($list[0]) && file_exists($list[0])) {
-                                                unlink($list[0]);
+                                            $imageList = glob($imgdir . '.*');
+                                            if (!empty($imageList) && isset($imageList[0]) && file_exists($imageList[0])) {
+                                                unlink($imageList[0]);
                                             }
                                         }
                                     }
@@ -4878,9 +4979,9 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                                 $response_file['activity'] = insertActivity($userID, $comment, 'add_card_attachment', $foreign_ids, null, $row['id']);
                                 foreach ($thumbsizes['CardAttachment'] as $key => $value) {
                                     $mediadir = IMG_PATH . DS . $key . DS . 'CardAttachment' . DS . $row['id'];
-                                    $list = glob($mediadir . '.*');
-                                    if (!empty($list) && isset($list[0]) && file_exists($list[0])) {
-                                        unlink($list[0]);
+                                    $imageList = glob($mediadir . '.*');
+                                    if (!empty($imageList) && isset($imageList[0]) && file_exists($imageList[0])) {
+                                        unlink($imageList[0]);
                                     }
                                 }
                             }
@@ -5089,7 +5190,7 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                             $r_post['card_id'],
                             $user['id']
                         );
-                        $card_subscribed = executeQuery('DELETE FROM card_subscribers WHERE id = (SELECT id FROM card_subscribers WHERE card_id = $1 and user_id = $2)', $qry_val_arr);
+                        executeQuery('DELETE FROM card_subscribers WHERE id = (SELECT id FROM card_subscribers WHERE card_id = $1 and user_id = $2)', $qry_val_arr);
                         $qry_val_arr = array(
                             $r_post['card_id'],
                             $user['id'],
@@ -5172,7 +5273,8 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             $subscribe = pg_fetch_assoc($s_result);
             $response['id'] = $subscribe['id'];
             if ($sql && ($sql !== true) && !empty($json) && !empty($response['id'])) {
-                if ($result = pg_query_params($db_lnk, $sql, array())) {
+                $result = pg_query_params($db_lnk, $sql, array());
+                if ($result) {
                     $count = pg_num_rows($result);
                     $i = 0;
                     while ($row = pg_fetch_row($result)) {
@@ -5499,10 +5601,9 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                         $path = $save_path . DS . $filename['file_name'];
                         $mimetype = explode('.', $r_post['name']);
                         $mimetypeStore = "";
+                        $mimetypeStore = "application/" + $mimetype[count($mimetype) - 1];
                         if ($mimetype[count($mimetype) - 1] == "jpg" || $mimetype[count($mimetype) - 1] == "gif" || $mimetype[count($mimetype) - 1] == "jpeg" || $mimetype[count($mimetype) - 1] == "png") {
                             $mimetypeStore = "image/" + $mimetype[count($mimetype) - 1];
-                        } else {
-                            $mimetypeStore = "application/" + $mimetype[count($mimetype) - 1];
                         }
                         $qry_val_arr = array(
                             $r_post['card_id'],
@@ -5513,7 +5614,8 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                             $mimetypeStore,
                             NULL
                         );
-                    } else {
+                    }
+                    if (empty($image_type_check)) {
                         $qry_val_arr = array(
                             $r_post['card_id'],
                             $r_post['name'],
@@ -5604,7 +5706,6 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
         $label_names = pg_query_params($db_lnk, 'SELECT l.name FROM labels l inner join cards_labels cl on cl.label_id = l.id WHERE card_id = $1', $qry_val_arr);
         $delete_labels = pg_query_params($db_lnk, 'DELETE FROM ' . $table_name . ' WHERE card_id = $1 RETURNING label_id', $qry_val_arr);
         $delete_label = pg_fetch_assoc($delete_labels);
-        $delete_labels_count = pg_affected_rows($delete_labels);
         $names = '';
         if (!empty($r_post['name'])) {
             $label_names = explode(',', $r_post['name']);
@@ -5613,7 +5714,8 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             foreach ($label_names as $label_name) {
                 if (in_array($label_name, $previous_cards_labels)) {
                     $oldlabel[] = $label_name;
-                } else {
+                }
+                if (!in_array($label_name, $previous_cards_labels)) {
                     $newlabel[] = $label_name;
                 }
                 $names.= $label_name . ', ';
@@ -6055,6 +6157,9 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                             );
                             $custom_fields = pg_query_params($db_lnk, 'SELECT * FROM custom_fields WHERE board_id IS NULL or board_id = $1', $qry_val_arr);
                             while ($custom_field = pg_fetch_assoc($custom_fields)) {
+                                if (!empty($custom_field) && empty($custom_field['board_id'])) {
+                                    $customFields[$custom_field['id']] = $custom_field['id'];
+                                }
                                 if (!empty($custom_field['board_id'])) {
                                     $qry_val_arr = array(
                                         $r_post['board_id'],
@@ -6077,7 +6182,8 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                                         $result = pg_execute_insert('custom_fields', $data);
                                         $row = pg_fetch_assoc($result);
                                         $customFields[$custom_field['id']] = (int)($row['id']);
-                                    } else {
+                                    }
+                                    if (!empty($customField)) {
                                         $qry_val_arr = array(
                                             $r_resource_vars['boards'],
                                             $custom_field['name']
@@ -6097,8 +6203,6 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                                         }
                                         $customFields[$custom_field['id']] = $customField['id'];
                                     }
-                                } else {
-                                    $customFields[$custom_field['id']] = $custom_field['id'];
                                 }
                             }
                             if (!empty($customFields)) {
@@ -6451,7 +6555,8 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 $response['status']['code'] = 200;
                 echo json_encode($response);
                 break;
-            } else {
+            }
+            if ($get_saml_idp_meta_data_responces['status']['code'] != '200' || empty($get_saml_idp_meta_data_responces['metadata'])) {
                 $response['status']['code'] = 401;
                 $response['error']['type'] = 'IdP metadata not generated';
                 $response['error']['content'] = 'Please check your IdP metadata XML';
@@ -6556,7 +6661,8 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                         'R_SAML_META_DATA'
                     );
                     pg_query_params($db_lnk, "UPDATE settings SET value = $1 WHERE name = $2", $saml_qry_val_arr);
-                } else {
+                }
+                if ($get_saml_meta_data_responces['status']['code'] != '200') {
                     $response['error']['type'] = 'Metadata Error';
                     $response['error']['content'] = 'Metadata Not Updated';
                     echo json_encode($response);
@@ -6564,7 +6670,8 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
                 }
             }
             $response['success'] = 'App updated successfully';
-        } else {
+        }
+        if (!is_writable(APP_PATH . '/client/apps/' . $folder_name . '/app.json')) {
             $response['error']['type'] = 'File permission';
             $response['error']['content'] = '/client/apps/ ' . $folder_name . ' / app.json';
         }
@@ -6731,15 +6838,15 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
             $passed_values['r_resource_filters'] = $r_resource_filters;
             $passed_values['authUser'] = $authUser;
             $passed_values['r_post'] = $r_post;
-            if (!empty($table_name)) {
+            /* if (!empty($table_name)) {
                 $passed_values['table_name'] = $table_name;
-            }
-            if (!empty($siteCurrencyCode)) {
+            } */
+            /* if (!empty($siteCurrencyCode)) {
                 $passed_values['siteCurrencyCode'] = $siteCurrencyCode;
-            }
-            if (!empty($enabledPlugins)) {
+            } */
+            /* if (!empty($enabledPlugins)) {
                 $passed_values['enabledPlugins'] = $enabledPlugins;
-            }
+            } */
             $plugin_return = call_user_func($plugin_key . '_r_post', $passed_values);
             echo json_encode($plugin_return);
             break;
@@ -6761,13 +6868,9 @@ function r_post($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_post)
 function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
 {
     global $r_debug, $db_lnk, $authUser, $thumbsizes, $_server_domain_url;
-    $fields = 'modified';
-    $values = array(
-        date('Y-m-d H:i:s')
-    );
-    $sfields = $table_name = $id = $activity_type = '';
-    $response = $diff = $pg_params = $foreign_id = $foreign_ids = $revisions = $previous_value = $obj = array();
-    $sql = $json = false;
+    $table_name = $id = $activity_type = '';
+    $response = $foreign_id = $foreign_ids = $revisions = $previous_value = array();
+    $sql = false;
     unset($r_put['temp_id']);
     switch ($r_resource_cmd) {
     case '/users/?/activation': //users activation
@@ -6880,6 +6983,7 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
 
     case '/labels/?': //labels update
         $json = true;
+        $label_id = array();
         $table_name = 'labels';
         $id = $r_resource_vars['labels'];
         $response['success'] = 'Label has been updated successfully.';
@@ -6923,6 +7027,7 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
 
     case '/boards/?':
         $table_name = 'boards';
+        $board = array();
         $id = $r_resource_vars['boards'];
         $qry_val_arr = array(
             $r_resource_vars['boards']
@@ -6948,9 +7053,6 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
         }
         if (isset($r_put['r_gridview_configure'])) {
             if (is_plugin_enabled('r_gridview_configure')) {
-                $field_arr = array(
-                    'r_gridview_configure',
-                );
                 $custom_fields_array = array();
                 $custom_fields_array['r_gridview_configure'] = $r_put['r_gridview_configure'];
                 $boardCustomFields = executeQuery('SELECT board_custom_fields FROM boards WHERE id = $1', [$id]);
@@ -6985,9 +7087,6 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
         }
         if (isset($r_put['r_listview_configure'])) {
             if (is_plugin_enabled('r_listview_configure')) {
-                $field_arr = array(
-                    'r_listview_configure'
-                );
                 $custom_fields_array = array();
                 $custom_fields_array['r_listview_configure'] = $r_put['r_listview_configure'];
                 $boardCustomFields = executeQuery('SELECT board_custom_fields FROM boards WHERE id = $1', [$id]);
@@ -7020,19 +7119,15 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
         }
         if (isset($r_put['r_listview_configure_position'])) {
             if (is_plugin_enabled('r_listview_configure')) {
-                $field_arr = array(
-                    'r_listview_configure_position',
-                );
                 $custom_fields_array = array();
                 $custom_fields_array['r_listview_configure_position'] = $r_put['r_listview_configure_position'];
                 $boardCustomFields = executeQuery('SELECT board_custom_fields FROM boards WHERE id = $1', [$id]);
                 if (!empty($boardCustomFields['board_custom_fields'])) {
                     $boardCustomFields = json_decode($boardCustomFields['board_custom_fields'], true);
                     foreach ($boardCustomFields as $key => $boardValue) {
+                        $custom_fields_array[$key] = $boardValue;
                         if (array_key_exists($key, $custom_fields_array)) {
                             $custom_fields_array[$key] = $custom_fields_array[$key];
-                        } else {
-                            $custom_fields_array[$key] = $boardValue;
                         }
                     }
                 }
@@ -7560,6 +7655,9 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
                 );
                 $custom_fields = pg_query_params($db_lnk, 'SELECT * FROM custom_fields WHERE board_id IS NULL or board_id = $1', $qry_val_arr);
                 while ($custom_field = pg_fetch_assoc($custom_fields)) {
+                    if (!empty($custom_field) && empty($custom_field['board_id'])) {
+                        $customFields[$custom_field['id']] = $custom_field['id'];
+                    }
                     if (!empty($custom_field['board_id'])) {
                         $qry_val_arr = array(
                             $r_put['board_id'],
@@ -7602,8 +7700,6 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
                             }
                             $customFields[$custom_field['id']] = $customField['id'];
                         }
-                    } else {
-                        $customFields[$custom_field['id']] = $custom_field['id'];
                     }
                 }
                 if (!empty($customFields)) {
@@ -7640,10 +7736,9 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
             $comment = '##USER_NAME## added card description in the card ##CARD_LINK## - ##DESCRIPTION##';
             $activity_type = 'add_card_desc';
         } else if (isset($previous_value) && isset($r_put['description']) && $r_put['description'] != $previous_value['description']) {
+            $comment = '##USER_NAME## updated description on the card ##CARD_LINK##';
             if (empty($r_put['description'])) {
                 $comment = '##USER_NAME## removed description from the card ##CARD_LINK##';
-            } else {
-                $comment = '##USER_NAME## updated description on the card ##CARD_LINK##';
             }
             $activity_type = 'edit_card_desc';
         }
@@ -7688,24 +7783,6 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
         $foreign_ids['card_id'] = $r_resource_vars['cards'];
         $comment = '##USER_NAME## updated comment to this card ##CARD_LINK##';
         $activity_type = 'edit_comment';
-        $response = update_query($table_name, $id, $r_resource_cmd, $r_put, $comment, $activity_type, $foreign_ids);
-        echo json_encode($response);
-        break;
-
-    case '/boards/?/lists/?/cards/?/attachments/?': // card attachment update
-        $table_name = 'card_attachments';
-        $id = $r_resource_vars['attachments'];
-        $foreign_ids['board_id'] = $r_resource_vars['boards'];
-        $foreign_ids['list_id'] = $r_resource_vars['lists'];
-        $foreign_ids['card_id'] = $r_resource_vars['cards'];
-        $data = array(
-            $foreign_ids['card_id'],
-            $foreign_ids['board_id'],
-            $foreign_ids['list_id']
-        );
-        pg_query_params($db_lnk, 'UPDATE card_attachments SET is_cover = false WHERE card_id = $1 AND board_id = $2 AND list_id = $3', $data);
-        $comment = '##USER_NAME## updated card attachments to this card ##CARD_LINK##';
-        $activity_type = 'update_card_attachment';
         $response = update_query($table_name, $id, $r_resource_cmd, $r_put, $comment, $activity_type, $foreign_ids);
         echo json_encode($response);
         break;
@@ -7759,7 +7836,7 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
             }
         } else if (isset($r_put['is_completed']) && $r_put['is_completed'] == 'false') {
             $comment = '##USER_NAME## updated ' . $prev_value['name'] . ' as incomplete on the card ##CARD_LINK##';
-        } else {
+        } else if (!empty($r_put['name'])) {
             $comment = '##USER_NAME## updated item name of ' . $r_put['name'] . ' in the card ##CARD_LINK##';
         }
         $response = update_query($table_name, $id, $r_resource_cmd, $r_put, $comment, $activity_type, $foreign_ids);
@@ -8003,15 +8080,15 @@ function r_put($r_resource_cmd, $r_resource_vars, $r_resource_filters, $r_put)
             $passed_values['r_resource_filters'] = $r_resource_filters;
             $passed_values['authUser'] = $authUser;
             $passed_values['r_put'] = $r_put;
-            if (!empty($table_name)) {
+            /* if (!empty($table_name)) {
                 $passed_values['table_name'] = $table_name;
-            }
-            if (!empty($siteCurrencyCode)) {
+            } */
+            /* if (!empty($siteCurrencyCode)) {
                 $passed_values['siteCurrencyCode'] = $siteCurrencyCode;
-            }
-            if (!empty($enabledPlugins)) {
+            } */
+            /* if (!empty($enabledPlugins)) {
                 $passed_values['enabledPlugins'] = $enabledPlugins;
-            }
+            } */
             $plugin_return = call_user_func($plugin_key . '_r_put', $passed_values);
             echo json_encode($plugin_return);
             break;
@@ -8180,6 +8257,7 @@ function r_delete($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         break;
 
     case '/boards/?/labels/?': // delete Labels in Filter
+        $label_id = array();
         $sql = 'DELETE FROM cards_labels WHERE board_id = $1 AND label_id = $2';
         array_push($pg_params, $r_resource_vars['boards'], $r_resource_vars['labels']);
         $comment = __l('##USER_NAME## removed label ##LABEL_NAME## on ##BOARD_NAME##');
@@ -8194,7 +8272,7 @@ function r_delete($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             $_GET['token'],
             $revision
         );
-        $activity = pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO activities (created, modified, board_id, user_id, type, comment, token, revisions) VALUES (now(), now(),$1, $2, $3, $4, $5, $6) RETURNING id', $qry_val_arr));
+        pg_fetch_assoc(pg_query_params($db_lnk, 'INSERT INTO activities (created, modified, board_id, user_id, type, comment, token, revisions) VALUES (now(), now(),$1, $2, $3, $4, $5, $6) RETURNING id', $qry_val_arr));
         break;
 
     case '/boards/?/lists/?/cards/?': // delete card
@@ -8235,10 +8313,9 @@ function r_delete($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         if (!empty($revisions['revisions'])) {
             $revision = unserialize($revisions['revisions']);
             $revisions_del['comment'] = $comment;
+            $revisions_del['old_value'] = '';
             if (isset($revision['new_value']['comment'])) {
                 $revisions_del['old_value'] = $revision['new_value']['comment'];
-            } else {
-                $revisions_del['old_value'] = '';
             }
             $revisions_del['new_value'] = '';
             $revisions_del = serialize($revisions_del);
@@ -8315,21 +8392,21 @@ function r_delete($r_resource_cmd, $r_resource_vars, $r_resource_filters)
         $attachment = executeQuery('SELECT name, path FROM card_attachments WHERE id =  $1', $qry_val_arr);
         if (!empty($attachment)) {
             $file = MEDIA_PATH . DS . $attachment['path'];
-            if (file_exists($file)) {
+            if (file_exists($file) && strpos(realpath($file), MEDIA_PATH) !== false) {
                 unlink($file);
             }
             foreach ($thumbsizes['CardAttachment'] as $key => $value) {
                 $file_ext = explode('.', $attachment['name']);
                 $hash = md5(SECURITYSALT . 'CardAttachment' . $r_resource_vars['attachments'] . $file_ext[1] . $key);
                 $thumb_file = IMG_PATH . DS . $key . DS . 'CardAttachment' . DS . $r_resource_vars['attachments'] . '.' . $hash . '.' . $file_ext[1];
-                if (file_exists($thumb_file)) {
+                if (file_exists($thumb_file) && strpos(realpath($thumb_file), IMG_PATH) !== false) {
                     unlink($thumb_file);
                 }
             }
             $file_ext = explode('.', $attachment['name']);
             $hash = md5(SECURITYSALT . 'CardAttachment' . $r_resource_vars['attachments'] . $file_ext[1] . $key);
             $thumb_file = IMG_PATH . DS . 'original' . DS . 'CardAttachment' . DS . $r_resource_vars['attachments'] . '.' . $hash . '.' . $file_ext[1];
-            if (file_exists($thumb_file)) {
+            if (file_exists($thumb_file) && strpos(realpath($thumb_file), IMG_PATH) !== false) {
                 unlink($thumb_file);
             }
         }
@@ -8475,15 +8552,15 @@ function r_delete($r_resource_cmd, $r_resource_vars, $r_resource_filters)
             $passed_values['r_resource_vars'] = $r_resource_vars;
             $passed_values['r_resource_filters'] = $r_resource_filters;
             $passed_values['authUser'] = $authUser;
-            if (!empty($table_name)) {
+            /* if (!empty($table_name)) {
                 $passed_values['table_name'] = $table_name;
-            }
-            if (!empty($siteCurrencyCode)) {
+            } */
+            /* if (!empty($siteCurrencyCode)) {
                 $passed_values['siteCurrencyCode'] = $siteCurrencyCode;
-            }
-            if (!empty($enabledPlugins)) {
+            } */
+            /* if (!empty($enabledPlugins)) {
                 $passed_values['enabledPlugins'] = $enabledPlugins;
-            }
+            } */
             $plugin_return = call_user_func($plugin_key . '_r_delete', $passed_values);
             echo json_encode($plugin_return);
             exit;

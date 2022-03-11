@@ -1,3 +1,7 @@
+---
+description: Theming/CSSilize Plugin Installation
+---
+
 # Theming/CSSilize Plugin Installation
 
 ## Introduction
@@ -18,7 +22,7 @@ This document contains information about Theming/CSSilize Plugin Installation fr
 
 For step-by-step instructions on Theming/CSSilize Plugin Installation from Admin, refer [YouTube video](https://www.youtube.com/watch?v=BR6bBZ1nkrg "Watch video on Theming/CSSilize Plugin Installation from Admin")
 
-[![Theming/CSSilize Plugin Installation](cssilize_installation.png)](http://www.youtube.com/watch?v=0Xdn52DoNHs "Watch video on Theming/CSSilize Plugin Installation")  
+[![Theming/CSSilize Plugin Installation](cssilize_installation.png)](https://www.youtube.com/watch?v=0Xdn52DoNHs "Watch video on Theming/CSSilize Plugin Installation")  
 
 ## How to install Theming/CSSilize Plugin Installation?
 

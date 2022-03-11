@@ -186,7 +186,7 @@
 .datetimepicker table tr td.today:hover,
 .datetimepicker table tr td.today.disabled,
 .datetimepicker table tr td.today.disabled:hover {
-	background-color: ##f47564;
+	background-color: #f47564;
 	/*background-image: -moz-linear-gradient(top, #fdd49a, #fdf59a);
 	background-image: -ms-linear-gradient(top, #fdd49a, #fdf59a);
 	background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#fdd49a), to(#fdf59a));

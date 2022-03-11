@@ -8,7 +8,7 @@
  * @package    Restyaboard
  * @subpackage Core
  * @author     Restya <info@restya.com>
- * @copyright  2014-2021 Restya
+ * @copyright  2014-2022 Restya
  * @license    http://restya.com/ Restya Licence
  * @link       http://restya.com/
  */
@@ -30,7 +30,7 @@ if (!empty($_GET['id']) && !empty($_GET['hash'])) {
                 $board = pg_fetch_assoc($result);
                 if (!empty($board) && $board['board_visibility'] === '2') {
                     $file = MEDIA_PATH . DS . $attachment['path'];
-                    if (file_exists($file)) {
+                    if (file_exists($file) && strpos(realpath($file) , MEDIA_PATH) !== false) {
                         $basename = basename($file);
                         $add_slash = addcslashes($basename, '"\\');
                         $quoted = sprintf('"%s"', $add_slash);
@@ -61,6 +61,8 @@ if (!empty($_GET['id']) && !empty($_GET['hash'])) {
                         }
                         readfile($file);
                         exit;
+                    } else {
+                        header($_SERVER['SERVER_PROTOCOL'] . ' 404 Not Found', true, 404);
                     }
                 } else if (isset($_COOKIE['auth'])) {
                     $auth = json_decode($_COOKIE['auth'], true);
@@ -84,7 +86,7 @@ if (!empty($_GET['id']) && !empty($_GET['hash'])) {
                             $board_user = pg_fetch_assoc($result);
                             if (!empty($board_user) || ($auth['user']['role_id'] == 1)) {
                                 $file = MEDIA_PATH . DS . $attachment['path'];
-                                if (file_exists($file)) {
+                                if (file_exists($file) && strpos(realpath($file) , MEDIA_PATH) !== false) {
                                     $basename = basename($file);
                                     $add_slash = addcslashes($basename, '"\\');
                                     $quoted = sprintf('"%s"', $add_slash);
@@ -115,6 +117,8 @@ if (!empty($_GET['id']) && !empty($_GET['hash'])) {
                                     }
                                     readfile($file);
                                     exit;
+                                } else {
+                                    header($_SERVER['SERVER_PROTOCOL'] . ' 404 Not Found', true, 404);
                                 }
                             } else {
                                 header($_SERVER['SERVER_PROTOCOL'] . ' 401 Unauthorized 1', true, 401);
@@ -138,7 +142,7 @@ if (!empty($_GET['id']) && !empty($_GET['hash'])) {
         $md5_hash = md5(SECURITYSALT . $_GET['id'] . '.csv');
         if ($md5_hash == $_GET['hash']) {
             $file = MEDIA_PATH . DS . 'reports' . DS . $_GET['id'] . '.csv';
-            if (file_exists($file)) {
+            if (file_exists($file) && strpos(realpath($file) , MEDIA_PATH) !== false) {
                 $basename = basename($file);
                 $add_slash = addcslashes($basename, '"\\');
                 $quoted = sprintf('"%s"', $add_slash);

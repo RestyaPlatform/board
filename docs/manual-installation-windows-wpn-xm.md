@@ -1,3 +1,7 @@
+---
+description: Installation in windows using WPN-XM
+---
+
 # Manual installation in windows using wpn-xm
 
 ## Introduction
@@ -21,7 +25,7 @@ This document contains information about how to install and configure the Restya
 
 *   Install nginx, postgresql, adminer, Pickle, Fake Sendmail, WPN-XM - Service Control Panel, WPN-XM Webinterface using [https://github.com/WPN-XM/WPN-XM](https://github.com/WPN-XM/WPN-XM) at `D:\server`
 
-*   Download latest built file from [https://github.com/RestyaPlatform/board/releases](https://github.com/RestyaPlatform/board/releases) (board-v1.7.zip) and place it in `D:\server\www\restyaboard`
+*   Download latest built file from [https://github.com/RestyaPlatform/board/releases](https://github.com/RestyaPlatform/board/releases) (board-v1.7.1.zip) and place it in `D:\server\www\restyaboard`
 
 *   For Apache:
     *   `https://github.com/RestyaPlatform/board/blob/master/.htaccess#L7` Change `RewriteBase / to RewriteBase /your_local_folder/`

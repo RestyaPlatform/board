@@ -1,3 +1,7 @@
+---
+description: Restyaboard Elasticsearch Help
+---
+
 # Elasticsearch Help
 
 ## Introduction
@@ -18,7 +22,7 @@ This document contains information about how to use Elasticsearch plugin's searc
 
 For step-by-step instructions on Elasticsearch Help, refer [YouTube video](https://www.youtube.com/watch?v=Kkx9-_FIOi0 "Watch video on Elasticsearch Help")
 
-[![[Elasticsearch Help]](elasticsearch_help.png)](http://www.youtube.com/watch?v=Kkx9-_FIOi0 "Watch video on Elasticsearch Help")
+[![[Elasticsearch Help]](elasticsearch_help.png)](https://www.youtube.com/watch?v=Kkx9-_FIOi0 "Watch video on Elasticsearch Help")
 
 ## Elasticsearch Help
 

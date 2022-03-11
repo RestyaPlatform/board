@@ -1,3 +1,7 @@
+---
+description: Restyaboard Card and List Delete Actions
+---
+
 # Restyaboard Card and List Delete Actions
 
 ## Introduction

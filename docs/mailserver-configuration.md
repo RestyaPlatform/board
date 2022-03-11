@@ -1,3 +1,7 @@
+---
+description: Mail server configuration in Restyaboard
+---
+
 # Mail server configuration
 
 ## Introduction
@@ -30,7 +34,7 @@ In Restyaboard, emails are sent using PHP’s inbuilt mail() function which intu
 
 *   In Windows machine, you’ll need additional program that mimics sendmail functions. If you setup Apache/nginx/PHP using multiple installer programs such as WPN-XM, they usually comes with such feature.
     
-*   Alternatively, you may also use external SMTP server as mentioned in [php.ini based approach to setup external SMTP (for Windows)](http://stackoverflow.com/questions/112190/php-ini-smtp-how-do-you-pass-username-password/6941390#6941390 "php.ini based approach to setup external SMTP (for Windows)")
+*   Alternatively, you may also use external SMTP server as mentioned in [php.ini based approach to setup external SMTP (for Windows)](https://stackoverflow.com/questions/112190/php-ini-smtp-how-do-you-pass-username-password/6941390#6941390 "php.ini based approach to setup external SMTP (for Windows)")
     
 
 #### Popular sendmail alternative for Windows
@@ -48,12 +52,12 @@ Sometimes you may want to make use of external SMTP server to send mails. One po
 
 #### Postfix based approach to setup external SMTP (for Linux)
 
-*   In Linux, for setting up external SMTP, can directly enter in Postfix. For more details, [refer to Stack Overflow post on how to configure Postfix](http://stackoverflow.com/questions/112190/php-ini-smtp-how-do-you-pass-username-password/31084190#31084190 "refer to Stack Overflow post on how to configure Postfix")
+*   In Linux, for setting up external SMTP, can directly enter in Postfix. For more details, [refer to Stack Overflow post on how to configure Postfix](https://stackoverflow.com/questions/112190/php-ini-smtp-how-do-you-pass-username-password/31084190#31084190 "refer to Stack Overflow post on how to configure Postfix")
     
 
 #### php.ini based approach to setup external SMTP (for Windows)
 
-*   In Windows, for setting up external SMTP, can directly enter in php.in. For more details, [refer to Stack Overflow post on how to configure php.ini](http://stackoverflow.com/questions/112190/php-ini-smtp-how-do-you-pass-username-password/6941390#6941390 "refer to Stack Overflow post on how to configure php.ini")
+*   In Windows, for setting up external SMTP, can directly enter in php.in. For more details, [refer to Stack Overflow post on how to configure php.ini](https://stackoverflow.com/questions/112190/php-ini-smtp-how-do-you-pass-username-password/6941390#6941390 "refer to Stack Overflow post on how to configure php.ini")
     
 
 #### References related to external SMTP server
@@ -96,7 +100,7 @@ If there are no problems reported, most likely the emails will be received in in
 
 *   Please note that for some cases, setting up SPF, DKIM and DMARC may not still work as mail systems use lot of heuristics to determine spam and can flag system mails as spam.
 
-# Troubleshooting email issues in Azure hosting
+## Troubleshooting email issues in Azure hosting
 
 By default, Azure hosting blocks all outgoing mails. So, even if you use Linux VM on Azure, emails won’t be sent.
 

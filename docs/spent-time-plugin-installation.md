@@ -1,3 +1,7 @@
+---
+description: Spent Time Tracking Plugin Installation, This document contains information about how to install the Spent Time Tracking plugin.
+---
+
 # Spent Time Tracking Plugin Installation
 
 ## Introduction

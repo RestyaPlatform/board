@@ -1,3 +1,7 @@
+---
+description: Check Permission for Add/Edit Labels, This document contains information about how to check permission for add/edit labels on Restyaboard.
+---
+
 # Check Permission for Add/Edit Labels
 
 ## Introduction

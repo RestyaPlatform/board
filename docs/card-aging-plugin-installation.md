@@ -1,3 +1,7 @@
+---
+description: Card Aging Plugin Installation
+---
+
 # Card Aging Plugin Installation
 
 ## Introduction

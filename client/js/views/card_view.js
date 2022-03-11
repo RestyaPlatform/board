@@ -720,10 +720,14 @@ App.CardView = Backbone.View.extend({
      * @type string
      */
     selectCardPosition: function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        _(function() {
+            $(e.target).parents('.dropdown').addClass('open');
+        }).defer();
         var target = $(e.currentTarget);
         var self = this;
         var list_id = target.val();
-        var board_id = $(e.target).parents('form.js-cardAddForm').find('.js-selected-board').val();
         var content_position = '';
         self.$el.find('.js-card-add-list').val(list_id);
         var list = this.model.list.collection.board.lists.findWhere({
@@ -733,7 +737,6 @@ App.CardView = Backbone.View.extend({
             list_id: list.attributes.id,
             is_archived: 0
         }).length;
-        var current_position = filtered_cards_count + 1;
         for (var i = 1; i <= filtered_cards_count; i++) {
             content_position += '<option value="' + i + '">' + i + '</option>';
         }
@@ -749,7 +752,12 @@ App.CardView = Backbone.View.extend({
      * @type string
      */
     changeCardPosition: function(e) {
+        e.preventDefault();
+        e.stopPropagation();
         var target = $(e.currentTarget);
+        _(function() {
+            $(target).parents('.dropdown').addClass('open');
+        }).defer();
         var posoition = target.val();
         this.$el.find('.js-card-add-position').val(posoition);
         return false;
@@ -989,6 +997,8 @@ App.CardView = Backbone.View.extend({
      *
      */
     backToCardActions: function(e) {
+        e.preventDefault();
+        e.stopPropagation();
         $('a.js-show-card-action-list').next().remove();
         $('a.js-show-card-action-list').after(new App.CardActionsView({
             model: this.model

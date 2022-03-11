@@ -1,3 +1,7 @@
+---
+description: Attachment Downloader Plugin Installation
+---
+
 # Attachment Downloader Plugin Installation
 
 ## Introduction
@@ -17,9 +21,9 @@ This document contains information about how to install and configure Agile WIP 
 
 ## Video Tutorial
 
-For step-by-step instructions about Attachment Downloader Plugin Installation, refer [YouTube video](https://youtu.be/e5Syqui-PhA "Watch video on Attachment Downloader Plugin Installation")
+For step-by-step instructions about Attachment Downloader Plugin Installation, refer [YouTube video](https://www.youtube.com/watch?v=e5Syqui-PhA "Watch video on Attachment Downloader Plugin Installation")
 
-[![Watch video on Attachment Downloader Plugin Installation](download_attachment.png "Attachment Downloader Plugin Installation")](https://youtu.be/e5Syqui-PhA "Watch video on Attachment Downloader Plugin Installation")
+[![Watch video on Attachment Downloader Plugin Installation](download_attachment.png "Attachment Downloader Plugin Installation")](https://www.youtube.com/watch?v=e5Syqui-PhA "Watch video on Attachment Downloader Plugin Installation")
 
 ## How to install Attachment Downloader Plugin?
 

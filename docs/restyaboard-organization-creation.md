@@ -1,3 +1,7 @@
+---
+description: Organization Creation in Restyaboard
+---
+
 # Organization Creation in Restyaboard
 
 ## Introduction

@@ -1,3 +1,7 @@
+---
+description: LDAP Plugin Installation
+---
+
 # LDAP Plugin Installation
 
 ## Introduction
@@ -18,7 +22,7 @@ This document contains information about how to install LDAP plugin in the Resty
 
 For step-by-step instructions on LDAP Plugin Installation, refer [YouTube video](https://www.youtube.com/watch?v=g5SzFy4n4u4 "Watch video on LDAP Plugin Installation")
 
-[![LDAP Plugin Installation](ldap_installation.png "LDAP Plugin Installation")](http://www.youtube.com/watch?v=g5SzFy4n4u4 "Watch video on LDAP Plugin Installation")  
+[![LDAP Plugin Installation](ldap_installation.png "LDAP Plugin Installation")](https://www.youtube.com/watch?v=g5SzFy4n4u4 "Watch video on LDAP Plugin Installation")  
 
 ## LDAP Plugin Installation
 

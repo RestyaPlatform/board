@@ -96,17 +96,20 @@ if (function_exists('imap_open')) {
     }
 }
 function _is_writable_recursive($dir) {
-    if (!($folder = @opendir($dir))) {
-        return false;
-    }
-    while ($file = readdir($folder)) {
-        if ($file != '.' && $file != '..' && (!is_writable($dir . '/' . $file) || (is_dir($dir . '/' . $file) && !_is_writable_recursive($dir . '/' . $file)))) {
-            closedir($folder);
+    if (is_dir($dir)){
+        $folder = opendir($dir);
+        if (!($folder)) {
             return false;
         }
+        while (($file = readdir($folder)) !== false) {
+            if ($file != '.' && $file != '..' && (!is_writable($dir . '/' . $file) || (is_dir($dir . '/' . $file) && !_is_writable_recursive($dir . '/' . $file)))) {
+                closedir($folder);
+                return false;
+            }
+        }
+        closedir($folder);
+        return true;
     }
-    closedir($folder);
-    return true;
 }
 if (file_exists(APP_PATH . '/client/apps/r_ldap_login/app.json')) {
     $is_having_ldap_plugin = true;
@@ -162,7 +165,7 @@ if (file_exists(APP_PATH . '/client/apps/r_elasticsearch/app.json')) {
         $elasticsearch_index_class = $elasticsearch_data['settings']['r_elasticsearch_index_name']['value'];
     }
     if (function_exists('curl_init')) {
-        $ch = curl_init('http://'.$elasticsearch_server_class. ':'. $elasticsearch_port_class . '/' . $elasticsearch_index_class . '/cards/_search');
+        $ch = curl_init('http://'.$elasticsearch_server_class. ':'. $elasticsearch_port_class . '/' . $elasticsearch_index_class . '/_search');
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);

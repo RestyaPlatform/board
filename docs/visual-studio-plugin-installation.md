@@ -1,3 +1,7 @@
+---
+description: Visual Studio Plugin Installation, this document contains information about how to install and use Visual Studio app in Restyaboard.
+---
+
 # Visual Studio Plugin Installation
 
 ## Introduction
