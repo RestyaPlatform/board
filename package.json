@@ -38,7 +38,7 @@
     "grunt-regex-replace": "~0.4.0",
     "grunt-template-jasmine-istanbul": "0.4.0",
     "grunt-usemin": "~3.1.1",
-    "grunt-zip": "~0.18.2"
+    "grunt-zip": "~0.20.0"
   },
   "scripts": {
     "docker:prebuild": "grunt build:docker",
